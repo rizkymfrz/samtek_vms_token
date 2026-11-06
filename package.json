@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "fix:spacing": "node scripts/fix-spacing.mjs",
+    "check:showcase": "node scripts/check-showcase.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
