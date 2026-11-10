@@ -1,9 +1,9 @@
 "use client";
-import * as React from "react";
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 import { cn } from "cn";
-import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
+import type { ComponentProps } from "react";
+import { Button } from "@/components/ui/button";
 
 const Sheet = ({ ...props }: SheetPrimitive.Root.Props) => {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -80,7 +80,7 @@ const SheetContent = ({
   );
 };
 
-const SheetHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
+const SheetHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="sheet-header"
@@ -90,7 +90,7 @@ const SheetHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const SheetFooter = ({ className, ...props }: React.ComponentProps<"div">) => {
+const SheetFooter = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="sheet-footer"

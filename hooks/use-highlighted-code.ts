@@ -1,14 +1,14 @@
-import * as React from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { loadHighlighter } from "@/lib/highlighter";
 
 export const useHighlightedCode = (value: string, language: string) => {
   const code = value.endsWith("\n") ? value.slice(0, -1) : value;
-  const [loaded, setLoaded] = React.useState<{
+  const [loaded, setLoaded] = useState<{
     language: string;
     highlighter: Awaited<ReturnType<typeof loadHighlighter>>;
   } | null>(null);
   const highlighter = loaded?.language === language ? loaded.highlighter : null;
-  React.useEffect(() => {
+  useEffect(() => {
     let cancelled = false;
     loadHighlighter(language)
       .then((next) => {
@@ -21,10 +21,10 @@ export const useHighlightedCode = (value: string, language: string) => {
       cancelled = true;
     };
   }, [language]);
-  const [done, setDone] = React.useState<{
+  const [done, setDone] = useState<{
     highlighter: typeof highlighter;
     text: string;
-    lines: React.ReactNode[];
+    lines: ReactNode[];
     state?: Parameters<NonNullable<typeof highlighter>["highlight"]>[1];
   }>({ highlighter: null, text: "", lines: [] });
   let next = done;
@@ -48,7 +48,7 @@ export const useHighlightedCode = (value: string, language: string) => {
     setDone(next);
   }
   const tail = code.slice(end);
-  return React.useMemo(() => {
+  return useMemo(() => {
     if (!highlighter) {
       return code.split("\n");
     }

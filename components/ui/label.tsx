@@ -1,8 +1,8 @@
 "use client";
-import * as React from "react";
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 
-const Label = ({ className, ...props }: React.ComponentProps<"label">) => {
+const Label = ({ className, ...props }: ComponentProps<"label">) => {
   return (
     <label
       data-slot="label"

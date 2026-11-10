@@ -514,4 +514,5 @@ export const buildDashboard = (devices: DeviceInfo[], now = Date.now()) => {
     },
   };
 };
+
 export type Dashboard = ReturnType<typeof buildDashboard>;

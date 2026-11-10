@@ -2,6 +2,7 @@ import { NavigationMenu as NavigationMenuPrimitive } from "@base-ui/react/naviga
 import { cva } from "class-variance-authority";
 import { cn } from "cn";
 import { ChevronDownIcon } from "lucide-react";
+import type { ComponentPropsWithRef } from "react";
 
 const NavigationMenu = ({
   align = "start",
@@ -28,7 +29,7 @@ const NavigationMenu = ({
 const NavigationMenuList = ({
   className,
   ...props
-}: React.ComponentPropsWithRef<typeof NavigationMenuPrimitive.List>) => {
+}: ComponentPropsWithRef<typeof NavigationMenuPrimitive.List>) => {
   return (
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
@@ -44,7 +45,7 @@ const NavigationMenuList = ({
 const NavigationMenuItem = ({
   className,
   ...props
-}: React.ComponentPropsWithRef<typeof NavigationMenuPrimitive.Item>) => {
+}: ComponentPropsWithRef<typeof NavigationMenuPrimitive.Item>) => {
   return (
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
@@ -142,7 +143,7 @@ const NavigationMenuLink = ({
 const NavigationMenuIndicator = ({
   className,
   ...props
-}: React.ComponentPropsWithRef<typeof NavigationMenuPrimitive.Icon>) => {
+}: ComponentPropsWithRef<typeof NavigationMenuPrimitive.Icon>) => {
   return (
     <NavigationMenuPrimitive.Icon
       data-slot="navigation-menu-indicator"

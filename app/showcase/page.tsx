@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-
 import { Showcase } from "./_components/showcase"
 import { page } from "./_data/content"
 

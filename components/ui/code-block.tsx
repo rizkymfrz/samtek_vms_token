@@ -1,8 +1,8 @@
 "use client";
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { CheckIcon, CopyIcon } from "lucide-react";
+import { type ComponentProps, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const codeBlockVariants = cva(
@@ -27,7 +27,7 @@ const CodeBlock = ({
   variant = "default",
   size = "default",
   ...props
-}: React.ComponentProps<"div"> &
+}: ComponentProps<"div"> &
   VariantProps<typeof codeBlockVariants> & { size?: "default" | "sm" }) => {
   return (
     <div
@@ -40,10 +40,7 @@ const CodeBlock = ({
   );
 };
 
-const CodeBlockHeader = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const CodeBlockHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="code-block-header"
@@ -56,10 +53,7 @@ const CodeBlockHeader = ({
   );
 };
 
-const CodeBlockTitle = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const CodeBlockTitle = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="code-block-title"
@@ -72,10 +66,7 @@ const CodeBlockTitle = ({
   );
 };
 
-const CodeBlockActions = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const CodeBlockActions = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="code-block-actions"
@@ -95,9 +86,9 @@ const CodeBlockCopyButton = ({
   className,
   onClick,
   ...props
-}: React.ComponentProps<typeof Button> & { value: string }) => {
-  const [copied, setCopied] = React.useState(false);
-  React.useEffect(() => {
+}: ComponentProps<typeof Button> & { value: string }) => {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
     if (!copied) {
       return;
     }
@@ -139,7 +130,7 @@ const CodeBlockContent = ({
   lineNumbers = false,
   startLine = 1,
   ...props
-}: React.ComponentProps<"pre"> & {
+}: ComponentProps<"pre"> & {
   wrap?: boolean;
   lineNumbers?: boolean;
   startLine?: number;
@@ -197,8 +188,7 @@ const CodeBlockLine = ({
   variant = "default",
   children,
   ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof codeBlockLineVariants>) => {
+}: ComponentProps<"span"> & VariantProps<typeof codeBlockLineVariants>) => {
   const empty =
     children === undefined ||
     children === null ||
@@ -218,10 +208,7 @@ const CodeBlockLine = ({
   );
 };
 
-const CodeBlockFooter = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const CodeBlockFooter = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="code-block-footer"

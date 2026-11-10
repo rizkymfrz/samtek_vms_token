@@ -1,5 +1,11 @@
 "use client"
-import { AlertCircleIcon, CheckIcon, FileIcon, LoaderIcon, XIcon } from "lucide-react"
+import {
+  AlertCircleIcon,
+  CheckIcon,
+  FileIcon,
+  LoaderIcon,
+  XIcon,
+} from "lucide-react"
 import {
   Attachment,
   AttachmentAction,
@@ -11,7 +17,12 @@ import {
   AttachmentTitle,
 } from "@/components/ui/attachment"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "@/components/ui/bubble"
+import {
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+} from "@/components/ui/bubble"
 import {
   CodeBlock,
   CodeBlockActions,
@@ -72,7 +83,11 @@ export const BubbleDemo = () => {
   return (
     <BubbleGroup className="max-w-md">
       {bubbleVariantNames.map((variant: BubbleVariant, index) => (
-        <Bubble key={variant} variant={variant} align={index % 2 === 0 ? "start" : "end"}>
+        <Bubble
+          key={variant}
+          variant={variant}
+          align={index % 2 === 0 ? "start" : "end"}
+        >
           <BubbleContent>{variant}</BubbleContent>
           {index === 0 && <BubbleReactions>{chat.reaction}</BubbleReactions>}
         </Bubble>
@@ -183,7 +198,9 @@ export const AttachmentDemo = () => {
                 </AttachmentMedia>
                 <AttachmentContent>
                   <AttachmentTitle>{attachment.title}</AttachmentTitle>
-                  <AttachmentDescription>{attachment.description}</AttachmentDescription>
+                  <AttachmentDescription>
+                    {attachment.description}
+                  </AttachmentDescription>
                 </AttachmentContent>
                 <AttachmentActions>
                   <AttachmentAction aria-label={attachment.title}>
@@ -198,13 +215,19 @@ export const AttachmentDemo = () => {
       <Labelled label="vertical">
         <Row>
           {chat.attachments.slice(0, 2).map((attachment) => (
-            <Attachment key={attachment.id} orientation="vertical" state={attachment.state}>
+            <Attachment
+              key={attachment.id}
+              orientation="vertical"
+              state={attachment.state}
+            >
               <AttachmentMedia>
                 <FileIcon />
               </AttachmentMedia>
               <AttachmentContent>
                 <AttachmentTitle>{attachment.title}</AttachmentTitle>
-                <AttachmentDescription>{attachment.description}</AttachmentDescription>
+                <AttachmentDescription>
+                  {attachment.description}
+                </AttachmentDescription>
               </AttachmentContent>
             </Attachment>
           ))}
@@ -243,26 +266,33 @@ export const MessageScrollerDemo = () => {
 
 export const QuestionnaireDemo = () => {
   const { questionnaire } = chat
-  
   const items = questionnaire.items.map((item) => ({
     name: item.name,
     required: true,
     choices: item.choices.map(({ value }) => ({ value })),
   }))
-
   return (
     <Questionnaire items={items} shortcuts="numbers" className="max-w-md">
       <QuestionnaireProgress />
       {questionnaire.items.map((item) => (
-        <QuestionnaireItem key={item.name} name={item.name} multiple={item.multiple} required>
+        <QuestionnaireItem
+          key={item.name}
+          name={item.name}
+          multiple={item.multiple}
+          required
+        >
           <QuestionnaireTitle>{item.title}</QuestionnaireTitle>
-          <QuestionnaireDescription>{item.description}</QuestionnaireDescription>
+          <QuestionnaireDescription>
+            {item.description}
+          </QuestionnaireDescription>
           <QuestionnaireChoices>
             {item.choices.map((choice) => (
               <QuestionnaireChoice key={choice.value} value={choice.value}>
                 {choice.label}
                 {choice.description && (
-                  <QuestionnaireChoiceDescription>{choice.description}</QuestionnaireChoiceDescription>
+                  <QuestionnaireChoiceDescription>
+                    {choice.description}
+                  </QuestionnaireChoiceDescription>
                 )}
               </QuestionnaireChoice>
             ))}

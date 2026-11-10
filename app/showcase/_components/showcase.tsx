@@ -1,10 +1,10 @@
 "use client"
-import * as React from "react"
+import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { groups, page, type GroupId } from "../_data/content"
-import { registry, titleOf, type ShowcaseEntry } from "../_registry"
+import { type GroupId, groups, page } from "../_data/content"
+import { registry, type ShowcaseEntry, titleOf } from "../_registry"
 
 const groupIds = Object.keys(groups) as GroupId[]
 
@@ -14,13 +14,11 @@ const matches = (entry: ShowcaseEntry, query: string) => {
 }
 
 export const Showcase = () => {
-  const [query, setQuery] = React.useState("")
+  const [query, setQuery] = useState("")
   const visible = registry.filter((entry) => matches(entry, query))
-
   const toggleDark = (checked: boolean) => {
     document.documentElement.classList.toggle("dark", checked)
   }
-
   return (
     <div className="mx-auto flex w-full max-w-7xl gap-8 p-8">
       <aside className="sticky top-8 hidden h-[calc(100svh-4rem)] w-64 shrink-0 flex-col gap-4 overflow-y-auto md:flex">
@@ -62,15 +60,23 @@ export const Showcase = () => {
           <h1 className="text-3xl font-semibold">{page.title}</h1>
           <p className="text-muted-foreground">{page.description}</p>
         </header>
-        {visible.length === 0 && <p className="text-muted-foreground">{page.noResults}</p>}
+        {visible.length === 0 && (
+          <p className="text-muted-foreground">{page.noResults}</p>
+        )}
         {groupIds.map((group) => {
           const entries = visible.filter((entry) => entry.group === group)
           if (entries.length === 0) return null
           return (
             <div key={group} className="flex flex-col gap-16">
-              <h2 className="border-b pb-2 text-xl font-semibold">{groups[group]}</h2>
+              <h2 className="border-b pb-2 text-xl font-semibold">
+                {groups[group]}
+              </h2>
               {entries.map(({ id, Demo }) => (
-                <section key={id} id={id} className="flex scroll-mt-8 flex-col gap-4">
+                <section
+                  key={id}
+                  id={id}
+                  className="flex scroll-mt-8 flex-col gap-4"
+                >
                   <h3 className="text-lg font-medium">{titleOf(id)}</h3>
                   <div className="overflow-x-auto border p-8">
                     <Demo />

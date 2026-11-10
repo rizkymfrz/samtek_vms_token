@@ -5,6 +5,7 @@ const uiIds = readdirSync("components/ui")
   .map((file) => file.replace(/\.tsx$/, ""));
 
 const registry = readFileSync("app/showcase/_registry.tsx", "utf8");
+
 const registered = [...registry.matchAll(/\{ id: "([^"]+)"/g)].map(
   (match) => match[1],
 );

@@ -1,8 +1,9 @@
 "use client";
-import * as React from "react";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { Menubar as MenubarPrimitive } from "@base-ui/react/menubar";
 import { cn } from "cn";
+import { CheckIcon } from "lucide-react";
+import type { ComponentProps } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CheckIcon } from "lucide-react";
 
 const Menubar = ({ className, ...props }: MenubarPrimitive.Props) => {
   return (
@@ -33,28 +33,26 @@ const Menubar = ({ className, ...props }: MenubarPrimitive.Props) => {
   );
 };
 
-const MenubarMenu = ({
-  ...props
-}: React.ComponentProps<typeof DropdownMenu>) => {
+const MenubarMenu = ({ ...props }: ComponentProps<typeof DropdownMenu>) => {
   return <DropdownMenu data-slot="menubar-menu" {...props} />;
 };
 
 const MenubarGroup = ({
   ...props
-}: React.ComponentProps<typeof DropdownMenuGroup>) => {
+}: ComponentProps<typeof DropdownMenuGroup>) => {
   return <DropdownMenuGroup data-slot="menubar-group" {...props} />;
 };
 
 const MenubarPortal = ({
   ...props
-}: React.ComponentProps<typeof DropdownMenuPortal>) => {
+}: ComponentProps<typeof DropdownMenuPortal>) => {
   return <DropdownMenuPortal data-slot="menubar-portal" {...props} />;
 };
 
 const MenubarTrigger = ({
   className,
   ...props
-}: React.ComponentProps<typeof DropdownMenuTrigger>) => {
+}: ComponentProps<typeof DropdownMenuTrigger>) => {
   return (
     <DropdownMenuTrigger
       data-slot="menubar-trigger"
@@ -73,7 +71,7 @@ const MenubarContent = ({
   alignOffset = -4,
   sideOffset = 8,
   ...props
-}: React.ComponentProps<typeof DropdownMenuContent>) => {
+}: ComponentProps<typeof DropdownMenuContent>) => {
   return (
     <DropdownMenuContent
       data-slot="menubar-content"
@@ -94,7 +92,7 @@ const MenubarItem = ({
   inset,
   variant = "default",
   ...props
-}: React.ComponentProps<typeof DropdownMenuItem>) => {
+}: ComponentProps<typeof DropdownMenuItem>) => {
   return (
     <DropdownMenuItem
       data-slot="menubar-item"
@@ -141,7 +139,7 @@ const MenubarCheckboxItem = ({
 
 const MenubarRadioGroup = ({
   ...props
-}: React.ComponentProps<typeof DropdownMenuRadioGroup>) => {
+}: ComponentProps<typeof DropdownMenuRadioGroup>) => {
   return <DropdownMenuRadioGroup data-slot="menubar-radio-group" {...props} />;
 };
 
@@ -177,7 +175,7 @@ const MenubarLabel = ({
   className,
   inset,
   ...props
-}: React.ComponentProps<typeof DropdownMenuLabel> & {
+}: ComponentProps<typeof DropdownMenuLabel> & {
   inset?: boolean;
 }) => {
   return (
@@ -193,7 +191,7 @@ const MenubarLabel = ({
 const MenubarSeparator = ({
   className,
   ...props
-}: React.ComponentProps<typeof DropdownMenuSeparator>) => {
+}: ComponentProps<typeof DropdownMenuSeparator>) => {
   return (
     <DropdownMenuSeparator
       data-slot="menubar-separator"
@@ -206,7 +204,7 @@ const MenubarSeparator = ({
 const MenubarShortcut = ({
   className,
   ...props
-}: React.ComponentProps<typeof DropdownMenuShortcut>) => {
+}: ComponentProps<typeof DropdownMenuShortcut>) => {
   return (
     <DropdownMenuShortcut
       data-slot="menubar-shortcut"
@@ -219,9 +217,7 @@ const MenubarShortcut = ({
   );
 };
 
-const MenubarSub = ({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuSub>) => {
+const MenubarSub = ({ ...props }: ComponentProps<typeof DropdownMenuSub>) => {
   return <DropdownMenuSub data-slot="menubar-sub" {...props} />;
 };
 
@@ -229,7 +225,7 @@ const MenubarSubTrigger = ({
   className,
   inset,
   ...props
-}: React.ComponentProps<typeof DropdownMenuSubTrigger> & {
+}: ComponentProps<typeof DropdownMenuSubTrigger> & {
   inset?: boolean;
 }) => {
   return (
@@ -248,7 +244,7 @@ const MenubarSubTrigger = ({
 const MenubarSubContent = ({
   className,
   ...props
-}: React.ComponentProps<typeof DropdownMenuSubContent>) => {
+}: ComponentProps<typeof DropdownMenuSubContent>) => {
   return (
     <DropdownMenuSubContent
       data-slot="menubar-sub-content"

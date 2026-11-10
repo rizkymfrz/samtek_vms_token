@@ -6,12 +6,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { BellIcon, ChevronLeftIcon, type LucideIcon } from "lucide-react";
 import { connection } from "next/server";
 import {
+  type ComponentProps,
   createContext,
+  type CSSProperties,
+  type ReactNode,
   Suspense,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import { z } from "zod";
@@ -29,11 +35,10 @@ import { SampleSkeleton } from "./sample-skeleton";
 import {
   countByKind,
   DEFAULT_FILTERS,
-  type Filters,
   filterRows,
+  type Filters,
 } from "../lib/filter-rows";
 import type { Row, RowsData } from "../types";
-import React from "react";
 
 const POLL_INTERVAL_MS = 15_000;
 const LIST_PAGE_SIZE = 20;
@@ -85,8 +90,7 @@ export type SampleFilters = {
 export type Errors = Partial<Record<"name" | "deviceId", string>>;
 
 export type Result<T> =
-  | { status: "ok"; data: T }
-  | { status: "error"; message: string };
+  { status: "ok"; data: T } | { status: "error"; message: string };
 
 export type SampleRow = z.output<typeof sampleSchema>["items"][number];
 
@@ -294,7 +298,7 @@ const getSnapshot = () => Math.floor(Date.now() / 1000);
 const getServerSnapshot = () => 0;
 
 export const useClock = () => {
-  const seconds = React.useSyncExternalStore(
+  const seconds = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot,
@@ -303,10 +307,8 @@ export const useClock = () => {
 };
 
 export const useIsMobile = () => {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-    undefined,
-  );
-  React.useEffect(() => {
+  const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
     const mql = window.matchMedia("(max-width: 767px)");
     const onChange = () => {
       setIsMobile(window.innerWidth < 768);
@@ -339,7 +341,7 @@ const SampleProvider = ({
   className,
   children,
   ...props
-}: React.ComponentProps<"div"> & { defaultOpen?: boolean }) => {
+}: ComponentProps<"div"> & { defaultOpen?: boolean }) => {
   const [open, setOpen] = useState(defaultOpen);
   const toggle = useCallback(() => setOpen((value) => !value), []);
   useEffect(() => {
@@ -352,7 +354,7 @@ const SampleProvider = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggle]);
-  const contextValue = React.useMemo<SampleContextProps>(
+  const contextValue = useMemo<SampleContextProps>(
     () => ({ open, setOpen, toggle }),
     [open, toggle],
   );
@@ -360,7 +362,7 @@ const SampleProvider = ({
     <SampleContext.Provider value={contextValue}>
       <div
         data-slot="sample-wrapper"
-        style={{ "--sample-width": "16rem" } as React.CSSProperties}
+        style={{ "--sample-width": "16rem" } as CSSProperties}
         className={cn("group/sample flex min-h-svh w-full", className)}
         {...props}
       >
@@ -412,7 +414,7 @@ const SampleCard = ({
   className,
   size = "default",
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) => {
+}: ComponentProps<"div"> & { size?: "default" | "sm" }) => {
   return (
     <div
       data-slot="sample-card"
@@ -426,10 +428,7 @@ const SampleCard = ({
   );
 };
 
-const SampleCardTitle = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const SampleCardTitle = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="sample-card-title"
@@ -439,10 +438,7 @@ const SampleCardTitle = ({
   );
 };
 
-const SampleCardContent = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const SampleCardContent = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="sample-card-content"
@@ -480,11 +476,7 @@ export const LevelBadge = ({ level }: { level: string }) => {
   );
 };
 
-export const SamplePageShell = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const SamplePageShell = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-full flex-col lg:h-[calc(100svh-var(--header-height))] lg:min-h-0 lg:flex-row">
       {children}
@@ -580,7 +572,7 @@ export const ImageWithFallback = ({
   src: string | null;
   className?: string;
 }) => {
-  const [hasFailed, setHasFailed] = React.useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
   return (
     <div role="img" aria-label="Snapshot" className={cn("relative", className)}>
       {src && !hasFailed ? (
@@ -629,19 +621,19 @@ export const SampleTrend = ({
 };
 
 export const SampleView = ({ data }: { data: RowsData }) => {
-  const [filters, setFilters] = React.useState<Filters>(DEFAULT_FILTERS);
-  const [view, setView] = React.useState<View>("grid");
-  const [grid, setGrid] = React.useState(DEFAULT_GRID);
-  const [page, setPage] = React.useState(0);
-  const [openId, setOpenId] = React.useState<string | null>(null);
-  const box = React.useRef<HTMLDivElement>(null);
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [view, setView] = useState<View>("grid");
+  const [grid, setGrid] = useState(DEFAULT_GRID);
+  const [page, setPage] = useState(0);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const box = useRef<HTMLDivElement>(null);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
-  const matches = React.useMemo(
+  const matches = useMemo(
     () => filterRows(data.rows, filters, data.now),
     [data.rows, data.now, filters],
   );
-  const cameras = React.useMemo(
+  const cameras = useMemo(
     () => countByKind(data.rows, filters, data.now),
     [data.rows, data.now, filters],
   );
@@ -707,7 +699,7 @@ export const SampleView = ({ data }: { data: RowsData }) => {
               {
                 "--columns": `repeat(${columns}, minmax(0, 1fr))`,
                 "--rows": `repeat(${rows}, minmax(0, 1fr))`,
-              } as React.CSSProperties
+              } as CSSProperties
             }
           >
             {visible.map((row) => (
@@ -718,7 +710,6 @@ export const SampleView = ({ data }: { data: RowsData }) => {
                 className="lg:aspect-auto lg:h-full lg:min-h-0"
               />
             ))}
-            {/* The last page can be short; empty cells keep the grid lines complete. */}
             {Array.from({ length: pageSize - visible.length }, (_, index) => (
               <div
                 key={`empty-${index}`}

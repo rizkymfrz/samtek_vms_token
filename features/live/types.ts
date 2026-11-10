@@ -11,6 +11,7 @@ export type Tile = {
   state: StreamState;
   hasSubStream: boolean;
 };
+
 export type ServerNode = { id: string; name: string; online: boolean };
 
 export type LiveLayout = {

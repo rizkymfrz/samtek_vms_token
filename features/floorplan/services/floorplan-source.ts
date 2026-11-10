@@ -1,9 +1,6 @@
-import { buildAlerts } from "@/lib/mock/alerts-source";
 import { analyticLabel } from "@/config/analytics-catalog";
-import {
-  buildLiveSource,
-  HEARTBEAT_SECONDS,
-} from "@/lib/mock/live-source";
+import { buildAlerts } from "@/lib/mock/alerts-source";
+import { buildLiveSource, HEARTBEAT_SECONDS } from "@/lib/mock/live-source";
 import type {
   Floorplan,
   FloorplanDevice,

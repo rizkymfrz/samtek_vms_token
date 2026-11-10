@@ -1,7 +1,7 @@
-import * as React from "react";
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 
-const MessageGroup = ({ className, ...props }: React.ComponentProps<"div">) => {
+const MessageGroup = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="message-group"
@@ -15,7 +15,7 @@ const Message = ({
   className,
   align = "start",
   ...props
-}: React.ComponentProps<"div"> & { align?: "start" | "end" }) => {
+}: ComponentProps<"div"> & { align?: "start" | "end" }) => {
   return (
     <div
       data-slot="message"
@@ -29,10 +29,7 @@ const Message = ({
   );
 };
 
-const MessageAvatar = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const MessageAvatar = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="message-avatar"
@@ -45,10 +42,7 @@ const MessageAvatar = ({
   );
 };
 
-const MessageContent = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const MessageContent = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="message-content"
@@ -61,10 +55,7 @@ const MessageContent = ({
   );
 };
 
-const MessageHeader = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const MessageHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="message-header"
@@ -77,10 +68,7 @@ const MessageHeader = ({
   );
 };
 
-const MessageFooter = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const MessageFooter = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="message-footer"

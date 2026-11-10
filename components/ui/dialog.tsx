@@ -1,8 +1,8 @@
 "use client";
-import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { cn } from "cn";
 import { XIcon } from "lucide-react";
+import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 
 const Dialog = ({ ...props }: DialogPrimitive.Root.Props) => {
@@ -77,7 +77,7 @@ const DialogContent = ({
   );
 };
 
-const DialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
+const DialogHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="dialog-header"
@@ -92,7 +92,7 @@ const DialogFooter = ({
   showCloseButton = false,
   children,
   ...props
-}: React.ComponentProps<"div"> & {
+}: ComponentProps<"div"> & {
   showCloseButton?: boolean;
 }) => {
   return (

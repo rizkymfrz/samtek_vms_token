@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   Card,
   CardContent,
@@ -16,7 +17,7 @@ export const Panel = ({
   title: string;
   description?: string;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <Card className={cn("h-full", className)}>

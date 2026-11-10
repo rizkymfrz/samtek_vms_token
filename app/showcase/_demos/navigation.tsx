@@ -1,6 +1,6 @@
 "use client"
-import * as React from "react"
 import { ChevronsUpDownIcon } from "lucide-react"
+import { Fragment } from "react"
 import {
   Accordion,
   AccordionContent,
@@ -17,7 +17,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import {
   Menubar,
   MenubarContent,
@@ -131,12 +135,12 @@ export const BreadcrumbDemo = () => {
     <Breadcrumb>
       <BreadcrumbList>
         {breadcrumb.map((crumb) => (
-          <React.Fragment key={crumb.id}>
+          <Fragment key={crumb.id}>
             <BreadcrumbItem>
               <BreadcrumbLink href={crumb.href}>{crumb.label}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-          </React.Fragment>
+          </Fragment>
         ))}
         <BreadcrumbItem>
           <BreadcrumbEllipsis />
@@ -188,7 +192,9 @@ export const NavigationMenuDemo = () => {
                   <li key={link.id}>
                     <NavigationMenuLink href="#">
                       <span className="text-sm font-medium">{link.label}</span>
-                      <span className="text-xs text-muted-foreground">{link.description}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {link.description}
+                      </span>
                     </NavigationMenuLink>
                   </li>
                 ))}
@@ -230,7 +236,9 @@ export const SidebarDemo = () => {
                 <SidebarMenu>
                   {sidebar.items.map((label, index) => (
                     <SidebarMenuItem key={label}>
-                      <SidebarMenuButton isActive={index === 0}>{label}</SidebarMenuButton>
+                      <SidebarMenuButton isActive={index === 0}>
+                        {label}
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
                 </SidebarMenu>

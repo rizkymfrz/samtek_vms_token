@@ -1,7 +1,7 @@
 "use client";
-import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 
 const AlertDialog = ({ ...props }: AlertDialogPrimitive.Root.Props) => {
@@ -61,10 +61,7 @@ const AlertDialogContent = ({
   );
 };
 
-const AlertDialogHeader = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const AlertDialogHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-dialog-header"
@@ -77,10 +74,7 @@ const AlertDialogHeader = ({
   );
 };
 
-const AlertDialogFooter = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const AlertDialogFooter = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-dialog-footer"
@@ -93,10 +87,7 @@ const AlertDialogFooter = ({
   );
 };
 
-const AlertDialogMedia = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const AlertDialogMedia = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-dialog-media"
@@ -112,7 +103,7 @@ const AlertDialogMedia = ({
 const AlertDialogTitle = ({
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Title>) => {
+}: ComponentProps<typeof AlertDialogPrimitive.Title>) => {
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
@@ -128,7 +119,7 @@ const AlertDialogTitle = ({
 const AlertDialogDescription = ({
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Description>) => {
+}: ComponentProps<typeof AlertDialogPrimitive.Description>) => {
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
@@ -144,7 +135,7 @@ const AlertDialogDescription = ({
 const AlertDialogAction = ({
   className,
   ...props
-}: React.ComponentProps<typeof Button>) => {
+}: ComponentProps<typeof Button>) => {
   return (
     <Button
       data-slot="alert-dialog-action"
@@ -160,7 +151,7 @@ const AlertDialogCancel = ({
   size = "default",
   ...props
 }: AlertDialogPrimitive.Close.Props &
-  Pick<React.ComponentProps<typeof Button>, "variant" | "size">) => {
+  Pick<ComponentProps<typeof Button>, "variant" | "size">) => {
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-cancel"

@@ -2,8 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { LevelBadge } from "./level-badge";
 import { Stats } from "./stats";
-import type { Metrics } from "../types";
 import { percentLevel, storageTotals } from "../lib/metric-level";
+import type { Metrics } from "../types";
 
 const tb = (value: number) => `${value.toFixed(2)} TB`;
 

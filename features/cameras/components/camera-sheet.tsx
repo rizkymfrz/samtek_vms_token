@@ -1,6 +1,7 @@
 "use client";
-import * as React from "react";
 import { Trash2Icon } from "lucide-react";
+import { useId, useState } from "react";
+import { Pick } from "@/components/shared/pick";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,16 +24,15 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { Pick } from "@/components/shared/pick";
 import { ANALYTICS } from "@/config/analytics-catalog";
-import type { CameraRecord, ServerOption } from "../types";
 import {
+  type Draft,
   emptyDraft,
+  maskSource,
   toDraft,
   validate,
-  maskSource,
-  type Draft,
 } from "../lib/edit-camera";
+import type { CameraRecord, ServerOption } from "../types";
 
 const SHEET_ANALYTIC_ITEMS = [
   { value: "none", label: "No analytic" },
@@ -57,12 +57,12 @@ const Form = ({
   onClose: () => void;
 }) => {
   const editing = target === "new" ? null : target;
-  const [draft, setDraft] = React.useState<Draft>(() =>
+  const [draft, setDraft] = useState<Draft>(() =>
     editing ? toDraft(editing) : emptyDraft(servers),
   );
-  const [submitted, setSubmitted] = React.useState(false);
-  const [confirmDelete, setConfirmDelete] = React.useState(false);
-  const formId = React.useId();
+  const [submitted, setSubmitted] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const formId = useId();
   const errors = submitted ? validate(draft, cameras, editing?.id ?? null) : {};
   const set = (patch: Partial<Draft>) =>
     setDraft((current) => ({ ...current, ...patch }));

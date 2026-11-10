@@ -1,5 +1,4 @@
 "use client";
-import * as React from "react";
 import {
   PencilIcon,
   RotateCwIcon,
@@ -7,6 +6,8 @@ import {
   TerminalIcon,
   Trash2Icon,
 } from "lucide-react";
+import { useState } from "react";
+import { StatusDot } from "@/components/shared/status-dot";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,13 +21,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { StatusDot } from "@/components/shared/status-dot";
-import { Stats } from "./stats";
 import { MetricChart } from "./metric-chart";
+import { Stats } from "./stats";
 import { StorageCard } from "./storage-card";
-import type { ServerRecord, ServerGroup, Metrics } from "../types";
-import { TEMP_LIMIT, tempLevel, percentLevel } from "../lib/metric-level";
 import { canDelete } from "../lib/edit-server";
+import { percentLevel, TEMP_LIMIT, tempLevel } from "../lib/metric-level";
+import type { Metrics, ServerGroup, ServerRecord } from "../types";
 
 const last = (points: number[]) => points[points.length - 1];
 
@@ -51,9 +51,7 @@ export const ServerDetail = ({
   onRestart: () => void;
   onDelete: () => void;
 }) => {
-  const [confirm, setConfirm] = React.useState<"restart" | "delete" | null>(
-    null,
-  );
+  const [confirm, setConfirm] = useState<"restart" | "delete" | null>(null);
   const group = groups.find((g) => g.id === server.groupId)?.name;
   const empty = !online
     ? "No data. The server is offline."

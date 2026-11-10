@@ -1,6 +1,6 @@
-import { CameraIcon, ServerIcon, type LucideIcon } from "lucide-react";
+import { CameraIcon, type LucideIcon, ServerIcon } from "lucide-react";
+import { CAMERAS, type DeviceStatus, SERVERS } from "@/lib/mock/header-data";
 import { cn } from "@/lib/utils";
-import { CAMERAS, SERVERS, type DeviceStatus } from "@/lib/mock/header-data";
 
 const MAX_SEGMENTS = 12;
 

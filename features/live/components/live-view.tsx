@@ -1,6 +1,6 @@
 "use client";
 import { MaximizeIcon } from "lucide-react";
-import * as React from "react";
+import { type CSSProperties, useRef, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
@@ -35,10 +35,10 @@ const gridItems = (rows: number, columns: number) => {
 
 export const LiveView = ({ data }: { data: LiveData }) => {
   const { servers, tiles } = data;
-  const [layouts, setLayouts] = React.useState(data.layouts);
-  const [layoutId, setLayoutId] = React.useState(data.layouts[0]?.id ?? "");
-  const [quality, setQuality] = React.useState<StreamQuality>("sub");
-  const stage = React.useRef<HTMLDivElement>(null);
+  const [layouts, setLayouts] = useState(data.layouts);
+  const [layoutId, setLayoutId] = useState(data.layouts[0]?.id ?? "");
+  const [quality, setQuality] = useState<StreamQuality>("sub");
+  const stage = useRef<HTMLDivElement>(null);
   const layout = layouts.find((l) => l.id === layoutId) ?? layouts[0];
   const tileById = new Map(tiles.map((tile) => [tile.id, tile]));
   if (!layout) {
@@ -109,7 +109,7 @@ export const LiveView = ({ data }: { data: LiveData }) => {
             {
               "--columns": `repeat(${layout.columns}, minmax(0, 1fr))`,
               "--rows": `repeat(${layout.rows}, minmax(0, 1fr))`,
-            } as React.CSSProperties
+            } as CSSProperties
           }
         >
           {layout.slots.map((id, position) => {

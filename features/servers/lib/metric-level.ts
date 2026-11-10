@@ -1,4 +1,5 @@
 export type Level = "normal" | "warning" | "critical";
+
 export const TEMP_LIMIT = 80;
 
 export const tempLevel = (celsius: number): Level =>

@@ -1,24 +1,24 @@
 "use client";
-import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
-import { Pick } from "@/components/shared/pick";
 import { SidePanel } from "@/components/layout/side-panel";
+import { Pick } from "@/components/shared/pick";
+import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { CameraCard } from "./camera-card";
 import { CameraFilterPanel } from "./camera-filter-panel";
 import { CameraSheet, type SheetTarget } from "./camera-sheet";
 import { CameraTable } from "./camera-table";
-import type { CameraData, CameraRecord } from "../types";
 import { cameraState } from "../lib/camera-state";
+import { type Draft, removeCamera, saveCamera } from "../lib/edit-camera";
 import {
   ALL,
   DEFAULT_FILTERS,
   filterCameras,
   type Filters,
 } from "../lib/filter-cameras";
-import { saveCamera, removeCamera, type Draft } from "../lib/edit-camera";
+import type { CameraData, CameraRecord } from "../types";
 
 export const GRID_PRESETS: [rows: number, columns: number][] = [
   [2, 2],
@@ -49,19 +49,19 @@ const analyticName = (id: string | null) =>
 
 export const CamerasView = ({ data }: { data: CameraData }) => {
   const { servers } = data;
-  const [cameras, setCameras] = React.useState(data.cameras);
-  const [filters, setFilters] = React.useState<Filters>(DEFAULT_FILTERS);
-  const [view, setView] = React.useState<View>("grid");
-  const [grid, setGrid] = React.useState(DEFAULT_GRID);
-  const [page, setPage] = React.useState(0);
-  const [sheet, setSheet] = React.useState<SheetTarget>(null);
+  const [cameras, setCameras] = useState(data.cameras);
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [view, setView] = useState<View>("grid");
+  const [grid, setGrid] = useState(DEFAULT_GRID);
+  const [page, setPage] = useState(0);
+  const [sheet, setSheet] = useState<SheetTarget>(null);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
-  const matches = React.useMemo(
+  const matches = useMemo(
     () => filterCameras(cameras, servers, filters, analyticName),
     [cameras, servers, filters],
   );
-  const counts = React.useMemo(() => {
+  const counts = useMemo(() => {
     const others = filterCameras(
       cameras,
       servers,
@@ -167,7 +167,7 @@ export const CamerasView = ({ data }: { data: CameraData }) => {
               {
                 "--columns": `repeat(${columns}, minmax(0, 1fr))`,
                 "--rows": `repeat(${rows}, minmax(0, 1fr))`,
-              } as React.CSSProperties
+              } as CSSProperties
             }
           >
             {visible.map((camera) => (

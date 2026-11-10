@@ -1,13 +1,15 @@
+import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { Dashboard } from "../services/build-dashboard";
 
-const Row = ({ children }: { children: React.ReactNode }) => {
+const Row = ({ children }: { children: ReactNode }) => {
   return (
     <li className="flex items-center justify-between gap-2 border-b py-2 last:border-b-0">
       {children}
     </li>
   );
 };
+
 export const RecentFaces = ({ faces }: { faces: Dashboard["recentFaces"] }) => {
   return (
     <ul>
@@ -34,6 +36,7 @@ export const RecentFaces = ({ faces }: { faces: Dashboard["recentFaces"] }) => {
     </ul>
   );
 };
+
 export const RecentPlates = ({
   plates,
 }: {

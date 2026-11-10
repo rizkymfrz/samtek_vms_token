@@ -1,7 +1,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 
-const Empty = ({ className, ...props }: React.ComponentProps<"div">) => {
+const Empty = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="empty"
@@ -14,7 +15,7 @@ const Empty = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const EmptyHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
+const EmptyHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="empty-header"
@@ -43,7 +44,7 @@ const EmptyMedia = ({
   className,
   variant = "default",
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) => {
+}: ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) => {
   return (
     <div
       data-slot="empty-icon"
@@ -54,7 +55,7 @@ const EmptyMedia = ({
   );
 };
 
-const EmptyTitle = ({ className, ...props }: React.ComponentProps<"div">) => {
+const EmptyTitle = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="empty-title"
@@ -64,10 +65,7 @@ const EmptyTitle = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const EmptyDescription = ({
-  className,
-  ...props
-}: React.ComponentProps<"p">) => {
+const EmptyDescription = ({ className, ...props }: ComponentProps<"p">) => {
   return (
     <div
       data-slot="empty-description"
@@ -80,7 +78,7 @@ const EmptyDescription = ({
   );
 };
 
-const EmptyContent = ({ className, ...props }: React.ComponentProps<"div">) => {
+const EmptyContent = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="empty-content"

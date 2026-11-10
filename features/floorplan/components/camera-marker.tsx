@@ -1,6 +1,6 @@
 "use client";
-import * as React from "react";
 import { ServerOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+import { useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { PlanCamera } from "../types";
@@ -33,7 +33,7 @@ export const CameraMarker = ({
   planBox: (clientX: number, clientY: number) => { x: number; y: number };
 }) => {
   const Icon = ICON[camera.state];
-  const drag = React.useRef<{
+  const drag = useRef<{
     startX: number;
     startY: number;
     moved: boolean;

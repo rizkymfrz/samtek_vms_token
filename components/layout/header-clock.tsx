@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import { useSyncExternalStore } from "react";
 
 const subscribe = (onTick: () => void) => {
   const timer = setInterval(onTick, 1000);
@@ -10,7 +10,7 @@ const getSnapshot = () => Math.floor(Date.now() / 1000);
 const getServerSnapshot = () => 0;
 
 export const HeaderClock = () => {
-  const seconds = React.useSyncExternalStore(
+  const seconds = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot,

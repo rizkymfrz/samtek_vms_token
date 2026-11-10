@@ -12,6 +12,7 @@ export const GRID_PRESETS: [rows: number, columns: number][] = [
   [5, 5],
   [6, 6],
 ];
+
 export const countCameras = (layout: LiveLayout) =>
   layout.slots.filter(Boolean).length;
 

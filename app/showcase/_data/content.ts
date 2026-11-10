@@ -1,13 +1,14 @@
-import type { ComponentProps } from "react"
 import type { VariantProps } from "class-variance-authority"
+import type { ComponentProps } from "react"
 import type { Alert } from "@/components/ui/alert"
 import type { badgeVariants } from "@/components/ui/badge"
 import type { buttonVariants } from "@/components/ui/button"
 import type { toggleVariants } from "@/components/ui/toggle"
 
-type Variant<T extends (...args: never[]) => string, K extends string> = NonNullable<
-  VariantProps<T>[K & keyof VariantProps<T>]
->
+type Variant<
+  T extends (...args: never[]) => string,
+  K extends string,
+> = NonNullable<VariantProps<T>[K & keyof VariantProps<T>]>
 
 export const page = {
   title: "Component showcase",
@@ -41,10 +42,12 @@ export const buttonVariantNames = [
   "link",
 ] as const satisfies readonly Variant<typeof buttonVariants, "variant">[]
 
-export const buttonSizeNames = ["xs", "sm", "default", "lg"] as const satisfies readonly Variant<
-  typeof buttonVariants,
-  "size"
->[]
+export const buttonSizeNames = [
+  "xs",
+  "sm",
+  "default",
+  "lg",
+] as const satisfies readonly Variant<typeof buttonVariants, "size">[]
 
 export const buttonIconSizeNames = [
   "icon-xs",
@@ -62,19 +65,23 @@ export const badgeVariantNames = [
   "link",
 ] as const satisfies readonly Variant<typeof badgeVariants, "variant">[]
 
-export const alertVariantNames = ["default", "destructive"] as const satisfies readonly NonNullable<
+export const alertVariantNames = [
+  "default",
+  "destructive",
+] as const satisfies readonly NonNullable<
   ComponentProps<typeof Alert>["variant"]
 >[]
 
-export const toggleVariantNames = ["default", "outline"] as const satisfies readonly Variant<
-  typeof toggleVariants,
-  "variant"
->[]
+export const toggleVariantNames = [
+  "default",
+  "outline",
+] as const satisfies readonly Variant<typeof toggleVariants, "variant">[]
 
-export const toggleSizeNames = ["sm", "default", "lg"] as const satisfies readonly Variant<
-  typeof toggleVariants,
-  "size"
->[]
+export const toggleSizeNames = [
+  "sm",
+  "default",
+  "lg",
+] as const satisfies readonly Variant<typeof toggleVariants, "size">[]
 
 export const bubbleVariantNames = [
   "default",
@@ -89,10 +96,34 @@ export const bubbleVariantNames = [
 export const markerVariantNames = ["default", "separator", "border"] as const
 
 export const people = [
-  { id: "ada", name: "Ada Lovelace", email: "ada@example.com", initials: "AL", role: "Admin" },
-  { id: "alan", name: "Alan Turing", email: "alan@example.com", initials: "AT", role: "Editor" },
-  { id: "grace", name: "Grace Hopper", email: "grace@example.com", initials: "GH", role: "Viewer" },
-  { id: "linus", name: "Linus Torvalds", email: "linus@example.com", initials: "LT", role: "Editor" },
+  {
+    id: "ada",
+    name: "Ada Lovelace",
+    email: "ada@example.com",
+    initials: "AL",
+    role: "Admin",
+  },
+  {
+    id: "alan",
+    name: "Alan Turing",
+    email: "alan@example.com",
+    initials: "AT",
+    role: "Editor",
+  },
+  {
+    id: "grace",
+    name: "Grace Hopper",
+    email: "grace@example.com",
+    initials: "GH",
+    role: "Viewer",
+  },
+  {
+    id: "linus",
+    name: "Linus Torvalds",
+    email: "linus@example.com",
+    initials: "LT",
+    role: "Editor",
+  },
 ] as const
 
 export const frameworks = [
@@ -117,7 +148,8 @@ export const common = {
   loading: "Loading",
   placeholder: "Type something…",
   noResults: "No results found.",
-  loremShort: "A short sentence used to fill the component with realistic text.",
+  loremShort:
+    "A short sentence used to fill the component with realistic text.",
   loremLong:
     "A longer paragraph that is only here to demonstrate how the component wraps, truncates and spaces real content when it grows beyond a single line.",
 } as const
@@ -129,15 +161,35 @@ export const keyboardShortcuts = [
 ] as const
 
 export const accordion = [
-  { value: "what", title: "What is this?", body: "A catalogue of every UI primitive in the project." },
-  { value: "why", title: "Why a showcase?", body: "It makes visual regressions and missing states easy to spot." },
-  { value: "how", title: "How is it built?", body: "Entries are registered once and rendered from data." },
+  {
+    value: "what",
+    title: "What is this?",
+    body: "A catalogue of every UI primitive in the project.",
+  },
+  {
+    value: "why",
+    title: "Why a showcase?",
+    body: "It makes visual regressions and missing states easy to spot.",
+  },
+  {
+    value: "how",
+    title: "How is it built?",
+    body: "Entries are registered once and rendered from data.",
+  },
 ] as const
 
 export const tabs = [
   { value: "account", label: "Account", body: "Manage your account details." },
-  { value: "security", label: "Security", body: "Rotate passwords and review sessions." },
-  { value: "billing", label: "Billing", body: "View invoices and payment methods." },
+  {
+    value: "security",
+    label: "Security",
+    body: "Rotate passwords and review sessions.",
+  },
+  {
+    value: "billing",
+    label: "Billing",
+    body: "View invoices and payment methods.",
+  },
 ] as const
 
 export const breadcrumb = [
@@ -159,8 +211,16 @@ export const navigationMenu = [
     id: "products",
     label: "Products",
     links: [
-      { id: "cameras", label: "Cameras", description: "Edge devices and streams." },
-      { id: "analytics", label: "Analytics", description: "Detections and reports." },
+      {
+        id: "cameras",
+        label: "Cameras",
+        description: "Edge devices and streams.",
+      },
+      {
+        id: "analytics",
+        label: "Analytics",
+        description: "Detections and reports.",
+      },
     ],
   },
   {
@@ -199,8 +259,16 @@ export const menubar = [
 ] as const
 
 export const commandGroups = [
-  { id: "suggestions", heading: "Suggestions", items: ["Calendar", "Search emoji", "Calculator"] },
-  { id: "settings", heading: "Settings", items: ["Profile", "Billing", "Preferences"] },
+  {
+    id: "suggestions",
+    heading: "Suggestions",
+    items: ["Calendar", "Search emoji", "Calculator"],
+  },
+  {
+    id: "settings",
+    heading: "Settings",
+    items: ["Profile", "Billing", "Preferences"],
+  },
 ] as const
 
 export const table = {
@@ -214,7 +282,12 @@ export const table = {
   rows: [
     { id: "INV001", status: "Paid", method: "Credit card", amount: "$250.00" },
     { id: "INV002", status: "Pending", method: "PayPal", amount: "$150.00" },
-    { id: "INV003", status: "Unpaid", method: "Bank transfer", amount: "$350.00" },
+    {
+      id: "INV003",
+      status: "Unpaid",
+      method: "Bank transfer",
+      amount: "$350.00",
+    },
   ],
   total: { label: "Total", value: "$750.00" },
 } as const
@@ -253,7 +326,11 @@ export const radio = [
 export const field = {
   title: "Profile",
   description: "This appears on your public profile.",
-  username: { label: "Username", placeholder: "ada", hint: "Letters and numbers only." },
+  username: {
+    label: "Username",
+    placeholder: "ada",
+    hint: "Letters and numbers only.",
+  },
   bio: { label: "Bio", placeholder: "Tell us about yourself" },
   error: "This field is required.",
   terms: "Accept terms and conditions",
@@ -266,10 +343,25 @@ export const inputGroup = {
 }
 
 export const dateRange = { label: "Pick a date" }
-export const hoverCard = { trigger: "@nextjs", title: "Next.js", body: "The React framework for the web." }
+
+export const hoverCard = {
+  trigger: "@nextjs",
+  title: "Next.js",
+  body: "The React framework for the web.",
+}
+
 export const tooltip = { trigger: "Hover me", body: "Add to library" }
-export const popover = { trigger: "Dimensions", title: "Dimensions", body: "Set the dimensions for the layer." }
-export const collapsible = { title: "3 starred repositories", items: ["next.js", "react", "tailwindcss"] }
+
+export const popover = {
+  trigger: "Dimensions",
+  title: "Dimensions",
+  body: "Set the dimensions for the layer.",
+}
+
+export const collapsible = {
+  title: "3 starred repositories",
+  items: ["next.js", "react", "tailwindcss"],
+}
 
 export const empty = {
   title: "No projects yet",
@@ -278,33 +370,74 @@ export const empty = {
 }
 
 export const alert = {
-  default: { title: "Heads up!", body: "You can add components using the CLI." },
-  destructive: { title: "Error", body: "Your session has expired. Please log in again." },
+  default: {
+    title: "Heads up!",
+    body: "You can add components using the CLI.",
+  },
+  destructive: {
+    title: "Error",
+    body: "Your session has expired. Please log in again.",
+  },
   action: "Undo",
 }
 
 export const dialog = {
   trigger: "Open dialog",
   title: "Edit profile",
-  description: "Make changes to your profile here. Click save when you are done.",
+  description:
+    "Make changes to your profile here. Click save when you are done.",
 }
 
 export const alertDialog = {
   trigger: "Delete account",
   title: "Are you absolutely sure?",
-  description: "This action cannot be undone. This permanently deletes your account.",
+  description:
+    "This action cannot be undone. This permanently deletes your account.",
 }
 
-export const sheet = { trigger: "Open sheet", side: ["top", "right", "bottom", "left"] as const }
-export const drawer = { trigger: "Open drawer", title: "Move goal", description: "Set your daily activity goal." }
+export const sheet = {
+  trigger: "Open sheet",
+  side: ["top", "right", "bottom", "left"] as const,
+}
+
+export const drawer = {
+  trigger: "Open drawer",
+  title: "Move goal",
+  description: "Set your daily activity goal.",
+}
 
 export const toast = {
   triggers: [
-    { id: "default", label: "Default", title: "Event created", description: "Friday at 9:00 AM" },
-    { id: "success", label: "Success", title: "Saved", description: "Your changes were saved." },
-    { id: "info", label: "Info", title: "Heads up", description: "A new version is available." },
-    { id: "warning", label: "Warning", title: "Careful", description: "Storage is almost full." },
-    { id: "error", label: "Error", title: "Failed", description: "Could not reach the server." },
+    {
+      id: "default",
+      label: "Default",
+      title: "Event created",
+      description: "Friday at 9:00 AM",
+    },
+    {
+      id: "success",
+      label: "Success",
+      title: "Saved",
+      description: "Your changes were saved.",
+    },
+    {
+      id: "info",
+      label: "Info",
+      title: "Heads up",
+      description: "A new version is available.",
+    },
+    {
+      id: "warning",
+      label: "Warning",
+      title: "Careful",
+      description: "Storage is almost full.",
+    },
+    {
+      id: "error",
+      label: "Error",
+      title: "Failed",
+      description: "Could not reach the server.",
+    },
   ],
 } as const
 
@@ -337,15 +470,38 @@ export const sidebar = {
   items: ["Home", "Inbox", "Calendar", "Search", "Settings"],
 }
 
-export const direction = { label: "Direction", options: ["ltr", "rtl"] as const, sample: "Hello, world" }
+export const direction = {
+  label: "Direction",
+  options: ["ltr", "rtl"] as const,
+  sample: "Hello, world",
+}
+
 export const spinner = { sizes: ["size-4", "size-6", "size-8"] as const }
 export const skeleton = { lines: 3 }
 
 export const chat = {
   messages: [
-    { id: "m1", align: "start", variant: "secondary", author: "Assistant", text: "How can I help you today?" },
-    { id: "m2", align: "end", variant: "default", author: "You", text: "Summarise last night's events." },
-    { id: "m3", align: "start", variant: "muted", author: "Assistant", text: "Three vehicles and two people were detected." },
+    {
+      id: "m1",
+      align: "start",
+      variant: "secondary",
+      author: "Assistant",
+      text: "How can I help you today?",
+    },
+    {
+      id: "m2",
+      align: "end",
+      variant: "default",
+      author: "You",
+      text: "Summarise last night's events.",
+    },
+    {
+      id: "m3",
+      align: "start",
+      variant: "muted",
+      author: "Assistant",
+      text: "Three vehicles and two people were detected.",
+    },
   ],
   reaction: "👍",
   marker: { text: "Today" },
@@ -360,16 +516,32 @@ export const chat = {
   },
   attachments: [
     { id: "a1", state: "done", title: "report.pdf", description: "2.4 MB" },
-    { id: "a2", state: "uploading", title: "clip.mp4", description: "Uploading…" },
-    { id: "a3", state: "processing", title: "frame.png", description: "Processing…" },
-    { id: "a4", state: "error", title: "broken.zip", description: "Upload failed" },
+    {
+      id: "a2",
+      state: "uploading",
+      title: "clip.mp4",
+      description: "Uploading…",
+    },
+    {
+      id: "a3",
+      state: "processing",
+      title: "frame.png",
+      description: "Processing…",
+    },
+    {
+      id: "a4",
+      state: "error",
+      title: "broken.zip",
+      description: "Upload failed",
+    },
     { id: "a5", state: "idle", title: "drop.txt", description: "Waiting" },
   ],
   scroller: { count: 12, label: "Message", jump: "Jump to latest" },
   code: {
     title: "example.ts",
     language: "ts",
-    value: 'export function greet(name: string) {\n  return `Hello, ${name}!`\n}\n',
+    value:
+      "export function greet(name: string) {\n  return `Hello, ${name}!`\n}\n",
   },
   questionnaire: {
     items: [

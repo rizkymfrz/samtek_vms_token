@@ -1,7 +1,7 @@
 "use client";
-import * as React from "react";
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import { cn } from "cn";
+import { type ComponentProps, createContext, useContext, useMemo } from "react";
 
 type DrawerContextProps = {
   hasSnapPoints: boolean;
@@ -10,10 +10,10 @@ type DrawerContextProps = {
   swipeDirection: NonNullable<DrawerPrimitive.Root.Props["swipeDirection"]>;
 };
 
-const DrawerContext = React.createContext<DrawerContextProps | null>(null);
+const DrawerContext = createContext<DrawerContextProps | null>(null);
 
 const useDrawer = () => {
-  const context = React.useContext(DrawerContext);
+  const context = useContext(DrawerContext);
   if (!context) {
     throw new Error("useDrawer must be used within a Drawer.");
   }
@@ -30,7 +30,7 @@ const Drawer = ({
   showSwipeHandle?: boolean;
 }) => {
   const hasSnapPoints = snapPoints != null && snapPoints.length > 0;
-  const contextValue = React.useMemo(
+  const contextValue = useMemo(
     () => ({ hasSnapPoints, modal, showSwipeHandle, swipeDirection }),
     [hasSnapPoints, modal, showSwipeHandle, swipeDirection],
   );
@@ -75,10 +75,7 @@ const DrawerOverlay = ({
   );
 };
 
-const DrawerSwipeHandle = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const DrawerSwipeHandle = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="drawer-swipe-handle"
@@ -146,7 +143,7 @@ const DrawerContent = ({
   );
 };
 
-const DrawerHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
+const DrawerHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="drawer-header"
@@ -159,7 +156,7 @@ const DrawerHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const DrawerFooter = ({ className, ...props }: React.ComponentProps<"div">) => {
+const DrawerFooter = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="drawer-footer"

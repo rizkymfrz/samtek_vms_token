@@ -1,15 +1,15 @@
 "use client";
-import * as React from "react";
 import { Toast as ToastPrimitive } from "@base-ui/react/toast";
 import { cn } from "cn";
 import {
-  XIcon,
   CircleCheckIcon,
   InfoIcon,
-  TriangleAlertIcon,
-  OctagonXIcon,
   Loader2Icon,
+  OctagonXIcon,
+  TriangleAlertIcon,
+  XIcon,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 const toast = ToastPrimitive.createToastManager();
@@ -142,7 +142,7 @@ const ToastClose = ({
 };
 
 const ToastIcon = ({ type }: { type: string | undefined }) => {
-  let icon: React.ReactNode = null;
+  let icon: ReactNode = null;
   if (type === "success") {
     icon = <CircleCheckIcon aria-hidden="true" />;
   }

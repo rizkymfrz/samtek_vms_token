@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { CameraMarker } from "./camera-marker";
 import { coneGeometry, pointToPlan } from "../lib/edit-placements";
@@ -11,6 +11,7 @@ import type {
 } from "../types";
 
 const RANGE = 0.12;
+
 export const PlanCanvas = ({
   plan,
   rooms,
@@ -28,7 +29,7 @@ export const PlanCanvas = ({
   onSelect: (id: string | null) => void;
   onMove: (id: string, x: number, y: number) => void;
 }) => {
-  const box = React.useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLDivElement>(null);
   const toPlan = (clientX: number, clientY: number) => {
     const rect = box.current?.getBoundingClientRect();
     return pointToPlan(

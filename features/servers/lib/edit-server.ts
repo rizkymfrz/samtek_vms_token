@@ -1,4 +1,4 @@
-import type { ServerRecord, Discovered } from "../types";
+import type { Discovered, ServerRecord } from "../types";
 
 export type Draft = {
   name: string;

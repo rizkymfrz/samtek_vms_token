@@ -8,7 +8,7 @@ import {
   SearchIcon,
   Trash2Icon,
 } from "lucide-react";
-import * as React from "react";
+import { type ReactNode, useState } from "react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,7 @@ const IconAction = ({
   label: string;
   disabled?: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <Button
@@ -75,7 +75,7 @@ export const DevicePanel = ({
   onAdd: (ids: string[]) => void;
   onRemove: (ids: string[]) => void;
 }) => {
-  const [query, setQuery] = React.useState("");
+  const [query, setQuery] = useState("");
   const inLayout = new Set(layout.slots);
   const full = freeSlots(layout) === 0;
   const needle = query.trim().toLowerCase();

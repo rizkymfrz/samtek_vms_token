@@ -1,15 +1,15 @@
 import {
   BarChart3Icon,
   BellIcon,
-  CameraIcon,
   Building2Icon,
+  CameraIcon,
   LayoutDashboardIcon,
+  type LucideIcon,
   MapIcon,
   RadioIcon,
   ServerIcon,
   SettingsIcon,
   UsersIcon,
-  type LucideIcon,
 } from "lucide-react";
 
 export type NavItem = { href: string; title: string; icon: LucideIcon };

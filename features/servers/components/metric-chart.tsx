@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import type { ReactNode } from "react";
 import {
   Area,
   AreaChart,
@@ -45,7 +45,7 @@ export const MetricChart = ({
   ticks: number[];
   unit: string;
   limit?: number;
-  footer: React.ReactNode;
+  footer: ReactNode;
   empty?: string;
 }) => {
   const data = points.map((point, index) => ({

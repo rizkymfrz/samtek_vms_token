@@ -2,6 +2,7 @@ import type { Dashboard } from "../services/build-dashboard";
 
 const tint = (count: number, max: number) =>
   `color-mix(in oklch, var(--chart-2) ${Math.round((count / max) * 100)}%, var(--muted))`;
+
 export const Heatmap = ({
   rows,
   hours,

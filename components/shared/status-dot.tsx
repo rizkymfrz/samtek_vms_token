@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const statusDot = cva("inline-block size-2 shrink-0", {
@@ -33,7 +34,7 @@ export const StatusDot = ({
   shape,
   className,
   ...props
-}: React.ComponentProps<"span"> & VariantProps<typeof statusDot>) => {
+}: ComponentProps<"span"> & VariantProps<typeof statusDot>) => {
   return (
     <span className={cn(statusDot({ status, shape }), className)} {...props} />
   );

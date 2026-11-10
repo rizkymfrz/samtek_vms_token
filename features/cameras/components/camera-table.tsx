@@ -1,3 +1,5 @@
+import { Pick } from "@/components/shared/pick";
+import { StatusDot } from "@/components/shared/status-dot";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -7,12 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
-import { Pick } from "@/components/shared/pick";
-import { StatusDot } from "@/components/shared/status-dot";
 import { analyticLabel } from "@/config/analytics-catalog";
-import type { CameraRecord, ServerOption } from "../types";
+import { cn } from "@/lib/utils";
 import { cameraState, STATE_LABEL } from "../lib/camera-state";
+import type { CameraRecord, ServerOption } from "../types";
 
 export const CameraTable = ({
   cameras,
@@ -82,7 +82,6 @@ export const CameraTable = ({
               <TableCell className="text-muted-foreground">
                 {camera.sourceSub ? "Main + Sub" : "Main"}
               </TableCell>
-              {/* The switches act on their own: a click must not also open the editor. */}
               <TableCell onClick={(event) => event.stopPropagation()}>
                 <Switch
                   size="sm"

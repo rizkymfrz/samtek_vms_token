@@ -1,5 +1,6 @@
 "use client";
-import * as React from "react";
+import { useId, useState } from "react";
+import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -17,9 +18,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { Pick } from "@/components/shared/pick";
-import type { ServerRecord, ServerGroup } from "../types";
-import { emptyDraft, toDraft, validate, type Draft } from "../lib/edit-server";
+import { type Draft, emptyDraft, toDraft, validate } from "../lib/edit-server";
+import type { ServerGroup, ServerRecord } from "../types";
 
 export type FormTarget = "new" | ServerRecord | null;
 
@@ -84,11 +84,11 @@ const Form = ({
   onClose: () => void;
 }) => {
   const editing = target === "new" ? null : target;
-  const [draft, setDraft] = React.useState<Draft>(() =>
+  const [draft, setDraft] = useState<Draft>(() =>
     editing ? toDraft(editing) : emptyDraft(),
   );
-  const [submitted, setSubmitted] = React.useState(false);
-  const formId = React.useId();
+  const [submitted, setSubmitted] = useState(false);
+  const formId = useId();
   const errors = submitted ? validate(draft, servers, editing?.id ?? null) : {};
   const set = (patch: Partial<Draft>) =>
     setDraft((current) => ({ ...current, ...patch }));

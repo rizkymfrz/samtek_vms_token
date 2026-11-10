@@ -1,7 +1,7 @@
 import { Pick } from "@/components/shared/pick";
-import { createRandom } from "@/lib/random";
 import { buildLiveSource } from "@/lib/mock/live-source";
-import type { ServerRecord, ServerGroup, Discovered, Metrics } from "../types";
+import { createRandom } from "@/lib/random";
+import type { Discovered, Metrics, ServerGroup, ServerRecord } from "../types";
 
 export const GROUPS: ServerGroup[] = [
   { id: "1", name: "Building A" },

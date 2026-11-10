@@ -1,8 +1,8 @@
 "use client";
-import * as React from "react";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { cn } from "cn";
-import { ChevronRightIcon, CheckIcon } from "lucide-react";
+import { CheckIcon, ChevronRightIcon } from "lucide-react";
+import type { ComponentProps } from "react";
 
 const DropdownMenu = ({ ...props }: MenuPrimitive.Root.Props) => {
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
@@ -132,7 +132,7 @@ const DropdownMenuSubContent = ({
   sideOffset = 0,
   className,
   ...props
-}: React.ComponentProps<typeof DropdownMenuContent>) => {
+}: ComponentProps<typeof DropdownMenuContent>) => {
   return (
     <DropdownMenuContent
       data-slot="dropdown-menu-sub-content"
@@ -240,7 +240,7 @@ const DropdownMenuSeparator = ({
 const DropdownMenuShortcut = ({
   className,
   ...props
-}: React.ComponentProps<"span">) => {
+}: ComponentProps<"span">) => {
   return (
     <span
       data-slot="dropdown-menu-shortcut"

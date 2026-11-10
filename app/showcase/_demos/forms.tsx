@@ -1,6 +1,6 @@
 "use client"
-import * as React from "react"
 import { SearchIcon } from "lucide-react"
+import { Fragment, useState, useSyncExternalStore } from "react"
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -27,7 +27,12 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group"
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 import { Label } from "@/components/ui/label"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -43,7 +48,15 @@ import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { Stack } from "../_components/layout"
-import { common, field, frameworks, inputGroup, otp, radio, slider } from "../_data/content"
+import {
+  common,
+  field,
+  frameworks,
+  inputGroup,
+  otp,
+  radio,
+  slider,
+} from "../_data/content"
 
 const frameworkLabels = frameworks.map((framework) => framework.label)
 
@@ -71,7 +84,10 @@ export const LabelDemo = () => {
   return (
     <Stack>
       <Label htmlFor="showcase-label-input">{field.username.label}</Label>
-      <Input id="showcase-label-input" placeholder={field.username.placeholder} />
+      <Input
+        id="showcase-label-input"
+        placeholder={field.username.placeholder}
+      />
     </Stack>
   )
 }
@@ -84,18 +100,31 @@ export const FieldDemo = () => {
         <FieldDescription>{field.description}</FieldDescription>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="showcase-field-username">{field.username.label}</FieldLabel>
-            <Input id="showcase-field-username" placeholder={field.username.placeholder} />
+            <FieldLabel htmlFor="showcase-field-username">
+              {field.username.label}
+            </FieldLabel>
+            <Input
+              id="showcase-field-username"
+              placeholder={field.username.placeholder}
+            />
             <FieldDescription>{field.username.hint}</FieldDescription>
           </Field>
           <Field data-invalid>
-            <FieldLabel htmlFor="showcase-field-bio">{field.bio.label}</FieldLabel>
-            <Textarea id="showcase-field-bio" aria-invalid placeholder={field.bio.placeholder} />
+            <FieldLabel htmlFor="showcase-field-bio">
+              {field.bio.label}
+            </FieldLabel>
+            <Textarea
+              id="showcase-field-bio"
+              aria-invalid
+              placeholder={field.bio.placeholder}
+            />
             <FieldError>{field.error}</FieldError>
           </Field>
           <Field orientation="horizontal">
             <Checkbox id="showcase-field-terms" />
-            <FieldLabel htmlFor="showcase-field-terms">{field.terms}</FieldLabel>
+            <FieldLabel htmlFor="showcase-field-terms">
+              {field.terms}
+            </FieldLabel>
           </Field>
         </FieldGroup>
       </FieldSet>
@@ -134,18 +163,17 @@ export const InputOTPDemo = () => {
     acc.push(Array.from({ length: size }, (_, index) => start + index))
     return acc
   }, [])
-
   return (
     <InputOTP maxLength={otp.length}>
       {slots.map((group, groupIndex) => (
-        <React.Fragment key={group[0]}>
+        <Fragment key={group[0]}>
           {groupIndex > 0 && <InputOTPSeparator />}
           <InputOTPGroup>
             {group.map((index) => (
               <InputOTPSlot key={index} index={index} />
             ))}
           </InputOTPGroup>
-        </React.Fragment>
+        </Fragment>
       ))}
     </InputOTP>
   )
@@ -270,14 +298,12 @@ export const ComboboxDemo = () => {
 const subscribeNever = () => () => {}
 
 export const CalendarDemo = () => {
-  const [date, setDate] = React.useState<Date | undefined>()
-
-  const mounted = React.useSyncExternalStore(
+  const [date, setDate] = useState<Date | undefined>()
+  const mounted = useSyncExternalStore(
     subscribeNever,
     () => true,
-    () => false
+    () => false,
   )
-  
   if (!mounted) return null
   return <Calendar mode="single" selected={date} onSelect={setDate} />
 }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import type { CSSProperties } from "react";
 import {
   createHighlighterCore,
   type GrammarState,
@@ -86,7 +86,7 @@ export const loadHighlighter = async (language: string) => {
           line.map((token, index) => (
             <span
               key={index}
-              style={token.htmlStyle as React.CSSProperties}
+              style={token.htmlStyle as CSSProperties}
               className="text-(--shiki-light) dark:text-(--shiki-dark)"
             >
               {token.content}

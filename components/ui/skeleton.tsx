@@ -1,6 +1,7 @@
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 
-const Skeleton = ({ className, ...props }: React.ComponentProps<"div">) => {
+const Skeleton = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="skeleton"

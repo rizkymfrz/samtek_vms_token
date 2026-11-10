@@ -1,13 +1,16 @@
-import { buildLiveSource, HEARTBEAT_SECONDS } from "@/lib/mock/live-source"
-import type { CameraData } from "../types"
+import { buildLiveSource, HEARTBEAT_SECONDS } from "@/lib/mock/live-source";
+import type { CameraData } from "../types";
 
 export const buildCameras = (now = Date.now()): CameraData => {
-  const { edgeServers, devices } = buildLiveSource(now)
+  const { edgeServers, devices } = buildLiveSource(now);
   return {
     servers: edgeServers.map((s) => ({
       id: s.id,
       name: s.name,
-      online: s.isActive && s.lastSeenAt !== null && now - s.lastSeenAt.getTime() < HEARTBEAT_SECONDS * 1000,
+      online:
+        s.isActive &&
+        s.lastSeenAt !== null &&
+        now - s.lastSeenAt.getTime() < HEARTBEAT_SECONDS * 1000,
     })),
     cameras: devices.map((d) => ({
       id: d.id,
@@ -20,5 +23,5 @@ export const buildCameras = (now = Date.now()): CameraData => {
       analyticId: d.analyticId,
       isRecordingEnabled: d.isRecordingEnabled,
     })),
-  }
-}
+  };
+};

@@ -63,7 +63,11 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 import {
   Popover,
   PopoverContent,
@@ -82,7 +86,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { Row } from "../_components/layout"
 import {
   alertDialog,
@@ -100,14 +109,18 @@ import {
 export const DialogDemo = () => {
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" />}>{dialog.trigger}</DialogTrigger>
+      <DialogTrigger render={<Button variant="outline" />}>
+        {dialog.trigger}
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{dialog.title}</DialogTitle>
           <DialogDescription>{dialog.description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>{common.cancel}</DialogClose>
+          <DialogClose render={<Button variant="outline" />}>
+            {common.cancel}
+          </DialogClose>
           <Button>{common.save}</Button>
         </DialogFooter>
       </DialogContent>
@@ -124,7 +137,9 @@ export const AlertDialogDemo = () => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
-          <AlertDialogDescription>{alertDialog.description}</AlertDialogDescription>
+          <AlertDialogDescription>
+            {alertDialog.description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{common.cancel}</AlertDialogCancel>
@@ -140,14 +155,18 @@ export const SheetDemo = () => {
     <Row>
       {sheet.side.map((side) => (
         <Sheet key={side}>
-          <SheetTrigger render={<Button variant="outline" />}>{side}</SheetTrigger>
+          <SheetTrigger render={<Button variant="outline" />}>
+            {side}
+          </SheetTrigger>
           <SheetContent side={side}>
             <SheetHeader>
               <SheetTitle>{dialog.title}</SheetTitle>
               <SheetDescription>{dialog.description}</SheetDescription>
             </SheetHeader>
             <SheetFooter>
-              <SheetClose render={<Button variant="outline" />}>{common.close}</SheetClose>
+              <SheetClose render={<Button variant="outline" />}>
+                {common.close}
+              </SheetClose>
             </SheetFooter>
           </SheetContent>
         </Sheet>
@@ -159,7 +178,9 @@ export const SheetDemo = () => {
 export const DrawerDemo = () => {
   return (
     <Drawer>
-      <DrawerTrigger render={<Button variant="outline" />}>{drawer.trigger}</DrawerTrigger>
+      <DrawerTrigger render={<Button variant="outline" />}>
+        {drawer.trigger}
+      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{drawer.title}</DrawerTitle>
@@ -167,7 +188,9 @@ export const DrawerDemo = () => {
         </DrawerHeader>
         <DrawerFooter>
           <Button>{common.confirm}</Button>
-          <DrawerClose render={<Button variant="outline" />}>{common.cancel}</DrawerClose>
+          <DrawerClose render={<Button variant="outline" />}>
+            {common.cancel}
+          </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
@@ -177,7 +200,9 @@ export const DrawerDemo = () => {
 export const PopoverDemo = () => {
   return (
     <Popover>
-      <PopoverTrigger render={<Button variant="outline" />}>{popover.trigger}</PopoverTrigger>
+      <PopoverTrigger render={<Button variant="outline" />}>
+        {popover.trigger}
+      </PopoverTrigger>
       <PopoverContent>
         <PopoverHeader>
           <PopoverTitle>{popover.title}</PopoverTitle>
@@ -192,7 +217,9 @@ export const TooltipDemo = () => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="outline" />}>{tooltip.trigger}</TooltipTrigger>
+        <TooltipTrigger render={<Button variant="outline" />}>
+          {tooltip.trigger}
+        </TooltipTrigger>
         <TooltipContent>{tooltip.body}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -202,7 +229,9 @@ export const TooltipDemo = () => {
 export const HoverCardDemo = () => {
   return (
     <HoverCard>
-      <HoverCardTrigger render={<Button variant="link" />}>{hoverCard.trigger}</HoverCardTrigger>
+      <HoverCardTrigger render={<Button variant="link" />}>
+        {hoverCard.trigger}
+      </HoverCardTrigger>
       <HoverCardContent>
         <p className="text-sm font-medium">{hoverCard.title}</p>
         <p className="text-sm text-muted-foreground">{hoverCard.body}</p>
@@ -214,7 +243,9 @@ export const HoverCardDemo = () => {
 export const DropdownMenuDemo = () => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="outline" />}>{menu.trigger}</DropdownMenuTrigger>
+      <DropdownMenuTrigger render={<Button variant="outline" />}>
+        {menu.trigger}
+      </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
           <DropdownMenuLabel>{menu.label}</DropdownMenuLabel>
@@ -226,7 +257,9 @@ export const DropdownMenuDemo = () => {
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem checked>{menu.checkbox}</DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem checked>
+          {menu.checkbox}
+        </DropdownMenuCheckboxItem>
         <DropdownMenuRadioGroup value={menu.radio[0].value}>
           {menu.radio.map((option) => (
             <DropdownMenuRadioItem key={option.value} value={option.value}>

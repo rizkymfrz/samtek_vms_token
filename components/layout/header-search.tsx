@@ -1,7 +1,7 @@
 "use client";
-import * as React from "react";
-import { useRouter } from "next/navigation";
 import { CameraIcon, SearchIcon, ServerIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -13,13 +13,13 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Kbd } from "@/components/ui/kbd";
-import { CAMERAS, SERVERS } from "@/lib/mock/header-data";
 import { NAV_ITEMS, SETTINGS_ITEM } from "@/config/navigation";
+import { CAMERAS, SERVERS } from "@/lib/mock/header-data";
 
 export const HeaderSearch = () => {
   const router = useRouter();
-  const [open, setOpen] = React.useState(false);
-  React.useEffect(() => {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();

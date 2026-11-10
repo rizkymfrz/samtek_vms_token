@@ -1,25 +1,25 @@
 "use client";
-import * as React from "react";
+import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
-import type { FloorplanData } from "../types";
 import { FloorplanPanel } from "./floorplan-panel";
 import { PlanCanvas } from "./plan-canvas";
 import {
-  placeCamera,
   moveCamera,
+  placeCamera,
+  removeCamera,
   rotateCamera,
   setFov,
-  removeCamera,
 } from "../lib/edit-placements";
+import type { FloorplanData } from "../types";
 
 export const FloorplanView = ({ data }: { data: FloorplanData }) => {
-  const [placements, setPlacements] = React.useState(data.placements);
-  const [planId, setPlanId] = React.useState(data.plans[0]?.id ?? "");
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
-  const [query, setQuery] = React.useState("");
+  const [placements, setPlacements] = useState(data.placements);
+  const [planId, setPlanId] = useState(data.plans[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const plan = data.plans.find((p) => p.id === planId) ?? data.plans[0];
-  const cameras = React.useMemo(
+  const cameras = useMemo(
     () => new Map(data.cameras.map((c) => [c.id, c])),
     [data.cameras],
   );

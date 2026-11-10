@@ -20,6 +20,7 @@ const ARBITRARY = new RegExp(
 );
 
 const SPACING_FN = /--spacing\(\s*(\d+(?:\.\d+)?)\s*\)/g;
+
 const SPACING_VAR =
   /\[--([\w-]*(?:gap|peek|bleed|spacing)[\w-]*):(\d*\.?\d+)(px|rem)\]/g;
 

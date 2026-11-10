@@ -1,8 +1,8 @@
-import * as React from "react";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 
 const markerVariants = cva(
   "group/marker relative flex min-h-4 w-full items-center gap-2 text-left text-xs text-muted-foreground [&_svg:not([class*='size-'])]:size-3.5 [a]:underline [a]:underline-offset-3 [a]:hover:text-foreground",
@@ -40,7 +40,7 @@ const Marker = ({
   });
 };
 
-const MarkerIcon = ({ className, ...props }: React.ComponentProps<"span">) => {
+const MarkerIcon = ({ className, ...props }: ComponentProps<"span">) => {
   return (
     <span
       data-slot="marker-icon"
@@ -54,10 +54,7 @@ const MarkerIcon = ({ className, ...props }: React.ComponentProps<"span">) => {
   );
 };
 
-const MarkerContent = ({
-  className,
-  ...props
-}: React.ComponentProps<"span">) => {
+const MarkerContent = ({ className, ...props }: ComponentProps<"span">) => {
   return (
     <span
       data-slot="marker-content"

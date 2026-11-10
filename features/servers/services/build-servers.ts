@@ -1,4 +1,4 @@
-import { GROUPS, buildServerSource, buildMetrics } from "./server-source";
+import { buildMetrics, buildServerSource, GROUPS } from "./server-source";
 import type { ServersData } from "../types";
 
 export const buildServers = (now = Date.now()): ServersData => {

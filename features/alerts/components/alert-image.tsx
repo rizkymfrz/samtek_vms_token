@@ -1,7 +1,7 @@
 "use client";
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
-import * as React from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export const AlertImage = ({
@@ -15,7 +15,7 @@ export const AlertImage = ({
   className?: string;
   iconClassName?: string;
 }) => {
-  const [hasFailed, setHasFailed] = React.useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
   return (
     <div
       role="img"

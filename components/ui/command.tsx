@@ -1,8 +1,8 @@
 "use client";
-import * as React from "react";
 import { Command as CommandPrimitive } from "cmdk";
 import { cn } from "cn";
-import { SearchIcon, CheckIcon } from "lucide-react";
+import { CheckIcon, SearchIcon } from "lucide-react";
+import type { ComponentProps, ReactNode } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 const Command = ({
   className,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive>) => {
+}: ComponentProps<typeof CommandPrimitive>) => {
   return (
     <CommandPrimitive
       data-slot="command"
@@ -35,12 +35,12 @@ const CommandDialog = ({
   className,
   showCloseButton = false,
   ...props
-}: Omit<React.ComponentProps<typeof Dialog>, "children"> & {
+}: Omit<ComponentProps<typeof Dialog>, "children"> & {
   title?: string;
   description?: string;
   className?: string;
   showCloseButton?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <Dialog {...props}>
@@ -64,7 +64,7 @@ const CommandDialog = ({
 const CommandInput = ({
   className,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) => {
+}: ComponentProps<typeof CommandPrimitive.Input>) => {
   return (
     <div data-slot="command-input-wrapper" className="border-b pb-0">
       <InputGroup className="h-8 border-none border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
@@ -87,7 +87,7 @@ const CommandInput = ({
 const CommandList = ({
   className,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.List>) => {
+}: ComponentProps<typeof CommandPrimitive.List>) => {
   return (
     <CommandPrimitive.List
       data-slot="command-list"
@@ -103,7 +103,7 @@ const CommandList = ({
 const CommandEmpty = ({
   className,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Empty>) => {
+}: ComponentProps<typeof CommandPrimitive.Empty>) => {
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
@@ -116,7 +116,7 @@ const CommandEmpty = ({
 const CommandGroup = ({
   className,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Group>) => {
+}: ComponentProps<typeof CommandPrimitive.Group>) => {
   return (
     <CommandPrimitive.Group
       data-slot="command-group"
@@ -132,7 +132,7 @@ const CommandGroup = ({
 const CommandSeparator = ({
   className,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Separator>) => {
+}: ComponentProps<typeof CommandPrimitive.Separator>) => {
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
@@ -146,7 +146,7 @@ const CommandItem = ({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Item>) => {
+}: ComponentProps<typeof CommandPrimitive.Item>) => {
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
@@ -162,10 +162,7 @@ const CommandItem = ({
   );
 };
 
-const CommandShortcut = ({
-  className,
-  ...props
-}: React.ComponentProps<"span">) => {
+const CommandShortcut = ({ className, ...props }: ComponentProps<"span">) => {
   return (
     <span
       data-slot="command-shortcut"

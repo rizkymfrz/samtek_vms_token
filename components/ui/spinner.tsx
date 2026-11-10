@@ -1,7 +1,8 @@
 import { cn } from "cn";
 import { Loader2Icon } from "lucide-react";
+import type { ComponentProps } from "react";
 
-const Spinner = ({ className, ...props }: React.ComponentProps<"svg">) => {
+const Spinner = ({ className, ...props }: ComponentProps<"svg">) => {
   return (
     <Loader2Icon
       data-slot="spinner"

@@ -1,6 +1,6 @@
 import type { ChartConfig } from "@/components/ui/chart";
-import type { Dashboard } from "../services/build-dashboard";
 import { DonutChart } from "./donut-chart";
+import type { Dashboard } from "../services/build-dashboard";
 
 const vehicleConfig = {
   car: { label: "Car", color: "var(--chart-1)" },

@@ -1,13 +1,13 @@
-import * as React from "react";
 import { SearchIcon, XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { ANALYTICS } from "@/config/analytics-catalog";
+import type { ReactNode } from "react";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ANALYTICS } from "@/config/analytics-catalog";
+import { cn } from "@/lib/utils";
+import { ALL, type Filters, isFiltered } from "../lib/filter-cameras";
 import type { ServerOption } from "../types";
-import { ALL, isFiltered, type Filters } from "../lib/filter-cameras";
 
 const STATUS_ITEMS = [
   { value: ALL, label: "All statuses" },
@@ -33,7 +33,7 @@ const FilterField = ({
   children,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <div className="flex flex-col gap-2">

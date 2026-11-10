@@ -1,9 +1,9 @@
 import { ServerOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { StatusDot } from "@/components/shared/status-dot";
-import type { StreamState } from "../types";
 import { STATE_LABEL } from "../lib/camera-state";
+import type { StreamState } from "../types";
 
 export const CameraCard = ({
   name,

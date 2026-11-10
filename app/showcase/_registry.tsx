@@ -9,8 +9,8 @@ import {
   ToggleGroupDemo,
 } from "./_demos/actions"
 import {
-  BubbleDemo,
   AttachmentDemo,
+  BubbleDemo,
   CodeBlockDemo,
   MarkerDemo,
   MessageDemo,

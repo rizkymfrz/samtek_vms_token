@@ -2,7 +2,11 @@
 import { ChevronDownIcon, MailIcon, PlusIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from "@/components/ui/button-group"
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from "@/components/ui/button-group"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { Toggle } from "@/components/ui/toggle"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -105,7 +109,12 @@ export const ToggleGroupDemo = () => {
   return (
     <div className="flex flex-col gap-4">
       {toggleVariantNames.map((variant) => (
-        <ToggleGroup key={variant} variant={variant} multiple defaultValue={[toggleGroup[0].value]}>
+        <ToggleGroup
+          key={variant}
+          variant={variant}
+          multiple
+          defaultValue={[toggleGroup[0].value]}
+        >
           {toggleGroup.map((item) => (
             <ToggleGroupItem key={item.value} value={item.value}>
               {item.label}

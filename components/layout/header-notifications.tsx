@@ -1,7 +1,8 @@
 "use client";
-import * as React from "react";
-import Link from "next/link";
 import { BellIcon } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -10,12 +11,11 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { ALERTS } from "@/lib/mock/header-data";
-import { StatusDot } from "@/components/shared/status-dot";
+import { cn } from "@/lib/utils";
 
 export const HeaderNotifications = () => {
-  const [alerts, setAlerts] = React.useState(ALERTS);
+  const [alerts, setAlerts] = useState(ALERTS);
   const unread = alerts.filter((alert) => !alert.read).length;
   return (
     <Popover>

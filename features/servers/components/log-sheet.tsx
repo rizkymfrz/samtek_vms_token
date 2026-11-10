@@ -1,6 +1,6 @@
 "use client";
-import * as React from "react";
 import { PauseIcon, PlayIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,8 +10,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import type { LogLine } from "../types";
 import { logLine } from "../lib/log-lines";
+import type { LogLine } from "../types";
 
 const clock = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Asia/Jakarta",
@@ -32,15 +32,15 @@ const Stream = ({
   startedAt: number;
 }) => {
   const base = Number(serverId.replace(/\D/g, "")) || 1;
-  const [lines, setLines] = React.useState<LogLine[]>(() =>
+  const [lines, setLines] = useState<LogLine[]>(() =>
     Array.from({ length: 30 }, (_, index) =>
       logLine(base * 1000 + index, startedAt - (30 - index) * 2000),
     ),
   );
-  const [paused, setPaused] = React.useState(false);
-  const end = React.useRef<HTMLDivElement>(null);
-  const counter = React.useRef(30);
-  React.useEffect(() => {
+  const [paused, setPaused] = useState(false);
+  const end = useRef<HTMLDivElement>(null);
+  const counter = useRef(30);
+  useEffect(() => {
     if (paused || !online) return;
     const timer = setInterval(() => {
       const index = counter.current++;
@@ -50,7 +50,7 @@ const Stream = ({
     }, 2000);
     return () => clearInterval(timer);
   }, [paused, online, base]);
-  React.useEffect(() => {
+  useEffect(() => {
     if (!paused) end.current?.scrollIntoView({ block: "end" });
   }, [lines, paused]);
   return (

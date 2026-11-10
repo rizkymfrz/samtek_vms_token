@@ -1,6 +1,6 @@
 "use client";
-import * as React from "react";
 import { PaletteIcon } from "lucide-react";
+import { useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -37,11 +37,7 @@ const setTheme = (theme: string) => {
 };
 
 export const ThemeSwitcher = () => {
-  const theme = React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  );
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger

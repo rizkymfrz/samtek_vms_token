@@ -1,7 +1,7 @@
 "use client";
-import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { getBreadcrumbs } from "@/lib/breadcrumbs";
 import { HeaderActions } from "./header-actions";
 import { HeaderClock } from "./header-clock";
 import { HeaderNotifications } from "./header-notifications";
 import { HeaderSearch } from "./header-search";
 import { HeaderStatus } from "./header-status";
 import { ThemeSwitcher } from "./theme-switcher";
-import { getBreadcrumbs } from "@/lib/breadcrumbs";
 
 export const AppHeader = () => {
   const pathname = usePathname();
@@ -32,7 +32,7 @@ export const AppHeader = () => {
           {crumbs.map((crumb, index) => {
             const isLast = index === crumbs.length - 1;
             return (
-              <React.Fragment key={crumb.label + index}>
+              <Fragment key={crumb.label + index}>
                 <BreadcrumbItem>
                   {isLast ? (
                     <BreadcrumbPage className="font-medium">
@@ -47,7 +47,7 @@ export const AppHeader = () => {
                   )}
                 </BreadcrumbItem>
                 {!isLast && <BreadcrumbSeparator />}
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </BreadcrumbList>

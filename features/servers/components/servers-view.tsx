@@ -1,19 +1,19 @@
 "use client";
-import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { LogSheet } from "./log-sheet";
-import { ServerFormSheet, type FormTarget } from "./server-form-sheet";
-import { ServerListPanel, type DiscoverTab } from "./server-list-panel";
 import { ServerDetail } from "./server-detail";
-import type { Discovered, ServersData } from "../types";
-import { isOnline } from "../lib/server-status";
+import { type FormTarget, ServerFormSheet } from "./server-form-sheet";
+import { type DiscoverTab, ServerListPanel } from "./server-list-panel";
 import {
-  saveServer,
-  removeServer,
-  registerDiscovered,
   type Draft,
+  registerDiscovered,
+  removeServer,
+  saveServer,
 } from "../lib/edit-server";
+import { isOnline } from "../lib/server-status";
+import type { Discovered, ServersData } from "../types";
 
 const SCAN_POOL: Omit<Discovered, "registeredServerId">[] = [
   { id: "edge-c4d9", ip: "192.168.1.71", vendor: "SAMTEK Edge" },
@@ -25,29 +25,29 @@ const RESTART_MS = 4000;
 const SCAN_MS = 1500;
 
 export const ServersView = ({ data }: { data: ServersData }) => {
-  const [servers, setServers] = React.useState(data.servers);
-  const [discovered, setDiscovered] = React.useState(data.discovered);
-  const [selectedId, setSelectedId] = React.useState<string | null>(
+  const [servers, setServers] = useState(data.servers);
+  const [discovered, setDiscovered] = useState(data.discovered);
+  const [selectedId, setSelectedId] = useState<string | null>(
     data.servers[0]?.id ?? null,
   );
-  const [tab, setTab] = React.useState<DiscoverTab>("discovered");
-  const [scanning, setScanning] = React.useState(false);
-  const [scanCount, setScanCount] = React.useState(0);
-  const [restartingId, setRestartingId] = React.useState<string | null>(null);
-  const [form, setForm] = React.useState<FormTarget>(null);
-  const [logsOpen, setLogsOpen] = React.useState(false);
-  const online = React.useMemo(
+  const [tab, setTab] = useState<DiscoverTab>("discovered");
+  const [scanning, setScanning] = useState(false);
+  const [scanCount, setScanCount] = useState(0);
+  const [restartingId, setRestartingId] = useState<string | null>(null);
+  const [form, setForm] = useState<FormTarget>(null);
+  const [logsOpen, setLogsOpen] = useState(false);
+  const online = useMemo(
     () =>
       new Set(servers.filter((s) => isOnline(s, data.now)).map((s) => s.id)),
     [servers, data.now],
   );
   const selected = servers.find((s) => s.id === selectedId) ?? null;
-  React.useEffect(() => {
+  useEffect(() => {
     if (!restartingId) return;
     const timer = setTimeout(() => setRestartingId(null), RESTART_MS);
     return () => clearTimeout(timer);
   }, [restartingId]);
-  React.useEffect(() => {
+  useEffect(() => {
     if (!scanning) return;
     const timer = setTimeout(() => {
       const next = SCAN_POOL[scanCount];

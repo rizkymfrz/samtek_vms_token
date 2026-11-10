@@ -1,6 +1,7 @@
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 
-const Kbd = ({ className, ...props }: React.ComponentProps<"kbd">) => {
+const Kbd = ({ className, ...props }: ComponentProps<"kbd">) => {
   return (
     <kbd
       data-slot="kbd"
@@ -13,7 +14,7 @@ const Kbd = ({ className, ...props }: React.ComponentProps<"kbd">) => {
   );
 };
 
-const KbdGroup = ({ className, ...props }: React.ComponentProps<"div">) => {
+const KbdGroup = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <kbd
       data-slot="kbd-group"

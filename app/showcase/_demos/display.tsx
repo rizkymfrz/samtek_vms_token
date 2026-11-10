@@ -1,8 +1,13 @@
 "use client"
-import * as React from "react"
 import { InboxIcon, InfoIcon, TriangleAlertIcon } from "lucide-react"
+import { Fragment } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
-import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import {
   Avatar,
@@ -29,12 +34,12 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import {
+  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart"
 import { DirectionProvider } from "@/components/ui/direction"
 import {
@@ -45,6 +50,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { Input } from "@/components/ui/input"
 import {
   Item,
   ItemActions,
@@ -55,9 +61,12 @@ import {
   ItemSeparator,
   ItemTitle,
 } from "@/components/ui/item"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress"
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -101,7 +110,7 @@ import {
 } from "../_data/content"
 
 const chartConfig = Object.fromEntries(
-  chart.dataKeys.map(({ key, label, color }) => [key, { label, color }])
+  chart.dataKeys.map(({ key, label, color }) => [key, { label, color }]),
 ) satisfies ChartConfig
 
 export const CardDemo = () => {
@@ -118,7 +127,10 @@ export const CardDemo = () => {
       </CardHeader>
       <CardContent>
         <Label htmlFor="showcase-card-name">{cardContent.nameLabel}</Label>
-        <Input id="showcase-card-name" placeholder={cardContent.namePlaceholder} />
+        <Input
+          id="showcase-card-name"
+          placeholder={cardContent.namePlaceholder}
+        />
       </CardContent>
       <CardFooter className="justify-between">
         <Button variant="outline">{cardContent.cancel}</Button>
@@ -151,7 +163,9 @@ export const TableDemo = () => {
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={table.columns.length - 1}>{table.total.label}</TableCell>
+          <TableCell colSpan={table.columns.length - 1}>
+            {table.total.label}
+          </TableCell>
           <TableCell>{table.total.value}</TableCell>
         </TableRow>
       </TableFooter>
@@ -187,7 +201,7 @@ export const ItemDemo = () => {
   return (
     <ItemGroup className="max-w-md">
       {people.slice(0, 3).map((person, index) => (
-        <React.Fragment key={person.id}>
+        <Fragment key={person.id}>
           {index > 0 && <ItemSeparator />}
           <Item variant="outline">
             <ItemMedia variant="icon">
@@ -203,7 +217,7 @@ export const ItemDemo = () => {
               </Button>
             </ItemActions>
           </Item>
-        </React.Fragment>
+        </Fragment>
       ))}
     </ItemGroup>
   )
@@ -232,10 +246,10 @@ export const SeparatorDemo = () => {
       <Separator />
       <div className="flex h-8 items-center gap-4 text-sm">
         {people.slice(0, 3).map((person, index) => (
-          <React.Fragment key={person.id}>
+          <Fragment key={person.id}>
             {index > 0 && <Separator orientation="vertical" />}
             <span>{person.role}</span>
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
     </Stack>
@@ -279,8 +293,13 @@ export const SpinnerDemo = () => {
 export const AspectRatioDemo = () => {
   return (
     <div className="w-full max-w-sm">
-      <AspectRatio ratio={aspectRatio.ratio} className="flex items-center justify-center bg-muted">
-        <span className="text-sm text-muted-foreground">{aspectRatio.label}</span>
+      <AspectRatio
+        ratio={aspectRatio.ratio}
+        className="flex items-center justify-center bg-muted"
+      >
+        <span className="text-sm text-muted-foreground">
+          {aspectRatio.label}
+        </span>
       </AspectRatio>
     </div>
   )
@@ -340,14 +359,19 @@ export const ChartDemo = () => {
 
 export const ResizableDemo = () => {
   return (
-    <ResizablePanelGroup orientation="horizontal" className="h-32 max-w-md border">
+    <ResizablePanelGroup
+      orientation="horizontal"
+      className="h-32 max-w-md border"
+    >
       {resizable.panels.map((label, index) => (
-        <React.Fragment key={label}>
+        <Fragment key={label}>
           {index > 0 && <ResizableHandle withHandle />}
           <ResizablePanel defaultSize={100 / resizable.panels.length}>
-            <div className="flex h-full items-center justify-center text-sm">{label}</div>
+            <div className="flex h-full items-center justify-center text-sm">
+              {label}
+            </div>
           </ResizablePanel>
-        </React.Fragment>
+        </Fragment>
       ))}
     </ResizablePanelGroup>
   )

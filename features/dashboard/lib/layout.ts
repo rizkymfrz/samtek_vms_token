@@ -15,7 +15,6 @@ export const packRows = <T extends Sized>(
     for (let start = end - 1; start >= 0; start--) {
       used += items[start].span;
       if (used > GRID_COLUMNS) break;
-      // Squared leftover punishes one very short row; +1 prefers fewer rows on ties.
       const cost = best[start] + (GRID_COLUMNS - used) ** 2 + 1;
       if (cost < best[end]) {
         best[end] = cost;

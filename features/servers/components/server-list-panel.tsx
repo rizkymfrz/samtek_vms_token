@@ -5,11 +5,11 @@ import {
   RadarIcon,
   ServerIcon,
 } from "lucide-react";
+import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { StatusDot } from "@/components/shared/status-dot";
-import type { ServerRecord, Discovered } from "../types";
+import type { Discovered, ServerRecord } from "../types";
 
 export type DiscoverTab = "registered" | "discovered";
 

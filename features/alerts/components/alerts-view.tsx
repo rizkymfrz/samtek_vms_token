@@ -1,6 +1,6 @@
 "use client";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import * as React from "react";
+import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
@@ -13,8 +13,8 @@ import { FilterPanel } from "./filter-panel";
 import {
   countByCamera,
   DEFAULT_FILTERS,
-  type Filters,
   filterAlerts,
+  type Filters,
 } from "../lib/filter-alerts";
 import type { AlertRow, AlertsData } from "../types";
 
@@ -44,18 +44,18 @@ const gridItems = GRID_PRESETS.map(([rows, columns]) => ({
 }));
 
 export const AlertsView = ({ data }: { data: AlertsData }) => {
-  const [filters, setFilters] = React.useState<Filters>(DEFAULT_FILTERS);
-  const [view, setView] = React.useState<View>("grid");
-  const [grid, setGrid] = React.useState(DEFAULT_GRID);
-  const [page, setPage] = React.useState(0);
-  const [openId, setOpenId] = React.useState<string | null>(null);
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [view, setView] = useState<View>("grid");
+  const [grid, setGrid] = useState(DEFAULT_GRID);
+  const [page, setPage] = useState(0);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
-  const matches = React.useMemo(
+  const matches = useMemo(
     () => filterAlerts(data.rows, filters, data.now),
     [data.rows, data.now, filters],
   );
-  const cameras = React.useMemo(
+  const cameras = useMemo(
     () => countByCamera(data.rows, filters, data.now),
     [data.rows, data.now, filters],
   );
@@ -148,7 +148,7 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
               {
                 "--columns": `repeat(${columns}, minmax(0, 1fr))`,
                 "--rows": `repeat(${rows}, minmax(0, 1fr))`,
-              } as React.CSSProperties
+              } as CSSProperties
             }
           >
             {visible.map((alert) => (
@@ -159,7 +159,6 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
                 className="lg:aspect-auto lg:h-full lg:min-h-0"
               />
             ))}
-            {/* The last page can be short; empty cells keep the grid lines complete. */}
             {Array.from({ length: pageSize - visible.length }, (_, index) => (
               <div
                 key={`empty-${index}`}

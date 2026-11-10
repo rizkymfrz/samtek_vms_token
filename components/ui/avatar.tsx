@@ -1,7 +1,7 @@
 "use client";
-import * as React from "react";
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
 import { cn } from "cn";
+import type { ComponentProps } from "react";
 
 const Avatar = ({
   className,
@@ -52,7 +52,7 @@ const AvatarFallback = ({
   );
 };
 
-const AvatarBadge = ({ className, ...props }: React.ComponentProps<"span">) => {
+const AvatarBadge = ({ className, ...props }: ComponentProps<"span">) => {
   return (
     <span
       data-slot="avatar-badge"
@@ -68,7 +68,7 @@ const AvatarBadge = ({ className, ...props }: React.ComponentProps<"span">) => {
   );
 };
 
-const AvatarGroup = ({ className, ...props }: React.ComponentProps<"div">) => {
+const AvatarGroup = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="avatar-group"
@@ -81,10 +81,7 @@ const AvatarGroup = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const AvatarGroupCount = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+const AvatarGroupCount = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="avatar-group-count"

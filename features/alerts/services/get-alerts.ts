@@ -1,5 +1,5 @@
 import { isLiveSource } from "@/config/env";
-import { getFromEdge, type EdgeTarget } from "@/lib/api/edge-client";
+import { type EdgeTarget, getFromEdge } from "@/lib/api/edge-client";
 import { getEdgeServers } from "@/lib/api/edge-registry";
 import { queryEdges } from "@/lib/api/fan-out";
 import { requireAccessToken } from "@/lib/auth/session";

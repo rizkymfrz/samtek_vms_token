@@ -1,10 +1,9 @@
+import { SECTIONS, WIDGETS } from "./widgets";
 import { packRows, spanClass } from "../lib/layout";
 import type { Dashboard } from "../services/build-dashboard";
-import { SECTIONS, WIDGETS } from "./widgets";
 
 export const DashboardView = ({ data }: { data: Dashboard }) => {
   const visible = WIDGETS.filter((widget) => widget.when(data));
-
   return (
     <div className="flex flex-col gap-8 p-4">
       {SECTIONS.map((section) => {

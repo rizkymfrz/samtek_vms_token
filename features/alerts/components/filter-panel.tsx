@@ -1,4 +1,5 @@
 import { SearchIcon, XIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +12,7 @@ const RISK_ITEMS = [
   { value: "medium", label: "Medium" },
 ];
 
-const Field = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => {
+const Field = ({ label, children }: { label: string; children: ReactNode }) => {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>

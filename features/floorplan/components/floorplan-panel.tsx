@@ -1,11 +1,11 @@
-import * as React from "react";
 import { MinusIcon, PlusIcon, SearchIcon, Trash2Icon } from "lucide-react";
+import type { ReactNode } from "react";
+import { Pick } from "@/components/shared/pick";
+import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Pick } from "@/components/shared/pick";
-import { StatusDot } from "@/components/shared/status-dot";
 import { FOV_OPTIONS } from "../lib/edit-placements";
 import type { Floorplan, FloorplanDevice, PlanCamera } from "../types";
 
@@ -20,7 +20,7 @@ const Detail = ({
   children,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <div className="flex items-center justify-between gap-4 border-b py-2 text-xs last:border-b-0">
@@ -39,7 +39,7 @@ const IconAction = ({
 }: {
   label: string;
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <Button
@@ -293,7 +293,7 @@ const List = ({
   title: string;
   count: number;
   empty: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <div className="flex flex-col">
