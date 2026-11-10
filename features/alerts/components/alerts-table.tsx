@@ -40,7 +40,11 @@ export const AlertsTable = ({
             className="cursor-pointer outline-none focus-visible:bg-muted"
           >
             <TableCell>
-              <AlertImage path={row.imagePath} className="w-20" />
+              <AlertImage
+                path={row.imagePath}
+                src={row.imageUrl}
+                className="w-20"
+              />
             </TableCell>
             <TableCell className="whitespace-nowrap">
               <div className="flex flex-col">

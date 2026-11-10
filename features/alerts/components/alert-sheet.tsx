@@ -39,7 +39,11 @@ export const AlertSheet = ({
             </SheetHeader>
             <div className="flex flex-col gap-4 p-4 pt-0">
               <div className="flex flex-col gap-2">
-                <AlertImage path={alert.imagePath} className="w-full" />
+                <AlertImage
+                  path={alert.imagePath}
+                  src={alert.imageUrl}
+                  className="w-full"
+                />
                 <span className="text-xs break-all text-muted-foreground">
                   {alert.imagePath}
                 </span>

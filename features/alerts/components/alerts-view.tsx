@@ -4,6 +4,7 @@ import * as React from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AlertSheet } from "./alert-sheet";
 import { AlertsTable } from "./alerts-table";
@@ -81,6 +82,16 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
+        {data.failures.length > 0 && (
+          <Alert variant="destructive">
+            <AlertTitle>Some edge servers did not respond</AlertTitle>
+            <AlertDescription>
+              {data.failures
+                .map((failure) => `${failure.edgeName}: ${failure.message}`)
+                .join(" · ")}
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="mr-2 text-xs text-muted-foreground tabular-nums">
             {matches.length === 0

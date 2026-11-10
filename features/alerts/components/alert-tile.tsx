@@ -1,8 +1,8 @@
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { AlertRow } from "../types";
 import { AlertImage } from "./alert-image";
+import type { AlertRow } from "../types";
 
 export const AlertTile = ({
   alert,
@@ -25,6 +25,7 @@ export const AlertTile = ({
     >
       <AlertImage
         path={alert.imagePath}
+        src={alert.imageUrl}
         iconClassName="size-8"
         className="absolute inset-0 aspect-auto size-full border-0"
       />

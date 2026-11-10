@@ -36,6 +36,7 @@ export type AlertRow = {
   trackId: number;
   frame: string;
   imagePath: string;
+  imageUrl: string | null;
   details: { label: string; value: string }[];
 };
 
@@ -44,6 +45,7 @@ export type AlertsData = {
   rows: AlertRow[];
   titles: string[];
   cameras: string[];
+  failures: { edgeId: string; edgeName: string; message: string }[];
 };
 
 export const buildAlerts = (now = Date.now()): AlertsData => {
@@ -89,6 +91,7 @@ export const buildAlerts = (now = Date.now()): AlertsData => {
       trackId: alarm.track_id,
       frame: `${alarm.frame_width}×${alarm.frame_height}`,
       imagePath: alarm.image_path,
+      imageUrl: null,
       details: formatDetails(alarm.event_id),
     }));
   return {
@@ -96,5 +99,6 @@ export const buildAlerts = (now = Date.now()): AlertsData => {
     rows,
     titles: [...new Set(rows.map((r) => r.title))].sort(),
     cameras: [...new Set(rows.map((r) => r.camera))].sort(),
+    failures: [],
   };
 };
