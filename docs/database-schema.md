@@ -322,7 +322,9 @@ Source of truth for the shape is the edge's DDL (`src/adapters/outbound/external
 | `event_id`, `detail_key` | VARCHAR |
 | `text_value` | VARCHAR, nullable |
 | `number_value` | DOUBLE, nullable |
-| `item_index` | INTEGER, nullable (0-based, only for list values) |
+| `item_index` | INTEGER, nullable (only for list values such as `missing_items`; added by the edge migration `addAlarmItemIndex`. **Unconfirmed:** whether it is 0-based) |
+
+Exactly one of `text_value` / `number_value` is set; the other is NULL. `text_value` also carries booleans as `true` / `false`.
 
 ### Recognition
 
@@ -356,6 +358,18 @@ Result tables, all joined to `recognition_events` by `event_id`:
 - `object_dwellings`: `device_id`, `perimeter_name`, `object_label`, `total_stay_time` (seconds), `total_object`,
   `average_stay_time`, `start_date`, `end_date`, `created_at`
 - Embeddings (`face_embeddings`, `person_embeddings`, `person_clip_embeddings`) exist but are not for the UI.
+
+### Indexes
+
+Defined in `duckdb_database.cpp:78-92`. They are plain indexes, not constraints. Filter by these columns first.
+
+- `object_counts (device_id, start_date)`
+- `object_dwellings (device_id, start_date)`
+- `recognition_events (device_id, occurred_at)`
+- `alarm_events (device_id, occurred_at)`
+- `person_sightings (person_id)`
+- `alarm_events (event_id)`
+- `recognition_events (event_id)`
 
 ### Value sets
 
