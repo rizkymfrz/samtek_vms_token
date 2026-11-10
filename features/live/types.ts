@@ -14,20 +14,27 @@ export type Tile = {
 
 export type ServerNode = { id: string; name: string; online: boolean };
 
-export type LiveLayout = {
+export type LiveLayoutSummary = {
   id: string;
   name: string;
   description: string | null;
   rows: number;
   columns: number;
   isDefault: boolean;
+};
+
+export type LiveLayout = LiveLayoutSummary & {
   slots: (string | null)[];
 };
+
+export type LiveFailure = { serverName: string; message: string };
 
 export type LiveData = {
   servers: ServerNode[];
   tiles: Tile[];
-  layouts: LiveLayout[];
+  layouts: LiveLayoutSummary[];
+  details: Record<string, LiveLayout>;
+  failures: LiveFailure[];
 };
 
 export type StreamQuality = "sub" | "main";

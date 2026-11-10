@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { freeSlots } from "../lib/edit-layout";
-import type { LiveLayout, ServerNode, Tile } from "../types";
+import type { LiveLayout, LiveLayoutSummary, ServerNode, Tile } from "../types";
 
 const IconAction = ({
   label,
@@ -59,16 +59,18 @@ export const DevicePanel = ({
   layout,
   servers,
   tiles,
+  readOnly,
   onSelectLayout,
   onNewLayout,
   onDeleteLayout,
   onAdd,
   onRemove,
 }: {
-  layouts: LiveLayout[];
+  layouts: LiveLayoutSummary[];
   layout: LiveLayout;
   servers: ServerNode[];
   tiles: Tile[];
+  readOnly: boolean;
   onSelectLayout: (id: string) => void;
   onNewLayout: () => void;
   onDeleteLayout: () => void;
@@ -164,14 +166,14 @@ export const DevicePanel = ({
                   </CollapsibleTrigger>
                   <IconAction
                     label={`Add all ${server.name} cameras`}
-                    disabled={full || placed === cameras.length}
+                    disabled={readOnly || full || placed === cameras.length}
                     onClick={() => onAdd(ids)}
                   >
                     <ListPlusIcon />
                   </IconAction>
                   <IconAction
                     label={`Remove all ${server.name} cameras`}
-                    disabled={placed === 0}
+                    disabled={readOnly || placed === 0}
                     onClick={() => onRemove(ids)}
                   >
                     <ListMinusIcon />
@@ -209,6 +211,7 @@ export const DevicePanel = ({
                           {added ? (
                             <IconAction
                               label={`Remove ${tile.name} from layout`}
+                              disabled={readOnly}
                               onClick={() => onRemove([tile.id])}
                             >
                               <MinusIcon />
@@ -216,7 +219,7 @@ export const DevicePanel = ({
                           ) : (
                             <IconAction
                               label={`Add ${tile.name} to layout`}
-                              disabled={full}
+                              disabled={readOnly || full}
                               onClick={() => onAdd([tile.id])}
                             >
                               <PlusIcon />

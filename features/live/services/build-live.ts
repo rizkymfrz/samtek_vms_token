@@ -1,6 +1,7 @@
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isServerOnline } from "@/config/server-status";
 import { buildLiveSource } from "@/lib/mock/live-source";
+import { summaryOf } from "../lib/edit-layout";
 import type { LiveData, Tile } from "../types";
 
 export const buildLive = (now = Date.now()): LiveData => {
@@ -29,6 +30,22 @@ export const buildLive = (now = Date.now()): LiveData => {
       hasSubStream: d.sourceSub !== null,
     };
   });
+  const detailed = layouts
+    .map((layout) => {
+      const slots: (string | null)[] = Array.from(
+        { length: layout.rows * layout.columns },
+        () => null,
+      );
+      for (const link of layoutDevices.filter(
+        (l) => l.layoutId === layout.id,
+      )) {
+        if (link.position < slots.length)
+          slots[link.position] = link.deviceRecordId;
+      }
+      const { id, name, description, rows, columns, isDefault } = layout;
+      return { id, name, description, rows, columns, isDefault, slots };
+    })
+    .sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
   return {
     servers: edgeServers.map((s) => ({
       id: s.id,
@@ -36,21 +53,8 @@ export const buildLive = (now = Date.now()): LiveData => {
       online: isOnline(s),
     })),
     tiles,
-    layouts: layouts
-      .map((layout) => {
-        const slots: (string | null)[] = Array.from(
-          { length: layout.rows * layout.columns },
-          () => null,
-        );
-        for (const link of layoutDevices.filter(
-          (l) => l.layoutId === layout.id,
-        )) {
-          if (link.position < slots.length)
-            slots[link.position] = link.deviceRecordId;
-        }
-        const { id, name, description, rows, columns, isDefault } = layout;
-        return { id, name, description, rows, columns, isDefault, slots };
-      })
-      .sort((a, b) => Number(b.isDefault) - Number(a.isDefault)),
+    layouts: detailed.map(summaryOf),
+    details: Object.fromEntries(detailed.map((layout) => [layout.id, layout])),
+    failures: [],
   };
 };

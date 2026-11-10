@@ -1,4 +1,4 @@
-import type { LiveLayout } from "../types";
+import type { LiveLayout, LiveLayoutSummary } from "../types";
 
 export const GRID_PRESETS: [rows: number, columns: number][] = [
   [1, 1],
@@ -56,7 +56,7 @@ export const resizeLayout = (
   return { ...layout, rows, columns, slots };
 };
 
-export const createLayout = (existing: LiveLayout[]): LiveLayout => {
+export const createLayout = (existing: LiveLayoutSummary[]): LiveLayout => {
   let number = existing.length + 1;
   while (existing.some((layout) => layout.name === `Layout ${number}`))
     number++;
@@ -70,3 +70,19 @@ export const createLayout = (existing: LiveLayout[]): LiveLayout => {
     slots: Array.from({ length: 4 }, () => null),
   };
 };
+
+export const summaryOf = ({
+  id,
+  name,
+  description,
+  rows,
+  columns,
+  isDefault,
+}: LiveLayoutSummary): LiveLayoutSummary => ({
+  id,
+  name,
+  description,
+  rows,
+  columns,
+  isDefault,
+});

@@ -1,16 +1,5 @@
 import { z } from "zod";
-
-export const deviceSchema = z.object({
-  id: z.coerce.string(),
-  edgeServerId: z.coerce.string(),
-  deviceId: z.string(),
-  name: z.string(),
-  isEnabled: z.boolean(),
-  sourceMain: z.string(),
-  sourceSub: z.string().nullable(),
-  analyticId: z.string().nullable(),
-  isRecordingEnabled: z.boolean(),
-});
+import { deviceSchema } from "@/lib/api/central-devices";
 
 export const deviceResponseSchema = z.object({ data: deviceSchema });
 

@@ -11,7 +11,7 @@ export const isValidIds = (...ids: string[]) =>
   ids.every((id) => ID_PATTERN.test(id));
 
 export const callCentral = async (
-  method: "post" | "patch" | "put" | "delete",
+  method: "get" | "post" | "patch" | "put" | "delete",
   path: string,
   body?: unknown,
 ) => {

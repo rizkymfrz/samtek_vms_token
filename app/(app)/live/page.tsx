@@ -1,12 +1,15 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { isLiveSource } from "@/config/env";
 import { LiveSkeleton } from "@/features/live/components/live-skeleton";
 import { LiveView } from "@/features/live/components/live-view";
-import { buildLive } from "@/features/live/services/build-live";
+import { getLive } from "@/features/live/services/get-live";
+import { redirectIfUnauthorized } from "@/lib/auth/guard";
 
 const LiveContent = async () => {
   await connection();
-  return <LiveView data={buildLive()} />;
+  const data = await redirectIfUnauthorized(getLive());
+  return <LiveView data={data} isLive={isLiveSource} />;
 };
 
 const Page = () => {
