@@ -20,31 +20,32 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { SETTINGS_ITEM } from "@/config/navigation";
+import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
+import type { CurrentUser } from "@/features/auth/types";
 
-const user = {
-  name: "Rizky Maulana",
-  email: "rizky@samtek.id",
-  avatar: "",
-};
+const initialsOf = (name: string) =>
+  name
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
-const initials = user.name
-  .split(" ")
-  .map((part) => part[0])
-  .join("")
-  .slice(0, 2)
-  .toUpperCase();
-
-const UserInfo = () => {
+const UserInfo = ({ user }: { user: CurrentUser | undefined }) => {
+  const name = user?.username ?? "Loading…";
   return (
     <>
       <Avatar className="size-8 rounded-lg">
-        <AvatarImage src={user.avatar} alt={user.name} />
-        <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+        <AvatarImage src={user?.avatar ?? undefined} alt={name} />
+        <AvatarFallback className="rounded-lg">
+          {user ? initialsOf(user.username) : ""}
+        </AvatarFallback>
       </Avatar>
       <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-medium">{user.name}</span>
+        <span className="truncate font-medium">{name}</span>
         <span className="truncate text-xs text-muted-foreground">
-          {user.email}
+          {user?.email ?? " "}
         </span>
       </div>
     </>
@@ -53,6 +54,7 @@ const UserInfo = () => {
 
 export const NavUser = () => {
   const { isMobile } = useSidebar();
+  const { data: user } = useCurrentUser();
   const router = useRouter();
   const handleLogout = async () => {
     await axios.post("/api/auth/logout").catch(() => {});
@@ -64,9 +66,9 @@ export const NavUser = () => {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={<SidebarMenuButton size="lg" tooltip={user.name} />}
+            render={<SidebarMenuButton size="lg" tooltip={user?.username} />}
           >
-            <UserInfo />
+            <UserInfo user={user} />
             <ChevronsUpDownIcon className="ml-auto size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -77,7 +79,7 @@ export const NavUser = () => {
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="flex items-center gap-2 p-1 text-foreground">
-                <UserInfo />
+                <UserInfo user={user} />
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
