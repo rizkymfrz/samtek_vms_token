@@ -1,4 +1,4 @@
-import { buildLiveSource, HEARTBEAT_SECONDS } from "@/app/(app)/_data/live-source"
+import { buildLiveSource, HEARTBEAT_SECONDS } from "@/lib/mock/live-source"
 import type { CameraData } from "../types"
 
 export const buildCameras = (now = Date.now()): CameraData => {

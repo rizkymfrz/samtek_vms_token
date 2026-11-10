@@ -18,7 +18,7 @@ import { HeaderNotifications } from "./header-notifications";
 import { HeaderSearch } from "./header-search";
 import { HeaderStatus } from "./header-status";
 import { ThemeSwitcher } from "./theme-switcher";
-import { getBreadcrumbs } from "./nav";
+import { getBreadcrumbs } from "@/lib/breadcrumbs";
 
 export const AppHeader = () => {
   const pathname = usePathname();

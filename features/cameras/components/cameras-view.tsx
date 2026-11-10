@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PageShell } from "@/components/layout/page-shell";
 import { Pick } from "@/components/shared/pick";
 import { SidePanel } from "@/components/layout/side-panel";
-import { analyticLabel } from "@/app/(app)/_data/analytics-catalog";
+import { analyticLabel } from "@/config/analytics-catalog";
 import { CameraCard } from "./camera-card";
 import { CameraFilterPanel } from "./camera-filter-panel";
 import { CameraSheet, type SheetTarget } from "./camera-sheet";

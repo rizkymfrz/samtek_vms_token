@@ -1,4 +1,4 @@
-import { createRandom } from "@/app/(app)/_data/random";
+import { createRandom } from "@/lib/random";
 import type { LogLine } from "../types";
 
 export const LOG_TEMPLATES: [

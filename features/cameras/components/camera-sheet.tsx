@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Pick } from "@/components/shared/pick";
-import { ANALYTICS } from "@/app/(app)/_data/analytics-catalog";
+import { ANALYTICS } from "@/config/analytics-catalog";
 import type { CameraRecord, ServerOption } from "../types";
 import {
   emptyDraft,

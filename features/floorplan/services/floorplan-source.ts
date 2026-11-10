@@ -1,9 +1,9 @@
-import { buildAlerts } from "@/app/(app)/_data/alerts-source";
-import { analyticLabel } from "@/app/(app)/_data/analytics-catalog";
+import { buildAlerts } from "@/lib/mock/alerts-source";
+import { analyticLabel } from "@/config/analytics-catalog";
 import {
   buildLiveSource,
   HEARTBEAT_SECONDS,
-} from "@/app/(app)/_data/live-source";
+} from "@/lib/mock/live-source";
 import type {
   Floorplan,
   FloorplanDevice,

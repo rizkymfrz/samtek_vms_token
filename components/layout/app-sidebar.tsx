@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { NAV_GROUPS } from "./nav";
+import { NAV_GROUPS } from "@/config/navigation";
 import { NavUser } from "./nav-user";
 
 export const AppSidebar = () => {

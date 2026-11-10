@@ -13,8 +13,8 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Kbd } from "@/components/ui/kbd";
-import { CAMERAS, SERVERS } from "./dummy-data";
-import { NAV_ITEMS, SETTINGS_ITEM } from "./nav";
+import { CAMERAS, SERVERS } from "@/lib/mock/header-data";
+import { NAV_ITEMS, SETTINGS_ITEM } from "@/config/navigation";
 
 export const HeaderSearch = () => {
   const router = useRouter();

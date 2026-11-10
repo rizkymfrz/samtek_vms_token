@@ -1,6 +1,5 @@
-import { ANALYTICS } from "./analytics-catalog";
-
-export type RiskLevel = "low" | "medium" | "high";
+import { ANALYTICS } from "@/config/analytics-catalog";
+import type { RiskLevel } from "@/types/risk";
 
 export type AlarmEvent = {
   event_id: string;

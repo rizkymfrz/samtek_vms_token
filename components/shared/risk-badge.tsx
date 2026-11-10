@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-
-export type RiskLevel = "low" | "medium" | "high";
+import type { RiskLevel } from "@/types/risk";
 
 const VARIANTS = {
   high: "destructive",

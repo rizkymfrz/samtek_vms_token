@@ -1,9 +1,6 @@
-import { ANALYTIC_IDS, analyticLabel } from "./analytics-catalog";
-import {
-  createDevices,
-  generateAnalytics,
-  type RiskLevel,
-} from "./dashboard-source";
+import { ANALYTIC_IDS, analyticLabel } from "@/config/analytics-catalog";
+import type { RiskLevel } from "@/types/risk";
+import { createDevices, generateAnalytics } from "./dashboard-source";
 
 const TIME_ZONE = "Asia/Jakarta";
 

@@ -6,7 +6,7 @@ import {
   generateAnalytics,
   PLATE_ANALYTICS,
   PPE_ANALYTICS,
-} from "@/app/(app)/_data/dashboard-source";
+} from "@/lib/mock/dashboard-source";
 import { countBy, withOther } from "../lib/aggregate";
 import {
   clock,

@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { ALERTS } from "./dummy-data";
+import { ALERTS } from "@/lib/mock/header-data";
 import { StatusDot } from "@/components/shared/status-dot";
 
 export const HeaderNotifications = () => {

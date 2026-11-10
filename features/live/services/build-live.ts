@@ -1,8 +1,8 @@
-import { analyticLabel } from "@/app/(app)/_data/analytics-catalog";
+import { analyticLabel } from "@/config/analytics-catalog";
 import {
   buildLiveSource,
   HEARTBEAT_SECONDS,
-} from "@/app/(app)/_data/live-source";
+} from "@/lib/mock/live-source";
 import type { LiveData, Tile } from "../types";
 
 export const buildLive = (now = Date.now()): LiveData => {

@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
-import { analyticLabel } from "@/app/(app)/_data/analytics-catalog";
+import { analyticLabel } from "@/config/analytics-catalog";
 import type { CameraRecord, ServerOption } from "../types";
 import { cameraState, STATE_LABEL } from "../lib/camera-state";
 

@@ -1,6 +1,6 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppHeader } from "./_components/app-header";
-import { AppSidebar } from "./_components/app-sidebar";
+import { AppHeader } from "@/components/layout/app-header";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 
 const AppLayout = ({ children }: LayoutProps<"/">) => {
   return (

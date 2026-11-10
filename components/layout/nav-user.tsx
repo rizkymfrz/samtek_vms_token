@@ -17,7 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { SETTINGS_ITEM } from "./nav";
+import { SETTINGS_ITEM } from "@/config/navigation";
 
 const user = {
   name: "Rizky Maulana",

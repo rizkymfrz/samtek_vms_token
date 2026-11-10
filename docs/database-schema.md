@@ -373,7 +373,7 @@ Result tables, all joined to `recognition_events` by `event_id`:
 
 ## 3. Analytics the edge can run
 
-18 analytic ids; the list with labels is `app/(app)/_data/analytics-catalog.ts`. Each camera runs exactly one
+18 analytic ids; the list with labels is `config/analytics-catalog.ts`. Each camera runs exactly one
 (`devices.json` -> `analytic.id`, mirrored in `Device.analyticId`).
 
 `people_counting_dwelling`, `vehicle_counting_dwelling`, `ppe_violation`, `ppe_violation_advance`, `fire_smoke`,

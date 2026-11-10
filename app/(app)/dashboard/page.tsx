@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
 import { DashboardView } from "@/features/dashboard/components/dashboard-view";
 import { getDashboard } from "@/features/dashboard/services/get-dashboard";
-import { parseSelection } from "../_data/analytics-catalog";
+import { parseSelection } from "@/config/analytics-catalog";
 
 const DashboardContent = async ({
   searchParams,

@@ -3,7 +3,7 @@ import { SearchIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { ANALYTICS } from "@/app/(app)/_data/analytics-catalog";
+import { ANALYTICS } from "@/config/analytics-catalog";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
 import type { ServerOption } from "../types";
