@@ -45,15 +45,19 @@ const Form = ({
   target,
   cameras,
   servers,
+  isPending,
+  error,
   onSave,
   onDelete,
   onClose,
 }: {
   target: "new" | CameraRecord;
+  isPending: boolean;
+  error: string | null;
   cameras: CameraRecord[];
   servers: ServerOption[];
-  onSave: (draft: Draft, id: string | null) => void;
-  onDelete: (id: string) => void;
+  onSave: (draft: Draft, id: string | null) => void | Promise<void>;
+  onDelete: (id: string) => void | Promise<void>;
   onClose: () => void;
 }) => {
   const editing = target === "new" ? null : target;
@@ -107,6 +111,7 @@ const Form = ({
             id={`${formId}-device`}
             value={draft.deviceId}
             onChange={(e) => set({ deviceId: e.target.value })}
+            disabled={!!editing}
             placeholder="cam-001"
             aria-invalid={!!errors.deviceId}
           />
@@ -118,7 +123,7 @@ const Form = ({
             label="Edge server"
             items={serverItems}
             value={draft.edgeServerId}
-            onChange={(edgeServerId) => set({ edgeServerId })}
+            onChange={(edgeServerId) => !editing && set({ edgeServerId })}
             className="w-full"
           />
           {errors.edgeServerId && (
@@ -186,6 +191,7 @@ const Form = ({
             }
           />
         </div>
+        {error && <FieldError>{error}</FieldError>}
         {editing && (
           <p className="text-xs text-muted-foreground">
             Currently {maskSource(editing.sourceMain)}. Analytic parameters and
@@ -210,7 +216,7 @@ const Form = ({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" form={formId}>
+          <Button type="submit" form={formId} disabled={isPending}>
             {editing ? "Save" : "Add camera"}
           </Button>
         </div>
@@ -243,15 +249,19 @@ export const CameraSheet = ({
   target,
   cameras,
   servers,
+  isPending,
+  error,
   onSave,
   onDelete,
   onClose,
 }: {
   target: SheetTarget;
+  isPending: boolean;
+  error: string | null;
   cameras: CameraRecord[];
   servers: ServerOption[];
-  onSave: (draft: Draft, id: string | null) => void;
-  onDelete: (id: string) => void;
+  onSave: (draft: Draft, id: string | null) => void | Promise<void>;
+  onDelete: (id: string) => void | Promise<void>;
   onClose: () => void;
 }) => {
   return (
@@ -263,6 +273,8 @@ export const CameraSheet = ({
             target={target}
             cameras={cameras}
             servers={servers}
+            isPending={isPending}
+            error={error}
             onSave={onSave}
             onDelete={onDelete}
             onClose={onClose}

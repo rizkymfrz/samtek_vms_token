@@ -40,7 +40,7 @@ export const toDraft = (camera: CameraRecord): Draft => ({
   isRecordingEnabled: camera.isRecordingEnabled,
 });
 
-const STREAM_URL = /^(rtsp|rtsps|http|https):\/\/\S+$/i;
+const STREAM_URL = /^(rtsp|rtsps|rtmp|rtmps|http|https|srt|udp|rtp):\/\/\S+$/i;
 
 export const validate = (
   draft: Draft,
@@ -70,9 +70,9 @@ export const validate = (
   if (!draft.sourceMain.trim())
     errors.sourceMain = "The main stream is required.";
   else if (!STREAM_URL.test(draft.sourceMain.trim()))
-    errors.sourceMain = "Use an rtsp:// or http(s):// address.";
+    errors.sourceMain = "Use a stream address such as rtsp:// or http(s)://.";
   if (draft.sourceSub.trim() && !STREAM_URL.test(draft.sourceSub.trim())) {
-    errors.sourceSub = "Use an rtsp:// or http(s):// address.";
+    errors.sourceSub = "Use a stream address such as rtsp:// or http(s)://.";
   }
   return errors;
 };
@@ -108,4 +108,35 @@ export const removeCamera = (cameras: CameraRecord[], id: string) =>
 export const maskSource = (url: string | null): string => {
   if (!url) return "Not set";
   return url.replace(/^([a-z]+:\/\/)[^/@\s]*@/i, "$1");
+};
+
+export const toCreatePayload = (draft: Draft) => ({
+  deviceId: draft.deviceId.trim(),
+  name: draft.name.trim(),
+  isEnabled: draft.isEnabled,
+  sourceMain: draft.sourceMain.trim(),
+  sourceSub: draft.sourceSub.trim() || undefined,
+  analyticId: draft.analyticId ?? undefined,
+  isRecordingEnabled: draft.isRecordingEnabled,
+});
+
+export const toUpdatePayload = (draft: Draft, original: CameraRecord) => {
+  const sourceSub = draft.sourceSub.trim();
+  return {
+    name: draft.name.trim() !== original.name ? draft.name.trim() : undefined,
+    isEnabled:
+      draft.isEnabled !== original.isEnabled ? draft.isEnabled : undefined,
+    isRecordingEnabled:
+      draft.isRecordingEnabled !== original.isRecordingEnabled
+        ? draft.isRecordingEnabled
+        : undefined,
+    sourceMain:
+      draft.sourceMain.trim() !== original.sourceMain
+        ? draft.sourceMain.trim()
+        : undefined,
+    sourceSub:
+      sourceSub !== (original.sourceSub ?? "") ? sourceSub || null : undefined,
+    analyticId:
+      draft.analyticId !== original.analyticId ? draft.analyticId : undefined,
+  };
 };

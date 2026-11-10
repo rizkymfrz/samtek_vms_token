@@ -1,52 +1,61 @@
 import { cacheLife } from "next/cache";
 import { z } from "zod";
-import { createCentralClient, toCentralError } from "./central-client";
+import { createCentralClient } from "./central-client";
+import { fetchAllPages } from "./central-pages";
 import type { EdgeTarget } from "./edge-client";
 
-const PAGE_SIZE = 100;
-const MAX_PAGES = 50;
+export const HEARTBEAT_SECONDS = 60;
 
-const edgeServersPageSchema = z.object({
-  data: z.array(
-    z.object({
-      id: z.coerce.string(),
-      name: z.string(),
-      hostAddress: z.string().nullable(),
-      localHostAddress: z.string().nullable(),
-      isActive: z.boolean(),
-    }),
-  ),
-  meta: z.object({ total: z.number().int().nonnegative() }),
+const centralServerSchema = z.object({
+  id: z.coerce.string(),
+  groupId: z.string().nullable(),
+  name: z.string(),
+  code: z.string(),
+  description: z.string().nullable(),
+  hostAddress: z.string().nullable(),
+  localHostAddress: z.string().nullable(),
+  webrtcUrl: z.string().nullable(),
+  webrtcUrlLocal: z.string().nullable(),
+  macAddress: z.string().nullable(),
+  isActive: z.boolean(),
+  lastSeenAt: z.iso.datetime().nullable(),
 });
 
-const fetchEdgeServers = async (token: string): Promise<EdgeTarget[]> => {
+export type CentralServer = Omit<
+  z.output<typeof centralServerSchema>,
+  "lastSeenAt"
+> & { lastSeenAt: number | null };
+
+export const isServerOnline = (server: CentralServer, now: number) =>
+  server.isActive &&
+  server.lastSeenAt !== null &&
+  now - server.lastSeenAt < HEARTBEAT_SECONDS * 1000;
+
+const fetchCentralServers = async (token: string): Promise<CentralServer[]> => {
   "use cache";
   cacheLife({ revalidate: 30, expire: 60 });
-  const client = createCentralClient(token);
-  const servers: z.output<typeof edgeServersPageSchema>["data"] = [];
-  try {
-    for (let page = 1; page <= MAX_PAGES; page++) {
-      const { data } = await client.get<unknown>("/v1/edge-servers", {
-        params: { page, pageSize: PAGE_SIZE },
-      });
-      const body = edgeServersPageSchema.parse(data);
-      servers.push(...body.data);
-      if (page * PAGE_SIZE >= body.meta.total) break;
-    }
-  } catch (error) {
-    throw toCentralError(error);
-  }
-  return servers
-    .filter((edge) => edge.isActive)
+  const servers = await fetchAllPages(
+    createCentralClient(token),
+    "/v1/edge-servers",
+    centralServerSchema,
+  );
+  return servers.map((server) => ({
+    ...server,
+    lastSeenAt: server.lastSeenAt ? Date.parse(server.lastSeenAt) : null,
+  }));
+};
+
+export const getCentralServers = fetchCentralServers;
+
+export const getEdgeServers = async (token: string): Promise<EdgeTarget[]> =>
+  (await fetchCentralServers(token))
+    .filter((server) => server.isActive)
     .map(({ id, name, hostAddress, localHostAddress }) => ({
       id,
       name,
       hostAddress,
       localHostAddress,
     }));
-};
-
-export const getEdgeServers = fetchEdgeServers;
 
 export const findEdgeServer = async (token: string, edgeId: string) =>
-  (await fetchEdgeServers(token)).find((edge) => edge.id === edgeId) ?? null;
+  (await getEdgeServers(token)).find((edge) => edge.id === edgeId) ?? null;

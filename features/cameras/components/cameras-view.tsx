@@ -4,21 +4,23 @@ import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { CameraCard } from "./camera-card";
 import { CameraFilterPanel } from "./camera-filter-panel";
 import { CameraSheet, type SheetTarget } from "./camera-sheet";
 import { CameraTable } from "./camera-table";
+import { useCameraActions } from "../hooks/use-camera-actions";
 import { cameraState } from "../lib/camera-state";
-import { type Draft, removeCamera, saveCamera } from "../lib/edit-camera";
+import type { Draft } from "../lib/edit-camera";
 import {
   ALL,
   DEFAULT_FILTERS,
   filterCameras,
   type Filters,
 } from "../lib/filter-cameras";
-import type { CameraData, CameraRecord } from "../types";
+import type { CameraData } from "../types";
 
 export const GRID_PRESETS: [rows: number, columns: number][] = [
   [2, 2],
@@ -47,7 +49,13 @@ const gridItems = GRID_PRESETS.map(([rows, columns]) => ({
 const analyticName = (id: string | null) =>
   id ? analyticLabel(id) : "No analytic";
 
-export const CamerasView = ({ data }: { data: CameraData }) => {
+export const CamerasView = ({
+  data,
+  isLive,
+}: {
+  data: CameraData;
+  isLive: boolean;
+}) => {
   const { servers } = data;
   const [cameras, setCameras] = useState(data.cameras);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
@@ -55,6 +63,7 @@ export const CamerasView = ({ data }: { data: CameraData }) => {
   const [grid, setGrid] = useState(DEFAULT_GRID);
   const [page, setPage] = useState(0);
   const [sheet, setSheet] = useState<SheetTarget>(null);
+  const actions = useCameraActions(isLive, cameras, setCameras);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
   const matches = useMemo(
@@ -83,11 +92,6 @@ export const CamerasView = ({ data }: { data: CameraData }) => {
     setFilters((current) => ({ ...current, ...patch }));
     setPage(0);
   };
-  const toggle = (
-    id: string,
-    patch: Partial<Pick<CameraRecord, "isEnabled" | "isRecordingEnabled">>,
-  ) =>
-    setCameras((all) => all.map((c) => (c.id === id ? { ...c, ...patch } : c)));
   return (
     <PageShell>
       <SidePanel>
@@ -103,6 +107,12 @@ export const CamerasView = ({ data }: { data: CameraData }) => {
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
+        {actions.error && sheet === null && (
+          <Alert variant="destructive">
+            <AlertTitle>Could not update the camera</AlertTitle>
+            <AlertDescription>{actions.error}</AlertDescription>
+          </Alert>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button onClick={() => setSheet("new")}>
             <PlusIcon />
@@ -196,7 +206,7 @@ export const CamerasView = ({ data }: { data: CameraData }) => {
               onSelect={(id) =>
                 setSheet(cameras.find((c) => c.id === id) ?? null)
               }
-              onToggle={toggle}
+              onToggle={actions.toggle}
             />
           </div>
         )}
@@ -205,14 +215,17 @@ export const CamerasView = ({ data }: { data: CameraData }) => {
         target={sheet}
         cameras={cameras}
         servers={servers}
-        onClose={() => setSheet(null)}
-        onSave={(draft: Draft, id) => {
-          setCameras((all) => saveCamera(all, draft, id));
+        onClose={() => {
           setSheet(null);
+          actions.clearError();
         }}
-        onDelete={(id) => {
-          setCameras((all) => removeCamera(all, id));
-          setSheet(null);
+        isPending={actions.isPending}
+        error={actions.error}
+        onSave={async (draft: Draft, id) => {
+          if (await actions.save(draft, id)) setSheet(null);
+        }}
+        onDelete={async (id) => {
+          if (await actions.remove(id)) setSheet(null);
         }}
       />
     </PageShell>

@@ -14,7 +14,13 @@ export class CentralError extends Error {
 }
 
 const errorBodySchema = z.object({
-  error: z.object({ code: z.string(), message: z.string() }),
+  error: z.object({
+    code: z.string(),
+    message: z.string(),
+    details: z
+      .array(z.object({ field: z.string(), messages: z.array(z.string()) }))
+      .optional(),
+  }),
 });
 
 export const createCentralClient = (token?: string) => {
@@ -43,7 +49,12 @@ export const toCentralError = (error: unknown) => {
       "UNKNOWN",
     );
   }
-  const { code, message } = parsed.data.error;
+  const { code, message, details } = parsed.data.error;
   if (code === "UNAUTHORIZED") return new UnauthorizedError();
-  return new CentralError(message, error.response.status, code);
+  const detail = details?.[0];
+  return new CentralError(
+    detail ? `${detail.field}: ${detail.messages[0]}` : message,
+    error.response.status,
+    code,
+  );
 };
