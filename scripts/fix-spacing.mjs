@@ -51,6 +51,7 @@ const fix = (source) => {
     });
 };
 
+// eslint-disable-next-line func-style
 function* walk(dir) {
   for (const entry of readdirSync(dir)) {
     const path = join(dir, entry);

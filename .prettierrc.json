@@ -1,0 +1,8 @@
+{
+  "overrides": [
+    {
+      "files": "app/showcase/**",
+      "options": { "semi": false }
+    }
+  ]
+}

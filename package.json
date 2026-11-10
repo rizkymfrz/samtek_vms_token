@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "fix:spacing": "node scripts/fix-spacing.mjs",
-    "check:showcase": "node scripts/check-showcase.mjs"
+    "check:showcase": "node scripts/check-showcase.mjs",
+    "format": "node scripts/format.mjs",
+    "format:check": "node scripts/format.mjs --check"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -34,12 +36,14 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@babel/parser": "^8.1.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
+    "prettier": "^3.9.10",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

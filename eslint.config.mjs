@@ -12,6 +12,25 @@ const eslintConfig = defineConfig([
     plugins: { spacing },
     rules: { "spacing/spacing-scale": "error" },
   },
+  // Functions must be arrow functions assigned to const (see scripts/format).
+  {
+    rules: {
+      "func-style": ["error", "expression"],
+      "prefer-arrow-callback": "error",
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "react",
+              importNames: ["default", "*"],
+              message: "Import the named exports you use from react.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
