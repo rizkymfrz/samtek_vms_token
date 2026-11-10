@@ -36,7 +36,7 @@ export type Metrics = {
     analytics: number;
     system: number;
     free: number;
-    retentionDays: number;
+    retentionDays: number | null;
   };
 };
 

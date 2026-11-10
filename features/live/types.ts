@@ -10,9 +10,17 @@ export type Tile = {
   isRecordingEnabled: boolean;
   state: StreamState;
   hasSubStream: boolean;
+  webrtcUrl: string | null;
+  webrtcUrlLocal: string | null;
 };
 
-export type ServerNode = { id: string; name: string; online: boolean };
+export type ServerNode = {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+  online: boolean;
+};
 
 export type LiveLayoutSummary = {
   id: string;

@@ -1,18 +1,25 @@
 "use client";
-import { MaximizeIcon, PlusIcon } from "lucide-react";
-import { type CSSProperties, useRef, useState } from "react";
+import {
+  LayoutGridIcon,
+  LoaderIcon,
+  MaximizeIcon,
+  PlusIcon,
+} from "lucide-react";
+import { type CSSProperties, useMemo, useRef, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { useServerOnline } from "@/features/edge-status";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
 import { useLayout } from "../hooks/use-layout";
 import { useLayoutActions } from "../hooks/use-layout-actions";
 import { useLive } from "../hooks/use-live";
 import { addCameras, GRID_PRESETS, removeCameras } from "../lib/edit-layout";
-import type { LiveData, LiveLayout, StreamQuality } from "../types";
+import type { LiveData, LiveLayout, StreamQuality, Tile } from "../types";
 
 const QUALITY_ITEMS = [
   { value: "sub", label: "Sub stream" },
@@ -39,7 +46,24 @@ export const LiveView = ({
   isLive: boolean;
 }) => {
   const { data: live } = useLive(data, isLive);
-  const { servers, tiles, layouts, failures } = live;
+  const { layouts, failures } = live;
+  const serverOnline = useServerOnline();
+  const servers = useMemo(
+    () =>
+      live.servers.map((s) => ({ ...s, online: serverOnline(s, s.online) })),
+    [live.servers, serverOnline],
+  );
+  const tiles = useMemo(() => {
+    const online = new Map(servers.map((s) => [s.id, s.online]));
+    return live.tiles.map((tile): Tile =>
+      tile.state === "disabled"
+        ? tile
+        : {
+            ...tile,
+            state: online.get(tile.serverId) ? "live" : "server-offline",
+          },
+    );
+  }, [live.tiles, servers]);
   const actions = useLayoutActions(isLive);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [quality, setQuality] = useState<StreamQuality>("sub");
@@ -57,16 +81,23 @@ export const LiveView = ({
     });
   if (!summary) {
     return (
-      <div className="flex flex-col items-center gap-4 p-8 text-center">
-        <p className="text-xs text-muted-foreground">No layouts yet.</p>
-        {actions.error && (
-          <p className="text-xs text-destructive">{actions.error}</p>
-        )}
-        <Button onClick={createLayout} disabled={actions.create.isPending}>
-          <PlusIcon />
-          Create layout
-        </Button>
-      </div>
+      <PageShell>
+        <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4">
+          <EmptyState
+            icon={<LayoutGridIcon />}
+            title="No layouts yet"
+            description="Create a layout to start watching cameras."
+          >
+            {actions.error && (
+              <p className="text-xs text-destructive">{actions.error}</p>
+            )}
+            <Button onClick={createLayout} disabled={actions.create.isPending}>
+              <PlusIcon />
+              Create layout
+            </Button>
+          </EmptyState>
+        </div>
+      </PageShell>
     );
   }
   const layout: LiveLayout = detail ?? {
@@ -146,7 +177,7 @@ export const LiveView = ({
             onChange={(next) => setQuality(next as StreamQuality)}
           />
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={() => stage.current?.requestFullscreen?.()}
           >
             <MaximizeIcon />
@@ -183,9 +214,10 @@ export const LiveView = ({
             })}
           </div>
         ) : (
-          <p className="flex flex-1 items-center justify-center border text-xs text-muted-foreground max-lg:py-16">
-            Loading layout…
-          </p>
+          <EmptyState
+            icon={<LoaderIcon className="animate-spin" />}
+            title="Loading layout…"
+          />
         )}
       </div>
     </PageShell>

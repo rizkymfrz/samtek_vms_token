@@ -10,7 +10,13 @@ export type CameraRecord = {
   isRecordingEnabled: boolean;
 };
 
-export type ServerOption = { id: string; name: string; online: boolean };
+export type ServerOption = {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+  online: boolean;
+};
 
 export type CameraFailure = {
   serverId: string;

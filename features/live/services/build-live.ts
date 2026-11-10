@@ -28,6 +28,8 @@ export const buildLive = (now = Date.now()): LiveData => {
           ? "live"
           : "server-offline",
       hasSubStream: d.sourceSub !== null,
+      webrtcUrl: s.webrtcUrl,
+      webrtcUrlLocal: s.webrtcUrlLocal,
     };
   });
   const detailed = layouts
@@ -49,7 +51,9 @@ export const buildLive = (now = Date.now()): LiveData => {
   return {
     servers: edgeServers.map((s) => ({
       id: s.id,
+      code: s.code,
       name: s.name,
+      isActive: s.isActive,
       online: isOnline(s),
     })),
     tiles,

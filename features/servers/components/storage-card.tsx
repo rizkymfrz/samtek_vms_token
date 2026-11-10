@@ -5,7 +5,8 @@ import { Stats } from "./stats";
 import { percentLevel, storageTotals } from "../lib/metric-level";
 import type { Metrics } from "../types";
 
-const tb = (value: number) => `${value.toFixed(2)} TB`;
+const gb = (value: number) =>
+  `${value.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} GB`;
 
 const PARTS = [
   { key: "recordings", label: "Recordings", color: "bg-chart-3" },
@@ -28,7 +29,7 @@ export const StorageCard = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">
             <span className="text-sm font-medium">Storage Usage</span>
-            <span className="text-xs text-muted-foreground">Last 60 min</span>
+            <span className="text-xs text-muted-foreground">Current</span>
           </div>
           {!empty && (
             <div className="flex flex-col items-end gap-2">
@@ -55,7 +56,7 @@ export const StorageCard = ({
                   key={part.key}
                   className={cn("h-full", part.color)}
                   style={{ width: `${(storage[part.key] / total) * 100}%` }}
-                  title={`${part.label}: ${tb(storage[part.key])}`}
+                  title={`${part.label}: ${gb(storage[part.key])}`}
                 />
               ))}
             </div>
@@ -67,7 +68,7 @@ export const StorageCard = ({
                     {part.label}
                   </span>
                   <span className="tabular-nums text-muted-foreground">
-                    {tb(storage[part.key])}
+                    {gb(storage[part.key])}
                   </span>
                 </div>
               ))}
@@ -78,9 +79,14 @@ export const StorageCard = ({
           <div className="border-t pt-4 text-xs text-muted-foreground">
             <Stats
               items={[
-                ["Used", tb(used)],
-                ["Free", tb(storage.free)],
-                ["Retention", `${storage.retentionDays} days`],
+                ["Used", gb(used)],
+                ["Free", gb(storage.free)],
+                [
+                  "Retention",
+                  storage.retentionDays === null
+                    ? "—"
+                    : `${storage.retentionDays} days`,
+                ],
               ]}
             />
           </div>

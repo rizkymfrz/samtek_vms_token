@@ -1,7 +1,9 @@
-import { ServerOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+import { ServerOffIcon, VideoOffIcon } from "lucide-react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { WebrtcPlayer } from "./webrtc-player";
+import { streamName } from "../lib/relay-url";
 import type { StreamQuality, StreamState, Tile } from "../types";
 
 const STATE: Record<StreamState, { label: string; hint: string | null }> = {
@@ -20,13 +22,9 @@ export const CameraTile = ({
   className?: string;
 }) => {
   const { label, hint } = STATE[tile.state];
-  const Icon =
-    tile.state === "live"
-      ? VideoIcon
-      : tile.state === "disabled"
-        ? VideoOffIcon
-        : ServerOffIcon;
+  const Icon = tile.state === "disabled" ? VideoOffIcon : ServerOffIcon;
   const stream = quality === "sub" && tile.hasSubStream ? "sub" : "main";
+  const isLive = tile.state === "live";
   return (
     <div
       role="group"
@@ -36,10 +34,17 @@ export const CameraTile = ({
         className,
       )}
     >
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-        <Icon className="size-8" />
-        {hint && <span className="text-xs">{hint}</span>}
-      </div>
+      {isLive ? (
+        <WebrtcPlayer
+          relay={tile}
+          stream={streamName(tile.deviceId, quality, tile.hasSubStream)}
+        />
+      ) : (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+          <Icon className="size-8" />
+          {hint && <span className="text-xs">{hint}</span>}
+        </div>
+      )}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
         <Badge variant="overlay">
           <StatusDot
@@ -65,7 +70,7 @@ export const CameraTile = ({
           )}
         </div>
       </div>
-      <div className="absolute inset-x-0 bottom-0 p-2">
+      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-background/80 to-transparent p-2">
         <span className="block truncate text-sm font-medium">{tile.name}</span>
       </div>
     </div>

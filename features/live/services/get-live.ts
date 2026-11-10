@@ -36,13 +36,13 @@ export const getLive = async (): Promise<LiveData> => {
   const online = new Map(
     servers.map((server) => [server.id, isServerOnline(server, now)]),
   );
-  const serverName = new Map(servers.map((server) => [server.id, server.name]));
+  const serverById = new Map(servers.map((server) => [server.id, server]));
   const tiles: Tile[] = devices.map((device) => ({
     id: device.id,
     deviceId: device.deviceId,
     name: device.name,
     serverId: device.edgeServerId,
-    serverName: serverName.get(device.edgeServerId) ?? "Unknown",
+    serverName: serverById.get(device.edgeServerId)?.name ?? "Unknown",
     analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
     isRecordingEnabled: device.isRecordingEnabled,
     state: !device.isEnabled
@@ -51,6 +51,8 @@ export const getLive = async (): Promise<LiveData> => {
         ? "live"
         : "server-offline",
     hasSubStream: device.sourceSub !== null,
+    webrtcUrl: serverById.get(device.edgeServerId)?.webrtcUrl ?? null,
+    webrtcUrlLocal: serverById.get(device.edgeServerId)?.webrtcUrlLocal ?? null,
   }));
   const summaries = layouts
     .map(summaryOf)
@@ -59,7 +61,9 @@ export const getLive = async (): Promise<LiveData> => {
   return {
     servers: servers.map((server) => ({
       id: server.id,
+      code: server.code,
       name: server.name,
+      isActive: server.isActive,
       online: online.get(server.id) ?? false,
     })),
     tiles,

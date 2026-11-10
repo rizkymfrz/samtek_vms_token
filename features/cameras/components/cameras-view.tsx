@@ -1,12 +1,19 @@
 "use client";
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PlusIcon,
+  VideoIcon,
+} from "lucide-react";
 import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
+import { useServerOnline } from "@/features/edge-status";
 import { CameraCard } from "./camera-card";
 import { CameraFilterPanel } from "./camera-filter-panel";
 import { CameraSheet, type SheetTarget } from "./camera-sheet";
@@ -58,7 +65,16 @@ export const CamerasView = ({
   isLive: boolean;
 }) => {
   const { data: current } = useCameras(data, isLive);
-  const { servers, cameras, failures } = current;
+  const { cameras, failures } = current;
+  const serverOnline = useServerOnline();
+  const servers = useMemo(
+    () =>
+      current.servers.map((s) => ({
+        ...s,
+        online: serverOnline(s, s.online),
+      })),
+    [current.servers, serverOnline],
+  );
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [view, setView] = useState<View>("grid");
   const [grid, setGrid] = useState(DEFAULT_GRID);
@@ -177,11 +193,15 @@ export const CamerasView = ({
           </div>
         </div>
         {matches.length === 0 ? (
-          <p className="flex flex-1 items-center justify-center border text-xs text-muted-foreground max-lg:py-16">
-            {cameras.length === 0
-              ? "No cameras yet. Add the first one."
-              : "No cameras match the filters."}
-          </p>
+          <EmptyState
+            icon={<VideoIcon />}
+            title={cameras.length === 0 ? "No cameras yet" : "No cameras found"}
+            description={
+              cameras.length === 0
+                ? "Add the first one."
+                : "No cameras match the filters."
+            }
+          />
         ) : view === "grid" ? (
           <div
             className="grid grid-cols-1 gap-0 border-t border-l sm:grid-cols-2 md:grid-cols-(--columns) lg:min-h-0 lg:flex-1 lg:grid-rows-(--rows)"

@@ -1,15 +1,20 @@
 "use client";
+import { ServerIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { mqttConfig } from "@/config/mqtt";
 import { isServerOnline } from "@/config/server-status";
+import { useEdgeStatus, useServerOnline } from "@/features/edge-status";
 import { LogSheet } from "./log-sheet";
 import { ServerDetail } from "./server-detail";
 import { type FormTarget, ServerFormSheet } from "./server-form-sheet";
 import { type DiscoverTab, ServerListPanel } from "./server-list-panel";
 import { useServerActions } from "../hooks/use-server-actions";
 import { useServers } from "../hooks/use-servers";
+import { toMetrics } from "../lib/edge-metrics";
 import { type Draft, registerDiscovered } from "../lib/edit-server";
 import type { Discovered, ServersData } from "../types";
 
@@ -42,12 +47,24 @@ export const ServersView = ({
   const [restartingId, setRestartingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormTarget>(null);
   const [logsOpen, setLogsOpen] = useState(false);
+  const { entries, error: brokerError } = useEdgeStatus();
+  const serverOnline = useServerOnline();
   const online = useMemo(
     () =>
-      new Set(servers.filter((s) => isServerOnline(s, now)).map((s) => s.id)),
-    [servers, now],
+      new Set(
+        servers
+          .filter((s) => serverOnline(s, isServerOnline(s, now)))
+          .map((s) => s.id),
+      ),
+    [servers, now, serverOnline],
   );
   const selected = servers.find((s) => s.id === selectedId) ?? null;
+  const entry = selected ? entries.get(selected.code) : undefined;
+  const selectedMetrics = entry
+    ? toMetrics(entry)
+    : selected
+      ? (metrics[selected.id] ?? null)
+      : null;
   useEffect(() => {
     if (!restartingId) return;
     const timer = setTimeout(() => setRestartingId(null), RESTART_MS);
@@ -129,6 +146,14 @@ export const ServersView = ({
             </AlertDescription>
           </Alert>
         )}
+        {mqttConfig && brokerError && (
+          <Alert variant="destructive">
+            <AlertTitle>Could not reach the MQTT broker</AlertTitle>
+            <AlertDescription>
+              Server status and metrics are unavailable. {brokerError}
+            </AlertDescription>
+          </Alert>
+        )}
         {actions.removeError && (
           <Alert variant="destructive">
             <AlertTitle>Could not delete the server</AlertTitle>
@@ -143,18 +168,24 @@ export const ServersView = ({
             groups={groups}
             online={online.has(selected.id)}
             restarting={restartingId === selected.id}
-            metrics={metrics[selected.id] ?? null}
+            metrics={selectedMetrics}
             onLogs={() => setLogsOpen(true)}
             onEdit={() => setForm(selected)}
             onRestart={() => setRestartingId(selected.id)}
             onDelete={() => remove(selected.id)}
           />
         ) : (
-          <p className="flex flex-1 items-center justify-center border text-xs text-muted-foreground max-lg:py-16">
-            {servers.length === 0
-              ? "No servers yet. Add one, or register a discovered device."
-              : "Choose a server."}
-          </p>
+          <EmptyState
+            icon={<ServerIcon />}
+            title={
+              servers.length === 0 ? "No servers yet" : "No server selected"
+            }
+            description={
+              servers.length === 0
+                ? "Add one, or register a discovered device."
+                : "Choose a server from the list."
+            }
+          />
         )}
       </div>
       <ServerFormSheet

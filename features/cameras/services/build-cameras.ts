@@ -8,7 +8,9 @@ export const buildCameras = (now = Date.now()): CameraData => {
     failures: [],
     servers: edgeServers.map((s) => ({
       id: s.id,
+      code: s.code,
       name: s.name,
+      isActive: s.isActive,
       online: isServerOnline(
         { isActive: s.isActive, lastSeenAt: s.lastSeenAt?.getTime() ?? null },
         now,

@@ -1,5 +1,5 @@
 "use client";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -18,12 +18,8 @@ import {
 import { LevelBadge } from "./level-badge";
 import type { Level } from "../lib/metric-level";
 
-const config = {
-  value: { label: "Value", color: "var(--chart-2)" },
-} satisfies ChartConfig;
-
 const X_TICKS = [-60, -45, -30, -15, 0];
-const minuteLabel = (minute: number) => (minute === 0 ? "now" : `${minute}m`);
+const secondLabel = (second: number) => (second === 0 ? "now" : `${second}s`);
 
 export const MetricChart = ({
   title,
@@ -48,8 +44,12 @@ export const MetricChart = ({
   footer: ReactNode;
   empty?: string;
 }) => {
+  const config: ChartConfig = {
+    value: { label: `${title} (${unit})`, color: "var(--chart-2)" },
+  };
+  const [isHovered, setIsHovered] = useState(false);
   const data = points.map((point, index) => ({
-    minute: index - (points.length - 1),
+    second: index - (points.length - 1),
     value: point,
   }));
   return (
@@ -58,7 +58,7 @@ export const MetricChart = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">
             <span className="text-sm font-medium">{title}</span>
-            <span className="text-xs text-muted-foreground">Last 60 min</span>
+            <span className="text-xs text-muted-foreground">Last 60 sec</span>
           </div>
           {!empty && (
             <div className="flex flex-col items-end gap-2">
@@ -74,7 +74,11 @@ export const MetricChart = ({
             {empty}
           </p>
         ) : (
-          <div className="relative min-h-40 flex-1">
+          <div
+            className="relative min-h-40 flex-1"
+            onPointerEnter={() => setIsHovered(true)}
+            onPointerLeave={() => setIsHovered(false)}
+          >
             <ChartContainer
               config={config}
               className="absolute inset-0 aspect-auto size-full"
@@ -85,11 +89,11 @@ export const MetricChart = ({
               >
                 <CartesianGrid vertical={false} />
                 <XAxis
-                  dataKey="minute"
+                  dataKey="second"
                   type="number"
                   domain={[-60, 0]}
                   ticks={X_TICKS}
-                  tickFormatter={minuteLabel}
+                  tickFormatter={secondLabel}
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
@@ -105,14 +109,14 @@ export const MetricChart = ({
                   className="font-mono"
                 />
                 <ChartTooltip
+                  active={isHovered ? undefined : false}
                   content={
                     <ChartTooltipContent
                       indicator="line"
                       labelFormatter={(_, items) => {
-                        const minute = Number(items?.[0]?.payload?.minute ?? 0);
-                        return minute === 0 ? "now" : `${-minute} min ago`;
+                        const second = Number(items?.[0]?.payload?.second ?? 0);
+                        return second === 0 ? "now" : `${-second} sec ago`;
                       }}
-                      formatter={(v) => `${v}${unit}`}
                     />
                   }
                 />
@@ -131,6 +135,7 @@ export const MetricChart = ({
                   fill="var(--color-value)"
                   fillOpacity={0.15}
                   dot={false}
+                  activeDot={{ r: 4, stroke: "var(--card)", strokeWidth: 2 }}
                   isAnimationActive={false}
                 />
               </AreaChart>

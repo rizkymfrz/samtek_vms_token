@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { mqttConfig } from "@/config/mqtt";
 import { cn } from "@/lib/utils";
 import { MetricChart } from "./metric-chart";
 import { Stats } from "./stats";
@@ -55,16 +56,16 @@ export const ServerDetail = ({
 }) => {
   const [confirm, setConfirm] = useState<"restart" | "delete" | null>(null);
   const group = groups.find((g) => g.id === server.groupId)?.name;
-  const empty = isLive
-    ? "Metrics are not available from the API yet."
-    : !online
-      ? "No data. The server is offline."
-      : !metrics
-        ? "Waiting for the first report."
-        : undefined;
-  const temp = metrics ? last(metrics.cpuTemp) : 0;
-  const memory = metrics ? last(metrics.memory) : 0;
-  const cpu = metrics ? last(metrics.cpu) : 0;
+  const empty = !online
+    ? "No data. The server is offline."
+    : !metrics
+      ? isLive && !mqttConfig
+        ? "Metrics are not available from the API yet."
+        : "Waiting for the first report."
+      : undefined;
+  const temp = metrics ? (last(metrics.cpuTemp) ?? 0) : 0;
+  const memory = metrics ? (last(metrics.memory) ?? 0) : 0;
+  const cpu = metrics ? (last(metrics.cpu) ?? 0) : 0;
   const memoryUsed = metrics ? (memory / 100) * metrics.memoryTotalGb : 0;
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
@@ -99,18 +100,18 @@ export const ServerDetail = ({
         </div>
         <div className="flex flex-wrap gap-2">
           {!isLive && (
-            <Button variant="outline" onClick={onLogs}>
+            <Button variant="secondary" onClick={onLogs}>
               <TerminalIcon />
               Log Stream
             </Button>
           )}
-          <Button variant="outline" onClick={onEdit}>
+          <Button variant="secondary" onClick={onEdit}>
             <PencilIcon />
             Edit Server
           </Button>
           {!isLive && (
             <Button
-              variant="outline"
+              variant="secondary"
               disabled={restarting}
               onClick={() => setConfirm("restart")}
             >
@@ -179,7 +180,7 @@ export const ServerDetail = ({
               analytics: 0,
               system: 0,
               free: 0,
-              retentionDays: 0,
+              retentionDays: null,
             }
           }
           empty={empty}
