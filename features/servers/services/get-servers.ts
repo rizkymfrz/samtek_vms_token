@@ -1,6 +1,6 @@
 import { isLiveSource } from "@/config/env";
-import { createCentralClient, failureMessage } from "@/lib/api/central-client";
-import { fetchAllPages, fetchTotal } from "@/lib/api/central-pages";
+import { createCentralClient } from "@/lib/api/central-client";
+import { fetchAllPages } from "@/lib/api/central-pages";
 import { listCentralServers } from "@/lib/api/edge-registry";
 import { requireAccessToken } from "@/lib/auth/session";
 import { buildServers } from "./build-servers";
@@ -25,34 +25,14 @@ export const getServers = async (): Promise<ServersData> => {
   if (!groups) {
     failures.push({ serverName: "Groups", message: "Could not be loaded" });
   }
-  const counts = await Promise.allSettled(
-    servers.map((server) =>
-      fetchTotal(client, `/v1/edge-servers/${server.id}/devices`),
-    ),
-  );
   return {
     now,
-    failures: [
-      ...failures,
-      ...counts.flatMap((outcome, index) => {
-        if (outcome.status === "fulfilled") return [];
-        console.error(`[servers cameras ${servers[index].id}]`, outcome.reason);
-        return [
-          {
-            serverName: servers[index].name,
-            message: `Camera count unavailable: ${failureMessage(outcome.reason)}`,
-          },
-        ];
-      }),
-    ],
-    servers: servers.map((server, index) => {
-      const count = counts[index];
-      return {
-        ...server,
-        vendor: null,
-        cameraCount: count.status === "fulfilled" ? count.value : 0,
-      };
-    }),
+    failures,
+    servers: servers.map(({ deviceCount, ...server }) => ({
+      ...server,
+      vendor: null,
+      cameraCount: deviceCount,
+    })),
     groups: groups ?? [],
     discovered: [],
     metrics: {},

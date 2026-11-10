@@ -18,6 +18,7 @@ const centralServerSchema = z.object({
   mqttPublishTopic: z.string(),
   mqttSubscribeTopic: z.string(),
   isActive: z.boolean(),
+  deviceCount: z.number().int().nonnegative(),
   lastSeenAt: z.iso.datetime().nullable(),
 });
 
