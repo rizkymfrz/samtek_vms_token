@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { isServerOnline } from "@/config/server-status";
 import { LogSheet } from "./log-sheet";
 import { ServerDetail } from "./server-detail";
 import { type FormTarget, ServerFormSheet } from "./server-form-sheet";
@@ -12,7 +13,6 @@ import {
   removeServer,
   saveServer,
 } from "../lib/edit-server";
-import { isOnline } from "../lib/server-status";
 import type { Discovered, ServersData } from "../types";
 
 const SCAN_POOL: Omit<Discovered, "registeredServerId">[] = [
@@ -38,7 +38,9 @@ export const ServersView = ({ data }: { data: ServersData }) => {
   const [logsOpen, setLogsOpen] = useState(false);
   const online = useMemo(
     () =>
-      new Set(servers.filter((s) => isOnline(s, data.now)).map((s) => s.id)),
+      new Set(
+        servers.filter((s) => isServerOnline(s, data.now)).map((s) => s.id),
+      ),
     [servers, data.now],
   );
   const selected = servers.find((s) => s.id === selectedId) ?? null;

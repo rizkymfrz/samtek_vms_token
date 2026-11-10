@@ -1,10 +1,10 @@
 "use client";
-import axios, { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useSignIn } from "../hooks/use-sign-in";
 
 const safeNext = (value: string | null) =>
   value && value.startsWith("/") && !value.startsWith("//")
@@ -16,25 +16,17 @@ export const LoginForm = () => {
   const formId = useId();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signIn, isPending, error } = useSignIn();
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
     try {
-      await axios.post("/api/auth/login", { identifier, password });
-      const next = new URLSearchParams(window.location.search).get("next");
-      router.replace(safeNext(next));
-      router.refresh();
-    } catch (cause) {
-      setError(
-        isAxiosError(cause) && typeof cause.response?.data?.error === "string"
-          ? cause.response.data.error
-          : "Sign-in failed",
-      );
-      setIsSubmitting(false);
+      await signIn({ identifier, password });
+    } catch {
+      return;
     }
+    const next = new URLSearchParams(window.location.search).get("next");
+    router.replace(safeNext(next));
+    router.refresh();
   };
   return (
     <form
@@ -66,7 +58,7 @@ export const LoginForm = () => {
         />
         {error && <FieldError>{error}</FieldError>}
       </Field>
-      <Button type="submit" disabled={isSubmitting || !identifier || !password}>
+      <Button type="submit" disabled={isPending || !identifier || !password}>
         Sign in
       </Button>
     </form>

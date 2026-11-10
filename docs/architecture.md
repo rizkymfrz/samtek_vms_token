@@ -118,6 +118,13 @@ Rules:
 - Ambil UI dan logic fitur dari direktori `features/`.
 - Jangan membuat route handler sebagai pengganti API backend tanpa
   alasan arsitektural yang jelas.
+- Pengecualian yang diterima: route handler di `app/api/auth/`,
+  `app/api/cameras/`, `app/api/edge-servers/`, dan `app/api/alerts/`
+  dipakai sebagai lapisan tipis (BFF) di depan API central dan Edge.
+  Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
+  dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
+  Handler hanya memvalidasi input, meneruskan permintaan, dan memetakan
+  error; aturan bisnis tetap berada di API backend.
 
 ### 3.2 `features/`
 

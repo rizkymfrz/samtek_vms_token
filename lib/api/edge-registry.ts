@@ -4,8 +4,6 @@ import { createCentralClient } from "./central-client";
 import { fetchAllPages } from "./central-pages";
 import type { EdgeTarget } from "./edge-client";
 
-export const HEARTBEAT_SECONDS = 60;
-
 const centralServerSchema = z.object({
   id: z.coerce.string(),
   groupId: z.string().nullable(),
@@ -25,11 +23,6 @@ export type CentralServer = Omit<
   z.output<typeof centralServerSchema>,
   "lastSeenAt"
 > & { lastSeenAt: number | null };
-
-export const isServerOnline = (server: CentralServer, now: number) =>
-  server.isActive &&
-  server.lastSeenAt !== null &&
-  now - server.lastSeenAt < HEARTBEAT_SECONDS * 1000;
 
 const fetchCentralServers = async (token: string): Promise<CentralServer[]> => {
   "use cache";

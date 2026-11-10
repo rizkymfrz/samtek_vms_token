@@ -1,5 +1,5 @@
-import axios from "axios";
+import { http } from "@/lib/axios/browser-client";
 import type { CurrentUser } from "../types";
 
 export const fetchCurrentUser = async () =>
-  (await axios.get<CurrentUser>("/api/auth/me")).data;
+  (await http.get<CurrentUser>("/api/auth/me")).data;

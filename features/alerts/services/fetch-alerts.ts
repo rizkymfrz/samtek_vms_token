@@ -1,5 +1,5 @@
-import axios from "axios";
+import { http } from "@/lib/axios/browser-client";
 import type { AlertsData } from "../types";
 
 export const fetchAlerts = async () =>
-  (await axios.get<AlertsData>("/api/alerts")).data;
+  (await http.get<AlertsData>("/api/alerts")).data;

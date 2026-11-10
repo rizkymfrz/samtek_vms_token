@@ -1,7 +1,9 @@
+import { connection } from "next/server";
 import { getAlerts } from "@/features/alerts/services/get-alerts";
 import { UnauthorizedError } from "@/lib/auth/session";
 
 export const GET = async () => {
+  await connection();
   try {
     return Response.json(await getAlerts());
   } catch (error) {

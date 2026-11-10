@@ -1,17 +1,14 @@
 import { cookies } from "next/headers";
-import { z } from "zod";
 import { isLiveSource } from "@/config/env";
+import { loginInputSchema } from "@/features/auth/schemas/login";
 import { CentralError } from "@/lib/api/central-client";
 import { setAuthCookies } from "@/lib/auth/session";
 import { login } from "@/lib/auth/tokens";
 
-const bodySchema = z.object({
-  identifier: z.string().trim().min(1).max(255),
-  password: z.string().min(1).max(1024),
-});
-
 export const POST = async (request: Request) => {
-  const body = bodySchema.safeParse(await request.json().catch(() => null));
+  const body = loginInputSchema.safeParse(
+    await request.json().catch(() => null),
+  );
   if (!body.success) {
     return Response.json(
       { error: "Enter your username and password" },

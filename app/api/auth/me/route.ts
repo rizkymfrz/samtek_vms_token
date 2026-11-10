@@ -1,7 +1,9 @@
+import { connection } from "next/server";
 import { getCurrentUser } from "@/features/auth/services/get-current-user";
 import { UnauthorizedError } from "@/lib/auth/session";
 
 export const GET = async () => {
+  await connection();
   try {
     return Response.json(await getCurrentUser());
   } catch (error) {

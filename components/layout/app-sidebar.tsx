@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,9 +16,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NAV_GROUPS } from "@/config/navigation";
-import { NavUser } from "./nav-user";
 
-export const AppSidebar = () => {
+export const AppSidebar = ({ footer }: { footer: ReactNode }) => {
   const pathname = usePathname();
   return (
     <Sidebar collapsible="icon">
@@ -69,9 +69,7 @@ export const AppSidebar = () => {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser />
-      </SidebarFooter>
+      <SidebarFooter>{footer}</SidebarFooter>
     </Sidebar>
   );
 };

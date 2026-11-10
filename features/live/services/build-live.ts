@@ -1,13 +1,15 @@
 import { analyticLabel } from "@/config/analytics-catalog";
-import { buildLiveSource, HEARTBEAT_SECONDS } from "@/lib/mock/live-source";
+import { isServerOnline } from "@/config/server-status";
+import { buildLiveSource } from "@/lib/mock/live-source";
 import type { LiveData, Tile } from "../types";
 
 export const buildLive = (now = Date.now()): LiveData => {
   const { edgeServers, devices, layouts, layoutDevices } = buildLiveSource(now);
   const isOnline = (s: (typeof edgeServers)[number]) =>
-    s.isActive &&
-    s.lastSeenAt !== null &&
-    now - s.lastSeenAt.getTime() < HEARTBEAT_SECONDS * 1000;
+    isServerOnline(
+      { isActive: s.isActive, lastSeenAt: s.lastSeenAt?.getTime() ?? null },
+      now,
+    );
   const server = new Map(edgeServers.map((s) => [s.id, s]));
   const tiles: Tile[] = devices.map((d) => {
     const s = server.get(d.edgeServerId)!;

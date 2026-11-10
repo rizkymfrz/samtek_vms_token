@@ -1,5 +1,4 @@
 "use client";
-import axios from "axios";
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,8 +19,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { SETTINGS_ITEM } from "@/config/navigation";
-import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
-import type { CurrentUser } from "@/features/auth/types";
+import { useCurrentUser } from "../hooks/use-current-user";
+import { useSignOut } from "../hooks/use-sign-out";
+import type { CurrentUser } from "../types";
 
 const initialsOf = (name: string) =>
   name
@@ -52,15 +52,18 @@ const UserInfo = ({ user }: { user: CurrentUser | undefined }) => {
   );
 };
 
-export const NavUser = () => {
+export const UserMenu = () => {
   const { isMobile } = useSidebar();
   const { data: user } = useCurrentUser();
   const router = useRouter();
-  const handleLogout = async () => {
-    await axios.post("/api/auth/logout").catch(() => {});
-    router.replace("/login");
-    router.refresh();
-  };
+  const signOut = useSignOut();
+  const handleLogout = () =>
+    signOut.mutate(undefined, {
+      onSettled: () => {
+        router.replace("/login");
+        router.refresh();
+      },
+    });
   return (
     <SidebarMenu>
       <SidebarMenuItem>

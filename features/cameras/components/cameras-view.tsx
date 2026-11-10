@@ -7,11 +7,13 @@ import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
+import { messageOf } from "@/lib/axios/browser-client";
 import { CameraCard } from "./camera-card";
 import { CameraFilterPanel } from "./camera-filter-panel";
 import { CameraSheet, type SheetTarget } from "./camera-sheet";
 import { CameraTable } from "./camera-table";
 import { useCameraActions } from "../hooks/use-camera-actions";
+import { useCameras } from "../hooks/use-cameras";
 import { cameraState } from "../lib/camera-state";
 import type { Draft } from "../lib/edit-camera";
 import {
@@ -56,14 +58,14 @@ export const CamerasView = ({
   data: CameraData;
   isLive: boolean;
 }) => {
-  const { servers } = data;
-  const [cameras, setCameras] = useState(data.cameras);
+  const { data: current } = useCameras(data, isLive);
+  const { servers, cameras, failures } = current;
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [view, setView] = useState<View>("grid");
   const [grid, setGrid] = useState(DEFAULT_GRID);
   const [page, setPage] = useState(0);
   const [sheet, setSheet] = useState<SheetTarget>(null);
-  const actions = useCameraActions(isLive, cameras, setCameras);
+  const { save, remove, toggle } = useCameraActions(isLive);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
   const matches = useMemo(
@@ -107,10 +109,22 @@ export const CamerasView = ({
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
-        {actions.error && sheet === null && (
+        {failures.length > 0 && (
+          <Alert variant="destructive">
+            <AlertTitle>Some edge servers did not respond</AlertTitle>
+            <AlertDescription>
+              {failures
+                .map((failure) => `${failure.serverName}: ${failure.message}`)
+                .join(" · ")}
+            </AlertDescription>
+          </Alert>
+        )}
+        {toggle.error && (
           <Alert variant="destructive">
             <AlertTitle>Could not update the camera</AlertTitle>
-            <AlertDescription>{actions.error}</AlertDescription>
+            <AlertDescription>
+              {messageOf(toggle.error, "Something went wrong. Try again.")}
+            </AlertDescription>
           </Alert>
         )}
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -206,7 +220,7 @@ export const CamerasView = ({
               onSelect={(id) =>
                 setSheet(cameras.find((c) => c.id === id) ?? null)
               }
-              onToggle={actions.toggle}
+              onToggle={(id, patch) => toggle.mutate({ id, patch })}
             />
           </div>
         )}
@@ -217,15 +231,33 @@ export const CamerasView = ({
         servers={servers}
         onClose={() => {
           setSheet(null);
-          actions.clearError();
+          save.reset();
+          remove.reset();
         }}
-        isPending={actions.isPending}
-        error={actions.error}
+        isPending={save.isPending || remove.isPending}
+        error={
+          save.error || remove.error
+            ? messageOf(
+                save.error ?? remove.error,
+                "Something went wrong. Try again.",
+              )
+            : null
+        }
         onSave={async (draft: Draft, id) => {
-          if (await actions.save(draft, id)) setSheet(null);
+          try {
+            await save.mutateAsync({ draft, id });
+            setSheet(null);
+          } catch {
+            return;
+          }
         }}
         onDelete={async (id) => {
-          if (await actions.remove(id)) setSheet(null);
+          try {
+            await remove.mutateAsync(id);
+            setSheet(null);
+          } catch {
+            return;
+          }
         }}
       />
     </PageShell>

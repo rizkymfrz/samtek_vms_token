@@ -1,6 +1,7 @@
 import { analyticLabel } from "@/config/analytics-catalog";
+import { isServerOnline } from "@/config/server-status";
 import { buildAlerts } from "@/lib/mock/alerts-source";
-import { buildLiveSource, HEARTBEAT_SECONDS } from "@/lib/mock/live-source";
+import { buildLiveSource } from "@/lib/mock/live-source";
 import type {
   Floorplan,
   FloorplanDevice,
@@ -123,10 +124,10 @@ export const buildFloorplanSource = (
   }
   const cameras: PlanCamera[] = devices.map((d) => {
     const s = server.get(d.edgeServerId)!;
-    const reachable =
-      s.isActive &&
-      s.lastSeenAt !== null &&
-      now - s.lastSeenAt.getTime() < HEARTBEAT_SECONDS * 1000;
+    const reachable = isServerOnline(
+      { isActive: s.isActive, lastSeenAt: s.lastSeenAt?.getTime() ?? null },
+      now,
+    );
     return {
       id: d.id,
       deviceId: d.deviceId,

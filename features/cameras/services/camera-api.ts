@@ -1,4 +1,4 @@
-import axios from "axios";
+import { http } from "@/lib/axios/browser-client";
 import type { CameraRecord } from "../types";
 
 type CreatePayload = {
@@ -22,7 +22,7 @@ type UpdatePayload = {
 
 export const createCamera = async (serverId: string, payload: CreatePayload) =>
   (
-    await axios.post<CameraRecord>(
+    await http.post<CameraRecord>(
       `/api/edge-servers/${serverId}/devices`,
       payload,
     )
@@ -33,14 +33,14 @@ export const updateCamera = async (
   payload: UpdatePayload,
 ) =>
   (
-    await axios.patch<CameraRecord>(
+    await http.patch<CameraRecord>(
       `/api/edge-servers/${camera.edgeServerId}/devices/${camera.id}`,
       payload,
     )
   ).data;
 
 export const deleteCamera = async (camera: CameraRecord) => {
-  await axios.delete(
+  await http.delete(
     `/api/edge-servers/${camera.edgeServerId}/devices/${camera.id}`,
   );
 };

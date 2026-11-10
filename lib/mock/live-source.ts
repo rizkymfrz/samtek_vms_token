@@ -37,8 +37,6 @@ export type LayoutDevice = {
   position: number;
 };
 
-export const HEARTBEAT_SECONDS = 60;
-
 export const buildLiveSource = (now: number) => {
   const ago = (seconds: number) => new Date(now - seconds * 1000);
   const edgeServers: EdgeServer[] = [
