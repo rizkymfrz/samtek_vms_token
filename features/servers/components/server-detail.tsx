@@ -1,0 +1,237 @@
+"use client";
+import * as React from "react";
+import {
+  PencilIcon,
+  RotateCwIcon,
+  TagIcon,
+  TerminalIcon,
+  Trash2Icon,
+} from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { StatusDot } from "@/components/shared/status-dot";
+import { Stats } from "./stats";
+import { MetricChart } from "./metric-chart";
+import { StorageCard } from "./storage-card";
+import type { ServerRecord, ServerGroup, Metrics } from "../types";
+import { TEMP_LIMIT, tempLevel, percentLevel } from "../lib/metric-level";
+import { canDelete } from "../lib/edit-server";
+
+const last = (points: number[]) => points[points.length - 1];
+
+export const ServerDetail = ({
+  server,
+  groups,
+  online,
+  restarting,
+  metrics,
+  onLogs,
+  onEdit,
+  onRestart,
+  onDelete,
+}: {
+  server: ServerRecord;
+  groups: ServerGroup[];
+  online: boolean;
+  restarting: boolean;
+  metrics: Metrics | null;
+  onLogs: () => void;
+  onEdit: () => void;
+  onRestart: () => void;
+  onDelete: () => void;
+}) => {
+  const [confirm, setConfirm] = React.useState<"restart" | "delete" | null>(
+    null,
+  );
+  const group = groups.find((g) => g.id === server.groupId)?.name;
+  const empty = !online
+    ? "No data. The server is offline."
+    : !metrics
+      ? "Waiting for the first report."
+      : undefined;
+  const temp = metrics ? last(metrics.cpuTemp) : 0;
+  const memory = metrics ? last(metrics.memory) : 0;
+  const cpu = metrics ? last(metrics.cpu) : 0;
+  const memoryUsed = metrics ? (memory / 100) * metrics.memoryTotalGb : 0;
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
+            <h2 className="text-base font-medium">{server.name}</h2>
+            <span className="text-xs text-muted-foreground">
+              {server.description ? `${server.description} · ` : ""}
+              {server.cameraCount}{" "}
+              {server.cameraCount === 1 ? "camera" : "cameras"}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline">
+              <StatusDot shape="square" status={online ? "live" : "offline"} />
+              {restarting ? "Restarting" : online ? "Online" : "Offline"}
+            </Badge>
+            <Badge variant="outline">{server.vendor}</Badge>
+            {group && (
+              <Badge variant="secondary">
+                <TagIcon />
+                {group}
+              </Badge>
+            )}
+            {server.hostAddress && (
+              <Badge variant="outline" className="font-mono">
+                {server.hostAddress}
+              </Badge>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={onLogs}>
+            <TerminalIcon />
+            Log Stream
+          </Button>
+          <Button variant="outline" onClick={onEdit}>
+            <PencilIcon />
+            Edit Server
+          </Button>
+          <Button
+            variant="outline"
+            disabled={restarting}
+            onClick={() => setConfirm("restart")}
+          >
+            <RotateCwIcon className={cn(restarting && "animate-spin")} />
+            Restart Server
+          </Button>
+          <Button variant="destructive" onClick={() => setConfirm("delete")}>
+            <Trash2Icon />
+            Delete Server
+          </Button>
+        </div>
+      </div>
+      <div className="grid gap-4 lg:flex-1 lg:grid-cols-2 lg:auto-rows-fr">
+        <MetricChart
+          title="CPU Temperature"
+          value={`${temp} °C`}
+          level={tempLevel(temp)}
+          points={metrics?.cpuTemp ?? []}
+          domain={[40, 90]}
+          ticks={[40, 65, 90]}
+          unit="°C"
+          limit={TEMP_LIMIT}
+          empty={empty}
+          footer={`Dashed line: limit ${TEMP_LIMIT} °C`}
+        />
+        <MetricChart
+          title="Memory Usage"
+          value={`${Math.round(memory)}%`}
+          level={percentLevel(memory)}
+          points={metrics?.memory ?? []}
+          domain={[0, 100]}
+          ticks={[0, 50, 100]}
+          unit="%"
+          empty={empty}
+          footer={
+            metrics && (
+              <Stats
+                items={[
+                  ["Used", `${memoryUsed.toFixed(1)} GB`],
+                  [
+                    "Available",
+                    `${(metrics.memoryTotalGb - memoryUsed).toFixed(1)} GB`,
+                  ],
+                  ["Total", `${metrics.memoryTotalGb} GB`],
+                ]}
+              />
+            )
+          }
+        />
+        <MetricChart
+          title="CPU Usage"
+          value={`${Math.round(cpu)}%`}
+          level={percentLevel(cpu)}
+          points={metrics?.cpu ?? []}
+          domain={[0, 100]}
+          ticks={[0, 50, 100]}
+          unit="%"
+          empty={empty}
+          footer={null}
+        />
+        <StorageCard
+          storage={
+            metrics?.storage ?? {
+              recordings: 0,
+              analytics: 0,
+              system: 0,
+              free: 0,
+              retentionDays: 0,
+            }
+          }
+          empty={empty}
+        />
+      </div>
+      <AlertDialog
+        open={confirm === "restart"}
+        onOpenChange={(open) => !open && setConfirm(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restart {server.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Its {server.cameraCount} cameras stop streaming and analyzing
+              until the server is back, which takes about a minute.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirm(null);
+                onRestart();
+              }}
+            >
+              Restart
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        open={confirm === "delete"}
+        onOpenChange={(open) => !open && setConfirm(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {server.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {canDelete(server)
+                ? "The server is removed from the system. This cannot be undone."
+                : `It still has ${server.cameraCount} cameras. Move or delete them first; a server with cameras cannot be deleted.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={!canDelete(server)}
+              onClick={() => {
+                setConfirm(null);
+                onDelete();
+              }}
+            >
+              Delete server
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+};

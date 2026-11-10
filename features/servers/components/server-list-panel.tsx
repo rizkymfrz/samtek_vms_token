@@ -1,0 +1,173 @@
+import {
+  CctvIcon,
+  Loader2Icon,
+  PlusIcon,
+  RadarIcon,
+  ServerIcon,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { StatusDot } from "@/components/shared/status-dot";
+import type { ServerRecord, Discovered } from "../types";
+
+export type DiscoverTab = "registered" | "discovered";
+
+export const ServerListPanel = ({
+  servers,
+  online,
+  selectedId,
+  discovered,
+  tab,
+  scanning,
+  onSelect,
+  onAdd,
+  onTab,
+  onScan,
+  onRegister,
+}: {
+  servers: ServerRecord[];
+  online: Set<string>;
+  selectedId: string | null;
+  discovered: Discovered[];
+  tab: DiscoverTab;
+  scanning: boolean;
+  onSelect: (id: string) => void;
+  onAdd: () => void;
+  onTab: (tab: DiscoverTab) => void;
+  onScan: () => void;
+  onRegister: (id: string) => void;
+}) => {
+  const registered = discovered.filter((d) => d.registeredServerId);
+  const pending = discovered.filter((d) => !d.registeredServerId);
+  const shown = tab === "registered" ? registered : pending;
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b p-4">
+        <span className="text-sm font-medium">Servers</span>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Add server"
+          onClick={onAdd}
+        >
+          <PlusIcon />
+        </Button>
+      </div>
+      <div className="flex flex-col gap-2 p-4">
+        <span className="text-xs text-muted-foreground">
+          Servers · {servers.length}
+        </span>
+        {servers.length === 0 && (
+          <p className="py-4 text-center text-xs text-muted-foreground">
+            No servers yet.
+          </p>
+        )}
+        <ul className="flex flex-col gap-2">
+          {servers.map((server) => (
+            <li key={server.id}>
+              <button
+                type="button"
+                aria-pressed={server.id === selectedId}
+                onClick={() => onSelect(server.id)}
+                className={cn(
+                  "flex w-full items-center gap-2 border p-2 text-left outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
+                  server.id === selectedId && "border-primary bg-accent",
+                )}
+              >
+                <span className="flex size-8 shrink-0 items-center justify-center bg-muted text-muted-foreground">
+                  <ServerIcon className="size-4" />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-xs font-medium">
+                    {server.name}
+                  </span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {server.vendor}
+                  </span>
+                </span>
+                <StatusDot
+                  shape="square"
+                  status={online.has(server.id) ? "live" : "offline"}
+                  role="img"
+                  aria-label={online.has(server.id) ? "Online" : "Offline"}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex flex-1 flex-col gap-2 border-t p-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-medium">Registered / Discovered</span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onScan}
+            disabled={scanning}
+          >
+            {scanning ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              <RadarIcon />
+            )}
+            {scanning ? "Scanning" : "Scan"}
+          </Button>
+        </div>
+        <Tabs
+          value={tab}
+          onValueChange={(value) => onTab(value as DiscoverTab)}
+        >
+          <TabsList variant="line" className="w-full">
+            <TabsTrigger value="registered">
+              Registered {registered.length}
+            </TabsTrigger>
+            <TabsTrigger value="discovered">
+              Discovered {pending.length}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <ul className="flex flex-col gap-2">
+          {shown.length === 0 && (
+            <li className="py-4 text-center text-xs text-muted-foreground">
+              {tab === "registered"
+                ? "Nothing registered from a scan yet."
+                : "No new devices. Scan the network to look again."}
+            </li>
+          )}
+          {shown.map((device) => (
+            <li key={device.id} className="flex items-center gap-2 border p-2">
+              <CctvIcon className="size-4 shrink-0 text-muted-foreground" />
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate text-xs font-medium">
+                  {device.id}
+                </span>
+                qq{" "}
+                <span className="truncate text-xs text-muted-foreground">
+                  {device.ip} · {device.vendor}
+                </span>
+              </span>
+              {device.registeredServerId ? (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => onSelect(device.registeredServerId!)}
+                >
+                  Open
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="xs"
+                  onClick={() => onRegister(device.id)}
+                >
+                  Register
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
