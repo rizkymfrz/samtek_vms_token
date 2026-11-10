@@ -102,7 +102,7 @@ export const ServerDetail = ({
               Log Stream
             </Button>
           )}
-          <Button variant="secondary" onClick={onEdit}>
+          <Button variant="default" onClick={onEdit}>
             <PencilIcon />
             Edit Server
           </Button>
