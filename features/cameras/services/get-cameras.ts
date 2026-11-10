@@ -15,7 +15,6 @@ export const getCameras = async (): Promise<CameraData> => {
   return {
     servers: servers.map((server) => ({
       id: server.id,
-      code: server.code,
       name: server.name,
       isActive: server.isActive,
       online: isServerOnline(server, now),

@@ -79,7 +79,7 @@ const Form = ({
         <SheetTitle>{editing ? "Edit camera" : "Add camera"}</SheetTitle>
         <SheetDescription>
           {editing
-            ? `Device ${editing.deviceId}`
+            ? `Camera ID ${editing.id}`
             : "Register a camera on an edge server."}
         </SheetDescription>
       </SheetHeader>

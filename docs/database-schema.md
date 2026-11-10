@@ -77,10 +77,7 @@ model EdgeServer {
   id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   groupId            BigInt?   @map("group_id") @db.UnsignedBigInt
   name               String    @db.VarChar(100)
-  code               String    @db.VarChar(100)
   description        String?   @db.Text
-  mqttPublishTopic   String    @map("mqtt_publish_topic") @db.VarChar(255)
-  mqttSubscribeTopic String    @map("mqtt_subscribe_topic") @db.VarChar(255)
   webrtcUrl          String?   @map("webrtc_url") @db.VarChar(2048)
   hostAddress        String?   @map("host_address") @db.VarChar(255)
   localHostAddress   String?   @map("local_host_address") @db.VarChar(255)
@@ -97,7 +94,6 @@ model EdgeServer {
   userServerRoles UserServerRole[]
   devices         Device[]
 
-  @@unique([code], map: "uq_edge_servers_code")
   @@map("edge_servers")
 }
 
@@ -158,16 +154,20 @@ model UserServerRole {
 model Device {
   id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   edgeServerId       BigInt    @map("edge_server_id") @db.UnsignedBigInt
-  deviceId           String    @map("device_id") @db.VarChar(64)
   name               String    @db.VarChar(100)
   isEnabled          Boolean   @default(true) @map("is_enabled")
   sourceMain         String    @map("source_main") @db.Text
   sourceSub          String?   @map("source_sub") @db.Text
+  sourceThird        String?   @map("source_third") @db.Text
   analyticId         String?   @map("analytic_id") @db.VarChar(64)
   analyticParams     Json?     @map("analytic_params")
   perimeters         Json?
-  modelFile          String?   @map("model_file") @db.VarChar(255)
   isRecordingEnabled Boolean   @default(false) @map("is_recording_enabled")
+  applyStatus        String?   @map("apply_status") @db.VarChar(16)
+  applyErrorCode     String?   @map("apply_error_code") @db.VarChar(64)
+  applyErrorField    String?   @map("apply_error_field") @db.VarChar(128)
+  applyErrorMessage  String?   @map("apply_error_message") @db.VarChar(512)
+  applyReportedAt    DateTime? @map("apply_reported_at") @db.Timestamp(0)
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt          DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
   deletedAt          DateTime? @map("deleted_at") @db.Timestamp(0)
@@ -175,7 +175,6 @@ model Device {
   edgeServer    EdgeServer     @relation(fields: [edgeServerId], references: [id], onDelete: Restrict, map: "fk_devices_edge_server_id")
   layoutDevices LayoutDevice[]
 
-  @@unique([edgeServerId, deviceId], map: "uq_devices_edge_server_id_device_id")
   @@map("devices")
 }
 
@@ -240,13 +239,16 @@ model RefreshToken {
 
 ### Things to remember when building on it
 
-- **A camera is a `Device`.** It belongs to one `EdgeServer`. `deviceId` is the edge-side id (the same value the analytics
-  tables store in `device_id`); `id` is the profile database row id. `layout_devices.deviceRecordId` points at `Device.id`, **not**
-  `Device.deviceId`.
+- **A camera is a `Device`.** It belongs to one `EdgeServer`. Its identity is `Device.id`. The edge-side `device_id` (stream
+  names `dev{id}_main|sub`, MQTT messages, the analytics tables) is `String(Device.id)`. Central assigns it; nobody types it.
+- **An edge server is identified by `EdgeServer.id`**, also in MQTT: `samtek/v1/{id}/down` and `samtek/v1/{id}/up`. Topics are
+  computed, not stored. The UI shows the id on the server detail so it can be copied into the edge config.
+- **Analytics history**: rows written before the id switch keep the old edge `device_id` (e.g. `cam-001`) and no longer match any
+  device. Central pushes `device.apply` to the edge; the result of the last apply is stored on the device (`apply*` columns).
 - **One analytic per camera**: `Device.analyticId` is a single value (nullable = no analytic). `analyticParams` and
   `perimeters` are JSON blobs validated by the edge (see section 3).
-- **Two streams per camera:** `sourceMain` (required) and `sourceSub` (optional). Prefer the sub stream for grids and the
-  main stream for a single large view.
+- **Streams per camera:** `sourceMain` (required), `sourceSub` and `sourceThird` (optional). Prefer the sub stream for grids
+  and the main stream for a single large view. The frontend only uses main and sub.
 - **Live video** is delivered per edge server through `EdgeServer.webrtcUrl` (public) or `webrtcUrlLocal` (LAN).
 - **Online state:** `EdgeServer.isActive` is the switch, `EdgeServer.lastSeenAt` is the heartbeat. A camera is only
   watchable when `Device.isEnabled`, its server `isActive`, and `lastSeenAt` is recent.

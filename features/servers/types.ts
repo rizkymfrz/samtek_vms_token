@@ -2,15 +2,12 @@ export type ServerRecord = {
   id: string;
   groupId: string | null;
   name: string;
-  code: string;
   description: string | null;
   hostAddress: string | null;
   localHostAddress: string | null;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
   macAddress: string | null;
-  mqttPublishTopic: string;
-  mqttSubscribeTopic: string;
   isActive: boolean;
   lastSeenAt: number | null;
   vendor: string | null;

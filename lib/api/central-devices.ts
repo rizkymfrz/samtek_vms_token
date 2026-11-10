@@ -6,7 +6,6 @@ import type { CentralServer } from "./edge-registry";
 export const deviceSchema = z.object({
   id: z.coerce.string(),
   edgeServerId: z.coerce.string(),
-  deviceId: z.string(),
   name: z.string(),
   isEnabled: z.boolean(),
   sourceMain: z.string(),

@@ -1,6 +1,5 @@
 import { buildLiveSource } from "@/lib/mock/live-source";
 import { createRandom } from "@/lib/random";
-import { topicsFor } from "../lib/edit-server";
 import type { Discovered, Metrics, ServerGroup, ServerRecord } from "../types";
 
 export const GROUPS: ServerGroup[] = [
@@ -44,15 +43,12 @@ export const buildServerSource = (now: number) => {
     id: s.id,
     groupId: extra[s.id].groupId,
     name: s.name,
-    code: s.code,
     description: extra[s.id].description,
     hostAddress: extra[s.id].hostAddress,
     localHostAddress: s.webrtcUrlLocal ? new URL(s.webrtcUrlLocal).host : null,
     webrtcUrl: s.webrtcUrl,
     webrtcUrlLocal: s.webrtcUrlLocal,
     macAddress: extra[s.id].macAddress,
-    mqttPublishTopic: topicsFor(s.code).mqttPublishTopic,
-    mqttSubscribeTopic: topicsFor(s.code).mqttSubscribeTopic,
     isActive: s.isActive,
     lastSeenAt: s.lastSeenAt ? s.lastSeenAt.getTime() : null,
     vendor: extra[s.id].vendor,

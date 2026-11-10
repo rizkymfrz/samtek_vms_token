@@ -1,7 +1,6 @@
 export type EdgeServer = {
   id: string;
   name: string;
-  code: string;
   isActive: boolean;
   lastSeenAt: Date | null;
   webrtcUrl: string | null;
@@ -11,7 +10,6 @@ export type EdgeServer = {
 export type Device = {
   id: string;
   edgeServerId: string;
-  deviceId: string;
   name: string;
   isEnabled: boolean;
   sourceMain: string;
@@ -43,7 +41,6 @@ export const buildLiveSource = (now: number) => {
     {
       id: "1",
       name: "Main Building",
-      code: "edge-main",
       isActive: true,
       lastSeenAt: ago(8),
       webrtcUrl: "https://main.example.com/webrtc",
@@ -52,7 +49,6 @@ export const buildLiveSource = (now: number) => {
     {
       id: "2",
       name: "Parking",
-      code: "edge-parking",
       isActive: true,
       lastSeenAt: ago(21),
       webrtcUrl: "https://parking.example.com/webrtc",
@@ -61,7 +57,6 @@ export const buildLiveSource = (now: number) => {
     {
       id: "3",
       name: "Warehouse",
-      code: "edge-warehouse",
       isActive: true,
       lastSeenAt: ago(4 * 3600),
       webrtcUrl: "https://warehouse.example.com/webrtc",
@@ -77,7 +72,6 @@ export const buildLiveSource = (now: number) => {
   ): Device => ({
     id,
     edgeServerId,
-    deviceId: `cam-${id.padStart(3, "0")}`,
     name,
     isEnabled: options.isEnabled ?? true,
     sourceMain: `rtsp://10.0.${edgeServerId}.${id}/stream1`,

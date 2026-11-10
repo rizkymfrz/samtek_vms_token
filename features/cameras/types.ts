@@ -1,7 +1,6 @@
 export type CameraRecord = {
   id: string;
   edgeServerId: string;
-  deviceId: string;
   name: string;
   isEnabled: boolean;
   sourceMain: string;
@@ -12,7 +11,6 @@ export type CameraRecord = {
 
 export type ServerOption = {
   id: string;
-  code: string;
   name: string;
   isActive: boolean;
   online: boolean;

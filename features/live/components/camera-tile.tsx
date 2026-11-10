@@ -41,7 +41,7 @@ export const CameraTile = ({
       {isLive ? (
         <WebrtcPlayer
           relay={tile}
-          stream={streamName(tile.deviceId, quality, tile.hasSubStream)}
+          stream={streamName(tile.id, quality, tile.hasSubStream)}
         />
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -49,8 +49,8 @@ export const CameraTile = ({
           {hint && <span className="text-xs">{hint}</span>}
         </div>
       )}
-      {isLive && hasDetections && tile.serverCode && (
-        <DetectionOverlay edgeId={tile.serverCode} deviceId={tile.deviceId} />
+      {isLive && hasDetections && (
+        <DetectionOverlay edgeId={tile.serverId} deviceId={tile.id} />
       )}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
         <Badge variant="overlay">

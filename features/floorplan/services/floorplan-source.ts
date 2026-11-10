@@ -130,7 +130,6 @@ export const buildFloorplanSource = (
     );
     return {
       id: d.id,
-      deviceId: d.deviceId,
       name: d.name,
       serverName: s.name,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,

@@ -19,8 +19,8 @@ export const useServerOnline = () => {
     getServerOnlineEdges,
   );
   return useCallback(
-    (server: { code: string; isActive: boolean }, fallback: boolean) =>
-      mqttConfig ? server.isActive && online.has(server.code) : fallback,
+    (server: { id: string; isActive: boolean }, fallback: boolean) =>
+      mqttConfig ? server.isActive && online.has(server.id) : fallback,
     [online],
   );
 };

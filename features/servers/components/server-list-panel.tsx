@@ -69,7 +69,7 @@ export const ServerListPanel = ({
                     {server.name}
                   </span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {server.vendor ?? server.code}
+                    {server.vendor ?? `ID ${server.id}`}
                   </span>
                 </span>
                 <StatusDot

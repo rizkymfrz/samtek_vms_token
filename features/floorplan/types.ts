@@ -27,7 +27,6 @@ export type PlanRoom = {
 
 export type PlanCamera = {
   id: string;
-  deviceId: string;
   name: string;
   serverName: string;
   analytic: string | null;

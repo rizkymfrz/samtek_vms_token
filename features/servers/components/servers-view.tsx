@@ -59,7 +59,7 @@ export const ServersView = ({
     [servers, now, serverOnline],
   );
   const selected = servers.find((s) => s.id === selectedId) ?? null;
-  const entry = selected ? entries.get(selected.code) : undefined;
+  const entry = selected ? entries.get(selected.id) : undefined;
   const selectedMetrics = entry
     ? toMetrics(entry)
     : selected

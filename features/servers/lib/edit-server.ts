@@ -73,11 +73,6 @@ export const serverDraftSchema = z.object({
 
 const orNull = (value: string) => value.trim() || null;
 
-export const topicsFor = (code: string) => ({
-  mqttPublishTopic: `samtek/v1/${code.trim()}/down`,
-  mqttSubscribeTopic: `samtek/v1/${code.trim()}/up`,
-});
-
 export const toCreatePayload = (draft: Draft) => ({
   name: draft.name.trim(),
   description: orNull(draft.description) ?? undefined,
@@ -111,31 +106,25 @@ export const toUpdatePayload = (draft: Draft, original: ServerRecord) => ({
 const nextId = (servers: ServerRecord[]) =>
   Math.max(0, ...servers.map((s) => Number(s.id) || 0)) + 1;
 
-const codeFor = (id: number) => `srv-${String(id).padStart(3, "0")}`;
-
 export const saveServer = (
   servers: ServerRecord[],
   draft: Draft,
   editingId: string | null,
 ): ServerRecord[] => {
   if (editingId === null) {
-    const next = nextId(servers);
-    const id = String(next);
-    const code = codeFor(next);
+    const id = String(nextId(servers));
     return [
       ...servers,
       {
         id,
         groupId: draft.groupId,
         name: draft.name.trim(),
-        code,
         description: orNull(draft.description),
         hostAddress: orNull(draft.hostAddress),
         localHostAddress: orNull(draft.localHostAddress),
         webrtcUrl: orNull(draft.webrtcUrl),
         webrtcUrlLocal: orNull(draft.webrtcUrlLocal),
         macAddress: orNull(draft.macAddress),
-        ...topicsFor(code),
         isActive: draft.isActive,
         lastSeenAt: null,
         vendor: "Custom",
@@ -179,10 +168,7 @@ export const registerDiscovered = (
   const found = discovered.find((d) => d.id === discoveredId);
   if (!found || found.registeredServerId)
     return { servers, discovered, serverId: null };
-  const next = nextId(servers);
-  const serverId = String(next);
-  const taken = new Set(servers.map((s) => s.code));
-  const code = taken.has(found.id) ? codeFor(next) : found.id;
+  const serverId = String(nextId(servers));
   return {
     serverId,
     servers: [
@@ -191,14 +177,12 @@ export const registerDiscovered = (
         id: serverId,
         groupId: null,
         name: found.id,
-        code,
         description: null,
         hostAddress: `${found.ip}:443`,
         localHostAddress: null,
         webrtcUrl: null,
         webrtcUrlLocal: null,
         macAddress: null,
-        ...topicsFor(code),
         isActive: true,
         lastSeenAt: now,
         vendor: found.vendor,

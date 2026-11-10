@@ -16,10 +16,8 @@ export const buildLive = (now = Date.now()): LiveData => {
     const s = server.get(d.edgeServerId)!;
     return {
       id: d.id,
-      deviceId: d.deviceId,
       name: d.name,
       serverId: s.id,
-      serverCode: s.code,
       serverName: s.name,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,
       isRecordingEnabled: d.isRecordingEnabled,
@@ -52,7 +50,6 @@ export const buildLive = (now = Date.now()): LiveData => {
   return {
     servers: edgeServers.map((s) => ({
       id: s.id,
-      code: s.code,
       name: s.name,
       isActive: s.isActive,
       online: isOnline(s),

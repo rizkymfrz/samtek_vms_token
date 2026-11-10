@@ -60,9 +60,7 @@ export const CameraTable = ({
               <TableCell>
                 <div className="flex flex-col">
                   <span className="font-medium">{camera.name}</span>
-                  <span className="text-muted-foreground">
-                    {camera.deviceId}
-                  </span>
+                  <span className="text-muted-foreground">ID {camera.id}</span>
                 </div>
               </TableCell>
               <TableCell>

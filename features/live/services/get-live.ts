@@ -39,10 +39,8 @@ export const getLive = async (): Promise<LiveData> => {
   const serverById = new Map(servers.map((server) => [server.id, server]));
   const tiles: Tile[] = devices.map((device) => ({
     id: device.id,
-    deviceId: device.deviceId,
     name: device.name,
     serverId: device.edgeServerId,
-    serverCode: serverById.get(device.edgeServerId)?.code ?? "",
     serverName: serverById.get(device.edgeServerId)?.name ?? "Unknown",
     analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
     isRecordingEnabled: device.isRecordingEnabled,
@@ -62,7 +60,6 @@ export const getLive = async (): Promise<LiveData> => {
   return {
     servers: servers.map((server) => ({
       id: server.id,
-      code: server.code,
       name: server.name,
       isActive: server.isActive,
       online: online.get(server.id) ?? false,

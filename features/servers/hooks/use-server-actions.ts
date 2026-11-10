@@ -1,5 +1,6 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { edgeDownTopic } from "@/config/mqtt";
 import { sendEdgeCommand } from "@/features/edge-status";
 import { messageOf } from "@/lib/axios/browser-client";
 import { SERVERS_QUERY_KEY } from "./use-servers";
@@ -59,7 +60,7 @@ export const useServerActions = (isLive: boolean) => {
   });
   const restartEdge = useMutation({
     mutationFn: (server: ServerRecord) =>
-      sendEdgeCommand(server.mqttPublishTopic, "edge.restart"),
+      sendEdgeCommand(edgeDownTopic(server.id), "edge.restart"),
   });
   return {
     save,

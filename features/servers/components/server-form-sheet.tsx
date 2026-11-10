@@ -123,8 +123,8 @@ const Form = ({
         <SheetTitle>{editing ? "Edit server" : "Add server"}</SheetTitle>
         <SheetDescription>
           {editing
-            ? editing.code
-            : "Register an edge server. Its code is assigned automatically."}
+            ? `Edge ID ${editing.id}`
+            : "Register an edge server. Its ID is assigned automatically."}
         </SheetDescription>
       </SheetHeader>
       <form

@@ -18,4 +18,4 @@ const parse = () => {
 
 export const mqttConfig = parse();
 export const EDGE_UP_TOPIC = "samtek/v1/+/up";
-export const edgeDownTopic = (code: string) => `samtek/v1/${code}/down`;
+export const edgeDownTopic = (edgeId: string) => `samtek/v1/${edgeId}/down`;

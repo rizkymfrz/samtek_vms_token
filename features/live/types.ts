@@ -2,10 +2,8 @@ export type StreamState = "live" | "disabled" | "server-offline";
 
 export type Tile = {
   id: string;
-  deviceId: string;
   name: string;
   serverId: string;
-  serverCode: string;
   serverName: string;
   analytic: string | null;
   isRecordingEnabled: boolean;
@@ -17,7 +15,6 @@ export type Tile = {
 
 export type ServerNode = {
   id: string;
-  code: string;
   name: string;
   isActive: boolean;
   online: boolean;

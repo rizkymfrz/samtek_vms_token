@@ -46,7 +46,7 @@ export const filterCameras = (
         (filters.recording === "on") === camera.isRecordingEnabled) &&
       (filters.server === ALL || camera.edgeServerId === filters.server) &&
       (!needle ||
-        `${camera.name} ${camera.deviceId} ${serverName.get(camera.edgeServerId) ?? ""} ${analyticName(camera.analyticId)}`
+        `${camera.name} ${camera.id} ${serverName.get(camera.edgeServerId) ?? ""} ${analyticName(camera.analyticId)}`
           .toLowerCase()
           .includes(needle)),
   );

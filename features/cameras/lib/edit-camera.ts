@@ -58,10 +58,9 @@ export const saveCamera = (
   draft: Draft,
   editingId: string | null,
 ): CameraRecord[] => {
-  const record = (id: string, deviceId: string): CameraRecord => ({
+  const record = (id: string): CameraRecord => ({
     id,
     edgeServerId: draft.edgeServerId,
-    deviceId,
     name: draft.name.trim(),
     isEnabled: draft.isEnabled,
     sourceMain: draft.sourceMain.trim(),
@@ -73,19 +72,9 @@ export const saveCamera = (
     const nextId = String(
       Math.max(0, ...cameras.map((c) => Number(c.id) || 0)) + 1,
     );
-    const nextDeviceId = String(
-      Math.max(
-        0,
-        ...cameras
-          .filter((c) => c.edgeServerId === draft.edgeServerId)
-          .map((c) => Number(c.deviceId) || 0),
-      ) + 1,
-    );
-    return [...cameras, record(nextId, nextDeviceId)];
+    return [...cameras, record(nextId)];
   }
-  return cameras.map((c) =>
-    c.id === editingId ? record(c.id, c.deviceId) : c,
-  );
+  return cameras.map((c) => (c.id === editingId ? record(c.id) : c));
 };
 
 export const removeCamera = (cameras: CameraRecord[], id: string) =>
