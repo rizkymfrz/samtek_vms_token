@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { requiredText } from "@/lib/forms/required-text";
 import type { Discovered, ServerRecord } from "../types";
 
 export type Draft = {
@@ -12,19 +14,6 @@ export type Draft = {
   macAddress: string;
   isActive: boolean;
 };
-
-export type Errors = Partial<
-  Record<
-    | "name"
-    | "code"
-    | "hostAddress"
-    | "localHostAddress"
-    | "webrtcUrl"
-    | "webrtcUrlLocal"
-    | "macAddress",
-    string
-  >
->;
 
 export const emptyDraft = (): Draft => ({
   name: "",
@@ -55,39 +44,51 @@ export const toDraft = (server: ServerRecord): Draft => ({
 const HOST = /^[A-Za-z0-9.-]+(:\d{1,5})?$/;
 const HTTP_URL = /^https?:\/\/\S+$/i;
 const MAC = /^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$/;
+const HOST_MESSAGE = "Use a host name or IP, optionally with :port.";
+const URL_MESSAGE = "Use an http:// or https:// address.";
 
-export const validate = (
-  draft: Draft,
+const optionalHost = z.string().refine((value) => {
+  const text = value.trim();
+  return !text || (text.length <= 255 && HOST.test(text));
+}, HOST_MESSAGE);
+
+const optionalUrl = z.string().refine((value) => {
+  const text = value.trim();
+  return !text || (text.length <= 2048 && HTTP_URL.test(text));
+}, URL_MESSAGE);
+
+export const serverDraftSchema = (
   servers: ServerRecord[],
   editingId: string | null,
-): Errors => {
-  const errors: Errors = {};
-  const name = draft.name.trim();
-  const code = draft.code.trim();
-  if (!name) errors.name = "Name is required.";
-  else if (name.length > 100)
-    errors.name = "Name can be at most 100 characters.";
-  if (!code) errors.code = "Code is required.";
-  else if (code.length > 100)
-    errors.code = "Code can be at most 100 characters.";
-  else if (!/^[a-z0-9][a-z0-9-]*$/.test(code))
-    errors.code = "Use lowercase letters, numbers and dashes.";
-  else if (servers.some((s) => s.id !== editingId && s.code === code))
-    errors.code = "Another server already uses this code.";
-  for (const field of ["hostAddress", "localHostAddress"] as const) {
-    const value = draft[field].trim();
-    if (value && (value.length > 255 || !HOST.test(value)))
-      errors[field] = "Use a host name or IP, optionally with :port.";
-  }
-  for (const field of ["webrtcUrl", "webrtcUrlLocal"] as const) {
-    const value = draft[field].trim();
-    if (value && (value.length > 2048 || !HTTP_URL.test(value)))
-      errors[field] = "Use an http:// or https:// address.";
-  }
-  if (draft.macAddress.trim() && !MAC.test(draft.macAddress.trim()))
-    errors.macAddress = "Use the form 00:1A:2B:3C:4D:5E.";
-  return errors;
-};
+) =>
+  z.object({
+    name: requiredText("Name", 100),
+    code: requiredText("Code", 100)
+      .refine(
+        (value) => /^[a-z0-9][a-z0-9-]*$/.test(value.trim()),
+        "Use lowercase letters, numbers and dashes.",
+      )
+      .refine(
+        (value) =>
+          !servers.some(
+            (server) => server.id !== editingId && server.code === value.trim(),
+          ),
+        "Another server already uses this code.",
+      ),
+    description: z.string(),
+    groupId: z.string().nullable(),
+    hostAddress: optionalHost,
+    localHostAddress: optionalHost,
+    webrtcUrl: optionalUrl,
+    webrtcUrlLocal: optionalUrl,
+    macAddress: z
+      .string()
+      .refine(
+        (value) => !value.trim() || MAC.test(value.trim()),
+        "Use the form 00:1A:2B:3C:4D:5E.",
+      ),
+    isActive: z.boolean(),
+  });
 
 const orNull = (value: string) => value.trim() || null;
 

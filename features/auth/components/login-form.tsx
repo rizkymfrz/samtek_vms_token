@@ -1,10 +1,13 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useId, useState } from "react";
+import { useId } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useSignIn } from "../hooks/use-sign-in";
+import { type LoginInput, loginInputSchema } from "../schemas/login";
 
 const safeNext = (value: string | null) =>
   value && value.startsWith("/") && !value.startsWith("//")
@@ -14,20 +17,26 @@ const safeNext = (value: string | null) =>
 export const LoginForm = () => {
   const router = useRouter();
   const formId = useId();
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
   const { signIn, isPending, error } = useSignIn();
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginInputSchema),
+    defaultValues: { identifier: "", password: "" },
+  });
+  const submit = handleSubmit(async (credentials) => {
     try {
-      await signIn({ identifier, password });
+      await signIn(credentials);
     } catch {
       return;
     }
     const next = new URLSearchParams(window.location.search).get("next");
     router.replace(safeNext(next));
     router.refresh();
-  };
+  });
+  const passwordError = errors.password?.message ?? error;
   return (
     <form
       noValidate
@@ -35,30 +44,32 @@ export const LoginForm = () => {
       className="flex w-full max-w-sm flex-col gap-4 border bg-card p-4"
     >
       <h1 className="text-sm font-medium">Sign in</h1>
-      <Field>
+      <Field data-invalid={!!errors.identifier}>
         <FieldLabel htmlFor={`${formId}-identifier`}>
           Username or email
         </FieldLabel>
         <Input
           id={`${formId}-identifier`}
           autoComplete="username"
-          value={identifier}
-          onChange={(event) => setIdentifier(event.target.value)}
+          {...register("identifier")}
+          aria-invalid={!!errors.identifier}
         />
+        {errors.identifier && (
+          <FieldError>{errors.identifier.message}</FieldError>
+        )}
       </Field>
-      <Field data-invalid={!!error}>
+      <Field data-invalid={!!passwordError}>
         <FieldLabel htmlFor={`${formId}-password`}>Password</FieldLabel>
         <Input
           id={`${formId}-password`}
           type="password"
           autoComplete="current-password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          aria-invalid={!!error}
+          {...register("password")}
+          aria-invalid={!!passwordError}
         />
-        {error && <FieldError>{error}</FieldError>}
+        {passwordError && <FieldError>{passwordError}</FieldError>}
       </Field>
-      <Button type="submit" disabled={isPending || !identifier || !password}>
+      <Button type="submit" disabled={isPending}>
         Sign in
       </Button>
     </form>

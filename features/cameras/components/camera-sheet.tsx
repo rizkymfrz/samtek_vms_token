@@ -1,6 +1,8 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2Icon } from "lucide-react";
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
 import {
   AlertDialog,
@@ -26,11 +28,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ANALYTICS } from "@/config/analytics-catalog";
 import {
+  cameraDraftSchema,
   type Draft,
   emptyDraft,
   maskSource,
   toDraft,
-  validate,
 } from "../lib/edit-camera";
 import type { CameraRecord, ServerOption } from "../types";
 
@@ -61,15 +63,21 @@ const Form = ({
   onClose: () => void;
 }) => {
   const editing = target === "new" ? null : target;
-  const [draft, setDraft] = useState<Draft>(() =>
-    editing ? toDraft(editing) : emptyDraft(servers),
-  );
-  const [submitted, setSubmitted] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const formId = useId();
-  const errors = submitted ? validate(draft, cameras, editing?.id ?? null) : {};
-  const set = (patch: Partial<Draft>) =>
-    setDraft((current) => ({ ...current, ...patch }));
+  const schema = useMemo(
+    () => cameraDraftSchema(cameras, editing?.id ?? null),
+    [cameras, editing?.id],
+  );
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Draft>({
+    resolver: zodResolver(schema),
+    defaultValues: editing ? toDraft(editing) : emptyDraft(servers),
+  });
   const serverItems = servers.map((s) => ({ value: s.id, label: s.name }));
   return (
     <>
@@ -85,73 +93,80 @@ const Form = ({
         id={formId}
         noValidate
         className="flex flex-col gap-4 p-4 pt-0"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setSubmitted(true);
-          if (
-            Object.keys(validate(draft, cameras, editing?.id ?? null))
-              .length === 0
-          )
-            onSave(draft, editing?.id ?? null);
-        }}
+        onSubmit={handleSubmit((draft) => onSave(draft, editing?.id ?? null))}
       >
         <Field data-invalid={!!errors.name}>
           <FieldLabel htmlFor={`${formId}-name`}>Name</FieldLabel>
           <Input
             id={`${formId}-name`}
-            value={draft.name}
-            onChange={(e) => set({ name: e.target.value })}
+            {...register("name")}
             aria-invalid={!!errors.name}
           />
-          {errors.name && <FieldError>{errors.name}</FieldError>}
+          {errors.name && <FieldError>{errors.name.message}</FieldError>}
         </Field>
         <Field data-invalid={!!errors.deviceId}>
           <FieldLabel htmlFor={`${formId}-device`}>Device ID</FieldLabel>
           <Input
             id={`${formId}-device`}
-            value={draft.deviceId}
-            onChange={(e) => set({ deviceId: e.target.value })}
+            {...register("deviceId")}
             disabled={!!editing}
             placeholder="cam-001"
             aria-invalid={!!errors.deviceId}
           />
-          {errors.deviceId && <FieldError>{errors.deviceId}</FieldError>}
+          {errors.deviceId && (
+            <FieldError>{errors.deviceId.message}</FieldError>
+          )}
         </Field>
         <Field data-invalid={!!errors.edgeServerId}>
           <FieldLabel>Edge server</FieldLabel>
-          <Pick
-            label="Edge server"
-            items={serverItems}
-            value={draft.edgeServerId}
-            onChange={(edgeServerId) => !editing && set({ edgeServerId })}
-            className="w-full"
+          <Controller
+            control={control}
+            name="edgeServerId"
+            render={({ field }) => (
+              <Pick
+                label="Edge server"
+                items={serverItems}
+                value={field.value}
+                onChange={(edgeServerId) =>
+                  !editing && field.onChange(edgeServerId)
+                }
+                className="w-full"
+              />
+            )}
           />
           {errors.edgeServerId && (
-            <FieldError>{errors.edgeServerId}</FieldError>
+            <FieldError>{errors.edgeServerId.message}</FieldError>
           )}
         </Field>
         <Field>
           <FieldLabel>Analytic</FieldLabel>
-          <Pick
-            label="Analytic"
-            items={SHEET_ANALYTIC_ITEMS}
-            value={draft.analyticId ?? "none"}
-            onChange={(value) =>
-              set({ analyticId: value === "none" ? null : value })
-            }
-            className="w-full"
+          <Controller
+            control={control}
+            name="analyticId"
+            render={({ field }) => (
+              <Pick
+                label="Analytic"
+                items={SHEET_ANALYTIC_ITEMS}
+                value={field.value ?? "none"}
+                onChange={(value) =>
+                  field.onChange(value === "none" ? null : value)
+                }
+                className="w-full"
+              />
+            )}
           />
         </Field>
         <Field data-invalid={!!errors.sourceMain}>
           <FieldLabel htmlFor={`${formId}-main`}>Main stream</FieldLabel>
           <Input
             id={`${formId}-main`}
-            value={draft.sourceMain}
-            onChange={(e) => set({ sourceMain: e.target.value })}
+            {...register("sourceMain")}
             placeholder="rtsp://10.0.0.10/stream1"
             aria-invalid={!!errors.sourceMain}
           />
-          {errors.sourceMain && <FieldError>{errors.sourceMain}</FieldError>}
+          {errors.sourceMain && (
+            <FieldError>{errors.sourceMain.message}</FieldError>
+          )}
         </Field>
         <Field data-invalid={!!errors.sourceSub}>
           <FieldLabel htmlFor={`${formId}-sub`}>
@@ -159,21 +174,28 @@ const Form = ({
           </FieldLabel>
           <Input
             id={`${formId}-sub`}
-            value={draft.sourceSub}
-            onChange={(e) => set({ sourceSub: e.target.value })}
+            {...register("sourceSub")}
             placeholder="rtsp://10.0.0.10/stream2"
             aria-invalid={!!errors.sourceSub}
           />
-          {errors.sourceSub && <FieldError>{errors.sourceSub}</FieldError>}
+          {errors.sourceSub && (
+            <FieldError>{errors.sourceSub.message}</FieldError>
+          )}
         </Field>
         <div className="flex items-center justify-between gap-4">
           <label htmlFor={`${formId}-enabled`} className="text-xs font-medium">
             Enabled
           </label>
-          <Switch
-            id={`${formId}-enabled`}
-            checked={draft.isEnabled}
-            onCheckedChange={(isEnabled) => set({ isEnabled })}
+          <Controller
+            control={control}
+            name="isEnabled"
+            render={({ field }) => (
+              <Switch
+                id={`${formId}-enabled`}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            )}
           />
         </div>
         <div className="flex items-center justify-between gap-4">
@@ -183,12 +205,16 @@ const Form = ({
           >
             Recording
           </label>
-          <Switch
-            id={`${formId}-recording`}
-            checked={draft.isRecordingEnabled}
-            onCheckedChange={(isRecordingEnabled) =>
-              set({ isRecordingEnabled })
-            }
+          <Controller
+            control={control}
+            name="isRecordingEnabled"
+            render={({ field }) => (
+              <Switch
+                id={`${formId}-recording`}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            )}
           />
         </div>
         {error && <FieldError>{error}</FieldError>}

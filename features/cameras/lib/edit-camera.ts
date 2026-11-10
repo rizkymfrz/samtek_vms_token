@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { requiredText } from "@/lib/forms/required-text";
 import type { CameraRecord, ServerOption } from "../types";
 
 export type Draft = {
@@ -10,13 +12,6 @@ export type Draft = {
   isEnabled: boolean;
   isRecordingEnabled: boolean;
 };
-
-export type Errors = Partial<
-  Record<
-    "name" | "deviceId" | "edgeServerId" | "sourceMain" | "sourceSub",
-    string
-  >
->;
 
 export const emptyDraft = (servers: ServerOption[]): Draft => ({
   name: "",
@@ -41,41 +36,47 @@ export const toDraft = (camera: CameraRecord): Draft => ({
 });
 
 const STREAM_URL = /^(rtsp|rtsps|rtmp|rtmps|http|https|srt|udp|rtp):\/\/\S+$/i;
+const STREAM_MESSAGE = "Use a stream address such as rtsp:// or http(s)://.";
 
-export const validate = (
-  draft: Draft,
+export const cameraDraftSchema = (
   cameras: CameraRecord[],
   editingId: string | null,
-): Errors => {
-  const errors: Errors = {};
-  const name = draft.name.trim();
-  const deviceId = draft.deviceId.trim();
-  if (!name) errors.name = "Name is required.";
-  else if (name.length > 100)
-    errors.name = "Name can be at most 100 characters.";
-  if (!deviceId) errors.deviceId = "Device ID is required.";
-  else if (deviceId.length > 64)
-    errors.deviceId = "Device ID can be at most 64 characters.";
-  else if (
-    cameras.some(
-      (c) =>
-        c.id !== editingId &&
-        c.edgeServerId === draft.edgeServerId &&
-        c.deviceId === deviceId,
-    )
-  ) {
-    errors.deviceId = "This edge server already has a camera with that ID.";
-  }
-  if (!draft.edgeServerId) errors.edgeServerId = "Choose an edge server.";
-  if (!draft.sourceMain.trim())
-    errors.sourceMain = "The main stream is required.";
-  else if (!STREAM_URL.test(draft.sourceMain.trim()))
-    errors.sourceMain = "Use a stream address such as rtsp:// or http(s)://.";
-  if (draft.sourceSub.trim() && !STREAM_URL.test(draft.sourceSub.trim())) {
-    errors.sourceSub = "Use a stream address such as rtsp:// or http(s)://.";
-  }
-  return errors;
-};
+) =>
+  z
+    .object({
+      name: requiredText("Name", 100),
+      deviceId: requiredText("Device ID", 64),
+      edgeServerId: z.string().min(1, "Choose an edge server."),
+      sourceMain: z
+        .string()
+        .refine((value) => value.trim() !== "", "The main stream is required.")
+        .refine((value) => STREAM_URL.test(value.trim()), STREAM_MESSAGE),
+      sourceSub: z
+        .string()
+        .refine(
+          (value) => !value.trim() || STREAM_URL.test(value.trim()),
+          STREAM_MESSAGE,
+        ),
+      analyticId: z.string().nullable(),
+      isEnabled: z.boolean(),
+      isRecordingEnabled: z.boolean(),
+    })
+    .superRefine((draft, context) => {
+      const deviceId = draft.deviceId.trim();
+      const isTaken = cameras.some(
+        (camera) =>
+          camera.id !== editingId &&
+          camera.edgeServerId === draft.edgeServerId &&
+          camera.deviceId === deviceId,
+      );
+      if (isTaken) {
+        context.addIssue({
+          code: "custom",
+          path: ["deviceId"],
+          message: "This edge server already has a camera with that ID.",
+        });
+      }
+    });
 
 export const saveCamera = (
   cameras: CameraRecord[],
