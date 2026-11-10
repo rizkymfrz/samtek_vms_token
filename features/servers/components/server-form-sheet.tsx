@@ -184,7 +184,7 @@ const Form = ({
         </div>
       </form>
       <SheetFooter className="flex-row justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button type="button" variant="secondary" onClick={onClose}>
           Cancel
         </Button>
         <Button type="submit" form={formId} disabled={isPending}>

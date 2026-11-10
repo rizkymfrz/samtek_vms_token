@@ -5,6 +5,7 @@ import {
   RadarIcon,
   ServerIcon,
 } from "lucide-react";
+import { PanelEmpty, PanelSection } from "@/components/layout/side-panel";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -44,27 +45,9 @@ export const ServerListPanel = ({
   const pending = discovered.filter((d) => !d.registeredServerId);
   const shown = tab === "registered" ? registered : pending;
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b p-4">
-        <span className="text-sm font-medium">Servers</span>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Add server"
-          onClick={onAdd}
-        >
-          <PlusIcon />
-        </Button>
-      </div>
-      <div className="flex flex-col gap-2 p-4">
-        <span className="text-xs text-muted-foreground">
-          Servers · {servers.length}
-        </span>
-        {servers.length === 0 && (
-          <p className="py-4 text-center text-xs text-muted-foreground">
-            No servers yet.
-          </p>
-        )}
+    <>
+      <PanelSection title="Servers">
+        {servers.length === 0 && <PanelEmpty>No servers yet.</PanelEmpty>}
         <ul className="flex flex-col gap-2">
           {servers.map((server) => (
             <li key={server.id}>
@@ -98,14 +81,19 @@ export const ServerListPanel = ({
             </li>
           ))}
         </ul>
-      </div>
+        <Button onClick={onAdd} className="w-full">
+          <PlusIcon />
+          Add server
+        </Button>
+      </PanelSection>
       {!isLive && (
-        <div className="flex flex-1 flex-col gap-2 border-t p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium">Registered / Discovered</span>
+        <PanelSection
+          title="Registered / Discovered"
+          shouldGrow
+          action={
             <Button
-              variant="outline"
-              size="sm"
+              variant="secondary"
+              size="xs"
               onClick={onScan}
               disabled={scanning}
             >
@@ -116,7 +104,8 @@ export const ServerListPanel = ({
               )}
               {scanning ? "Scanning" : "Scan"}
             </Button>
-          </div>
+          }
+        >
           <Tabs
             value={tab}
             onValueChange={(value) => onTab(value as DiscoverTab)}
@@ -132,10 +121,12 @@ export const ServerListPanel = ({
           </Tabs>
           <ul className="flex flex-col gap-2">
             {shown.length === 0 && (
-              <li className="py-4 text-center text-xs text-muted-foreground">
-                {tab === "registered"
-                  ? "Nothing registered from a scan yet."
-                  : "No new devices. Scan the network to look again."}
+              <li>
+                <PanelEmpty>
+                  {tab === "registered"
+                    ? "Nothing registered from a scan yet."
+                    : "No new devices. Scan the network to look again."}
+                </PanelEmpty>
               </li>
             )}
             {shown.map((device) => (
@@ -154,7 +145,7 @@ export const ServerListPanel = ({
                 </span>
                 {device.registeredServerId ? (
                   <Button
-                    variant="ghost"
+                    variant="link"
                     size="xs"
                     onClick={() => onSelect(device.registeredServerId!)}
                   >
@@ -162,7 +153,7 @@ export const ServerListPanel = ({
                   </Button>
                 ) : (
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="xs"
                     onClick={() => onRegister(device.id)}
                   >
@@ -172,8 +163,8 @@ export const ServerListPanel = ({
               </li>
             ))}
           </ul>
-        </div>
+        </PanelSection>
       )}
-    </div>
+    </>
   );
 };

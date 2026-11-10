@@ -1,10 +1,14 @@
-import { MinusIcon, PlusIcon, SearchIcon, Trash2Icon } from "lucide-react";
+import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import type { ReactNode } from "react";
+import {
+  PanelEmpty,
+  PanelSearch,
+  PanelSection,
+} from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { FOV_OPTIONS } from "../lib/edit-placements";
 import type { Floorplan, FloorplanDevice, PlanCamera } from "../types";
@@ -111,11 +115,8 @@ export const FloorplanPanel = ({
   const unplacedShown = unplaced.filter(matches);
   const elsewhereShown = elsewhere.filter((item) => matches(item.camera));
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <section className="flex flex-col gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          Floor plan
-        </span>
+    <>
+      <PanelSection title="Floor plan">
         <Pick
           label="Floor plan"
           items={planItems}
@@ -123,7 +124,7 @@ export const FloorplanPanel = ({
           onChange={onPlan}
           className="w-full"
         />
-      </section>
+      </PanelSection>
       {selected && selectedCamera && (
         <section className="flex flex-col gap-2 border p-4">
           <div className="flex items-center justify-between gap-2">
@@ -176,20 +177,12 @@ export const FloorplanPanel = ({
           </div>
         </section>
       )}
-      <section className="flex flex-col gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          Cameras
-        </span>
-        <div className="relative">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(event) => onQuery(event.target.value)}
-            placeholder="Search cameras..."
-            aria-label="Search cameras"
-            className="pl-8"
-          />
-        </div>
+      <PanelSection title="Cameras">
+        <PanelSearch
+          value={query}
+          onChange={onQuery}
+          placeholder="Search cameras..."
+        />
         <List
           title="On this plan"
           count={hereShown.length}
@@ -279,8 +272,8 @@ export const FloorplanPanel = ({
             ))}
           </List>
         )}
-      </section>
-    </div>
+      </PanelSection>
+    </>
   );
 };
 
@@ -302,7 +295,7 @@ const List = ({
         <span className="text-muted-foreground tabular-nums">{count}</span>
       </div>
       {count === 0 ? (
-        <p className="py-2 text-xs text-muted-foreground">{empty}</p>
+        <PanelEmpty>{empty}</PanelEmpty>
       ) : (
         <ul className="flex flex-col">{children}</ul>
       )}

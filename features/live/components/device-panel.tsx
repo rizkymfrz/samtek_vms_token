@@ -5,10 +5,14 @@ import {
   ListPlusIcon,
   MinusIcon,
   PlusIcon,
-  SearchIcon,
   Trash2Icon,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
+import {
+  PanelEmpty,
+  PanelSearch,
+  PanelSection,
+} from "@/components/layout/side-panel";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +20,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -86,11 +89,8 @@ export const DevicePanel = ({
     label: `${l.name} · ${l.rows}×${l.columns}`,
   }));
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <section className="flex flex-col gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          Layout
-        </span>
+    <>
+      <PanelSection title="Layout">
         <div className="flex items-center gap-2">
           <Select
             items={layoutItems}
@@ -110,32 +110,28 @@ export const DevicePanel = ({
               </SelectGroup>
             </SelectContent>
           </Select>
-          <IconAction label="New layout" onClick={onNewLayout}>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button className="flex-1" onClick={onNewLayout}>
             <PlusIcon />
-          </IconAction>
-          <IconAction
-            label="Delete layout"
+            New layout
+          </Button>
+          <Button
+            variant="destructive"
             disabled={layouts.length === 1}
             onClick={onDeleteLayout}
           >
             <Trash2Icon />
-          </IconAction>
+            Delete
+          </Button>
         </div>
-      </section>
-      <section className="flex flex-col gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          Cameras
-        </span>
-        <div className="relative">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search cameras..."
-            aria-label="Search cameras"
-            className="pl-8"
-          />
-        </div>
+      </PanelSection>
+      <PanelSection title="Cameras">
+        <PanelSearch
+          value={query}
+          onChange={setQuery}
+          placeholder="Search cameras..."
+        />
         <div className="flex flex-col">
           {servers.map((server) => {
             const cameras = tiles.filter(
@@ -238,18 +234,14 @@ export const DevicePanel = ({
               `${tile.name} ${tile.analytic ?? ""}`
                 .toLowerCase()
                 .includes(needle),
-            ) && (
-              <p className="py-4 text-center text-xs text-muted-foreground">
-                No cameras match.
-              </p>
-            )}
+            ) && <PanelEmpty>No cameras match.</PanelEmpty>}
         </div>
         {full && (
           <p className="text-xs text-muted-foreground">
             The layout is full. Remove a camera or pick a bigger grid.
           </p>
         )}
-      </section>
-    </div>
+      </PanelSection>
+    </>
   );
 };

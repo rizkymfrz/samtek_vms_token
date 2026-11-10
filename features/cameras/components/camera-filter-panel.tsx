@@ -1,11 +1,14 @@
-import { SearchIcon, XIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { XIcon } from "lucide-react";
+import {
+  PanelField,
+  PanelOption,
+  PanelSearch,
+  PanelSection,
+} from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ANALYTICS } from "@/config/analytics-catalog";
-import { cn } from "@/lib/utils";
 import { ALL, type Filters, isFiltered } from "../lib/filter-cameras";
 import type { ServerOption } from "../types";
 
@@ -27,21 +30,6 @@ const RECORDING_ITEMS = [
   { value: "on", label: "Recording on" },
   { value: "off", label: "Recording off" },
 ];
-
-const FilterField = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) => {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      {children}
-    </div>
-  );
-};
 
 export const CameraFilterPanel = ({
   filters,
@@ -72,28 +60,24 @@ export const CameraFilterPanel = ({
     })),
   ];
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Filters</span>
-          {isFiltered(filters) && (
+    <>
+      <PanelSection
+        title="Filters"
+        action={
+          isFiltered(filters) && (
             <Button variant="ghost" size="xs" onClick={onClear}>
               <XIcon />
               Clear
             </Button>
-          )}
-        </div>
-        <div className="relative">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={filters.query}
-            onChange={(event) => onChange({ query: event.target.value })}
-            placeholder="Search cameras..."
-            aria-label="Search cameras"
-            className="pl-8"
-          />
-        </div>
-        <FilterField label="Status">
+          )
+        }
+      >
+        <PanelSearch
+          value={filters.query}
+          onChange={(query) => onChange({ query })}
+          placeholder="Search cameras..."
+        />
+        <PanelField label="Status">
           <Pick
             label="Status"
             items={STATUS_ITEMS}
@@ -101,8 +85,8 @@ export const CameraFilterPanel = ({
             onChange={(status) => onChange({ status })}
             className="w-full"
           />
-        </FilterField>
-        <FilterField label="Analytic">
+        </PanelField>
+        <PanelField label="Analytic">
           <Pick
             label="Analytic"
             items={ANALYTIC_ITEMS}
@@ -110,8 +94,8 @@ export const CameraFilterPanel = ({
             onChange={(analytic) => onChange({ analytic })}
             className="w-full"
           />
-        </FilterField>
-        <FilterField label="Recording">
+        </PanelField>
+        <PanelField label="Recording">
           <Pick
             label="Recording"
             items={RECORDING_ITEMS}
@@ -119,25 +103,17 @@ export const CameraFilterPanel = ({
             onChange={(recording) => onChange({ recording })}
             className="w-full"
           />
-        </FilterField>
-      </section>
-      <section className="flex flex-col gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          Edge servers
-        </span>
+        </PanelField>
+      </PanelSection>
+      <PanelSection title="Edge servers">
         <ul className="flex flex-col">
           {rows.map((row) => {
             const selected = filters.server === row.id;
             return (
               <li key={row.id}>
-                <button
-                  type="button"
-                  aria-pressed={selected}
+                <PanelOption
+                  isSelected={selected}
                   onClick={() => onChange({ server: selected ? ALL : row.id })}
-                  className={cn(
-                    "flex w-full items-center gap-2 p-2 text-left text-xs outline-none hover:bg-accent focus-visible:bg-accent",
-                    selected && "bg-accent font-medium",
-                  )}
                 >
                   {row.online !== null && (
                     <StatusDot status={row.online ? "live" : "offline"} />
@@ -146,12 +122,12 @@ export const CameraFilterPanel = ({
                   <span className="text-muted-foreground tabular-nums">
                     {row.count}
                   </span>
-                </button>
+                </PanelOption>
               </li>
             );
           })}
         </ul>
-      </section>
-    </div>
+      </PanelSection>
+    </>
   );
 };

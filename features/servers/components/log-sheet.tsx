@@ -61,7 +61,7 @@ const Stream = ({
           · {lines.length} lines
         </span>
         <Button
-          variant="outline"
+          variant="secondary"
           size="sm"
           disabled={!online}
           onClick={() => setPaused((value) => !value)}

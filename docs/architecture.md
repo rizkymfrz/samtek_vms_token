@@ -377,6 +377,28 @@ Rules:
 - Jangan membuat komponen reusable sebelum ada kebutuhan penggunaan
   ulang yang nyata.
 
+### 8.1 Button Variants
+
+Pilih variant `Button` berdasarkan fungsinya, bukan selera tampilan.
+
+- `default`: aksi utama satu konteks (tambah, simpan, kirim). Maksimal
+  satu per area. Aksi "buat baru" di sidebar berupa tombol berlabel
+  `w-full` di bawah daftar yang diisinya.
+- `secondary`: perintah biasa yang bukan aksi utama (Edit, Restart,
+  Scan, Register, Fullscreen, Cancel).
+- `destructive`: aksi menghapus atau tidak bisa dibatalkan. Selalu
+  berlabel, jangan icon-only, dan jangan ditaruh menempel pada tombol
+  tambah.
+- `outline`: kontrol netral yang menyatu dengan input, seperti
+  pagination dan pemicu pencarian. Bukan untuk perintah.
+- `ghost`: hanya untuk aksi icon-only di dalam baris yang padat, atau
+  aksi berprioritas rendah di baris judul (Clear, Mark all as read).
+- `link`: navigasi inline ke detail (Open).
+- Baris judul section hanya memuat aksi kecil yang berlaku untuk
+  section itu. Jangan taruh aksi "buat baru" di sana.
+- Jangan memakai `outline` atau `ghost` sebagai pengganti `secondary`
+  hanya agar tombol terlihat lebih ringan.
+
 ## 9. Naming and File Organization
 
 Gunakan konvensi berikut:

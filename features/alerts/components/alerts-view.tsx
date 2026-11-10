@@ -1,8 +1,9 @@
 "use client";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { BellIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -138,9 +139,11 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
           )}
         </div>
         {matches.length === 0 ? (
-          <p className="flex flex-1 items-center justify-center border text-xs text-muted-foreground max-lg:py-16">
-            No alerts match the filters.
-          </p>
+          <EmptyState
+            icon={<BellIcon />}
+            title="No alerts found"
+            description="No alerts match the filters."
+          />
         ) : view === "grid" ? (
           <div
             className="grid grid-cols-1 gap-0 border-t border-l sm:grid-cols-2 md:grid-cols-(--columns) lg:min-h-0 lg:flex-1 lg:grid-rows-(--rows)"

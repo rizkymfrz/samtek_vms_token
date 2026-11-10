@@ -1,6 +1,12 @@
 "use client";
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PlusIcon,
+  UsersIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -127,11 +133,15 @@ export const UsersView = ({
         </div>
       </div>
       {matches.length === 0 ? (
-        <p className="flex items-center justify-center border py-16 text-xs text-muted-foreground">
-          {users.length === 0
-            ? "No users yet. Add the first one."
-            : "No users match the filters."}
-        </p>
+        <EmptyState
+          icon={<UsersIcon />}
+          title={users.length === 0 ? "No users yet" : "No users found"}
+          description={
+            users.length === 0
+              ? "Add the first one."
+              : "No users match the filters."
+          }
+        />
       ) : (
         <div className="border">
           <UserTable

@@ -239,7 +239,7 @@ const Form = ({
           <span />
         )}
         <div className="flex gap-2">
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" form={formId} disabled={isPending}>
