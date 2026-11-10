@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { PageShell } from "../_components/page-shell"
 import { Pick } from "../_components/pick"
 import { SidePanel } from "../_components/side-panel"
-import { StatusDot } from "../_components/status-dot"
+import { StatusDot } from "@/components/shared/status-dot"
 import type { Floorplan, FloorplanData, FloorplanDevice, PlanCamera, PlanRoom } from "./page"
 
 // ---- floorplan/_data/edit.ts

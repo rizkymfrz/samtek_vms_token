@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ALERTS } from "./dummy-data";
-import { StatusDot } from "./status-dot";
+import { StatusDot } from "@/components/shared/status-dot";
 
 export const HeaderNotifications = () => {
   const [alerts, setAlerts] = React.useState(ALERTS);

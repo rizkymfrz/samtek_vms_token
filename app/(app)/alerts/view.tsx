@@ -9,9 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cn } from "@/lib/utils"
 import { PageShell } from "../_components/page-shell"
 import { Pick } from "../_components/pick"
-import { RiskBadge } from "../_components/risk-badge"
+import { RiskBadge } from "@/components/shared/risk-badge"
 import { SidePanel } from "../_components/side-panel"
-import { StatusDot } from "../_components/status-dot"
+import { StatusDot } from "@/components/shared/status-dot"
 import type { AlertRow, AlertsData } from "../_data/alerts-source"
 
 // ---- alerts/_data/filter.ts
