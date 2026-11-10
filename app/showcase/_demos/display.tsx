@@ -104,7 +104,7 @@ const chartConfig = Object.fromEntries(
   chart.dataKeys.map(({ key, label, color }) => [key, { label, color }])
 ) satisfies ChartConfig
 
-export function CardDemo() {
+export const CardDemo = () => {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -128,7 +128,7 @@ export function CardDemo() {
   )
 }
 
-export function TableDemo() {
+export const TableDemo = () => {
   return (
     <Table>
       <TableCaption>{table.caption}</TableCaption>
@@ -159,7 +159,7 @@ export function TableDemo() {
   )
 }
 
-export function AvatarDemo() {
+export const AvatarDemo = () => {
   const sizes = ["sm", "default", "lg"] as const
   return (
     <div className="flex flex-col gap-4">
@@ -183,7 +183,7 @@ export function AvatarDemo() {
   )
 }
 
-export function ItemDemo() {
+export const ItemDemo = () => {
   return (
     <ItemGroup className="max-w-md">
       {people.slice(0, 3).map((person, index) => (
@@ -209,7 +209,7 @@ export function ItemDemo() {
   )
 }
 
-export function EmptyDemo() {
+export const EmptyDemo = () => {
   return (
     <Empty className="border border-dashed">
       <EmptyHeader>
@@ -226,7 +226,7 @@ export function EmptyDemo() {
   )
 }
 
-export function SeparatorDemo() {
+export const SeparatorDemo = () => {
   return (
     <Stack>
       <Separator />
@@ -242,7 +242,7 @@ export function SeparatorDemo() {
   )
 }
 
-export function SkeletonDemo() {
+export const SkeletonDemo = () => {
   return (
     <div className="flex items-center gap-4">
       <Skeleton className="size-12 rounded-full" />
@@ -255,7 +255,7 @@ export function SkeletonDemo() {
   )
 }
 
-export function ProgressDemo() {
+export const ProgressDemo = () => {
   return (
     <Stack>
       <Progress value={progress.value}>
@@ -266,7 +266,7 @@ export function ProgressDemo() {
   )
 }
 
-export function SpinnerDemo() {
+export const SpinnerDemo = () => {
   return (
     <Row>
       {spinner.sizes.map((size) => (
@@ -276,7 +276,7 @@ export function SpinnerDemo() {
   )
 }
 
-export function AspectRatioDemo() {
+export const AspectRatioDemo = () => {
   return (
     <div className="w-full max-w-sm">
       <AspectRatio ratio={aspectRatio.ratio} className="flex items-center justify-center bg-muted">
@@ -286,7 +286,7 @@ export function AspectRatioDemo() {
   )
 }
 
-export function ScrollAreaDemo() {
+export const ScrollAreaDemo = () => {
   return (
     <ScrollArea className="h-48 w-48 border">
       <div className="flex flex-col gap-2 p-4">
@@ -300,7 +300,7 @@ export function ScrollAreaDemo() {
   )
 }
 
-export function CarouselDemo() {
+export const CarouselDemo = () => {
   return (
     <div className="w-full max-w-xs px-8">
       <Carousel>
@@ -322,7 +322,7 @@ export function CarouselDemo() {
   )
 }
 
-export function ChartDemo() {
+export const ChartDemo = () => {
   return (
     <ChartContainer config={chartConfig} className="h-64 w-full max-w-lg">
       <BarChart data={chart.data}>
@@ -338,7 +338,7 @@ export function ChartDemo() {
   )
 }
 
-export function ResizableDemo() {
+export const ResizableDemo = () => {
   return (
     <ResizablePanelGroup orientation="horizontal" className="h-32 max-w-md border">
       {resizable.panels.map((label, index) => (
@@ -353,7 +353,7 @@ export function ResizableDemo() {
   )
 }
 
-export function AlertDemo() {
+export const AlertDemo = () => {
   const icons = { default: InfoIcon, destructive: TriangleAlertIcon } as const
   return (
     <Stack className="max-w-md">
@@ -377,7 +377,7 @@ export function AlertDemo() {
   )
 }
 
-export function ToastDemo() {
+export const ToastDemo = () => {
   return (
     <Toaster>
       <Row>
@@ -401,7 +401,7 @@ export function ToastDemo() {
   )
 }
 
-export function DirectionDemo() {
+export const DirectionDemo = () => {
   return (
     <Row>
       {direction.options.map((dir) => (

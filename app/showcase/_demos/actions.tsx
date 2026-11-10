@@ -19,7 +19,7 @@ import {
   toggleVariantNames,
 } from "../_data/content"
 
-export function ButtonDemo() {
+export const ButtonDemo = () => {
   return (
     <div className="flex flex-col gap-8">
       <Labelled label="variant">
@@ -66,7 +66,7 @@ export function ButtonDemo() {
   )
 }
 
-export function ButtonGroupDemo() {
+export const ButtonGroupDemo = () => {
   return (
     <Row>
       <ButtonGroup>
@@ -85,7 +85,7 @@ export function ButtonGroupDemo() {
   )
 }
 
-export function ToggleDemo() {
+export const ToggleDemo = () => {
   return (
     <div className="flex flex-col gap-4">
       {toggleVariantNames.map((variant) => (
@@ -101,7 +101,7 @@ export function ToggleDemo() {
   )
 }
 
-export function ToggleGroupDemo() {
+export const ToggleGroupDemo = () => {
   return (
     <div className="flex flex-col gap-4">
       {toggleVariantNames.map((variant) => (
@@ -117,7 +117,7 @@ export function ToggleGroupDemo() {
   )
 }
 
-export function BadgeDemo() {
+export const BadgeDemo = () => {
   return (
     <Row>
       {badgeVariantNames.map((variant) => (
@@ -129,7 +129,7 @@ export function BadgeDemo() {
   )
 }
 
-export function KbdDemo() {
+export const KbdDemo = () => {
   return (
     <Row>
       {keyboardShortcuts.map((shortcut) => (

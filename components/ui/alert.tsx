@@ -1,6 +1,6 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "cn"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 
 const alertVariants = cva(
   "group/alert relative grid w-full gap-0.5 rounded-none border px-2 py-2 text-left text-xs has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-16 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
@@ -15,14 +15,14 @@ const alertVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
-)
+  },
+);
 
-function Alert({
+const Alert = ({
   className,
   variant,
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) => {
   return (
     <div
       data-slot="alert"
@@ -30,49 +30,49 @@ function Alert({
       className={cn(alertVariants({ variant }), className)}
       {...props}
     />
-  )
-}
+  );
+};
 
-function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
+const AlertTitle = ({ className, ...props }: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-title"
       className={cn(
         "font-medium group-has-[>svg]/alert:col-start-2 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground",
-        className
+        className,
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-function AlertDescription({
+const AlertDescription = ({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-description"
       className={cn(
         "text-xs/relaxed text-balance text-muted-foreground md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-2",
-        className
+        className,
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
+const AlertAction = ({ className, ...props }: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-action"
       className={cn(
         "absolute top-[calc(--spacing(1))] right-[calc(--spacing(1))]",
-        className
+        className,
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Alert, AlertTitle, AlertDescription, AlertAction }
+export { Alert, AlertTitle, AlertDescription, AlertAction };

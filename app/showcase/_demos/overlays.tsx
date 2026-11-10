@@ -97,7 +97,7 @@ import {
   tooltip,
 } from "../_data/content"
 
-export function DialogDemo() {
+export const DialogDemo = () => {
   return (
     <Dialog>
       <DialogTrigger render={<Button variant="outline" />}>{dialog.trigger}</DialogTrigger>
@@ -115,7 +115,7 @@ export function DialogDemo() {
   )
 }
 
-export function AlertDialogDemo() {
+export const AlertDialogDemo = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger render={<Button variant="destructive" />}>
@@ -135,7 +135,7 @@ export function AlertDialogDemo() {
   )
 }
 
-export function SheetDemo() {
+export const SheetDemo = () => {
   return (
     <Row>
       {sheet.side.map((side) => (
@@ -156,7 +156,7 @@ export function SheetDemo() {
   )
 }
 
-export function DrawerDemo() {
+export const DrawerDemo = () => {
   return (
     <Drawer>
       <DrawerTrigger render={<Button variant="outline" />}>{drawer.trigger}</DrawerTrigger>
@@ -174,7 +174,7 @@ export function DrawerDemo() {
   )
 }
 
-export function PopoverDemo() {
+export const PopoverDemo = () => {
   return (
     <Popover>
       <PopoverTrigger render={<Button variant="outline" />}>{popover.trigger}</PopoverTrigger>
@@ -188,7 +188,7 @@ export function PopoverDemo() {
   )
 }
 
-export function TooltipDemo() {
+export const TooltipDemo = () => {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -199,7 +199,7 @@ export function TooltipDemo() {
   )
 }
 
-export function HoverCardDemo() {
+export const HoverCardDemo = () => {
   return (
     <HoverCard>
       <HoverCardTrigger render={<Button variant="link" />}>{hoverCard.trigger}</HoverCardTrigger>
@@ -211,7 +211,7 @@ export function HoverCardDemo() {
   )
 }
 
-export function DropdownMenuDemo() {
+export const DropdownMenuDemo = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="outline" />}>{menu.trigger}</DropdownMenuTrigger>
@@ -250,7 +250,7 @@ export function DropdownMenuDemo() {
   )
 }
 
-export function ContextMenuDemo() {
+export const ContextMenuDemo = () => {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex h-32 w-full max-w-sm items-center justify-center border border-dashed text-sm text-muted-foreground">
@@ -268,7 +268,7 @@ export function ContextMenuDemo() {
   )
 }
 
-export function CommandDemo() {
+export const CommandDemo = () => {
   return (
     <Command className="max-w-sm border">
       <CommandInput placeholder={common.placeholder} />

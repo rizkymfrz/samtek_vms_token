@@ -69,7 +69,7 @@ import {
 
 const tabsListVariants = ["default", "line"] as const
 
-export function TabsDemo() {
+export const TabsDemo = () => {
   return (
     <div className="flex flex-col gap-8">
       {tabsListVariants.map((variant) => (
@@ -92,7 +92,7 @@ export function TabsDemo() {
   )
 }
 
-export function AccordionDemo() {
+export const AccordionDemo = () => {
   return (
     <Accordion defaultValue={[accordion[0].value]} className="max-w-md">
       {accordion.map((item) => (
@@ -105,7 +105,7 @@ export function AccordionDemo() {
   )
 }
 
-export function CollapsibleDemo() {
+export const CollapsibleDemo = () => {
   return (
     <Collapsible className="flex w-full max-w-sm flex-col gap-2">
       <div className="flex items-center justify-between gap-4">
@@ -126,7 +126,7 @@ export function CollapsibleDemo() {
   )
 }
 
-export function BreadcrumbDemo() {
+export const BreadcrumbDemo = () => {
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -150,7 +150,7 @@ export function BreadcrumbDemo() {
   )
 }
 
-export function PaginationDemo() {
+export const PaginationDemo = () => {
   return (
     <Pagination>
       <PaginationContent>
@@ -175,7 +175,7 @@ export function PaginationDemo() {
   )
 }
 
-export function NavigationMenuDemo() {
+export const NavigationMenuDemo = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -201,7 +201,7 @@ export function NavigationMenuDemo() {
   )
 }
 
-export function MenubarDemo() {
+export const MenubarDemo = () => {
   return (
     <Menubar>
       {menubar.map((menu) => (
@@ -218,7 +218,7 @@ export function MenubarDemo() {
   )
 }
 
-export function SidebarDemo() {
+export const SidebarDemo = () => {
   return (
     <Stack className="max-w-xs">
       <SidebarProvider className="min-h-0">

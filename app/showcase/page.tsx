@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: page.description,
 }
 
-export default function ShowcasePage() {
+const ShowcasePage = () => {
   return <Showcase />
 }
+
+export default ShowcasePage

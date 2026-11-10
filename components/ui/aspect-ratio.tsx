@@ -1,10 +1,10 @@
-import { cn } from "cn"
+import { cn } from "cn";
 
-function AspectRatio({
+const AspectRatio = ({
   ratio,
   className,
   ...props
-}: React.ComponentProps<"div"> & { ratio: number }) {
+}: React.ComponentProps<"div"> & { ratio: number }) => {
   return (
     <div
       data-slot="aspect-ratio"
@@ -16,7 +16,7 @@ function AspectRatio({
       className={cn("relative aspect-(--ratio)", className)}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { AspectRatio }
+export { AspectRatio };

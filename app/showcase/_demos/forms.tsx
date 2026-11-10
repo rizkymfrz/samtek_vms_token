@@ -47,7 +47,7 @@ import { common, field, frameworks, inputGroup, otp, radio, slider } from "../_d
 
 const frameworkLabels = frameworks.map((framework) => framework.label)
 
-export function InputDemo() {
+export const InputDemo = () => {
   return (
     <Stack>
       <Input placeholder={common.placeholder} />
@@ -58,7 +58,7 @@ export function InputDemo() {
   )
 }
 
-export function TextareaDemo() {
+export const TextareaDemo = () => {
   return (
     <Stack>
       <Textarea placeholder={common.placeholder} />
@@ -67,7 +67,7 @@ export function TextareaDemo() {
   )
 }
 
-export function LabelDemo() {
+export const LabelDemo = () => {
   return (
     <Stack>
       <Label htmlFor="showcase-label-input">{field.username.label}</Label>
@@ -76,7 +76,7 @@ export function LabelDemo() {
   )
 }
 
-export function FieldDemo() {
+export const FieldDemo = () => {
   return (
     <Stack>
       <FieldSet>
@@ -103,7 +103,7 @@ export function FieldDemo() {
   )
 }
 
-export function InputGroupDemo() {
+export const InputGroupDemo = () => {
   return (
     <Stack>
       <InputGroup>
@@ -128,7 +128,7 @@ export function InputGroupDemo() {
   )
 }
 
-export function InputOTPDemo() {
+export const InputOTPDemo = () => {
   const slots = otp.groups.reduce<number[][]>((acc, size) => {
     const start = acc.flat().length
     acc.push(Array.from({ length: size }, (_, index) => start + index))
@@ -151,7 +151,7 @@ export function InputOTPDemo() {
   )
 }
 
-export function CheckboxDemo() {
+export const CheckboxDemo = () => {
   return (
     <Stack>
       <Label>
@@ -170,7 +170,7 @@ export function CheckboxDemo() {
   )
 }
 
-export function RadioGroupDemo() {
+export const RadioGroupDemo = () => {
   return (
     <RadioGroup defaultValue={radio[0].value}>
       {radio.map((option) => (
@@ -183,7 +183,7 @@ export function RadioGroupDemo() {
   )
 }
 
-export function SwitchDemo() {
+export const SwitchDemo = () => {
   return (
     <Stack>
       <Label>
@@ -202,7 +202,7 @@ export function SwitchDemo() {
   )
 }
 
-export function SliderDemo() {
+export const SliderDemo = () => {
   return (
     <Stack>
       <Label>{slider.label}</Label>
@@ -212,7 +212,7 @@ export function SliderDemo() {
   )
 }
 
-export function SelectDemo() {
+export const SelectDemo = () => {
   return (
     <Stack>
       <Select items={frameworks} defaultValue={frameworks[0].value}>
@@ -233,7 +233,7 @@ export function SelectDemo() {
   )
 }
 
-export function NativeSelectDemo() {
+export const NativeSelectDemo = () => {
   return (
     <Stack>
       <NativeSelect defaultValue={frameworks[0].value}>
@@ -247,7 +247,7 @@ export function NativeSelectDemo() {
   )
 }
 
-export function ComboboxDemo() {
+export const ComboboxDemo = () => {
   return (
     <Stack>
       <Combobox items={frameworkLabels}>
@@ -269,7 +269,7 @@ export function ComboboxDemo() {
 
 const subscribeNever = () => () => {}
 
-export function CalendarDemo() {
+export const CalendarDemo = () => {
   const [date, setDate] = React.useState<Date | undefined>()
 
   const mounted = React.useSyncExternalStore(

@@ -148,7 +148,7 @@ export const registry: readonly ShowcaseEntry[] = [
   { id: "trace", group: "chat", Demo: TraceDemo },
 ]
 
-export function titleOf(id: string) {
+export const titleOf = (id: string) => {
   const spaced = id.replace(/-/g, " ")
   return spaced.charAt(0).toUpperCase() + spaced.slice(1)
 }

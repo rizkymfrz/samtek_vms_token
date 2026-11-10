@@ -68,7 +68,7 @@ import { bubbleVariantNames, chat, markerVariantNames } from "../_data/content"
 
 type BubbleVariant = (typeof bubbleVariantNames)[number]
 
-export function BubbleDemo() {
+export const BubbleDemo = () => {
   return (
     <BubbleGroup className="max-w-md">
       {bubbleVariantNames.map((variant: BubbleVariant, index) => (
@@ -81,7 +81,7 @@ export function BubbleDemo() {
   )
 }
 
-export function MessageDemo() {
+export const MessageDemo = () => {
   return (
     <MessageGroup className="max-w-md">
       {chat.messages.map((message) => (
@@ -104,7 +104,7 @@ export function MessageDemo() {
   )
 }
 
-export function MarkerDemo() {
+export const MarkerDemo = () => {
   return (
     <Stack className="max-w-md">
       {markerVariantNames.map((variant) => (
@@ -121,7 +121,7 @@ export function MarkerDemo() {
   )
 }
 
-export function TraceDemo() {
+export const TraceDemo = () => {
   const { trace } = chat
   return (
     <Trace className="max-w-md">
@@ -169,7 +169,7 @@ const attachmentIcons = {
   idle: FileIcon,
 } as const
 
-export function AttachmentDemo() {
+export const AttachmentDemo = () => {
   return (
     <div className="flex flex-col gap-8">
       <Labelled label="horizontal">
@@ -214,7 +214,7 @@ export function AttachmentDemo() {
   )
 }
 
-export function MessageScrollerDemo() {
+export const MessageScrollerDemo = () => {
   const { scroller } = chat
   const rows = Array.from({ length: scroller.count }, (_, index) => index + 1)
   return (
@@ -241,7 +241,7 @@ export function MessageScrollerDemo() {
   )
 }
 
-export function QuestionnaireDemo() {
+export const QuestionnaireDemo = () => {
   const { questionnaire } = chat
   
   const items = questionnaire.items.map((item) => ({
@@ -280,7 +280,7 @@ export function QuestionnaireDemo() {
   )
 }
 
-export function CodeBlockDemo() {
+export const CodeBlockDemo = () => {
   const { code } = chat
   return (
     <CodeBlock className="max-w-md">

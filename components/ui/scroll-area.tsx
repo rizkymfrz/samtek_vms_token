@@ -1,14 +1,12 @@
-"use client"
+"use client";
+import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
+import { cn } from "cn";
 
-import * as React from "react"
-import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area"
-import { cn } from "cn"
-
-function ScrollArea({
+const ScrollArea = ({
   className,
   children,
   ...props
-}: ScrollAreaPrimitive.Root.Props) {
+}: ScrollAreaPrimitive.Root.Props) => {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
@@ -24,14 +22,14 @@ function ScrollArea({
       <ScrollBar />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
-  )
-}
+  );
+};
 
-function ScrollBar({
+const ScrollBar = ({
   className,
   orientation = "vertical",
   ...props
-}: ScrollAreaPrimitive.Scrollbar.Props) {
+}: ScrollAreaPrimitive.Scrollbar.Props) => {
   return (
     <ScrollAreaPrimitive.Scrollbar
       data-slot="scroll-area-scrollbar"
@@ -39,7 +37,7 @@ function ScrollBar({
       orientation={orientation}
       className={cn(
         "flex touch-none p-0.5 transition-colors select-none data-horizontal:h-2.5 data-horizontal:flex-col data-horizontal:border-t data-horizontal:border-t-transparent data-vertical:h-full data-vertical:w-2.5 data-vertical:border-l data-vertical:border-l-transparent",
-        className
+        className,
       )}
       {...props}
     >
@@ -48,7 +46,7 @@ function ScrollBar({
         className="relative flex-1 rounded-none bg-scrollbar-thumb transition-colors hover:bg-scrollbar-thumb-hover"
       />
     </ScrollAreaPrimitive.Scrollbar>
-  )
-}
+  );
+};
 
-export { ScrollArea, ScrollBar }
+export { ScrollArea, ScrollBar };

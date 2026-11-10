@@ -8,16 +8,16 @@ import { registry, titleOf, type ShowcaseEntry } from "../_registry"
 
 const groupIds = Object.keys(groups) as GroupId[]
 
-function matches(entry: ShowcaseEntry, query: string) {
+const matches = (entry: ShowcaseEntry, query: string) => {
   const needle = query.trim().toLowerCase()
   return !needle || titleOf(entry.id).toLowerCase().includes(needle)
 }
 
-export function Showcase() {
+export const Showcase = () => {
   const [query, setQuery] = React.useState("")
   const visible = registry.filter((entry) => matches(entry, query))
 
-  function toggleDark(checked: boolean) {
+  const toggleDark = (checked: boolean) => {
     document.documentElement.classList.toggle("dark", checked)
   }
 
