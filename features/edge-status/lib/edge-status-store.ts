@@ -2,8 +2,12 @@ import type { MqttClient } from "mqtt";
 import { EDGE_UP_TOPIC } from "@/config/mqtt";
 import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
+import { ingestDetections } from "./detection-store";
 import { appendSample, toSeries } from "./edge-series";
+import { ulid } from "./ulid";
 import {
+  detectionBboxesSchema,
+  edgeResultSchema,
   edgeStateSchema,
   type EdgeStatusMessage,
   edgeStatusSchema,
@@ -11,6 +15,7 @@ import {
 import type { EdgeEntry, EdgeSample, EdgeStatusState } from "../types";
 
 const TICK_MS = 1000;
+const COMMAND_TIMEOUT_MS = 5000;
 
 const EMPTY: EdgeStatusState = {
   isConnected: false,
@@ -22,6 +27,11 @@ const EMPTY: EdgeStatusState = {
 let state = EMPTY;
 let isStarted = false;
 let client: MqttClient | null = null;
+
+const pending = new Map<
+  string,
+  { resolve: () => void; reject: (error: Error) => void; timer: number }
+>();
 
 const histories = new Map<string, EdgeSample[]>();
 const listeners = new Set<() => void>();
@@ -106,6 +116,35 @@ const receive = (topic: string, payload: Uint8Array) => {
     return;
   }
   const topicEdge = topic.split("/")[2];
+  const result = edgeResultSchema.safeParse(json);
+  if (result.success) {
+    const waiting = pending.get(result.data.reply_to);
+    if (!waiting) return;
+    pending.delete(result.data.reply_to);
+    clearTimeout(waiting.timer);
+    if (result.data.data.ok) waiting.resolve();
+    else {
+      waiting.reject(
+        new Error(result.data.data.error?.message ?? "The edge refused"),
+      );
+    }
+    return;
+  }
+  const detection = detectionBboxesSchema.safeParse(json);
+  if (detection.success) {
+    const { device_id: deviceId, objects } = detection.data.data;
+    ingestDetections(
+      topicEdge,
+      deviceId,
+      objects.map((o) => ({
+        label: o.label,
+        confidence: o.confidence,
+        trackId: o.track_id ?? null,
+        ...o.bbox,
+      })),
+    );
+    return;
+  }
   const status = edgeStatusSchema.safeParse(json);
   if (status.success && status.data.data.edge_id === topicEdge) {
     const sample = toSample(status.data.data, Date.now());
@@ -160,6 +199,31 @@ export const startEdgeStatus = () => {
   client.on("message", receive);
   setInterval(tick, TICK_MS);
 };
+
+export const sendEdgeCommand = (
+  topic: string,
+  type: string,
+  data: Record<string, unknown> = {},
+) =>
+  new Promise<void>((resolve, reject) => {
+    if (!client || !state.isConnected) {
+      reject(new Error("Not connected to the MQTT broker"));
+      return;
+    }
+    const id = ulid();
+    const timer = window.setTimeout(() => {
+      pending.delete(id);
+      reject(new Error("The edge did not answer"));
+    }, COMMAND_TIMEOUT_MS);
+    pending.set(id, { resolve, reject, timer });
+    const message = { v: 1, type, id, ts: new Date().toISOString(), data };
+    client.publish(topic, JSON.stringify(message), { qos: 1 }, (error) => {
+      if (!error) return;
+      pending.delete(id);
+      clearTimeout(timer);
+      reject(error);
+    });
+  });
 
 export const subscribeEdgeStatus = (listener: () => void) => {
   listeners.add(listener);

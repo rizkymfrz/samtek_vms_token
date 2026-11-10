@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,10 +17,9 @@ import { HeaderActions } from "./header-actions";
 import { HeaderClock } from "./header-clock";
 import { HeaderNotifications } from "./header-notifications";
 import { HeaderSearch } from "./header-search";
-import { HeaderStatus } from "./header-status";
 import { ThemeSwitcher } from "./theme-switcher";
 
-export const AppHeader = () => {
+export const AppHeader = ({ status }: { status: ReactNode }) => {
   const pathname = usePathname();
   const crumbs = getBreadcrumbs(pathname);
   return (
@@ -53,7 +52,7 @@ export const AppHeader = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="ml-auto flex items-center gap-4">
-        <HeaderStatus />
+        {status}
         <HeaderClock />
         <HeaderSearch />
         <HeaderNotifications />

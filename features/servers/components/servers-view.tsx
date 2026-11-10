@@ -154,6 +154,12 @@ export const ServersView = ({
             </AlertDescription>
           </Alert>
         )}
+        {actions.restartEdgeError && (
+          <Alert variant="destructive">
+            <AlertTitle>Could not restart the edge</AlertTitle>
+            <AlertDescription>{actions.restartEdgeError}</AlertDescription>
+          </Alert>
+        )}
         {actions.removeError && (
           <Alert variant="destructive">
             <AlertTitle>Could not delete the server</AlertTitle>
@@ -171,7 +177,9 @@ export const ServersView = ({
             metrics={selectedMetrics}
             onLogs={() => setLogsOpen(true)}
             onEdit={() => setForm(selected)}
+            isRestartingEdge={actions.restartEdge.isPending}
             onRestart={() => setRestartingId(selected.id)}
+            onRestartEdge={() => actions.restartEdge.mutate(selected)}
             onDelete={() => remove(selected.id)}
           />
         ) : (

@@ -32,3 +32,30 @@ export const edgeStateSchema = z.object({
 });
 
 export type EdgeStatusMessage = z.infer<typeof edgeStatusSchema>["data"];
+
+export const edgeResultSchema = z.object({
+  type: z.literal("result"),
+  reply_to: z.string(),
+  data: z.object({
+    ok: z.boolean(),
+    error: z.object({ code: z.string(), message: z.string() }).optional(),
+  }),
+});
+
+const ratio = z.number().min(0).max(1);
+
+export const detectionBboxesSchema = z.object({
+  type: z.literal("detection.bboxes"),
+  data: z.object({
+    device_id: z.string(),
+    frame_ts: z.string(),
+    objects: z.array(
+      z.object({
+        label: z.string().min(1),
+        confidence: z.number().min(0).max(1),
+        track_id: z.number().int().nonnegative().optional(),
+        bbox: z.object({ x1: ratio, y1: ratio, x2: ratio, y2: ratio }),
+      }),
+    ),
+  }),
+});

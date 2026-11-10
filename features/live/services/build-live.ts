@@ -19,6 +19,7 @@ export const buildLive = (now = Date.now()): LiveData => {
       deviceId: d.deviceId,
       name: d.name,
       serverId: s.id,
+      serverCode: s.code,
       serverName: s.name,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,
       isRecordingEnabled: d.isRecordingEnabled,

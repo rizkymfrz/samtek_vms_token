@@ -26,7 +26,7 @@ export const WebrtcPlayer = ({
         muted
         playsInline
         aria-label={stream}
-        className="absolute inset-0 size-full bg-background object-contain"
+        className="absolute inset-0 size-full bg-background object-fill"
       />
       {hint && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-sidebar text-muted-foreground">

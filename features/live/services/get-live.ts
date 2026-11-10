@@ -42,6 +42,7 @@ export const getLive = async (): Promise<LiveData> => {
     deviceId: device.deviceId,
     name: device.name,
     serverId: device.edgeServerId,
+    serverCode: serverById.get(device.edgeServerId)?.code ?? "",
     serverName: serverById.get(device.edgeServerId)?.name ?? "Unknown",
     analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
     isRecordingEnabled: device.isRecordingEnabled,

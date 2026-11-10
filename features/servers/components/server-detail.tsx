@@ -1,13 +1,13 @@
 "use client";
 import {
   PencilIcon,
+  PowerIcon,
   RotateCwIcon,
   TagIcon,
   TerminalIcon,
   Trash2Icon,
 } from "lucide-react";
 import { useState } from "react";
-import { StatusDot } from "@/components/shared/status-dot";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,10 +37,12 @@ export const ServerDetail = ({
   groups,
   online,
   restarting,
+  isRestartingEdge,
   metrics,
   onLogs,
   onEdit,
   onRestart,
+  onRestartEdge,
   onDelete,
 }: {
   server: ServerRecord;
@@ -48,13 +50,17 @@ export const ServerDetail = ({
   groups: ServerGroup[];
   online: boolean;
   restarting: boolean;
+  isRestartingEdge: boolean;
   metrics: Metrics | null;
   onLogs: () => void;
   onEdit: () => void;
   onRestart: () => void;
+  onRestartEdge: () => void;
   onDelete: () => void;
 }) => {
-  const [confirm, setConfirm] = useState<"restart" | "delete" | null>(null);
+  const [confirm, setConfirm] = useState<"restart" | "edge" | "delete" | null>(
+    null,
+  );
   const group = groups.find((g) => g.id === server.groupId)?.name;
   const empty = !online
     ? "No data. The server is offline."
@@ -73,27 +79,18 @@ export const ServerDetail = ({
         <div className="flex flex-col gap-2">
           <div className="flex flex-col">
             <h2 className="text-base font-medium">{server.name}</h2>
-            <span className="text-xs text-muted-foreground">
-              {server.description ? `${server.description} · ` : ""}
-              {server.cameraCount}{" "}
-              {server.cameraCount === 1 ? "camera" : "cameras"}
-            </span>
+            {server.description && (
+              <p className="text-xs text-muted-foreground">
+                {server.description}
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">
-              <StatusDot shape="square" status={online ? "live" : "offline"} />
-              {restarting ? "Restarting" : online ? "Online" : "Offline"}
-            </Badge>
             {server.vendor && <Badge variant="outline">{server.vendor}</Badge>}
             {group && (
               <Badge variant="secondary">
                 <TagIcon />
                 {group}
-              </Badge>
-            )}
-            {server.hostAddress && (
-              <Badge variant="outline" className="font-mono">
-                {server.hostAddress}
               </Badge>
             )}
           </div>
@@ -109,6 +106,16 @@ export const ServerDetail = ({
             <PencilIcon />
             Edit Server
           </Button>
+          {mqttConfig && (
+            <Button
+              variant="secondary"
+              disabled={!online || isRestartingEdge}
+              onClick={() => setConfirm("edge")}
+            >
+              <PowerIcon />
+              Restart Edge
+            </Button>
+          )}
           {!isLive && (
             <Button
               variant="secondary"
@@ -207,6 +214,33 @@ export const ServerDetail = ({
               }}
             >
               Restart
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        open={confirm === "edge"}
+        onOpenChange={(open) => !open && setConfirm(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Restart the edge of {server.name}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              The edge process stops and is started again by its service
+              manager. Cameras stop streaming and analyzing until it is back.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirm(null);
+                onRestartEdge();
+              }}
+            >
+              Restart Edge
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

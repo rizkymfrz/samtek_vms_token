@@ -5,6 +5,7 @@ export type Tile = {
   deviceId: string;
   name: string;
   serverId: string;
+  serverCode: string;
   serverName: string;
   analytic: string | null;
   isRecordingEnabled: boolean;

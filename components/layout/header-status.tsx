@@ -1,10 +1,12 @@
 import { CameraIcon, type LucideIcon, ServerIcon } from "lucide-react";
-import { CAMERAS, type DeviceStatus, SERVERS } from "@/lib/mock/header-data";
 import { cn } from "@/lib/utils";
+
+type DeviceStatus = "online" | "offline";
+type Items = { status: DeviceStatus }[];
 
 const MAX_SEGMENTS = 12;
 
-const Bar = ({ items }: { items: { status: DeviceStatus }[] }) => {
+const Bar = ({ items }: { items: Items }) => {
   const online = items.filter((item) => item.status === "online").length;
   if (items.length > MAX_SEGMENTS) {
     return (
@@ -38,7 +40,7 @@ const Status = ({
 }: {
   icon: LucideIcon;
   label: string;
-  items: { status: DeviceStatus }[];
+  items: Items;
 }) => {
   const online = items.filter((item) => item.status === "online").length;
   const text = `${label}: ${online} of ${items.length} online`;
@@ -53,11 +55,17 @@ const Status = ({
   );
 };
 
-export const HeaderStatus = () => {
+export const HeaderStatus = ({
+  cameras,
+  servers,
+}: {
+  cameras: Items;
+  servers: Items;
+}) => {
   return (
     <div className="hidden items-center gap-4 text-xs xl:flex">
-      <Status icon={CameraIcon} label="Cameras" items={CAMERAS} />
-      <Status icon={ServerIcon} label="Servers" items={SERVERS} />
+      <Status icon={CameraIcon} label="Cameras" items={cameras} />
+      <Status icon={ServerIcon} label="Servers" items={servers} />
     </div>
   );
 };

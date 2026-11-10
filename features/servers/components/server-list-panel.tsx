@@ -56,8 +56,9 @@ export const ServerListPanel = ({
                 aria-pressed={server.id === selectedId}
                 onClick={() => onSelect(server.id)}
                 className={cn(
-                  "flex w-full items-center gap-2 border p-2 text-left outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
-                  server.id === selectedId && "border-primary bg-accent",
+                  "relative flex w-full items-center gap-2 border p-2 text-left outline-none before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:bg-primary before:opacity-0 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
+                  server.id === selectedId &&
+                    "border-transparent bg-accent before:opacity-100",
                 )}
               >
                 <span className="flex size-8 shrink-0 items-center justify-center bg-muted text-muted-foreground">

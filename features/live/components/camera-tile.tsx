@@ -2,6 +2,7 @@ import { ServerOffIcon, VideoOffIcon } from "lucide-react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { DetectionOverlay } from "./detection-overlay";
 import { WebrtcPlayer } from "./webrtc-player";
 import { streamName } from "../lib/relay-url";
 import type { StreamQuality, StreamState, Tile } from "../types";
@@ -44,6 +45,9 @@ export const CameraTile = ({
           <Icon className="size-8" />
           {hint && <span className="text-xs">{hint}</span>}
         </div>
+      )}
+      {isLive && tile.serverCode && (
+        <DetectionOverlay edgeId={tile.serverCode} deviceId={tile.deviceId} />
       )}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
         <Badge variant="overlay">
