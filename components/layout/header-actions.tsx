@@ -3,9 +3,7 @@ import { PlusIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-const PAGE_ACTIONS: Record<string, string> = {
-  "/users": "Add User",
-};
+const PAGE_ACTIONS: Record<string, string> = {};
 
 export const HeaderActions = () => {
   const pathname = usePathname();

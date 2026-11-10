@@ -119,8 +119,10 @@ Rules:
 - Jangan membuat route handler sebagai pengganti API backend tanpa
   alasan arsitektural yang jelas.
 - Pengecualian yang diterima: route handler di `app/api/auth/`,
-  `app/api/cameras/`, `app/api/edge-servers/`, dan `app/api/alerts/`
-  dipakai sebagai lapisan tipis (BFF) di depan API central dan Edge.
+  `app/api/alerts/`, `app/api/cameras/`, `app/api/edge-servers/`,
+  `app/api/servers/`, `app/api/live/`, `app/api/layouts/`, dan
+  `app/api/users/` dipakai sebagai lapisan tipis (BFF) di depan API
+  central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
   Handler hanya memvalidasi input, meneruskan permintaan, dan memetakan
