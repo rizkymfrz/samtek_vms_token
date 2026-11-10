@@ -4,7 +4,6 @@ import { deviceSchema } from "@/lib/api/central-devices";
 export const deviceResponseSchema = z.object({ data: deviceSchema });
 
 export const createDeviceInputSchema = z.object({
-  deviceId: z.string(),
   name: z.string(),
   isEnabled: z.boolean().optional(),
   sourceMain: z.string(),

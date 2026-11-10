@@ -4,7 +4,6 @@ import type { CameraRecord, ServerOption } from "../types";
 
 export type Draft = {
   name: string;
-  deviceId: string;
   edgeServerId: string;
   sourceMain: string;
   sourceSub: string;
@@ -15,7 +14,6 @@ export type Draft = {
 
 export const emptyDraft = (servers: ServerOption[]): Draft => ({
   name: "",
-  deviceId: "",
   edgeServerId: servers[0]?.id ?? "",
   sourceMain: "",
   sourceSub: "",
@@ -26,7 +24,6 @@ export const emptyDraft = (servers: ServerOption[]): Draft => ({
 
 export const toDraft = (camera: CameraRecord): Draft => ({
   name: camera.name,
-  deviceId: camera.deviceId,
   edgeServerId: camera.edgeServerId,
   sourceMain: camera.sourceMain,
   sourceSub: camera.sourceSub ?? "",
@@ -38,55 +35,33 @@ export const toDraft = (camera: CameraRecord): Draft => ({
 const STREAM_URL = /^(rtsp|rtsps|rtmp|rtmps|http|https|srt|udp|rtp):\/\/\S+$/i;
 const STREAM_MESSAGE = "Use a stream address such as rtsp:// or http(s)://.";
 
-export const cameraDraftSchema = (
-  cameras: CameraRecord[],
-  editingId: string | null,
-) =>
-  z
-    .object({
-      name: requiredText("Name", 100),
-      deviceId: requiredText("Device ID", 64),
-      edgeServerId: z.string().min(1, "Choose an edge server."),
-      sourceMain: z
-        .string()
-        .refine((value) => value.trim() !== "", "The main stream is required.")
-        .refine((value) => STREAM_URL.test(value.trim()), STREAM_MESSAGE),
-      sourceSub: z
-        .string()
-        .refine(
-          (value) => !value.trim() || STREAM_URL.test(value.trim()),
-          STREAM_MESSAGE,
-        ),
-      analyticId: z.string().nullable(),
-      isEnabled: z.boolean(),
-      isRecordingEnabled: z.boolean(),
-    })
-    .superRefine((draft, context) => {
-      const deviceId = draft.deviceId.trim();
-      const isTaken = cameras.some(
-        (camera) =>
-          camera.id !== editingId &&
-          camera.edgeServerId === draft.edgeServerId &&
-          camera.deviceId === deviceId,
-      );
-      if (isTaken) {
-        context.addIssue({
-          code: "custom",
-          path: ["deviceId"],
-          message: "This edge server already has a camera with that ID.",
-        });
-      }
-    });
+export const cameraDraftSchema = z.object({
+  name: requiredText("Name", 100),
+  edgeServerId: z.string().min(1, "Choose an edge server."),
+  sourceMain: z
+    .string()
+    .refine((value) => value.trim() !== "", "The main stream is required.")
+    .refine((value) => STREAM_URL.test(value.trim()), STREAM_MESSAGE),
+  sourceSub: z
+    .string()
+    .refine(
+      (value) => !value.trim() || STREAM_URL.test(value.trim()),
+      STREAM_MESSAGE,
+    ),
+  analyticId: z.string().nullable(),
+  isEnabled: z.boolean(),
+  isRecordingEnabled: z.boolean(),
+});
 
 export const saveCamera = (
   cameras: CameraRecord[],
   draft: Draft,
   editingId: string | null,
 ): CameraRecord[] => {
-  const record = (id: string): CameraRecord => ({
+  const record = (id: string, deviceId: string): CameraRecord => ({
     id,
     edgeServerId: draft.edgeServerId,
-    deviceId: draft.deviceId.trim(),
+    deviceId,
     name: draft.name.trim(),
     isEnabled: draft.isEnabled,
     sourceMain: draft.sourceMain.trim(),
@@ -98,9 +73,19 @@ export const saveCamera = (
     const nextId = String(
       Math.max(0, ...cameras.map((c) => Number(c.id) || 0)) + 1,
     );
-    return [...cameras, record(nextId)];
+    const nextDeviceId = String(
+      Math.max(
+        0,
+        ...cameras
+          .filter((c) => c.edgeServerId === draft.edgeServerId)
+          .map((c) => Number(c.deviceId) || 0),
+      ) + 1,
+    );
+    return [...cameras, record(nextId, nextDeviceId)];
   }
-  return cameras.map((c) => (c.id === editingId ? record(c.id) : c));
+  return cameras.map((c) =>
+    c.id === editingId ? record(c.id, c.deviceId) : c,
+  );
 };
 
 export const removeCamera = (cameras: CameraRecord[], id: string) =>
@@ -112,7 +97,6 @@ export const maskSource = (url: string | null): string => {
 };
 
 export const toCreatePayload = (draft: Draft) => ({
-  deviceId: draft.deviceId.trim(),
   name: draft.name.trim(),
   isEnabled: draft.isEnabled,
   sourceMain: draft.sourceMain.trim(),

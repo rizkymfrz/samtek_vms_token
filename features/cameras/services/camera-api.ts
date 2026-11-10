@@ -2,7 +2,6 @@ import { http } from "@/lib/axios/browser-client";
 import type { CameraRecord } from "../types";
 
 type CreatePayload = {
-  deviceId: string;
   name: string;
   isEnabled: boolean;
   sourceMain: string;

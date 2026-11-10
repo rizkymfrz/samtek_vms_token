@@ -245,7 +245,6 @@ export const CamerasView = ({
       </div>
       <CameraSheet
         target={sheet}
-        cameras={cameras}
         servers={servers}
         onClose={() => {
           setSheet(null);

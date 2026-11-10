@@ -4,7 +4,6 @@ import type { Discovered, ServerRecord } from "../types";
 
 export type Draft = {
   name: string;
-  code: string;
   description: string;
   groupId: string | null;
   hostAddress: string;
@@ -17,7 +16,6 @@ export type Draft = {
 
 export const emptyDraft = (): Draft => ({
   name: "",
-  code: "",
   description: "",
   groupId: null,
   hostAddress: "",
@@ -30,7 +28,6 @@ export const emptyDraft = (): Draft => ({
 
 export const toDraft = (server: ServerRecord): Draft => ({
   name: server.name,
-  code: server.code,
   description: server.description ?? "",
   groupId: server.groupId,
   hostAddress: server.hostAddress ?? "",
@@ -57,38 +54,22 @@ const optionalUrl = z.string().refine((value) => {
   return !text || (text.length <= 2048 && HTTP_URL.test(text));
 }, URL_MESSAGE);
 
-export const serverDraftSchema = (
-  servers: ServerRecord[],
-  editingId: string | null,
-) =>
-  z.object({
-    name: requiredText("Name", 100),
-    code: requiredText("Code", 100)
-      .refine(
-        (value) => /^[a-z0-9][a-z0-9-]*$/.test(value.trim()),
-        "Use lowercase letters, numbers and dashes.",
-      )
-      .refine(
-        (value) =>
-          !servers.some(
-            (server) => server.id !== editingId && server.code === value.trim(),
-          ),
-        "Another server already uses this code.",
-      ),
-    description: z.string(),
-    groupId: z.string().nullable(),
-    hostAddress: optionalHost,
-    localHostAddress: optionalHost,
-    webrtcUrl: optionalUrl,
-    webrtcUrlLocal: optionalUrl,
-    macAddress: z
-      .string()
-      .refine(
-        (value) => !value.trim() || MAC.test(value.trim()),
-        "Use the form 00:1A:2B:3C:4D:5E.",
-      ),
-    isActive: z.boolean(),
-  });
+export const serverDraftSchema = z.object({
+  name: requiredText("Name", 100),
+  description: z.string(),
+  groupId: z.string().nullable(),
+  hostAddress: optionalHost,
+  localHostAddress: optionalHost,
+  webrtcUrl: optionalUrl,
+  webrtcUrlLocal: optionalUrl,
+  macAddress: z
+    .string()
+    .refine(
+      (value) => !value.trim() || MAC.test(value.trim()),
+      "Use the form 00:1A:2B:3C:4D:5E.",
+    ),
+  isActive: z.boolean(),
+});
 
 const orNull = (value: string) => value.trim() || null;
 
@@ -99,8 +80,6 @@ export const topicsFor = (code: string) => ({
 
 export const toCreatePayload = (draft: Draft) => ({
   name: draft.name.trim(),
-  code: draft.code.trim(),
-  ...topicsFor(draft.code),
   description: orNull(draft.description) ?? undefined,
   groupId: draft.groupId ?? undefined,
   hostAddress: orNull(draft.hostAddress) ?? undefined,
@@ -129,29 +108,34 @@ export const toUpdatePayload = (draft: Draft, original: ServerRecord) => ({
   isActive: draft.isActive !== original.isActive ? draft.isActive : undefined,
 });
 
+const nextId = (servers: ServerRecord[]) =>
+  Math.max(0, ...servers.map((s) => Number(s.id) || 0)) + 1;
+
+const codeFor = (id: number) => `srv-${String(id).padStart(3, "0")}`;
+
 export const saveServer = (
   servers: ServerRecord[],
   draft: Draft,
   editingId: string | null,
 ): ServerRecord[] => {
   if (editingId === null) {
-    const id = String(
-      Math.max(0, ...servers.map((s) => Number(s.id) || 0)) + 1,
-    );
+    const next = nextId(servers);
+    const id = String(next);
+    const code = codeFor(next);
     return [
       ...servers,
       {
         id,
         groupId: draft.groupId,
         name: draft.name.trim(),
-        code: draft.code.trim(),
+        code,
         description: orNull(draft.description),
         hostAddress: orNull(draft.hostAddress),
         localHostAddress: orNull(draft.localHostAddress),
         webrtcUrl: orNull(draft.webrtcUrl),
         webrtcUrlLocal: orNull(draft.webrtcUrlLocal),
         macAddress: orNull(draft.macAddress),
-        ...topicsFor(draft.code),
+        ...topicsFor(code),
         isActive: draft.isActive,
         lastSeenAt: null,
         vendor: "Custom",
@@ -166,7 +150,6 @@ export const saveServer = (
           ...s,
           groupId: draft.groupId,
           name: draft.name.trim(),
-          code: draft.code.trim(),
           description: orNull(draft.description),
           hostAddress: orNull(draft.hostAddress),
           localHostAddress: orNull(draft.localHostAddress),
@@ -196,11 +179,10 @@ export const registerDiscovered = (
   const found = discovered.find((d) => d.id === discoveredId);
   if (!found || found.registeredServerId)
     return { servers, discovered, serverId: null };
-  const serverId = String(
-    Math.max(0, ...servers.map((s) => Number(s.id) || 0)) + 1,
-  );
+  const next = nextId(servers);
+  const serverId = String(next);
   const taken = new Set(servers.map((s) => s.code));
-  const code = taken.has(found.id) ? `${found.id}-${serverId}` : found.id;
+  const code = taken.has(found.id) ? codeFor(next) : found.id;
   return {
     serverId,
     servers: [

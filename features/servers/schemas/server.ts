@@ -11,11 +11,8 @@ export const serverIdResponseSchema = z.object({
 
 export const createServerInputSchema = z.object({
   name: z.string(),
-  code: z.string(),
   description: z.string().optional(),
   groupId: z.string().optional(),
-  mqttPublishTopic: z.string(),
-  mqttSubscribeTopic: z.string(),
   webrtcUrl: z.string().optional(),
   hostAddress: z.string().optional(),
   localHostAddress: z.string().optional(),

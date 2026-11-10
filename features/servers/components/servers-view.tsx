@@ -198,7 +198,6 @@ export const ServersView = ({
       </div>
       <ServerFormSheet
         target={form}
-        servers={servers}
         groups={groups}
         isPending={actions.save.isPending}
         error={actions.saveError}

@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useId, useMemo } from "react";
+import { useId } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,6 @@ export type FormTarget = "new" | ServerRecord | null;
 
 type TextField =
   | "name"
-  | "code"
   | "description"
   | "hostAddress"
   | "localHostAddress"
@@ -47,12 +46,6 @@ const FIELDS: {
   hint?: string;
 }[] = [
   { key: "name", label: "Name" },
-  {
-    key: "code",
-    label: "Code",
-    placeholder: "edge-main",
-    hint: "Unique. Cannot be changed later. Sets the MQTT topics.",
-  },
   { key: "description", label: "Description", placeholder: "Main building" },
   {
     key: "hostAddress",
@@ -79,7 +72,6 @@ const FIELDS: {
 
 const Form = ({
   target,
-  servers,
   groups,
   isPending,
   error,
@@ -87,7 +79,6 @@ const Form = ({
   onClose,
 }: {
   target: "new" | ServerRecord;
-  servers: ServerRecord[];
   groups: ServerGroup[];
   isPending: boolean;
   error: string | null;
@@ -96,17 +87,13 @@ const Form = ({
 }) => {
   const editing = target === "new" ? null : target;
   const formId = useId();
-  const schema = useMemo(
-    () => serverDraftSchema(servers, editing?.id ?? null),
-    [servers, editing?.id],
-  );
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<Draft>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(serverDraftSchema),
     defaultValues: editing ? toDraft(editing) : emptyDraft(),
   });
   const groupItems = [
@@ -120,7 +107,6 @@ const Form = ({
         id={`${formId}-${field.key}`}
         {...register(field.key)}
         placeholder={field.placeholder}
-        disabled={field.key === "code" && !!editing}
         aria-invalid={!!errors[field.key]}
       />
       {field.hint && !errors[field.key] && (
@@ -136,7 +122,9 @@ const Form = ({
       <SheetHeader>
         <SheetTitle>{editing ? "Edit server" : "Add server"}</SheetTitle>
         <SheetDescription>
-          {editing ? editing.code : "Register an edge server by hand."}
+          {editing
+            ? editing.code
+            : "Register an edge server. Its code is assigned automatically."}
         </SheetDescription>
       </SheetHeader>
       <form
@@ -145,7 +133,7 @@ const Form = ({
         className="flex flex-col gap-4 p-4 pt-0"
         onSubmit={handleSubmit((draft) => onSave(draft, editing?.id ?? null))}
       >
-        {FIELDS.slice(0, 3).map(renderField)}
+        {FIELDS.slice(0, 2).map(renderField)}
         <Field>
           <FieldLabel>Group</FieldLabel>
           <Controller
@@ -164,7 +152,7 @@ const Form = ({
             )}
           />
         </Field>
-        {FIELDS.slice(3).map(renderField)}
+        {FIELDS.slice(2).map(renderField)}
         {error && <FieldError>{error}</FieldError>}
         <div className="flex items-center justify-between gap-4">
           <label htmlFor={`${formId}-active`} className="text-xs font-medium">
@@ -197,7 +185,6 @@ const Form = ({
 
 export const ServerFormSheet = ({
   target,
-  servers,
   groups,
   isPending,
   error,
@@ -205,7 +192,6 @@ export const ServerFormSheet = ({
   onClose,
 }: {
   target: FormTarget;
-  servers: ServerRecord[];
   groups: ServerGroup[];
   isPending: boolean;
   error: string | null;
@@ -219,7 +205,6 @@ export const ServerFormSheet = ({
           <Form
             key={target === "new" ? "new" : target.id}
             target={target}
-            servers={servers}
             groups={groups}
             isPending={isPending}
             error={error}

@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2Icon } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { useId, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
 import {
@@ -45,7 +45,6 @@ export type SheetTarget = "new" | CameraRecord | null;
 
 const Form = ({
   target,
-  cameras,
   servers,
   isPending,
   error,
@@ -56,7 +55,6 @@ const Form = ({
   target: "new" | CameraRecord;
   isPending: boolean;
   error: string | null;
-  cameras: CameraRecord[];
   servers: ServerOption[];
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
   onDelete: (id: string) => void | Promise<void>;
@@ -65,17 +63,13 @@ const Form = ({
   const editing = target === "new" ? null : target;
   const [confirmDelete, setConfirmDelete] = useState(false);
   const formId = useId();
-  const schema = useMemo(
-    () => cameraDraftSchema(cameras, editing?.id ?? null),
-    [cameras, editing?.id],
-  );
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<Draft>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(cameraDraftSchema),
     defaultValues: editing ? toDraft(editing) : emptyDraft(servers),
   });
   const serverItems = servers.map((s) => ({ value: s.id, label: s.name }));
@@ -103,19 +97,6 @@ const Form = ({
             aria-invalid={!!errors.name}
           />
           {errors.name && <FieldError>{errors.name.message}</FieldError>}
-        </Field>
-        <Field data-invalid={!!errors.deviceId}>
-          <FieldLabel htmlFor={`${formId}-device`}>Device ID</FieldLabel>
-          <Input
-            id={`${formId}-device`}
-            {...register("deviceId")}
-            disabled={!!editing}
-            placeholder="cam-001"
-            aria-invalid={!!errors.deviceId}
-          />
-          {errors.deviceId && (
-            <FieldError>{errors.deviceId.message}</FieldError>
-          )}
         </Field>
         <Field data-invalid={!!errors.edgeServerId}>
           <FieldLabel>Edge server</FieldLabel>
@@ -273,7 +254,6 @@ const Form = ({
 
 export const CameraSheet = ({
   target,
-  cameras,
   servers,
   isPending,
   error,
@@ -284,7 +264,6 @@ export const CameraSheet = ({
   target: SheetTarget;
   isPending: boolean;
   error: string | null;
-  cameras: CameraRecord[];
   servers: ServerOption[];
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
   onDelete: (id: string) => void | Promise<void>;
@@ -297,7 +276,6 @@ export const CameraSheet = ({
           <Form
             key={target === "new" ? "new" : target.id}
             target={target}
-            cameras={cameras}
             servers={servers}
             isPending={isPending}
             error={error}
