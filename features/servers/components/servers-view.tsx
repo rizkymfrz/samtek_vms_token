@@ -2,17 +2,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { isServerOnline } from "@/config/server-status";
 import { LogSheet } from "./log-sheet";
 import { ServerDetail } from "./server-detail";
 import { type FormTarget, ServerFormSheet } from "./server-form-sheet";
 import { type DiscoverTab, ServerListPanel } from "./server-list-panel";
-import {
-  type Draft,
-  registerDiscovered,
-  removeServer,
-  saveServer,
-} from "../lib/edit-server";
+import { useServerActions } from "../hooks/use-server-actions";
+import { useServers } from "../hooks/use-servers";
+import { type Draft, registerDiscovered } from "../lib/edit-server";
 import type { Discovered, ServersData } from "../types";
 
 const SCAN_POOL: Omit<Discovered, "registeredServerId">[] = [
@@ -24,8 +22,16 @@ const SCAN_POOL: Omit<Discovered, "registeredServerId">[] = [
 const RESTART_MS = 4000;
 const SCAN_MS = 1500;
 
-export const ServersView = ({ data }: { data: ServersData }) => {
-  const [servers, setServers] = useState(data.servers);
+export const ServersView = ({
+  data,
+  isLive,
+}: {
+  data: ServersData;
+  isLive: boolean;
+}) => {
+  const { data: current } = useServers(data, isLive);
+  const { servers, groups, metrics, failures, now } = current;
+  const actions = useServerActions(isLive);
   const [discovered, setDiscovered] = useState(data.discovered);
   const [selectedId, setSelectedId] = useState<string | null>(
     data.servers[0]?.id ?? null,
@@ -38,10 +44,8 @@ export const ServersView = ({ data }: { data: ServersData }) => {
   const [logsOpen, setLogsOpen] = useState(false);
   const online = useMemo(
     () =>
-      new Set(
-        servers.filter((s) => isServerOnline(s, data.now)).map((s) => s.id),
-      ),
-    [servers, data.now],
+      new Set(servers.filter((s) => isServerOnline(s, now)).map((s) => s.id)),
+    [servers, now],
   );
   const selected = servers.find((s) => s.id === selectedId) ?? null;
   useEffect(() => {
@@ -66,11 +70,23 @@ export const ServersView = ({ data }: { data: ServersData }) => {
     }, SCAN_MS);
     return () => clearTimeout(timer);
   }, [scanning, scanCount]);
-  const save = (draft: Draft, id: string | null) => {
-    const next = saveServer(servers, draft, id);
-    setServers(next);
-    if (id === null) setSelectedId(next[next.length - 1].id);
-    setForm(null);
+  const save = async (draft: Draft, id: string | null) => {
+    try {
+      const savedId = await actions.save.mutateAsync({ draft, id });
+      if (id === null) setSelectedId(savedId);
+      setForm(null);
+    } catch {
+      return;
+    }
+  };
+  const remove = async (id: string) => {
+    const rest = servers.filter((server) => server.id !== id);
+    try {
+      await actions.remove.mutateAsync(id);
+      setSelectedId(rest[0]?.id ?? null);
+    } catch {
+      return;
+    }
   };
   return (
     <PageShell>
@@ -85,16 +101,17 @@ export const ServersView = ({ data }: { data: ServersData }) => {
           onSelect={setSelectedId}
           onAdd={() => setForm("new")}
           onTab={setTab}
+          isLive={isLive}
           onScan={() => setScanning(true)}
           onRegister={(deviceId) => {
             const result = registerDiscovered(
               servers,
               discovered,
               deviceId,
-              data.now,
+              now,
             );
             if (!result.serverId) return;
-            setServers(result.servers);
+            actions.replaceServers(() => result.servers);
             setDiscovered(result.discovered);
             setSelectedId(result.serverId);
             setTab("registered");
@@ -102,22 +119,35 @@ export const ServersView = ({ data }: { data: ServersData }) => {
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0 lg:overflow-y-auto">
+        {failures.length > 0 && (
+          <Alert variant="destructive">
+            <AlertTitle>Some data could not be loaded</AlertTitle>
+            <AlertDescription>
+              {failures
+                .map((failure) => `${failure.serverName}: ${failure.message}`)
+                .join(" · ")}
+            </AlertDescription>
+          </Alert>
+        )}
+        {actions.removeError && (
+          <Alert variant="destructive">
+            <AlertTitle>Could not delete the server</AlertTitle>
+            <AlertDescription>{actions.removeError}</AlertDescription>
+          </Alert>
+        )}
         {selected ? (
           <ServerDetail
             key={selected.id}
             server={selected}
-            groups={data.groups}
+            isLive={isLive}
+            groups={groups}
             online={online.has(selected.id)}
             restarting={restartingId === selected.id}
-            metrics={data.metrics[selected.id] ?? null}
+            metrics={metrics[selected.id] ?? null}
             onLogs={() => setLogsOpen(true)}
             onEdit={() => setForm(selected)}
             onRestart={() => setRestartingId(selected.id)}
-            onDelete={() => {
-              const rest = removeServer(servers, selected.id);
-              setServers(rest);
-              setSelectedId(rest[0]?.id ?? null);
-            }}
+            onDelete={() => remove(selected.id)}
           />
         ) : (
           <p className="flex flex-1 items-center justify-center border text-xs text-muted-foreground max-lg:py-16">
@@ -130,16 +160,21 @@ export const ServersView = ({ data }: { data: ServersData }) => {
       <ServerFormSheet
         target={form}
         servers={servers}
-        groups={data.groups}
+        groups={groups}
+        isPending={actions.save.isPending}
+        error={actions.saveError}
         onSave={save}
-        onClose={() => setForm(null)}
+        onClose={() => {
+          setForm(null);
+          actions.save.reset();
+        }}
       />
       <LogSheet
         server={
           logsOpen && selected ? { id: selected.id, name: selected.name } : null
         }
         online={selected ? online.has(selected.id) : false}
-        startedAt={data.now}
+        startedAt={now}
         onClose={() => setLogsOpen(false)}
       />
     </PageShell>

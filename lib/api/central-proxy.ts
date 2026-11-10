@@ -5,7 +5,10 @@ import {
   toCentralError,
 } from "./central-client";
 
-export const ID_PATTERN = /^[0-9]+$/;
+const ID_PATTERN = /^[0-9]+$/;
+
+export const isValidIds = (...ids: string[]) =>
+  ids.every((id) => ID_PATTERN.test(id));
 
 export const callCentral = async (
   method: "post" | "patch" | "put" | "delete",

@@ -23,6 +23,7 @@ export const ServerListPanel = ({
   onSelect,
   onAdd,
   onTab,
+  isLive,
   onScan,
   onRegister,
 }: {
@@ -30,6 +31,7 @@ export const ServerListPanel = ({
   online: Set<string>;
   selectedId: string | null;
   discovered: Discovered[];
+  isLive: boolean;
   tab: DiscoverTab;
   scanning: boolean;
   onSelect: (id: string) => void;
@@ -83,7 +85,7 @@ export const ServerListPanel = ({
                     {server.name}
                   </span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {server.vendor}
+                    {server.vendor ?? server.code}
                   </span>
                 </span>
                 <StatusDot
@@ -97,76 +99,81 @@ export const ServerListPanel = ({
           ))}
         </ul>
       </div>
-      <div className="flex flex-1 flex-col gap-2 border-t p-4">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium">Registered / Discovered</span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onScan}
-            disabled={scanning}
-          >
-            {scanning ? (
-              <Loader2Icon className="animate-spin" />
-            ) : (
-              <RadarIcon />
-            )}
-            {scanning ? "Scanning" : "Scan"}
-          </Button>
-        </div>
-        <Tabs
-          value={tab}
-          onValueChange={(value) => onTab(value as DiscoverTab)}
-        >
-          <TabsList variant="line" className="w-full">
-            <TabsTrigger value="registered">
-              Registered {registered.length}
-            </TabsTrigger>
-            <TabsTrigger value="discovered">
-              Discovered {pending.length}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <ul className="flex flex-col gap-2">
-          {shown.length === 0 && (
-            <li className="py-4 text-center text-xs text-muted-foreground">
-              {tab === "registered"
-                ? "Nothing registered from a scan yet."
-                : "No new devices. Scan the network to look again."}
-            </li>
-          )}
-          {shown.map((device) => (
-            <li key={device.id} className="flex items-center gap-2 border p-2">
-              <CctvIcon className="size-4 shrink-0 text-muted-foreground" />
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-xs font-medium">
-                  {device.id}
-                </span>{" "}
-                <span className="truncate text-xs text-muted-foreground">
-                  {device.ip} · {device.vendor}
-                </span>
-              </span>
-              {device.registeredServerId ? (
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  onClick={() => onSelect(device.registeredServerId!)}
-                >
-                  Open
-                </Button>
+      {!isLive && (
+        <div className="flex flex-1 flex-col gap-2 border-t p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium">Registered / Discovered</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onScan}
+              disabled={scanning}
+            >
+              {scanning ? (
+                <Loader2Icon className="animate-spin" />
               ) : (
-                <Button
-                  variant="outline"
-                  size="xs"
-                  onClick={() => onRegister(device.id)}
-                >
-                  Register
-                </Button>
+                <RadarIcon />
               )}
-            </li>
-          ))}
-        </ul>
-      </div>
+              {scanning ? "Scanning" : "Scan"}
+            </Button>
+          </div>
+          <Tabs
+            value={tab}
+            onValueChange={(value) => onTab(value as DiscoverTab)}
+          >
+            <TabsList variant="line" className="w-full">
+              <TabsTrigger value="registered">
+                Registered {registered.length}
+              </TabsTrigger>
+              <TabsTrigger value="discovered">
+                Discovered {pending.length}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <ul className="flex flex-col gap-2">
+            {shown.length === 0 && (
+              <li className="py-4 text-center text-xs text-muted-foreground">
+                {tab === "registered"
+                  ? "Nothing registered from a scan yet."
+                  : "No new devices. Scan the network to look again."}
+              </li>
+            )}
+            {shown.map((device) => (
+              <li
+                key={device.id}
+                className="flex items-center gap-2 border p-2"
+              >
+                <CctvIcon className="size-4 shrink-0 text-muted-foreground" />
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-xs font-medium">
+                    {device.id}
+                  </span>{" "}
+                  <span className="truncate text-xs text-muted-foreground">
+                    {device.ip} · {device.vendor}
+                  </span>
+                </span>
+                {device.registeredServerId ? (
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => onSelect(device.registeredServerId!)}
+                  >
+                    Open
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    onClick={() => onRegister(device.id)}
+                  >
+                    Register
+                  </Button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

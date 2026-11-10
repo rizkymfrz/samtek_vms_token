@@ -18,7 +18,10 @@ http.interceptors.response.use(undefined, (error: unknown) => {
   return Promise.reject(error);
 });
 
-export const messageOf = (error: unknown, fallback: string) =>
+export const messageOf = (
+  error: unknown,
+  fallback = "Something went wrong. Try again.",
+) =>
   axios.isAxiosError(error) && typeof error.response?.data?.error === "string"
     ? error.response.data.error
     : fallback;

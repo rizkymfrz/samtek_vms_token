@@ -9,9 +9,11 @@ export type ServerRecord = {
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
   macAddress: string | null;
+  mqttPublishTopic: string;
+  mqttSubscribeTopic: string;
   isActive: boolean;
   lastSeenAt: number | null;
-  vendor: string;
+  vendor: string | null;
   cameraCount: number;
 };
 
@@ -45,8 +47,11 @@ export type LogLine = {
   message: string;
 };
 
+export type ServerFailure = { serverName: string; message: string };
+
 export type ServersData = {
   now: number;
+  failures: ServerFailure[];
   servers: ServerRecord[];
   groups: ServerGroup[];
   discovered: Discovered[];

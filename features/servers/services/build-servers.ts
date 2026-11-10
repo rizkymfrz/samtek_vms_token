@@ -5,6 +5,7 @@ export const buildServers = (now = Date.now()): ServersData => {
   const { servers, discovered } = buildServerSource(now);
   return {
     now,
+    failures: [],
     servers,
     groups: GROUPS,
     discovered,

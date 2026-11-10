@@ -7,7 +7,6 @@ import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
-import { messageOf } from "@/lib/axios/browser-client";
 import { CameraCard } from "./camera-card";
 import { CameraFilterPanel } from "./camera-filter-panel";
 import { CameraSheet, type SheetTarget } from "./camera-sheet";
@@ -65,7 +64,8 @@ export const CamerasView = ({
   const [grid, setGrid] = useState(DEFAULT_GRID);
   const [page, setPage] = useState(0);
   const [sheet, setSheet] = useState<SheetTarget>(null);
-  const { save, remove, toggle } = useCameraActions(isLive);
+  const { save, remove, toggle, saveError, toggleError } =
+    useCameraActions(isLive);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
   const matches = useMemo(
@@ -119,12 +119,10 @@ export const CamerasView = ({
             </AlertDescription>
           </Alert>
         )}
-        {toggle.error && (
+        {toggleError && (
           <Alert variant="destructive">
             <AlertTitle>Could not update the camera</AlertTitle>
-            <AlertDescription>
-              {messageOf(toggle.error, "Something went wrong. Try again.")}
-            </AlertDescription>
+            <AlertDescription>{toggleError}</AlertDescription>
           </Alert>
         )}
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -235,14 +233,7 @@ export const CamerasView = ({
           remove.reset();
         }}
         isPending={save.isPending || remove.isPending}
-        error={
-          save.error || remove.error
-            ? messageOf(
-                save.error ?? remove.error,
-                "Something went wrong. Try again.",
-              )
-            : null
-        }
+        error={saveError}
         onSave={async (draft: Draft, id) => {
           try {
             await save.mutateAsync({ draft, id });

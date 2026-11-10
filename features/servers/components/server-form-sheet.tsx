@@ -44,7 +44,7 @@ const FIELDS: {
     key: "code",
     label: "Code",
     placeholder: "edge-main",
-    hint: "Unique. Used to build the MQTT topics.",
+    hint: "Unique. Cannot be changed later. Sets the MQTT topics.",
   },
   { key: "description", label: "Description", placeholder: "Main building" },
   {
@@ -74,13 +74,17 @@ const Form = ({
   target,
   servers,
   groups,
+  isPending,
+  error,
   onSave,
   onClose,
 }: {
   target: "new" | ServerRecord;
   servers: ServerRecord[];
   groups: ServerGroup[];
-  onSave: (draft: Draft, id: string | null) => void;
+  isPending: boolean;
+  error: string | null;
+  onSave: (draft: Draft, id: string | null) => void | Promise<void>;
   onClose: () => void;
 }) => {
   const editing = target === "new" ? null : target;
@@ -131,6 +135,7 @@ const Form = ({
               value={draft[field.key]}
               placeholder={field.placeholder}
               onChange={(e) => set({ [field.key]: e.target.value })}
+              disabled={field.key === "code" && !!editing}
               aria-invalid={!!errors[field.key as keyof typeof errors]}
             />
             {field.hint && !errors[field.key as keyof typeof errors] && (
@@ -177,6 +182,7 @@ const Form = ({
             )}
           </Field>
         ))}
+        {error && <FieldError>{error}</FieldError>}
         <div className="flex items-center justify-between gap-4">
           <label htmlFor={`${formId}-active`} className="text-xs font-medium">
             Active
@@ -192,7 +198,7 @@ const Form = ({
         <Button type="button" variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        <Button type="submit" form={formId}>
+        <Button type="submit" form={formId} disabled={isPending}>
           {editing ? "Save" : "Add server"}
         </Button>
       </SheetFooter>
@@ -204,13 +210,17 @@ export const ServerFormSheet = ({
   target,
   servers,
   groups,
+  isPending,
+  error,
   onSave,
   onClose,
 }: {
   target: FormTarget;
   servers: ServerRecord[];
   groups: ServerGroup[];
-  onSave: (draft: Draft, id: string | null) => void;
+  isPending: boolean;
+  error: string | null;
+  onSave: (draft: Draft, id: string | null) => void | Promise<void>;
   onClose: () => void;
 }) => {
   return (
@@ -222,6 +232,8 @@ export const ServerFormSheet = ({
             target={target}
             servers={servers}
             groups={groups}
+            isPending={isPending}
+            error={error}
             onSave={onSave}
             onClose={onClose}
           />

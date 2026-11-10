@@ -1,6 +1,6 @@
-import { Pick } from "@/components/shared/pick";
 import { buildLiveSource } from "@/lib/mock/live-source";
 import { createRandom } from "@/lib/random";
+import { topicsFor } from "../lib/edit-server";
 import type { Discovered, Metrics, ServerGroup, ServerRecord } from "../types";
 
 export const GROUPS: ServerGroup[] = [
@@ -51,6 +51,8 @@ export const buildServerSource = (now: number) => {
     webrtcUrl: s.webrtcUrl,
     webrtcUrlLocal: s.webrtcUrlLocal,
     macAddress: extra[s.id].macAddress,
+    mqttPublishTopic: topicsFor(s.code).mqttPublishTopic,
+    mqttSubscribeTopic: topicsFor(s.code).mqttSubscribeTopic,
     isActive: s.isActive,
     lastSeenAt: s.lastSeenAt ? s.lastSeenAt.getTime() : null,
     vendor: extra[s.id].vendor,

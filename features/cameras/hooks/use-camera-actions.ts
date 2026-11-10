@@ -1,5 +1,6 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { messageOf } from "@/lib/axios/browser-client";
 import { CAMERAS_QUERY_KEY } from "./use-cameras";
 import {
   type Draft,
@@ -78,5 +79,15 @@ export const useCameraActions = (isLive: boolean) => {
     },
     onSettled: refresh,
   });
-  return { save, remove, toggle };
+  const errorOf = (...errors: unknown[]) => {
+    const found = errors.find(Boolean);
+    return found ? messageOf(found) : null;
+  };
+  return {
+    save,
+    remove,
+    toggle,
+    saveError: errorOf(save.error, remove.error),
+    toggleError: errorOf(toggle.error),
+  };
 };

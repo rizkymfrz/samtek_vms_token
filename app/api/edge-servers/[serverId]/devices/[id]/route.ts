@@ -6,14 +6,14 @@ import {
 import {
   callCentral,
   errorResponse,
-  ID_PATTERN,
+  isValidIds,
 } from "@/lib/api/central-proxy";
 
 type Context = { params: Promise<{ serverId: string; id: string }> };
 
 const resolve = async ({ params }: Context) => {
   const { serverId, id } = await params;
-  if (!isLiveSource || !ID_PATTERN.test(serverId) || !ID_PATTERN.test(id)) {
+  if (!isLiveSource || !isValidIds(serverId, id)) {
     return null;
   }
   return `/v1/edge-servers/${serverId}/devices/${id}`;

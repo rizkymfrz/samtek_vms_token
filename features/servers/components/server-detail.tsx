@@ -32,6 +32,7 @@ const last = (points: number[]) => points[points.length - 1];
 
 export const ServerDetail = ({
   server,
+  isLive,
   groups,
   online,
   restarting,
@@ -42,6 +43,7 @@ export const ServerDetail = ({
   onDelete,
 }: {
   server: ServerRecord;
+  isLive: boolean;
   groups: ServerGroup[];
   online: boolean;
   restarting: boolean;
@@ -53,11 +55,13 @@ export const ServerDetail = ({
 }) => {
   const [confirm, setConfirm] = useState<"restart" | "delete" | null>(null);
   const group = groups.find((g) => g.id === server.groupId)?.name;
-  const empty = !online
-    ? "No data. The server is offline."
-    : !metrics
-      ? "Waiting for the first report."
-      : undefined;
+  const empty = isLive
+    ? "Metrics are not available from the API yet."
+    : !online
+      ? "No data. The server is offline."
+      : !metrics
+        ? "Waiting for the first report."
+        : undefined;
   const temp = metrics ? last(metrics.cpuTemp) : 0;
   const memory = metrics ? last(metrics.memory) : 0;
   const cpu = metrics ? last(metrics.cpu) : 0;
@@ -79,7 +83,7 @@ export const ServerDetail = ({
               <StatusDot shape="square" status={online ? "live" : "offline"} />
               {restarting ? "Restarting" : online ? "Online" : "Offline"}
             </Badge>
-            <Badge variant="outline">{server.vendor}</Badge>
+            {server.vendor && <Badge variant="outline">{server.vendor}</Badge>}
             {group && (
               <Badge variant="secondary">
                 <TagIcon />
@@ -94,22 +98,26 @@ export const ServerDetail = ({
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={onLogs}>
-            <TerminalIcon />
-            Log Stream
-          </Button>
+          {!isLive && (
+            <Button variant="outline" onClick={onLogs}>
+              <TerminalIcon />
+              Log Stream
+            </Button>
+          )}
           <Button variant="outline" onClick={onEdit}>
             <PencilIcon />
             Edit Server
           </Button>
-          <Button
-            variant="outline"
-            disabled={restarting}
-            onClick={() => setConfirm("restart")}
-          >
-            <RotateCwIcon className={cn(restarting && "animate-spin")} />
-            Restart Server
-          </Button>
+          {!isLive && (
+            <Button
+              variant="outline"
+              disabled={restarting}
+              onClick={() => setConfirm("restart")}
+            >
+              <RotateCwIcon className={cn(restarting && "animate-spin")} />
+              Restart Server
+            </Button>
+          )}
           <Button variant="destructive" onClick={() => setConfirm("delete")}>
             <Trash2Icon />
             Delete Server

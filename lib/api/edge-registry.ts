@@ -15,6 +15,8 @@ const centralServerSchema = z.object({
   webrtcUrl: z.string().nullable(),
   webrtcUrlLocal: z.string().nullable(),
   macAddress: z.string().nullable(),
+  mqttPublishTopic: z.string(),
+  mqttSubscribeTopic: z.string(),
   isActive: z.boolean(),
   lastSeenAt: z.iso.datetime().nullable(),
 });
@@ -24,9 +26,9 @@ export type CentralServer = Omit<
   "lastSeenAt"
 > & { lastSeenAt: number | null };
 
-const fetchCentralServers = async (token: string): Promise<CentralServer[]> => {
-  "use cache";
-  cacheLife({ revalidate: 30, expire: 60 });
+export const listCentralServers = async (
+  token: string,
+): Promise<CentralServer[]> => {
   const servers = await fetchAllPages(
     createCentralClient(token),
     "/v1/edge-servers",
@@ -38,10 +40,14 @@ const fetchCentralServers = async (token: string): Promise<CentralServer[]> => {
   }));
 };
 
-export const getCentralServers = fetchCentralServers;
+export const getCentralServers = async (token: string) => {
+  "use cache";
+  cacheLife({ revalidate: 30, expire: 60 });
+  return listCentralServers(token);
+};
 
 export const getEdgeServers = async (token: string): Promise<EdgeTarget[]> =>
-  (await fetchCentralServers(token))
+  (await getCentralServers(token))
     .filter((server) => server.isActive)
     .map(({ id, name, hostAddress, localHostAddress }) => ({
       id,

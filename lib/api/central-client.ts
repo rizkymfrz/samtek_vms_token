@@ -58,3 +58,6 @@ export const toCentralError = (error: unknown) => {
     code,
   );
 };
+
+export const failureMessage = (reason: unknown) =>
+  reason instanceof CentralError ? reason.message : "Unexpected error";

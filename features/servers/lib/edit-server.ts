@@ -91,6 +91,43 @@ export const validate = (
 
 const orNull = (value: string) => value.trim() || null;
 
+export const topicsFor = (code: string) => ({
+  mqttPublishTopic: `samtek/v1/${code.trim()}/down`,
+  mqttSubscribeTopic: `samtek/v1/${code.trim()}/up`,
+});
+
+export const toCreatePayload = (draft: Draft) => ({
+  name: draft.name.trim(),
+  code: draft.code.trim(),
+  ...topicsFor(draft.code),
+  description: orNull(draft.description) ?? undefined,
+  groupId: draft.groupId ?? undefined,
+  hostAddress: orNull(draft.hostAddress) ?? undefined,
+  localHostAddress: orNull(draft.localHostAddress) ?? undefined,
+  webrtcUrl: orNull(draft.webrtcUrl) ?? undefined,
+  webrtcUrlLocal: orNull(draft.webrtcUrlLocal) ?? undefined,
+  macAddress: orNull(draft.macAddress) ?? undefined,
+  isActive: draft.isActive,
+});
+
+const changedText = (draft: string, original: string | null) =>
+  draft.trim() !== (original ?? "") ? orNull(draft) : undefined;
+
+export const toUpdatePayload = (draft: Draft, original: ServerRecord) => ({
+  name: draft.name.trim() !== original.name ? draft.name.trim() : undefined,
+  description: changedText(draft.description, original.description),
+  groupId: draft.groupId !== original.groupId ? draft.groupId : undefined,
+  hostAddress: changedText(draft.hostAddress, original.hostAddress),
+  localHostAddress: changedText(
+    draft.localHostAddress,
+    original.localHostAddress,
+  ),
+  webrtcUrl: changedText(draft.webrtcUrl, original.webrtcUrl),
+  webrtcUrlLocal: changedText(draft.webrtcUrlLocal, original.webrtcUrlLocal),
+  macAddress: changedText(draft.macAddress, original.macAddress),
+  isActive: draft.isActive !== original.isActive ? draft.isActive : undefined,
+});
+
 export const saveServer = (
   servers: ServerRecord[],
   draft: Draft,
@@ -113,6 +150,7 @@ export const saveServer = (
         webrtcUrl: orNull(draft.webrtcUrl),
         webrtcUrlLocal: orNull(draft.webrtcUrlLocal),
         macAddress: orNull(draft.macAddress),
+        ...topicsFor(draft.code),
         isActive: draft.isActive,
         lastSeenAt: null,
         vendor: "Custom",
@@ -177,6 +215,7 @@ export const registerDiscovered = (
         webrtcUrl: null,
         webrtcUrlLocal: null,
         macAddress: null,
+        ...topicsFor(code),
         isActive: true,
         lastSeenAt: now,
         vendor: found.vendor,

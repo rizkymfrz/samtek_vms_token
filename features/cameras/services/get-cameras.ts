@@ -1,6 +1,6 @@
 import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
-import { CentralError, createCentralClient } from "@/lib/api/central-client";
+import { createCentralClient, failureMessage } from "@/lib/api/central-client";
 import { fetchAllPages } from "@/lib/api/central-pages";
 import { getCentralServers } from "@/lib/api/edge-registry";
 import { requireAccessToken } from "@/lib/auth/session";
@@ -35,10 +35,7 @@ export const getCameras = async (): Promise<CameraData> => {
     failures.push({
       serverId: id,
       serverName: name,
-      message:
-        outcome.reason instanceof CentralError
-          ? outcome.reason.message
-          : "Unexpected error",
+      message: failureMessage(outcome.reason),
     });
   });
   return {

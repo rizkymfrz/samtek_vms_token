@@ -30,3 +30,16 @@ export const fetchAllPages = async <S extends z.ZodType>(
   }
   return items;
 };
+
+export const fetchTotal = async (client: AxiosInstance, path: string) => {
+  try {
+    const { data } = await client.get<unknown>(path, {
+      params: { page: 1, pageSize: 1 },
+    });
+    return z
+      .object({ meta: z.object({ total: z.number().int().nonnegative() }) })
+      .parse(data).meta.total;
+  } catch (error) {
+    throw toCentralError(error);
+  }
+};

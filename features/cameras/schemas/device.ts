@@ -24,7 +24,7 @@ export const createDeviceInputSchema = z.object({
   isRecordingEnabled: z.boolean().optional(),
 });
 
-export const updateDeviceInputSchema = z.object({
+export const updateDeviceInputSchema = z.strictObject({
   name: z.string().optional(),
   isEnabled: z.boolean().optional(),
   sourceMain: z.string().optional(),

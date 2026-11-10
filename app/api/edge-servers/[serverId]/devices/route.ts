@@ -6,7 +6,7 @@ import {
 import {
   callCentral,
   errorResponse,
-  ID_PATTERN,
+  isValidIds,
 } from "@/lib/api/central-proxy";
 
 export const POST = async (
@@ -14,7 +14,7 @@ export const POST = async (
   { params }: { params: Promise<{ serverId: string }> },
 ) => {
   const { serverId } = await params;
-  if (!isLiveSource || !ID_PATTERN.test(serverId)) {
+  if (!isLiveSource || !isValidIds(serverId)) {
     return new Response(null, { status: 404 });
   }
   const body = createDeviceInputSchema.safeParse(
