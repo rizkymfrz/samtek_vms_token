@@ -13,6 +13,7 @@ import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useServerOnline } from "@/features/edge-status";
+import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
 import { useLayout } from "../hooks/use-layout";
@@ -47,6 +48,10 @@ export const LiveView = ({
 }) => {
   const { data: live } = useLive(data, isLive);
   const { layouts, failures } = live;
+  useFailureToast(
+    "Some edge servers did not respond",
+    failures.map((failure) => `${failure.serverName}: ${failure.message}`),
+  );
   const serverOnline = useServerOnline();
   const servers = useMemo(
     () =>
@@ -143,16 +148,6 @@ export const LiveView = ({
         ref={stage}
         className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0"
       >
-        {failures.length > 0 && (
-          <Alert variant="destructive">
-            <AlertTitle>Some edge servers did not respond</AlertTitle>
-            <AlertDescription>
-              {failures
-                .map((failure) => `${failure.serverName}: ${failure.message}`)
-                .join(" · ")}
-            </AlertDescription>
-          </Alert>
-        )}
         {actions.error && (
           <Alert variant="destructive">
             <AlertTitle>Could not update the layout</AlertTitle>

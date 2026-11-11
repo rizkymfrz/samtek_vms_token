@@ -11,6 +11,7 @@ import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useFailureToast } from "@/hooks/use-failure-toast";
 import { type DialogTarget, UserDialog } from "./user-dialog";
 import { UserTable } from "./user-table";
 import { useUserActions } from "../hooks/use-user-actions";
@@ -35,6 +36,10 @@ export const UsersView = ({
 }) => {
   const { data: current } = useUsers(data, isLive);
   const { users, roles, failures } = current;
+  useFailureToast(
+    "Some data could not be loaded",
+    failures.map((failure) => `${failure.source}: ${failure.message}`),
+  );
   const { save, remove, saveError, removeError } = useUserActions(isLive);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
@@ -58,16 +63,6 @@ export const UsersView = ({
   );
   return (
     <div className="flex flex-col gap-4 p-4">
-      {failures.length > 0 && (
-        <Alert variant="destructive">
-          <AlertTitle>Some data could not be loaded</AlertTitle>
-          <AlertDescription>
-            {failures
-              .map((failure) => `${failure.source}: ${failure.message}`)
-              .join(" · ")}
-          </AlertDescription>
-        </Alert>
-      )}
       {warning && (
         <Alert variant="destructive">
           <AlertTitle>Saved with a problem</AlertTitle>

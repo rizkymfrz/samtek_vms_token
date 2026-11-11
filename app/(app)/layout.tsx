@@ -1,6 +1,7 @@
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/toast";
 import { UserMenu } from "@/features/auth/components/user-menu";
 import { DeviceStatus } from "@/features/cameras/components/device-status";
 import { EdgeStatusConnector } from "@/features/edge-status";
@@ -10,13 +11,15 @@ const AppLayout = ({ children }: LayoutProps<"/">) => {
   return (
     <QueryProvider>
       <EdgeStatusConnector />
-      <SidebarProvider>
-        <AppSidebar footer={<UserMenu />} />
-        <SidebarInset className="min-w-0">
-          <AppHeader status={<DeviceStatus />} />
-          <main className="flex-1">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
+      <Toaster>
+        <SidebarProvider>
+          <AppSidebar footer={<UserMenu />} />
+          <SidebarInset className="min-w-0">
+            <AppHeader status={<DeviceStatus />} />
+            <main className="flex-1">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+      </Toaster>
     </QueryProvider>
   );
 };

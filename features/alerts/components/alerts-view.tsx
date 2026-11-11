@@ -5,8 +5,8 @@ import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { useFailureToast } from "@/hooks/use-failure-toast";
 import { AlertDetailDialog } from "./alert-detail-dialog";
 import { AlertsTable } from "./alerts-table";
 import { AlertTile } from "./alert-tile";
@@ -45,6 +45,10 @@ const gridItems = GRID_PRESETS.map(([rows, columns]) => ({
 }));
 
 export const AlertsView = ({ data }: { data: AlertsData }) => {
+  useFailureToast(
+    "Some edge servers did not respond",
+    data.failures.map((failure) => `${failure.edgeName}: ${failure.message}`),
+  );
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [view, setView] = useState<View>("grid");
   const [grid, setGrid] = useState(DEFAULT_GRID);
@@ -83,16 +87,6 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
-        {data.failures.length > 0 && (
-          <Alert variant="destructive">
-            <AlertTitle>Some edge servers did not respond</AlertTitle>
-            <AlertDescription>
-              {data.failures
-                .map((failure) => `${failure.edgeName}: ${failure.message}`)
-                .join(" · ")}
-            </AlertDescription>
-          </Alert>
-        )}
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="mr-2 text-xs text-muted-foreground tabular-nums">
             {matches.length === 0

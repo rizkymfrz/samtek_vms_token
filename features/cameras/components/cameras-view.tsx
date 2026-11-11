@@ -15,6 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { useServerOnline } from "@/features/edge-status";
+import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraCard } from "./camera-card";
 import { CameraDialog, type DialogTarget } from "./camera-dialog";
 import { CameraFilterPanel } from "./camera-filter-panel";
@@ -67,6 +68,10 @@ export const CamerasView = ({
 }) => {
   const { data: current } = useCameras(data, isLive);
   const { cameras, failures } = current;
+  useFailureToast(
+    "Some edge servers did not respond",
+    failures.map((failure) => `${failure.serverName}: ${failure.message}`),
+  );
   const serverOnline = useServerOnline();
   const servers = useMemo(
     () =>
@@ -127,16 +132,6 @@ export const CamerasView = ({
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
-        {failures.length > 0 && (
-          <Alert variant="destructive">
-            <AlertTitle>Some edge servers did not respond</AlertTitle>
-            <AlertDescription>
-              {failures
-                .map((failure) => `${failure.serverName}: ${failure.message}`)
-                .join(" · ")}
-            </AlertDescription>
-          </Alert>
-        )}
         {toggleError && (
           <Alert variant="destructive">
             <AlertTitle>Could not update the camera</AlertTitle>

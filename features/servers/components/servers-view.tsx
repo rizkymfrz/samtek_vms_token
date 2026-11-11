@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { mqttConfig } from "@/config/mqtt";
 import { isServerOnline } from "@/config/server-status";
 import { useEdgeStatus, useServerOnline } from "@/features/edge-status";
+import { useFailureToast } from "@/hooks/use-failure-toast";
 import { DeleteServerDialog } from "./delete-server-dialog";
 import { LogDialog } from "./log-dialog";
 import { ServerDetail } from "./server-detail";
@@ -37,6 +38,10 @@ export const ServersView = ({
 }) => {
   const { data: current } = useServers(data, isLive);
   const { servers, groups, metrics, failures, now } = current;
+  useFailureToast(
+    "Some data could not be loaded",
+    failures.map((failure) => `${failure.serverName}: ${failure.message}`),
+  );
   const actions = useServerActions(isLive);
   const [discovered, setDiscovered] = useState(data.discovered);
   const [selectedId, setSelectedId] = useState<string | null>(
@@ -49,7 +54,7 @@ export const ServersView = ({
   const [form, setForm] = useState<FormTarget>(null);
   const [logsOpen, setLogsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { entries, error: brokerError } = useEdgeStatus();
+  const { entries, recording, error: brokerError } = useEdgeStatus();
   const serverOnline = useServerOnline();
   const online = useMemo(
     () =>
@@ -63,7 +68,7 @@ export const ServersView = ({
   const selected = servers.find((s) => s.id === selectedId) ?? null;
   const entry = selected ? entries.get(selected.id) : undefined;
   const selectedMetrics = entry
-    ? toMetrics(entry)
+    ? toMetrics(entry, recording.get(selected?.id ?? "")?.retentionDays ?? null)
     : selected
       ? (metrics[selected.id] ?? null)
       : null;
@@ -139,16 +144,6 @@ export const ServersView = ({
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0 lg:overflow-y-auto">
-        {failures.length > 0 && (
-          <Alert variant="destructive">
-            <AlertTitle>Some data could not be loaded</AlertTitle>
-            <AlertDescription>
-              {failures
-                .map((failure) => `${failure.serverName}: ${failure.message}`)
-                .join(" · ")}
-            </AlertDescription>
-          </Alert>
-        )}
         {mqttConfig && brokerError && (
           <Alert variant="destructive">
             <AlertTitle>Could not reach the MQTT broker</AlertTitle>
