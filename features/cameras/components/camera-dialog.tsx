@@ -1,9 +1,10 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2Icon } from "lucide-react";
+import { CircleDotIcon, PowerIcon, Trash2Icon } from "lucide-react";
 import { useId, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
+import { ToggleCard } from "@/components/shared/toggle-card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +30,6 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { ANALYTICS } from "@/config/analytics-catalog";
 import {
   cameraDraftSchema,
@@ -173,44 +173,34 @@ const Form = ({
                 <FieldError>{errors.sourceSub.message}</FieldError>
               )}
             </Field>
-            <div className="flex items-center justify-between gap-4">
-              <label
-                htmlFor={`${formId}-enabled`}
-                className="text-xs font-medium"
-              >
-                Enabled
-              </label>
-              <Controller
-                control={control}
-                name="isEnabled"
-                render={({ field }) => (
-                  <Switch
-                    id={`${formId}-enabled`}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <label
-                htmlFor={`${formId}-recording`}
-                className="text-xs font-medium"
-              >
-                Recording
-              </label>
-              <Controller
-                control={control}
-                name="isRecordingEnabled"
-                render={({ field }) => (
-                  <Switch
-                    id={`${formId}-recording`}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-            </div>
+            <Controller
+              control={control}
+              name="isEnabled"
+              render={({ field }) => (
+                <ToggleCard
+                  id={`${formId}-enabled`}
+                  icon={<PowerIcon />}
+                  label="Enabled"
+                  description="Turn the camera on or off. A disabled camera stops streaming and analyzing."
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="isRecordingEnabled"
+              render={({ field }) => (
+                <ToggleCard
+                  id={`${formId}-recording`}
+                  icon={<CircleDotIcon />}
+                  label="Recording"
+                  description="Record this camera's footage on the edge server."
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
             {error && <FieldError>{error}</FieldError>}
             {editing && (
               <p className="text-xs text-muted-foreground">

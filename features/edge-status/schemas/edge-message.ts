@@ -26,9 +26,33 @@ export const edgeStatusSchema = z.object({
   }),
 });
 
+const paramSpecSchema = z.object({
+  type: z.enum(["boolean", "integer", "number", "string", "array"]).optional(),
+  enum: z.array(z.string()).optional(),
+  items: z.object({ enum: z.array(z.string()).optional() }).optional(),
+  format: z.string().optional(),
+  minimum: z.number().optional(),
+  maximum: z.number().optional(),
+  default: z.unknown().optional(),
+});
+
+const announcedAnalyticSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  params_schema: z
+    .object({ properties: z.record(z.string(), paramSpecSchema).optional() })
+    .optional(),
+});
+
+export type AnnouncedAnalytic = z.infer<typeof announcedAnalyticSchema>;
+
 export const edgeStateSchema = z.object({
   type: z.literal("edge.state"),
-  data: z.object({ edge_id: z.string(), online: z.boolean() }),
+  data: z.object({
+    edge_id: z.string(),
+    online: z.boolean(),
+    analytics: z.array(announcedAnalyticSchema).optional().catch(undefined),
+  }),
 });
 
 export type EdgeStatusMessage = z.infer<typeof edgeStatusSchema>["data"];

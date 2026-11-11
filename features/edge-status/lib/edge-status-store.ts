@@ -2,6 +2,7 @@ import type { MqttClient } from "mqtt";
 import { EDGE_UP_TOPIC } from "@/config/mqtt";
 import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
+import { toDescriptors } from "./analytic-catalog";
 import { ingestDetections } from "./detection-store";
 import { appendSample, toSeries } from "./edge-series";
 import { ulid } from "./ulid";
@@ -12,8 +13,14 @@ import {
   type EdgeStatusMessage,
   edgeStatusSchema,
 } from "../schemas/edge-message";
-import type { EdgeEntry, EdgeSample, EdgeStatusState } from "../types";
+import type {
+  AnalyticDescriptor,
+  EdgeEntry,
+  EdgeSample,
+  EdgeStatusState,
+} from "../types";
 
+const NO_CATALOG: AnalyticDescriptor[] = [];
 const TICK_MS = 1000;
 const COMMAND_TIMEOUT_MS = 5000;
 
@@ -22,6 +29,7 @@ const EMPTY: EdgeStatusState = {
   error: null,
   entries: new Map(),
   online: new Set(),
+  catalog: new Map(),
 };
 
 let state = EMPTY;
@@ -107,6 +115,14 @@ const dropEdge = (edgeId: string) => {
   });
 };
 
+const setCatalog = (edgeId: string, next: AnalyticDescriptor[] | null) => {
+  if (next === null && !state.catalog.has(edgeId)) return;
+  const catalog = new Map(state.catalog);
+  if (next === null) catalog.delete(edgeId);
+  else catalog.set(edgeId, next);
+  setState({ catalog });
+};
+
 const receive = (topic: string, payload: Uint8Array) => {
   let json: unknown;
   try {
@@ -158,10 +174,13 @@ const receive = (topic: string, payload: Uint8Array) => {
     });
     return;
   }
-  const gone = edgeStateSchema.safeParse(json);
-  if (gone.success) {
-    if (!gone.data.data.online && state.entries.has(topicEdge)) {
-      dropEdge(topicEdge);
+  const announced = edgeStateSchema.safeParse(json);
+  if (announced.success) {
+    const { online, analytics } = announced.data.data;
+    if (online && analytics) setCatalog(topicEdge, toDescriptors(analytics));
+    if (!online) {
+      setCatalog(topicEdge, null);
+      if (state.entries.has(topicEdge)) dropEdge(topicEdge);
     }
     return;
   }
@@ -234,5 +253,10 @@ export const subscribeEdgeStatus = (listener: () => void) => {
 
 export const getEdgeStatus = () => state;
 export const getServerEdgeStatus = () => EMPTY;
+export const getServerEdgeCatalog = () => NO_CATALOG;
 export const getOnlineEdges = () => state.online;
+
+export const getEdgeCatalog = (edgeId: string) =>
+  state.catalog.get(edgeId) ?? NO_CATALOG;
+
 export const getServerOnlineEdges = () => EMPTY.online;

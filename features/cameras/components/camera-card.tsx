@@ -32,7 +32,7 @@ export const CameraCard = ({
       onClick={onSelect}
       aria-label={`${name}, ${STATE_LABEL[state]}`}
       className={cn(
-        "relative aspect-video w-full overflow-hidden border-r border-b bg-sidebar text-left text-sidebar-foreground outline-none hover:ring-2 hover:ring-ring hover:ring-inset focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+        "relative aspect-video w-full overflow-hidden border-r border-b bg-sidebar text-left text-sidebar-foreground outline-none",
         className,
       )}
     >

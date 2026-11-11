@@ -2,8 +2,10 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { mqttConfig } from "@/config/mqtt";
 import {
+  getEdgeCatalog,
   getEdgeStatus,
   getOnlineEdges,
+  getServerEdgeCatalog,
   getServerEdgeStatus,
   getServerOnlineEdges,
   subscribeEdgeStatus,
@@ -24,3 +26,10 @@ export const useServerOnline = () => {
     [online],
   );
 };
+
+export const useAnalyticCatalog = (edgeId: string) =>
+  useSyncExternalStore(
+    subscribeEdgeStatus,
+    () => getEdgeCatalog(edgeId),
+    getServerEdgeCatalog,
+  );

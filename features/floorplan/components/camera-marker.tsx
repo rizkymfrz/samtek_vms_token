@@ -46,11 +46,9 @@ export const CameraMarker = ({
       title={camera.name}
       style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
       className={cn(
-        "absolute z-10 flex size-8 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none items-center justify-center border bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing",
+        "absolute z-10 flex size-8 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none items-center justify-center border bg-background outline-none active:cursor-grabbing",
         camera.state === "live" ? "text-chart-2" : "text-muted-foreground",
-        selected
-          ? "z-20 border-primary ring-2 ring-primary"
-          : "hover:border-ring",
+        selected ? "z-20 border-primary" : "hover:border-ring",
       )}
       onPointerDown={(event) => {
         if (event.button !== 0) return;

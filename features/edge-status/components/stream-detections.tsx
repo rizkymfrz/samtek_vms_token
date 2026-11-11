@@ -1,6 +1,10 @@
 "use client";
-import { type DetectionObject, useDetections } from "@/features/edge-status";
+import { ScanEyeIcon } from "lucide-react";
+import { useState } from "react";
+import { Toggle } from "@/components/ui/toggle";
 import { cn } from "@/lib/utils";
+import { useDetections } from "../hooks/use-detections";
+import type { DetectionObject } from "../types";
 
 const TONES = [
   "text-chart-1 bg-chart-1/10 shadow-[0_0_12px_-2px_var(--chart-1)]",
@@ -58,7 +62,7 @@ const Box = ({ object }: { object: DetectionObject }) => {
   );
 };
 
-export const DetectionOverlay = ({
+const DetectionOverlay = ({
   edgeId,
   deviceId,
 }: {
@@ -72,5 +76,34 @@ export const DetectionOverlay = ({
         <Box key={object.trackId ?? `i${index}`} object={object} />
       ))}
     </div>
+  );
+};
+
+export const StreamDetections = ({
+  edgeId,
+  deviceId,
+}: {
+  edgeId: string;
+  deviceId: string;
+}) => {
+  const [hasDetections, setHasDetections] = useState(false);
+  return (
+    <>
+      {hasDetections && (
+        <DetectionOverlay edgeId={edgeId} deviceId={deviceId} />
+      )}
+      <div className="absolute right-2 bottom-2 flex items-center rounded border bg-background opacity-0 transition-opacity group-hover/tile:opacity-100 focus-within:opacity-100">
+        <Toggle
+          size="sm"
+          pressed={hasDetections}
+          onPressedChange={setHasDetections}
+          aria-label="Detections"
+          title="Detections"
+          className="aria-pressed:text-primary"
+        >
+          <ScanEyeIcon />
+        </Toggle>
+      </div>
+    </>
   );
 };

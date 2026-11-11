@@ -1,8 +1,10 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PowerIcon } from "lucide-react";
 import { useId } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
+import { ToggleCard } from "@/components/shared/toggle-card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,7 +25,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import {
   type Draft,
   emptyDraft,
@@ -164,25 +165,20 @@ const Form = ({
           <DialogSection>
             {FIELDS.slice(2).map(renderField)}
             {error && <FieldError>{error}</FieldError>}
-            <div className="flex items-center justify-between gap-4">
-              <label
-                htmlFor={`${formId}-active`}
-                className="text-xs font-medium"
-              >
-                Active
-              </label>
-              <Controller
-                control={control}
-                name="isActive"
-                render={({ field }) => (
-                  <Switch
-                    id={`${formId}-active`}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-            </div>
+            <Controller
+              control={control}
+              name="isActive"
+              render={({ field }) => (
+                <ToggleCard
+                  id={`${formId}-active`}
+                  icon={<PowerIcon />}
+                  label="Active"
+                  description="An inactive server is ignored and shown as offline."
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
           </DialogSection>
         </form>
       </DialogBody>

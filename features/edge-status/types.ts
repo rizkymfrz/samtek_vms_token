@@ -1,3 +1,5 @@
+import type { ParamValue } from "@/lib/api/analytic-params";
+
 export type EdgeSample = {
   receivedAt: number;
   uptimeSeconds: number;
@@ -26,6 +28,7 @@ export type EdgeStatusState = {
   error: string | null;
   entries: ReadonlyMap<string, EdgeEntry>;
   online: ReadonlySet<string>;
+  catalog: ReadonlyMap<string, AnalyticDescriptor[]>;
 };
 
 export type DetectionObject = {
@@ -36,4 +39,31 @@ export type DetectionObject = {
   y1: number;
   x2: number;
   y2: number;
+};
+
+export type ParamKind =
+  | "boolean"
+  | "integer"
+  | "number"
+  | "text"
+  | "choice"
+  | "list"
+  | "range"
+  | "time"
+  | "date"
+  | "datetime";
+
+export type ParamSpec = {
+  key: string;
+  kind: ParamKind;
+  options: string[];
+  min: number | null;
+  max: number | null;
+  fallback: ParamValue | null;
+};
+
+export type AnalyticDescriptor = {
+  id: string;
+  name: string;
+  params: ParamSpec[];
 };

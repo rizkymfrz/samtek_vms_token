@@ -1,11 +1,9 @@
 "use client";
 import { ServerOffIcon, VideoOffIcon } from "lucide-react";
-import { useState } from "react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
+import { StreamDetections } from "@/features/edge-status";
 import { cn } from "@/lib/utils";
-import { DetectionOverlay } from "./detection-overlay";
-import { TileControls } from "./tile-controls";
 import { WebrtcPlayer } from "./webrtc-player";
 import { streamName } from "../lib/relay-url";
 import type { StreamQuality, StreamState, Tile } from "../types";
@@ -25,7 +23,6 @@ export const CameraTile = ({
   quality: StreamQuality;
   className?: string;
 }) => {
-  const [hasDetections, setHasDetections] = useState(false);
   const { label, hint } = STATE[tile.state];
   const Icon = tile.state === "disabled" ? VideoOffIcon : ServerOffIcon;
   const isLive = tile.state === "live";
@@ -49,9 +46,7 @@ export const CameraTile = ({
           {hint && <span className="text-xs">{hint}</span>}
         </div>
       )}
-      {isLive && hasDetections && (
-        <DetectionOverlay edgeId={tile.serverId} deviceId={tile.id} />
-      )}
+      {isLive && <StreamDetections edgeId={tile.serverId} deviceId={tile.id} />}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
         <Badge variant="overlay">
           <StatusDot
@@ -75,12 +70,6 @@ export const CameraTile = ({
       >
         <span className="truncate">{tile.name}</span>
       </Badge>
-      {isLive && (
-        <TileControls
-          hasDetections={hasDetections}
-          onDetectionsChange={setHasDetections}
-        />
-      )}
     </div>
   );
 };

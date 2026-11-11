@@ -1,9 +1,10 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2Icon } from "lucide-react";
+import { Trash2Icon, UserCheckIcon } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
+import { ToggleCard } from "@/components/shared/toggle-card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +30,6 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import {
   type Draft,
   emptyDraft,
@@ -172,25 +172,20 @@ const Form = ({
                 )}
               />
             </Field>
-            <div className="flex items-center justify-between gap-4">
-              <label
-                htmlFor={`${formId}-active`}
-                className="text-xs font-medium"
-              >
-                Active
-              </label>
-              <Controller
-                control={control}
-                name="isActive"
-                render={({ field }) => (
-                  <Switch
-                    id={`${formId}-active`}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-            </div>
+            <Controller
+              control={control}
+              name="isActive"
+              render={({ field }) => (
+                <ToggleCard
+                  id={`${formId}-active`}
+                  icon={<UserCheckIcon />}
+                  label="Active"
+                  description="An inactive user can no longer sign in."
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
             {error && <FieldError>{error}</FieldError>}
           </DialogSection>
         </form>

@@ -24,8 +24,11 @@ const toPoints = (points: Point[]) =>
 
 const percent = (value: number) => `${value * 100}%`;
 const STROKE = "stroke-2 [vector-effect:non-scaling-stroke]";
-const HALO = "stroke-[5px] stroke-draw-halo [vector-effect:non-scaling-stroke]";
-const DRAFT = `${STROKE} animate-dash-flow stroke-draw [filter:drop-shadow(0_0_3px_var(--draw))]`;
+
+const HALO =
+  "stroke-[5px] stroke-background [vector-effect:non-scaling-stroke]";
+
+const DRAFT = `${STROKE} animate-dash-flow stroke-chart-1 [filter:drop-shadow(0_0_3px_var(--chart-1))]`;
 
 const DrawingLayer = ({
   perimeters,
@@ -117,7 +120,7 @@ const DrawingLayer = ({
       aria-label="Perimeter drawing area"
       tabIndex={0}
       onKeyDown={onKeyDown}
-      className="absolute inset-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+      className="absolute inset-0 outline-none"
     >
       <svg
         viewBox="0 0 1 1"
@@ -177,7 +180,7 @@ const DrawingLayer = ({
             />
             <polyline
               points={toPoints(cursor ? [...draft, cursor] : draft)}
-              className={cn(DRAFT, "fill-draw/10")}
+              className={cn(DRAFT, "fill-chart-1/10")}
               strokeDasharray="6 4"
             />
           </>
@@ -246,7 +249,7 @@ const DrawingLayer = ({
           key={index}
           style={{ left: percent(point.x), top: percent(point.y) }}
           className={cn(
-            "pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-draw ring-2 ring-draw-halo shadow-[0_0_8px_var(--draw)]",
+            "pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-chart-1 shadow-[0_0_8px_var(--chart-1)]",
             index === 0 ? "size-2" : "size-1",
           )}
         />

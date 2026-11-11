@@ -1,7 +1,8 @@
 import { MinusIcon, PentagonIcon } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { FieldError } from "@/components/ui/field";
+import { Separator } from "@/components/ui/separator";
 import type {
   AreaShape,
   LineShape,
@@ -9,6 +10,7 @@ import type {
   Point,
 } from "@/lib/api/perimeters";
 import { PerimeterCanvas } from "./perimeter-canvas";
+import { PerimeterForm } from "./perimeter-form";
 import { PerimeterList } from "./perimeter-list";
 import { StreamFrame } from "./stream-frame";
 import {
@@ -30,7 +32,6 @@ export const PerimeterPanel = ({
   perimeters,
   tool,
   selection,
-  error,
   onToolChange,
   onSelect,
   onChange,
@@ -40,7 +41,6 @@ export const PerimeterPanel = ({
   perimeters: Perimeters;
   tool: Tool;
   selection: Selection;
-  error: string | null;
   onToolChange: (tool: Tool) => void;
   onSelect: (selection: Selection) => void;
   onChange: (perimeters: Perimeters) => void;
@@ -63,11 +63,19 @@ export const PerimeterPanel = ({
     onChange(updateLine(perimeters, index, patch));
   const changeArea = (index: number, patch: Partial<AreaShape>) =>
     onChange(updateArea(perimeters, index, patch));
-  const remove = () => {
-    if (!selection) return;
-    onChange(removeShape(perimeters, selection));
-    onSelect(null);
+  const remove = (target: NonNullable<Selection>) => {
+    onChange(removeShape(perimeters, target));
+    if (selection?.kind !== target.kind) return;
+    if (selection.index === target.index) onSelect(null);
+    else if (selection.index > target.index) {
+      onSelect({ kind: target.kind, index: selection.index - 1 });
+    }
   };
+  const isSelected =
+    selection !== null &&
+    (selection.kind === "line"
+      ? perimeters.lines[selection.index] !== undefined
+      : perimeters.areas[selection.index] !== undefined);
   return (
     <section className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-1">
@@ -76,12 +84,6 @@ export const PerimeterPanel = ({
           Draw the detection zones on the frame, then save your changes.
         </p>
       </div>
-      {error && (
-        <Alert variant="destructive">
-          <AlertTitle>Could not save the perimeters</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
       <div className="flex gap-2">
         <Button
           variant={tool === "line" ? "default" : "secondary"}
@@ -120,14 +122,35 @@ export const PerimeterPanel = ({
       >
         <StreamFrame detail={detail} state={state} quality="sub" />
       </PerimeterCanvas>
-      <PerimeterList
-        perimeters={perimeters}
-        selection={selection}
-        onSelect={onSelect}
-        onChangeLine={changeLine}
-        onChangeArea={changeArea}
-        onRemove={remove}
-      />
+      <div className="@container">
+        <Card className="h-64 py-0 @xl:h-48">
+          <div className="flex h-full min-h-0 flex-col @xl:flex-row">
+            <PerimeterList
+              perimeters={perimeters}
+              selection={selection}
+              onSelect={onSelect}
+              onRemove={remove}
+            />
+            {isSelected && (
+              <>
+                <Separator className="@xl:hidden" />
+                <Separator
+                  orientation="vertical"
+                  className="hidden @xl:block"
+                />
+                <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-4">
+                  <PerimeterForm
+                    perimeters={perimeters}
+                    selection={selection}
+                    onChangeLine={changeLine}
+                    onChangeArea={changeArea}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </Card>
+      </div>
       {hasDuplicateNames(perimeters) && (
         <FieldError>Every line and area needs its own name.</FieldError>
       )}

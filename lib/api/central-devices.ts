@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { analyticParamsSchema } from "./analytic-params";
 import { createCentralClient, failureMessage } from "./central-client";
 import { fetchAllPages } from "./central-pages";
 import type { CentralServer } from "./edge-registry";
@@ -12,6 +13,7 @@ export const deviceSchema = z.object({
   sourceMain: z.string(),
   sourceSub: z.string().nullable(),
   analyticId: z.string().nullable(),
+  analyticParams: analyticParamsSchema.nullable().default(null),
   perimeters: perimetersSchema.nullable().default(null),
   isRecordingEnabled: z.boolean(),
 });

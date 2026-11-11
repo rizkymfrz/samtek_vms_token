@@ -7,19 +7,22 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { cn } from "@/lib/utils";
 
 export const EmptyState = ({
   icon,
   title,
   description,
   children,
+  className,
 }: {
   icon: ReactNode;
   title: string;
   description?: string;
   children?: ReactNode;
+  className?: string;
 }) => (
-  <Empty className="rounded border max-lg:py-16">
+  <Empty className={cn("rounded border max-lg:py-16", className)}>
     <EmptyHeader>
       <EmptyMedia variant="icon">{icon}</EmptyMedia>
       <EmptyTitle>{title}</EmptyTitle>

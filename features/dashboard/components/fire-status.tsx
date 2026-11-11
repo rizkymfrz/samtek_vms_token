@@ -64,7 +64,7 @@ export const FireStatus = ({ fire }: { fire: Dashboard["fire"] }) => {
                   style={{ left: `${event.position * 100}%` }}
                   title={`${MARKS[event.kind].label} · ${event.device} · ${event.time}`}
                 >
-                  <Mark kind={event.kind} className="block ring-2 ring-card" />
+                  <Mark kind={event.kind} className="block" />
                 </span>
               ))}
             </div>

@@ -12,12 +12,16 @@ type Device = {
   edgeServerId: string;
   name: string;
   isEnabled: boolean;
+  sourceMain: string;
   sourceSub: string | null;
+  isRecordingEnabled: boolean;
   analyticId: string | null;
+  analyticParams?: CameraDetail["analyticParams"] | null;
   perimeters?: CameraDetail["perimeters"] | null;
 };
 
 type Server = {
+  name: string;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
   isActive: boolean;
@@ -31,6 +35,10 @@ const toDetail = (
   id: device.id,
   edgeServerId: device.edgeServerId,
   name: device.name,
+  serverName: server.name,
+  sourceMain: device.sourceMain,
+  sourceSub: device.sourceSub,
+  isRecordingEnabled: device.isRecordingEnabled,
   analyticId: device.analyticId,
   isEnabled: device.isEnabled,
   isServerActive: server.isActive,
@@ -38,6 +46,7 @@ const toDetail = (
   hasSubStream: device.sourceSub !== null,
   webrtcUrl: server.webrtcUrl,
   webrtcUrlLocal: server.webrtcUrlLocal,
+  analyticParams: device.analyticParams ?? {},
   perimeters: device.perimeters ?? emptyPerimeters(),
 });
 

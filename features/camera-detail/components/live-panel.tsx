@@ -2,6 +2,8 @@ import { PauseIcon, RotateCcwIcon, ScanEyeIcon } from "lucide-react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StreamDetections } from "@/features/edge-status";
+import { PtzControls } from "./ptz-controls";
 import { StreamFrame } from "./stream-frame";
 import type { CameraDetail, StreamState } from "../types";
 
@@ -30,13 +32,16 @@ export const LivePanel = ({
           <RotateCcwIcon />
           Restart Camera
         </Button>
-        <Button variant="secondary" className="flex-1">
+        <Button variant="destructive" className="flex-1">
           <ScanEyeIcon />
           Pause Analytics
         </Button>
       </div>
-      <div className="relative aspect-video w-full overflow-hidden border bg-sidebar">
+      <div className="group/tile relative aspect-video w-full overflow-hidden border bg-sidebar">
         <StreamFrame detail={detail} state={state} quality="main" />
+        {isLive && (
+          <StreamDetections edgeId={detail.edgeServerId} deviceId={detail.id} />
+        )}
         <Badge variant="overlay" className="absolute top-2 left-2">
           <StatusDot
             status={isLive ? "live" : "offline"}
@@ -45,6 +50,7 @@ export const LivePanel = ({
           {isLive ? "Live" : "Offline"}
         </Badge>
       </div>
+      <PtzControls />
     </section>
   );
 };

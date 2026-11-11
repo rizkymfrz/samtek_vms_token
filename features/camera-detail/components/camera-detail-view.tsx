@@ -1,17 +1,39 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { BreadcrumbTitle } from "@/components/shared/breadcrumb-title";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { useServerOnline } from "@/features/edge-status";
+import { CameraForm } from "./camera-form";
 import { LivePanel } from "./live-panel";
 import { PerimeterPanel } from "./perimeter-panel";
-import { useSavePerimeters } from "../hooks/use-save-perimeters";
+import { useCameraActions } from "../hooks/use-camera-actions";
+import { useParamSpecs } from "../hooks/use-param-specs";
+import {
+  type DetailDraft,
+  detailDraftSchema,
+  toDetailDraft,
+} from "../lib/detail-draft";
+import { isValidParams } from "../lib/edit-analytic-params";
 import { isSamePerimeters, isValidPerimeters } from "../lib/edit-perimeters";
 import type { CameraDetail, Selection, StreamState, Tool } from "../types";
+
+const toRecord = (detail: CameraDetail) => ({
+  id: detail.id,
+  edgeServerId: detail.edgeServerId,
+  name: detail.name,
+  isEnabled: detail.isEnabled,
+  sourceMain: detail.sourceMain,
+  sourceSub: detail.sourceSub,
+  analyticId: detail.analyticId,
+  isRecordingEnabled: detail.isRecordingEnabled,
+});
 
 export const CameraDetailView = ({
   detail,
@@ -20,11 +42,18 @@ export const CameraDetailView = ({
   detail: CameraDetail;
   isLive: boolean;
 }) => {
+  const record = toRecord(detail);
   const [saved, setSaved] = useState(detail.perimeters);
   const [perimeters, setPerimeters] = useState(detail.perimeters);
   const [tool, setTool] = useState<Tool>(null);
   const [selection, setSelection] = useState<Selection>(null);
-  const { save, isPending, error } = useSavePerimeters(detail, isLive);
+  const form = useForm<DetailDraft>({
+    resolver: zodResolver(detailDraftSchema),
+    defaultValues: toDetailDraft(record, detail.analyticParams),
+  });
+  const actions = useCameraActions(record, isLive);
+  const analyticId = useWatch({ control: form.control, name: "analyticId" });
+  const { specs, isKnown } = useParamSpecs(detail.edgeServerId, analyticId);
   const serverOnline = useServerOnline();
   const state: StreamState = !detail.isEnabled
     ? "disabled"
@@ -34,10 +63,33 @@ export const CameraDetailView = ({
         )
       ? "live"
       : "server-offline";
+  const isPerimetersChanged = !isSamePerimeters(perimeters, saved);
+  const params = useWatch({ control: form.control, name: "analyticParams" });
+  const isParamsChanged = Boolean(form.formState.dirtyFields.analyticParams);
   const canSave =
-    !isPending &&
-    !isSamePerimeters(perimeters, saved) &&
-    isValidPerimeters(perimeters);
+    !actions.isSaving &&
+    (form.formState.isDirty || isPerimetersChanged) &&
+    isValidPerimeters(perimeters) &&
+    isValidParams(specs, params);
+  const save = form.handleSubmit((draft) =>
+    actions.save(
+      {
+        draft,
+        perimeters: isPerimetersChanged ? perimeters : undefined,
+        analyticParams:
+          draft.analyticId && isParamsChanged
+            ? draft.analyticParams
+            : undefined,
+      },
+      {
+        onSuccess: () => {
+          setSaved(perimeters);
+          form.reset(draft);
+        },
+      },
+    ),
+  );
+  const error = actions.saveError ?? actions.removeError;
   return (
     <div className="flex min-h-full flex-col gap-4 bg-background p-4">
       <BreadcrumbTitle href={`/cameras/${detail.id}`} label={detail.name} />
@@ -61,17 +113,18 @@ export const CameraDetailView = ({
             )}
           </div>
         </div>
-        <Button
-          disabled={!canSave}
-          onClick={() =>
-            save(perimeters, { onSuccess: () => setSaved(perimeters) })
-          }
-        >
+        <Button disabled={!canSave} onClick={save}>
           <SaveIcon />
-          {isPending ? "Saving…" : "Save changes"}
+          {actions.isSaving ? "Saving…" : "Save changes"}
         </Button>
       </div>
       <Separator />
+      {error && (
+        <Alert variant="destructive">
+          <AlertTitle>Could not save the changes</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr]">
         <LivePanel detail={detail} state={state} />
         <Separator orientation="vertical" className="max-lg:hidden" />
@@ -81,12 +134,19 @@ export const CameraDetailView = ({
           perimeters={perimeters}
           tool={tool}
           selection={selection}
-          error={error}
           onToolChange={setTool}
           onSelect={setSelection}
           onChange={setPerimeters}
         />
       </div>
+      <CameraForm
+        detail={detail}
+        form={form}
+        specs={specs}
+        isKnown={isKnown}
+        isRemoving={actions.isRemoving}
+        onRemove={() => actions.remove()}
+      />
     </div>
   );
 };
