@@ -8,6 +8,7 @@ import { BreadcrumbTitle } from "@/components/shared/breadcrumb-title";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { useServerOnline } from "@/features/edge-status";
 import { CameraForm } from "./camera-form";
@@ -93,60 +94,78 @@ export const CameraDetailView = ({
   return (
     <div className="flex min-h-full flex-col gap-4 bg-background p-4">
       <BreadcrumbTitle href={`/cameras/${detail.id}`} label={detail.name} />
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Back to cameras"
-            nativeButton={false}
-            render={<Link href="/cameras" />}
-          >
-            <ArrowLeftIcon />
-          </Button>
-          <div className="flex min-w-0 flex-col">
-            <h1 className="truncate text-sm font-medium">{detail.name}</h1>
-            {detail.analyticId && (
-              <span className="truncate text-xs text-muted-foreground">
-                {analyticLabel(detail.analyticId)}
-              </span>
-            )}
+      <Tabs defaultValue="configuration" className="gap-4">
+        <div className="grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr]">
+          <div className="flex min-w-0 items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Back to cameras"
+              nativeButton={false}
+              render={<Link href="/cameras" />}
+            >
+              <ArrowLeftIcon />
+            </Button>
+            <div className="flex min-w-0 flex-col">
+              <h1 className="truncate text-sm font-medium">{detail.name}</h1>
+              {detail.analyticId && (
+                <span className="truncate text-xs text-muted-foreground">
+                  {analyticLabel(detail.analyticId)}
+                </span>
+              )}
+            </div>
           </div>
+          <TabsList variant="line" size="lg">
+            <TabsTrigger value="configuration">Configuration</TabsTrigger>
+            <TabsTrigger value="playback">Playback</TabsTrigger>
+          </TabsList>
+          <Button
+            className="justify-self-end"
+            disabled={!canSave}
+            onClick={save}
+          >
+            <SaveIcon />
+            {actions.isSaving ? "Saving…" : "Save changes"}
+          </Button>
         </div>
-        <Button disabled={!canSave} onClick={save}>
-          <SaveIcon />
-          {actions.isSaving ? "Saving…" : "Save changes"}
-        </Button>
-      </div>
-      <Separator />
-      {error && (
-        <Alert variant="destructive">
-          <AlertTitle>Could not save the changes</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr]">
-        <LivePanel detail={detail} state={state} />
-        <Separator orientation="vertical" className="max-lg:hidden" />
-        <PerimeterPanel
-          detail={detail}
-          state={state}
-          perimeters={perimeters}
-          tool={tool}
-          selection={selection}
-          onToolChange={setTool}
-          onSelect={setSelection}
-          onChange={setPerimeters}
-        />
-      </div>
-      <CameraForm
-        detail={detail}
-        form={form}
-        specs={specs}
-        isKnown={isKnown}
-        isRemoving={actions.isRemoving}
-        onRemove={() => actions.remove()}
-      />
+        <Separator />
+        <TabsContent value="configuration" className="flex flex-col gap-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Could not save the changes</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr]">
+            <LivePanel detail={detail} state={state} />
+            <Separator orientation="vertical" className="max-lg:hidden" />
+            <PerimeterPanel
+              detail={detail}
+              state={state}
+              perimeters={perimeters}
+              tool={tool}
+              selection={selection}
+              onToolChange={setTool}
+              onSelect={setSelection}
+              onChange={setPerimeters}
+            />
+          </div>
+          <CameraForm
+            detail={detail}
+            form={form}
+            specs={specs}
+            isKnown={isKnown}
+            isRemoving={actions.isRemoving}
+            onRemove={() => actions.remove()}
+          />
+        </TabsContent>
+        <TabsContent
+          value="playback"
+          className="flex items-center justify-center py-16 text-muted-foreground"
+        >
+          Playback is not available yet.
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
