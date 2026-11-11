@@ -39,7 +39,7 @@ const SelectTrigger = ({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-fit items-center justify-between gap-2 rounded border border-border bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] py-2 pr-2 pl-2 text-xs whitespace-nowrap transition-colors outline-none select-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-placeholder:text-muted-foreground data-[size=xs]:h-6 data-[size=sm]:h-7 data-[size=md]:h-10 data-[size=lg]:h-12 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:aria-invalid:border-destructive/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex w-fit cursor-pointer items-center justify-between gap-2 rounded border border-border bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] py-2 pr-2 pl-2 text-xs whitespace-nowrap transition-colors outline-none select-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-placeholder:text-muted-foreground data-[size=xs]:h-6 data-[size=sm]:h-7 data-[size=md]:h-10 data-[size=lg]:h-12 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:aria-invalid:border-destructive/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -118,7 +118,7 @@ const SelectItem = ({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "group/item relative flex min-h-10 w-full cursor-default items-center gap-2 border-b border-border py-2 pr-2 pl-8 text-xs outline-hidden select-none last:border-b-0 data-selected:font-medium focus:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_10%)] focus:text-secondary-foreground not-data-[variant=destructive]:focus:**:text-secondary-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "group/item relative flex min-h-10 w-full cursor-pointer items-center gap-2 border-b border-border py-2 pr-2 pl-8 text-xs outline-hidden select-none last:border-b-0 data-selected:font-medium focus:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_10%)] focus:text-secondary-foreground not-data-[variant=destructive]:focus:**:text-secondary-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className,
       )}
       {...props}
