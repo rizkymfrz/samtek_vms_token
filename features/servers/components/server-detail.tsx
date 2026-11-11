@@ -143,7 +143,6 @@ export const ServerDetail = ({
           unit="°C"
           limit={TEMP_LIMIT}
           empty={empty}
-          footer={`Dashed line: limit ${TEMP_LIMIT} °C`}
         />
         <MetricChart
           title="Memory Usage"

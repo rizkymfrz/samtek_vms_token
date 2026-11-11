@@ -70,7 +70,6 @@ const Stream = ({
           </span>
           <Button
             variant="secondary"
-            size="sm"
             disabled={!online}
             onClick={() => setPaused((value) => !value)}
           >

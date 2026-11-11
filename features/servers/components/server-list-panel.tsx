@@ -92,12 +92,7 @@ export const ServerListPanel = ({
           title="Registered / Discovered"
           shouldGrow
           action={
-            <Button
-              variant="secondary"
-              size="xs"
-              onClick={onScan}
-              disabled={scanning}
-            >
+            <Button variant="secondary" onClick={onScan} disabled={scanning}>
               {scanning ? (
                 <Loader2Icon className="animate-spin" />
               ) : (
@@ -147,7 +142,6 @@ export const ServerListPanel = ({
                 {device.registeredServerId ? (
                   <Button
                     variant="link"
-                    size="xs"
                     onClick={() => onSelect(device.registeredServerId!)}
                   >
                     Open
@@ -155,7 +149,6 @@ export const ServerListPanel = ({
                 ) : (
                   <Button
                     variant="secondary"
-                    size="xs"
                     onClick={() => onRegister(device.id)}
                   >
                     Register

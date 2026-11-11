@@ -41,7 +41,6 @@ export const HeaderNotifications = () => {
           <PopoverTitle>Alerts</PopoverTitle>
           <Button
             variant="ghost"
-            size="xs"
             disabled={unread === 0}
             onClick={() =>
               setAlerts((items) => items.map((i) => ({ ...i, read: true })))

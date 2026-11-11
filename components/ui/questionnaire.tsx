@@ -212,7 +212,7 @@ const QuestionnaireActions = ({
 const QuestionnairePrevious = ({
   children,
   className,
-  size = "default",
+  size = "md",
   variant = "outline",
   ...props
 }: ComponentProps<typeof QuestionnairePrimitive.Previous> &
@@ -237,7 +237,7 @@ const QuestionnairePrevious = ({
 const QuestionnaireSkip = ({
   children,
   className,
-  size = "default",
+  size = "md",
   variant = "outline",
   ...props
 }: ComponentProps<typeof QuestionnairePrimitive.Skip> &
@@ -262,7 +262,7 @@ const QuestionnaireSkip = ({
 const QuestionnaireNext = ({
   children,
   className,
-  size = "default",
+  size = "md",
   variant = "default",
   ...props
 }: ComponentProps<typeof QuestionnairePrimitive.Next> &
@@ -287,7 +287,7 @@ const QuestionnaireNext = ({
 const QuestionnaireSubmit = ({
   children,
   className,
-  size = "default",
+  size = "md",
   variant = "default",
   ...props
 }: ComponentProps<typeof QuestionnairePrimitive.Submit> &

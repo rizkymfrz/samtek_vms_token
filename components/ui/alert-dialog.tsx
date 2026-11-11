@@ -148,7 +148,7 @@ const AlertDialogAction = ({
 const AlertDialogCancel = ({
   className,
   variant = "outline",
-  size = "default",
+  size = "md",
   ...props
 }: AlertDialogPrimitive.Close.Props &
   Pick<ComponentProps<typeof Button>, "variant" | "size">) => {

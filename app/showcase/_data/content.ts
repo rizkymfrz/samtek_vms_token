@@ -45,7 +45,7 @@ export const buttonVariantNames = [
 export const buttonSizeNames = [
   "xs",
   "sm",
-  "default",
+  "md",
   "lg",
 ] as const satisfies readonly Variant<typeof buttonVariants, "size">[]
 

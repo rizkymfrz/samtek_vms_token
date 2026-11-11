@@ -65,7 +65,7 @@ export const CameraFilterPanel = ({
         title="Filters"
         action={
           isFiltered(filters) && (
-            <Button variant="ghost" size="xs" onClick={onClear}>
+            <Button variant="ghost" onClick={onClear}>
               <XIcon />
               Clear
             </Button>

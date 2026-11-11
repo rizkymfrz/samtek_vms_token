@@ -41,7 +41,7 @@ export const MetricChart = ({
   ticks: number[];
   unit: string;
   limit?: number;
-  footer: ReactNode;
+  footer?: ReactNode;
   empty?: string;
 }) => {
   const config: ChartConfig = {

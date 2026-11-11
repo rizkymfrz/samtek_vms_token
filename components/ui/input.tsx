@@ -3,7 +3,7 @@ import { cn } from "cn";
 import type { ComponentProps } from "react";
 
 const inputSizes = {
-  default: "h-8",
+  md: "h-8",
   xs: "h-6",
   sm: "h-7",
   lg: "h-9",
@@ -12,7 +12,7 @@ const inputSizes = {
 const Input = ({
   className,
   type,
-  size = "default",
+  size = "md",
   ...props
 }: Omit<ComponentProps<"input">, "size"> & {
   size?: keyof typeof inputSizes;
