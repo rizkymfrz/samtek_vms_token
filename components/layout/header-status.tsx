@@ -10,7 +10,7 @@ const Bar = ({ items }: { items: Items }) => {
   const online = items.filter((item) => item.status === "online").length;
   if (items.length > MAX_SEGMENTS) {
     return (
-      <div className="flex h-1 w-24 bg-destructive">
+      <div className="flex h-1 w-24 overflow-hidden rounded bg-destructive">
         <div
           className="bg-chart-2"
           style={{ width: `${(online / items.length) * 100}%` }}
@@ -24,7 +24,7 @@ const Bar = ({ items }: { items: Items }) => {
         <span
           key={index}
           className={cn(
-            "h-1 w-2",
+            "h-1 w-2 rounded",
             item.status === "online" ? "bg-chart-2" : "bg-destructive",
           )}
         />

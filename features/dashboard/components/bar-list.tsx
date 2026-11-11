@@ -18,7 +18,7 @@ export const BarList = ({
               {format(item.value)}
             </span>
           </div>
-          <div className="h-2 bg-muted">
+          <div className="h-2 overflow-hidden rounded bg-muted">
             <div
               className="h-full bg-chart-2"
               style={{ width: `${(item.value / max) * 100}%` }}

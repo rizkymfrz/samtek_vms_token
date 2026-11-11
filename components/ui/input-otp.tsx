@@ -30,7 +30,7 @@ const InputOTPGroup = ({ className, ...props }: ComponentProps<"div">) => {
     <div
       data-slot="input-otp-group"
       className={cn(
-        "flex items-center rounded-none has-aria-invalid:border-destructive has-aria-invalid:ring-1 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40",
+        "flex items-center rounded has-aria-invalid:border-destructive has-aria-invalid:ring-1 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40",
         className,
       )}
       {...props}

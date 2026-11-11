@@ -21,7 +21,7 @@ export const CrowdBullets = ({
                 {area.alarms === 1 ? "alarm" : "alarms"}
               </span>
             </div>
-            <div className="relative h-2 bg-muted">
+            <div className="relative h-2 overflow-hidden rounded bg-muted">
               <div
                 className="h-full bg-chart-2"
                 style={{ width: `${(area.peak / scale) * 100}%` }}

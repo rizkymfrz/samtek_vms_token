@@ -11,7 +11,7 @@ import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { type SheetTarget, UserSheet } from "./user-sheet";
+import { type DialogTarget, UserDialog } from "./user-dialog";
 import { UserTable } from "./user-table";
 import { useUserActions } from "../hooks/use-user-actions";
 import { useUsers } from "../hooks/use-users";
@@ -39,7 +39,7 @@ export const UsersView = ({
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(0);
-  const [sheet, setSheet] = useState<SheetTarget>(null);
+  const [dialog, setDialog] = useState<DialogTarget>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const matches = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -82,7 +82,7 @@ export const UsersView = ({
       )}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={() => setSheet("new")}>
+          <Button onClick={() => setDialog("new")}>
             <PlusIcon />
             Add user
           </Button>
@@ -143,31 +143,31 @@ export const UsersView = ({
           }
         />
       ) : (
-        <div className="border">
+        <div className="overflow-hidden rounded border">
           <UserTable
             users={visible}
             roles={roles}
             onSelect={(id) =>
-              setSheet(users.find((user) => user.id === id) ?? null)
+              setDialog(users.find((user) => user.id === id) ?? null)
             }
           />
         </div>
       )}
-      <UserSheet
-        target={sheet}
+      <UserDialog
+        target={dialog}
         users={users}
         roles={roles}
         isPending={save.isPending || remove.isPending}
         error={saveError}
         onClose={() => {
-          setSheet(null);
+          setDialog(null);
           save.reset();
         }}
         onSave={async (draft: Draft, id) => {
           try {
             const result = await save.mutateAsync({ draft, id });
             setWarning(result.warning);
-            setSheet(null);
+            setDialog(null);
           } catch {
             return;
           }
@@ -175,9 +175,9 @@ export const UsersView = ({
         onDelete={async (id) => {
           try {
             await remove.mutateAsync(id);
-            setSheet(null);
+            setDialog(null);
           } catch {
-            setSheet(null);
+            setDialog(null);
           }
         }}
       />

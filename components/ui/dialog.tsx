@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { XIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const Dialog = ({ ...props }: DialogPrimitive.Root.Props) => {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -51,7 +52,7 @@ const DialogContent = ({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-none bg-popover p-4 text-xs/relaxed text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100svh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded bg-popover text-xs/relaxed text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className,
         )}
         {...props}
@@ -81,9 +82,41 @@ const DialogHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-1 text-left", className)}
+      className={cn("flex flex-col gap-1 p-4 pr-16 text-left", className)}
       {...props}
     />
+  );
+};
+
+const DialogBody = ({ className, ...props }: ComponentProps<"div">) => {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn(
+        "flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
+
+const DialogSection = ({ className, ...props }: ComponentProps<"div">) => {
+  return (
+    <div
+      data-slot="dialog-section"
+      className={cn("flex min-w-0 flex-1 flex-col gap-4 p-4", className)}
+      {...props}
+    />
+  );
+};
+
+const DialogDivider = () => {
+  return (
+    <>
+      <Separator className="md:hidden" />
+      <Separator orientation="vertical" className="hidden md:block" />
+    </>
   );
 };
 
@@ -98,10 +131,7 @@ const DialogFooter = ({
   return (
     <div
       data-slot="dialog-footer"
-      className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-        className,
-      )}
+      className={cn("flex gap-2 p-4 *:flex-1", className)}
       {...props}
     >
       {children}
@@ -142,13 +172,16 @@ const DialogDescription = ({
 
 export {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogDivider,
   DialogFooter,
   DialogHeader,
   DialogOverlay,
   DialogPortal,
+  DialogSection,
   DialogTitle,
   DialogTrigger,
 };

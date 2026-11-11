@@ -56,12 +56,12 @@ export const ServerListPanel = ({
                 aria-pressed={server.id === selectedId}
                 onClick={() => onSelect(server.id)}
                 className={cn(
-                  "relative flex w-full items-center gap-2 border p-2 text-left outline-none before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:bg-primary before:opacity-0 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
+                  "relative flex w-full items-center gap-2 rounded border p-2 text-left outline-none before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:bg-primary before:opacity-0 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
                   server.id === selectedId &&
                     "border-transparent bg-accent before:opacity-100",
                 )}
               >
-                <span className="flex size-8 shrink-0 items-center justify-center bg-muted text-muted-foreground">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground">
                   <ServerIcon className="size-4" />
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">
@@ -133,7 +133,7 @@ export const ServerListPanel = ({
             {shown.map((device) => (
               <li
                 key={device.id}
-                className="flex items-center gap-2 border p-2"
+                className="flex items-center gap-2 rounded border p-2"
               >
                 <CctvIcon className="size-4 shrink-0 text-muted-foreground" />
                 <span className="flex min-w-0 flex-1 flex-col">

@@ -184,7 +184,7 @@ const ChartTooltipContent = ({
   return (
     <div
       className={cn(
-        "grid min-w-32 items-start gap-2 rounded-none border border-border/50 bg-background px-2 py-2 text-xs shadow-xl",
+        "grid min-w-32 items-start gap-2 rounded border border-border/50 bg-background px-2 py-2 text-xs shadow-xl",
         className,
       )}
     >

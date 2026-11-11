@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { AlertSheet } from "./alert-sheet";
+import { AlertDetailDialog } from "./alert-detail-dialog";
 import { AlertsTable } from "./alerts-table";
 import { AlertTile } from "./alert-tile";
 import { FilterPanel } from "./filter-panel";
@@ -170,12 +170,12 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
             ))}
           </div>
         ) : (
-          <div className="border lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+          <div className="overflow-hidden rounded border lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
             <AlertsTable alerts={visible} onSelect={setOpenId} />
           </div>
         )}
       </div>
-      <AlertSheet alert={open} onClose={() => setOpenId(null)} />
+      <AlertDetailDialog alert={open} onClose={() => setOpenId(null)} />
     </PageShell>
   );
 };

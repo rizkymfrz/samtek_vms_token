@@ -76,6 +76,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
   SheetClose,
@@ -117,6 +118,7 @@ export const DialogDemo = () => {
           <DialogTitle>{dialog.title}</DialogTitle>
           <DialogDescription>{dialog.description}</DialogDescription>
         </DialogHeader>
+        <Separator />
         <DialogFooter>
           <DialogClose render={<Button variant="outline" />}>
             {common.cancel}

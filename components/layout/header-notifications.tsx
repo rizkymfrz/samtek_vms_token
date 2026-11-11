@@ -31,7 +31,7 @@ export const HeaderNotifications = () => {
       >
         <BellIcon />
         {unread > 0 && (
-          <span className="absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center bg-destructive px-0.5 text-xs font-medium text-background tabular-nums">
+          <span className="absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded bg-destructive px-0.5 text-xs font-medium text-background tabular-nums">
             {unread}
           </span>
         )}

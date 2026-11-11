@@ -41,7 +41,7 @@ export const LoginForm = () => {
     <form
       noValidate
       onSubmit={submit}
-      className="flex w-full max-w-sm flex-col gap-4 border bg-card p-4"
+      className="flex w-full max-w-sm flex-col gap-4 rounded border bg-card p-4"
     >
       <h1 className="text-sm font-medium">Sign in</h1>
       <Field data-invalid={!!errors.identifier}>

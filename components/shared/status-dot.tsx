@@ -14,7 +14,7 @@ const statusDot = cva("inline-block size-2 shrink-0", {
     },
     shape: {
       round: "rounded-full",
-      square: "border",
+      square: "rounded border",
       diamond: "rotate-45",
     },
   },

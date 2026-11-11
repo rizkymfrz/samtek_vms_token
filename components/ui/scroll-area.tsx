@@ -43,7 +43,7 @@ const ScrollBar = ({
     >
       <ScrollAreaPrimitive.Thumb
         data-slot="scroll-area-thumb"
-        className="relative flex-1 rounded-none bg-scrollbar-thumb transition-colors hover:bg-scrollbar-thumb-hover"
+        className="relative flex-1 rounded bg-scrollbar-thumb transition-colors hover:bg-scrollbar-thumb-hover"
       />
     </ScrollAreaPrimitive.Scrollbar>
   );

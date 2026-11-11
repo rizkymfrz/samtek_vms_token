@@ -9,7 +9,7 @@ export const TileControls = ({
   hasDetections: boolean;
   onDetectionsChange: (next: boolean) => void;
 }) => (
-  <div className="absolute right-2 bottom-2 flex items-center border bg-background opacity-0 transition-opacity group-hover/tile:opacity-100 focus-within:opacity-100">
+  <div className="absolute right-2 bottom-2 flex items-center rounded border bg-background opacity-0 transition-opacity group-hover/tile:opacity-100 focus-within:opacity-100">
     <Toggle
       size="sm"
       pressed={hasDetections}

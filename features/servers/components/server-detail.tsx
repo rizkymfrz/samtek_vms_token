@@ -1,7 +1,5 @@
 "use client";
 import {
-  CheckIcon,
-  CopyIcon,
   PencilIcon,
   PowerIcon,
   RotateCwIcon,
@@ -63,16 +61,6 @@ export const ServerDetail = ({
   const [confirm, setConfirm] = useState<"restart" | "edge" | "delete" | null>(
     null,
   );
-  const [copied, setCopied] = useState(false);
-  const copyId = async () => {
-    try {
-      await navigator.clipboard.writeText(server.id);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      setCopied(false);
-    }
-  };
   const group = groups.find((g) => g.id === server.groupId)?.name;
   const empty = !online
     ? "No data. The server is offline."
@@ -98,10 +86,6 @@ export const ServerDetail = ({
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" size="sm" onClick={copyId}>
-              {copied ? <CheckIcon /> : <CopyIcon />}
-              Edge ID {server.id}
-            </Button>
             {server.vendor && <Badge variant="outline">{server.vendor}</Badge>}
             {group && (
               <Badge variant="secondary">

@@ -19,7 +19,7 @@ export const EmptyState = ({
   description?: string;
   children?: ReactNode;
 }) => (
-  <Empty className="border max-lg:py-16">
+  <Empty className="rounded border max-lg:py-16">
     <EmptyHeader>
       <EmptyMedia variant="icon">{icon}</EmptyMedia>
       <EmptyTitle>{title}</EmptyTitle>

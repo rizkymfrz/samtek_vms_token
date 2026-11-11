@@ -399,6 +399,20 @@ Pilih variant `Button` berdasarkan fungsinya, bukan selera tampilan.
 - Jangan memakai `outline` atau `ghost` sebagai pengganti `secondary`
   hanya agar tombol terlihat lebih ringan.
 
+### 8.2 Overlay Forms
+
+Form tambah/edit dan panel detail di halaman fitur memakai `Dialog`,
+bukan `Sheet`. Beri nama file dan komponen `*-dialog` (contoh:
+`camera-dialog.tsx`). `Sheet` hanya dipakai untuk panel navigasi
+(sidebar mobile).
+
+Susun dialog dalam tiga bagian yang dipisah `Separator`: `DialogHeader`
+(title), `DialogBody` (isi), dan `DialogFooter` (tombol aksi, otomatis
+`flex-1`). Jika field banyak, bagi `DialogBody` menjadi beberapa
+`DialogSection` yang dipisah `DialogDivider`: berdampingan di layar
+`md` ke atas, bertumpuk di layar kecil. Lebarkan dialog dengan
+`md:max-w-2xl`.
+
 ## 9. Naming and File Organization
 
 Gunakan konvensi berikut:

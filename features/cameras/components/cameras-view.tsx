@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { useServerOnline } from "@/features/edge-status";
 import { CameraCard } from "./camera-card";
+import { CameraDialog, type DialogTarget } from "./camera-dialog";
 import { CameraFilterPanel } from "./camera-filter-panel";
-import { CameraSheet, type SheetTarget } from "./camera-sheet";
 import { CameraTable } from "./camera-table";
 import { useCameraActions } from "../hooks/use-camera-actions";
 import { useCameras } from "../hooks/use-cameras";
@@ -79,7 +79,7 @@ export const CamerasView = ({
   const [view, setView] = useState<View>("grid");
   const [grid, setGrid] = useState(DEFAULT_GRID);
   const [page, setPage] = useState(0);
-  const [sheet, setSheet] = useState<SheetTarget>(null);
+  const [dialog, setDialog] = useState<DialogTarget>(null);
   const { save, remove, toggle, saveError, toggleError } =
     useCameraActions(isLive);
   const [rows, columns] = grid.split("x").map(Number);
@@ -142,7 +142,7 @@ export const CamerasView = ({
           </Alert>
         )}
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <Button onClick={() => setSheet("new")}>
+          <Button onClick={() => setDialog("new")}>
             <PlusIcon />
             Add camera
           </Button>
@@ -219,7 +219,7 @@ export const CamerasView = ({
                 subtitle={`${serverName.get(camera.edgeServerId) ?? "Unknown"} · ${analyticName(camera.analyticId)}`}
                 state={cameraState(camera, servers)}
                 recording={camera.isRecordingEnabled}
-                onSelect={() => setSheet(camera)}
+                onSelect={() => setDialog(camera)}
                 className="lg:aspect-auto lg:h-full lg:min-h-0"
               />
             ))}
@@ -231,23 +231,23 @@ export const CamerasView = ({
             ))}
           </div>
         ) : (
-          <div className="border lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+          <div className="overflow-hidden rounded border lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
             <CameraTable
               cameras={visible}
               servers={servers}
               onSelect={(id) =>
-                setSheet(cameras.find((c) => c.id === id) ?? null)
+                setDialog(cameras.find((c) => c.id === id) ?? null)
               }
               onToggle={(id, patch) => toggle.mutate({ id, patch })}
             />
           </div>
         )}
       </div>
-      <CameraSheet
-        target={sheet}
+      <CameraDialog
+        target={dialog}
         servers={servers}
         onClose={() => {
-          setSheet(null);
+          setDialog(null);
           save.reset();
           remove.reset();
         }}
@@ -256,7 +256,7 @@ export const CamerasView = ({
         onSave={async (draft: Draft, id) => {
           try {
             await save.mutateAsync({ draft, id });
-            setSheet(null);
+            setDialog(null);
           } catch {
             return;
           }
@@ -264,7 +264,7 @@ export const CamerasView = ({
         onDelete={async (id) => {
           try {
             await remove.mutateAsync(id);
-            setSheet(null);
+            setDialog(null);
           } catch {
             return;
           }

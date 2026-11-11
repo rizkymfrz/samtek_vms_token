@@ -15,7 +15,7 @@ export const NewPersons = ({
         </span>
       </div>
       <div className="flex flex-col gap-1">
-        <div className="flex h-2 gap-0.5">
+        <div className="flex h-2 gap-0.5 overflow-hidden rounded">
           <span className="bg-chart-2" style={{ width: `${share}%` }} />
           <span className="flex-1 bg-muted" />
         </div>

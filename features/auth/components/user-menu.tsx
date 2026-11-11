@@ -36,9 +36,9 @@ const UserInfo = ({ user }: { user: CurrentUser | undefined }) => {
   const name = user?.username ?? "Loading…";
   return (
     <>
-      <Avatar className="size-8 rounded-lg">
+      <Avatar className="size-8 rounded">
         <AvatarImage src={user?.avatar ?? undefined} alt={name} />
-        <AvatarFallback className="rounded-lg">
+        <AvatarFallback className="rounded">
           {user ? initialsOf(user.username) : ""}
         </AvatarFallback>
       </Avatar>

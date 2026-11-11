@@ -41,7 +41,7 @@ export const StorageCard = ({
           )}
         </div>
         {empty ? (
-          <p className="flex min-h-40 flex-1 items-center justify-center border border-dashed text-xs text-muted-foreground">
+          <p className="flex min-h-40 flex-1 items-center justify-center rounded border border-dashed text-xs text-muted-foreground">
             {empty}
           </p>
         ) : (

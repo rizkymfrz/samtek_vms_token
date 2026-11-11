@@ -126,7 +126,7 @@ export const FloorplanPanel = ({
         />
       </PanelSection>
       {selected && selectedCamera && (
-        <section className="flex flex-col gap-2 border p-4">
+        <section className="flex flex-col gap-2 rounded border p-4">
           <div className="flex items-center justify-between gap-2">
             <span className="truncate text-sm font-medium">
               {selectedCamera.name}

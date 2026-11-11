@@ -40,7 +40,7 @@ export const PlanCanvas = ({
   };
   return (
     <div
-      className="relative min-h-96 flex-1 border bg-sidebar lg:min-h-0"
+      className="relative min-h-96 flex-1 overflow-hidden rounded border bg-sidebar lg:min-h-0"
       style={{ containerType: "size" }}
     >
       <div className="absolute inset-0 flex items-center justify-center">

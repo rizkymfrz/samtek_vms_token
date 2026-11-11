@@ -5,20 +5,24 @@ import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogDivider,
+  DialogFooter,
+  DialogHeader,
+  DialogSection,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import {
   type Draft,
@@ -119,71 +123,83 @@ const Form = ({
   );
   return (
     <>
-      <SheetHeader>
-        <SheetTitle>{editing ? "Edit server" : "Add server"}</SheetTitle>
-        <SheetDescription>
+      <DialogHeader>
+        <DialogTitle>{editing ? "Edit server" : "Add server"}</DialogTitle>
+        <DialogDescription>
           {editing
             ? `Edge ID ${editing.id}`
             : "Register an edge server. Its ID is assigned automatically."}
-        </SheetDescription>
-      </SheetHeader>
-      <form
-        id={formId}
-        noValidate
-        className="flex flex-col gap-4 p-4 pt-0"
-        onSubmit={handleSubmit((draft) => onSave(draft, editing?.id ?? null))}
-      >
-        {FIELDS.slice(0, 2).map(renderField)}
-        <Field>
-          <FieldLabel>Group</FieldLabel>
-          <Controller
-            control={control}
-            name="groupId"
-            render={({ field }) => (
-              <Pick
-                label="Group"
-                items={groupItems}
-                value={field.value ?? "none"}
-                onChange={(value) =>
-                  field.onChange(value === "none" ? null : value)
-                }
-                className="w-full"
+        </DialogDescription>
+      </DialogHeader>
+      <Separator />
+      <DialogBody>
+        <form
+          id={formId}
+          noValidate
+          className="contents"
+          onSubmit={handleSubmit((draft) => onSave(draft, editing?.id ?? null))}
+        >
+          <DialogSection>
+            {FIELDS.slice(0, 2).map(renderField)}
+            <Field>
+              <FieldLabel>Group</FieldLabel>
+              <Controller
+                control={control}
+                name="groupId"
+                render={({ field }) => (
+                  <Pick
+                    label="Group"
+                    items={groupItems}
+                    value={field.value ?? "none"}
+                    onChange={(value) =>
+                      field.onChange(value === "none" ? null : value)
+                    }
+                    className="w-full"
+                  />
+                )}
               />
-            )}
-          />
-        </Field>
-        {FIELDS.slice(2).map(renderField)}
-        {error && <FieldError>{error}</FieldError>}
-        <div className="flex items-center justify-between gap-4">
-          <label htmlFor={`${formId}-active`} className="text-xs font-medium">
-            Active
-          </label>
-          <Controller
-            control={control}
-            name="isActive"
-            render={({ field }) => (
-              <Switch
-                id={`${formId}-active`}
-                checked={field.value}
-                onCheckedChange={field.onChange}
+            </Field>
+          </DialogSection>
+          <DialogDivider />
+          <DialogSection>
+            {FIELDS.slice(2).map(renderField)}
+            {error && <FieldError>{error}</FieldError>}
+            <div className="flex items-center justify-between gap-4">
+              <label
+                htmlFor={`${formId}-active`}
+                className="text-xs font-medium"
+              >
+                Active
+              </label>
+              <Controller
+                control={control}
+                name="isActive"
+                render={({ field }) => (
+                  <Switch
+                    id={`${formId}-active`}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
               />
-            )}
-          />
-        </div>
-      </form>
-      <SheetFooter className="flex-row justify-end gap-2">
+            </div>
+          </DialogSection>
+        </form>
+      </DialogBody>
+      <Separator />
+      <DialogFooter>
         <Button type="button" variant="secondary" onClick={onClose}>
           Cancel
         </Button>
         <Button type="submit" form={formId} disabled={isPending}>
           {editing ? "Save" : "Add server"}
         </Button>
-      </SheetFooter>
+      </DialogFooter>
     </>
   );
 };
 
-export const ServerFormSheet = ({
+export const ServerFormDialog = ({
   target,
   groups,
   isPending,
@@ -199,8 +215,8 @@ export const ServerFormSheet = ({
   onClose: () => void;
 }) => {
   return (
-    <Sheet open={target !== null} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-md">
+    <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="md:max-w-2xl">
         {target && (
           <Form
             key={target === "new" ? "new" : target.id}
@@ -212,7 +228,7 @@ export const ServerFormSheet = ({
             onClose={onClose}
           />
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };

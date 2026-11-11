@@ -8,9 +8,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { mqttConfig } from "@/config/mqtt";
 import { isServerOnline } from "@/config/server-status";
 import { useEdgeStatus, useServerOnline } from "@/features/edge-status";
-import { LogSheet } from "./log-sheet";
+import { LogDialog } from "./log-dialog";
 import { ServerDetail } from "./server-detail";
-import { type FormTarget, ServerFormSheet } from "./server-form-sheet";
+import { type FormTarget, ServerFormDialog } from "./server-form-dialog";
 import { type DiscoverTab, ServerListPanel } from "./server-list-panel";
 import { useServerActions } from "../hooks/use-server-actions";
 import { useServers } from "../hooks/use-servers";
@@ -196,7 +196,7 @@ export const ServersView = ({
           />
         )}
       </div>
-      <ServerFormSheet
+      <ServerFormDialog
         target={form}
         groups={groups}
         isPending={actions.save.isPending}
@@ -207,7 +207,7 @@ export const ServersView = ({
           actions.save.reset();
         }}
       />
-      <LogSheet
+      <LogDialog
         server={
           logsOpen && selected ? { id: selected.id, name: selected.name } : null
         }
