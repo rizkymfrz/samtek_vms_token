@@ -1,4 +1,5 @@
 import type { MqttClient } from "mqtt";
+import type { z } from "zod";
 import { EDGE_UP_TOPIC } from "@/config/mqtt";
 import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
@@ -8,19 +9,24 @@ import { appendSample, toSeries } from "./edge-series";
 import { ulid } from "./ulid";
 import {
   detectionBboxesSchema,
+  type EdgeResultData,
   edgeResultSchema,
   edgeStateSchema,
   type EdgeStatusMessage,
   edgeStatusSchema,
+  recordingStatusSchema,
 } from "../schemas/edge-message";
 import type {
   AnalyticDescriptor,
   EdgeEntry,
+  EdgeRecording,
   EdgeSample,
   EdgeStatusState,
+  RecordingDevice,
 } from "../types";
 
 const NO_CATALOG: AnalyticDescriptor[] = [];
+const NO_RECORDING: EdgeRecording = { isAvailable: false, retentionDays: null };
 const TICK_MS = 1000;
 const COMMAND_TIMEOUT_MS = 5000;
 
@@ -30,6 +36,8 @@ const EMPTY: EdgeStatusState = {
   entries: new Map(),
   online: new Set(),
   catalog: new Map(),
+  recording: new Map(),
+  recordingStatus: new Map(),
 };
 
 let state = EMPTY;
@@ -38,7 +46,11 @@ let client: MqttClient | null = null;
 
 const pending = new Map<
   string,
-  { resolve: () => void; reject: (error: Error) => void; timer: number }
+  {
+    resolve: (data: EdgeResultData) => void;
+    reject: (error: Error) => void;
+    timer: number;
+  }
 >();
 
 const histories = new Map<string, EdgeSample[]>();
@@ -123,6 +135,44 @@ const setCatalog = (edgeId: string, next: AnalyticDescriptor[] | null) => {
   setState({ catalog });
 };
 
+const setRecording = (edgeId: string, next: EdgeRecording | null) => {
+  if (next === null && !state.recording.has(edgeId)) return;
+  const recording = new Map(state.recording);
+  if (next === null) recording.delete(edgeId);
+  else recording.set(edgeId, next);
+  setState({ recording });
+};
+
+const toTime = (value: string | undefined) =>
+  value === undefined ? null : Date.parse(value);
+
+const setRecordingStatus = (
+  edgeId: string,
+  devices: z.infer<typeof recordingStatusSchema>["data"]["devices"] | null,
+) => {
+  if (devices === null && !state.recordingStatus.has(edgeId)) return;
+  const recordingStatus = new Map(state.recordingStatus);
+  if (devices === null) recordingStatus.delete(edgeId);
+  else {
+    recordingStatus.set(
+      edgeId,
+      new Map<string, RecordingDevice>(
+        devices.map((device) => [
+          device.device_id,
+          {
+            isEnabled: device.enabled,
+            state: device.state,
+            oldestAt: toTime(device.oldest_at),
+            newestAt: toTime(device.newest_at),
+            bytes: device.bytes ?? null,
+          },
+        ]),
+      ),
+    );
+  }
+  setState({ recordingStatus });
+};
+
 const receive = (topic: string, payload: Uint8Array) => {
   let json: unknown;
   try {
@@ -138,12 +188,17 @@ const receive = (topic: string, payload: Uint8Array) => {
     if (!waiting) return;
     pending.delete(result.data.reply_to);
     clearTimeout(waiting.timer);
-    if (result.data.data.ok) waiting.resolve();
+    if (result.data.data.ok) waiting.resolve(result.data.data);
     else {
       waiting.reject(
         new Error(result.data.data.error?.message ?? "The edge refused"),
       );
     }
+    return;
+  }
+  const recordingStatus = recordingStatusSchema.safeParse(json);
+  if (recordingStatus.success) {
+    setRecordingStatus(topicEdge, recordingStatus.data.data.devices);
     return;
   }
   const detection = detectionBboxesSchema.safeParse(json);
@@ -176,10 +231,18 @@ const receive = (topic: string, payload: Uint8Array) => {
   }
   const announced = edgeStateSchema.safeParse(json);
   if (announced.success) {
-    const { online, analytics } = announced.data.data;
+    const { online, analytics, recording } = announced.data.data;
     if (online && analytics) setCatalog(topicEdge, toDescriptors(analytics));
+    if (online && recording) {
+      setRecording(topicEdge, {
+        isAvailable: recording.available,
+        retentionDays: recording.retention_days ?? null,
+      });
+    }
     if (!online) {
       setCatalog(topicEdge, null);
+      setRecording(topicEdge, null);
+      setRecordingStatus(topicEdge, null);
       if (state.entries.has(topicEdge)) dropEdge(topicEdge);
     }
     return;
@@ -224,7 +287,7 @@ export const sendEdgeCommand = (
   type: string,
   data: Record<string, unknown> = {},
 ) =>
-  new Promise<void>((resolve, reject) => {
+  new Promise<EdgeResultData>((resolve, reject) => {
     if (!client || !state.isConnected) {
       reject(new Error("Not connected to the MQTT broker"));
       return;
@@ -259,4 +322,15 @@ export const getOnlineEdges = () => state.online;
 export const getEdgeCatalog = (edgeId: string) =>
   state.catalog.get(edgeId) ?? NO_CATALOG;
 
+const NO_DEVICE: RecordingDevice | null = null;
+
+export const getRecordingDevice = (edgeId: string, deviceId: string) =>
+  state.recordingStatus.get(edgeId)?.get(deviceId) ?? NO_DEVICE;
+
+export const getServerRecordingDevice = () => NO_DEVICE;
+
+export const getEdgeRecording = (edgeId: string) =>
+  state.recording.get(edgeId) ?? NO_RECORDING;
+
+export const getServerEdgeRecording = () => NO_RECORDING;
 export const getServerOnlineEdges = () => EMPTY.online;

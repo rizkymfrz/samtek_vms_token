@@ -20,7 +20,12 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ANALYTICS } from "@/config/analytics-catalog";
-import type { ParamSpec } from "@/features/edge-status";
+import { mqttConfig } from "@/config/mqtt";
+import {
+  type EdgeRecording,
+  type ParamSpec,
+  useEdgeRecording,
+} from "@/features/edge-status";
 import { AnalyticParamFields } from "./analytic-params";
 import type { DetailDraft } from "../lib/detail-draft";
 import type { CameraDetail } from "../types";
@@ -32,6 +37,16 @@ const ANALYTIC_ITEMS = [
     label: analytic.label,
   })),
 ];
+
+const recordingHint = (recording: EdgeRecording, isLive: boolean) => {
+  const base = "Record this camera's footage on the edge server.";
+  if (!isLive) return base;
+  if (!recording.isAvailable)
+    return `${base} Recording is not available on this edge.`;
+  return recording.retentionDays === null
+    ? base
+    : `${base} Kept for ${recording.retentionDays} days.`;
+};
 
 export const CameraForm = ({
   detail,
@@ -56,6 +71,7 @@ export const CameraForm = ({
     formState: { errors },
   } = form;
   const analyticId = useWatch({ control, name: "analyticId" });
+  const recording = useEdgeRecording(detail.edgeServerId);
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
@@ -148,7 +164,7 @@ export const CameraForm = ({
                   id={`${formId}-recording`}
                   icon={<CircleDotIcon />}
                   label="Recording"
-                  description="Record this camera's footage on the edge server."
+                  description={recordingHint(recording, mqttConfig !== null)}
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />

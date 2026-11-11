@@ -5,7 +5,10 @@ const GB = 1e9;
 const GIB = 1024 ** 3;
 const gb = (bytes: number) => Math.round((bytes / GB) * 10) / 10;
 
-export const toMetrics = ({ sample, series }: EdgeEntry): Metrics => {
+export const toMetrics = (
+  { sample, series }: EdgeEntry,
+  announcedRetentionDays: number | null = null,
+): Metrics => {
   const storage = sample.storage;
   const recordings = storage?.recordingsBytes ?? 0;
   const analytics = storage?.analyticsBytes ?? 0;
@@ -27,7 +30,7 @@ export const toMetrics = ({ sample, series }: EdgeEntry): Metrics => {
       analytics: gb(analytics),
       system: gb(system),
       free: gb(storage?.freeBytes ?? 0),
-      retentionDays: storage?.retentionDays ?? null,
+      retentionDays: storage?.retentionDays ?? announcedRetentionDays,
     },
   };
 };

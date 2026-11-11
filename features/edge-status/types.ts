@@ -23,12 +23,42 @@ export type EdgeSeries = {
 
 export type EdgeEntry = { sample: EdgeSample; series: EdgeSeries };
 
+export type EdgeRecording = {
+  isAvailable: boolean;
+  retentionDays: number | null;
+};
+
+export type RecordingState = "off" | "idle" | "recording" | "stalled";
+
+export type RecordingDevice = {
+  isEnabled: boolean;
+  state: RecordingState;
+  oldestAt: number | null;
+  newestAt: number | null;
+  bytes: number | null;
+};
+
+export type PlaybackSession = {
+  sessionId: string;
+  app: string;
+  stream: string;
+  state: "playing" | "paused" | "ended";
+  position: number;
+  speed: number;
+  receivedAt: number;
+};
+
+export type RecordingRange = { from: number; to: number };
+export type RecordingStream = "main" | "sub" | "third";
+
 export type EdgeStatusState = {
   isConnected: boolean;
   error: string | null;
   entries: ReadonlyMap<string, EdgeEntry>;
   online: ReadonlySet<string>;
   catalog: ReadonlyMap<string, AnalyticDescriptor[]>;
+  recording: ReadonlyMap<string, EdgeRecording>;
+  recordingStatus: ReadonlyMap<string, ReadonlyMap<string, RecordingDevice>>;
 };
 
 export type DetectionObject = {

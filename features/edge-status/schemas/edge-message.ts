@@ -52,7 +52,38 @@ export const edgeStateSchema = z.object({
     edge_id: z.string(),
     online: z.boolean(),
     analytics: z.array(announcedAnalyticSchema).optional().catch(undefined),
+    recording: z
+      .object({
+        available: z.boolean(),
+        retention_days: z.number().int().positive().optional(),
+      })
+      .optional()
+      .catch(undefined),
   }),
+});
+
+export const recordingStatusSchema = z.object({
+  type: z.literal("recording.status"),
+  data: z.object({
+    edge_id: z.string(),
+    devices: z.array(
+      z.object({
+        device_id: z.string(),
+        enabled: z.boolean(),
+        state: z.enum(["off", "idle", "recording", "stalled"]),
+        oldest_at: z.iso.datetime().optional(),
+        newest_at: z.iso.datetime().optional(),
+        bytes: bytes.optional(),
+      }),
+    ),
+  }),
+});
+
+export const recordingResultSchema = z.object({
+  device_id: z.string(),
+  stream: z.enum(["main", "sub", "third"]),
+  segment_seconds: z.number().int().positive(),
+  ranges: z.array(z.object({ from: z.iso.datetime(), to: z.iso.datetime() })),
 });
 
 export type EdgeStatusMessage = z.infer<typeof edgeStatusSchema>["data"];
@@ -63,8 +94,21 @@ export const edgeResultSchema = z.object({
   data: z.object({
     ok: z.boolean(),
     error: z.object({ code: z.string(), message: z.string() }).optional(),
+    recording: z.unknown().optional(),
+    playback: z.unknown().optional(),
   }),
 });
+
+export const playbackResultSchema = z.object({
+  session_id: z.string(),
+  app: z.string().min(1),
+  stream: z.string().min(1),
+  state: z.enum(["playing", "paused", "ended"]),
+  position: z.iso.datetime(),
+  speed: z.number().positive(),
+});
+
+export type EdgeResultData = z.infer<typeof edgeResultSchema>["data"];
 
 const ratio = z.number().min(0).max(1);
 

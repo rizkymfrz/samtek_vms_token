@@ -14,6 +14,7 @@ import { useServerOnline } from "@/features/edge-status";
 import { CameraForm } from "./camera-form";
 import { LivePanel } from "./live-panel";
 import { PerimeterPanel } from "./perimeter-panel";
+import { PlaybackPanel } from "./playback-panel";
 import { useCameraActions } from "../hooks/use-camera-actions";
 import { useParamSpecs } from "../hooks/use-param-specs";
 import {
@@ -46,6 +47,7 @@ export const CameraDetailView = ({
   const record = toRecord(detail);
   const [saved, setSaved] = useState(detail.perimeters);
   const [perimeters, setPerimeters] = useState(detail.perimeters);
+  const [tab, setTab] = useState<string | number | null>("configuration");
   const [tool, setTool] = useState<Tool>(null);
   const [selection, setSelection] = useState<Selection>(null);
   const form = useForm<DetailDraft>({
@@ -90,12 +92,17 @@ export const CameraDetailView = ({
       },
     ),
   );
+  const isConfiguration = tab === "configuration";
   const error = actions.saveError ?? actions.removeError;
   return (
-    <div className="flex min-h-full flex-col gap-4 bg-background p-4">
+    <div className="flex min-h-full flex-col gap-4 bg-background p-4 lg:h-[calc(100svh-var(--header-height))] lg:min-h-0">
       <BreadcrumbTitle href={`/cameras/${detail.id}`} label={detail.name} />
-      <Tabs defaultValue="configuration" className="gap-4">
-        <div className="grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr]">
+      <Tabs
+        value={tab}
+        onValueChange={setTab}
+        className="gap-0 lg:min-h-0 lg:flex-1"
+      >
+        <div className="mb-4 grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr]">
           <div className="flex min-w-0 items-center gap-2">
             <Button
               variant="ghost"
@@ -115,21 +122,26 @@ export const CameraDetailView = ({
               )}
             </div>
           </div>
-          <TabsList variant="line" size="lg">
+          <TabsList variant="line" size="lg" className="sm:col-start-2">
             <TabsTrigger value="configuration">Configuration</TabsTrigger>
             <TabsTrigger value="playback">Playback</TabsTrigger>
           </TabsList>
-          <Button
-            className="justify-self-end"
-            disabled={!canSave}
-            onClick={save}
-          >
-            <SaveIcon />
-            {actions.isSaving ? "Saving…" : "Save changes"}
-          </Button>
+          {isConfiguration && (
+            <Button
+              className="justify-self-end sm:col-start-3"
+              disabled={!canSave}
+              onClick={save}
+            >
+              <SaveIcon />
+              {actions.isSaving ? "Saving…" : "Save changes"}
+            </Button>
+          )}
         </div>
         <Separator />
-        <TabsContent value="configuration" className="flex flex-col gap-4">
+        <TabsContent
+          value="configuration"
+          className="flex flex-col gap-4 pt-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto [&>*]:shrink-0"
+        >
           {error && (
             <Alert variant="destructive">
               <AlertTitle>Could not save the changes</AlertTitle>
@@ -161,9 +173,12 @@ export const CameraDetailView = ({
         </TabsContent>
         <TabsContent
           value="playback"
-          className="flex items-center justify-center py-16 text-muted-foreground"
+          className="pt-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
         >
-          Playback is not available yet.
+          <PlaybackPanel
+            detail={detail}
+            isOnline={state !== "server-offline"}
+          />
         </TabsContent>
       </Tabs>
     </div>

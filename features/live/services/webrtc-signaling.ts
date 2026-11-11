@@ -2,12 +2,13 @@ const SIGNALING_TIMEOUT_MS = 20_000;
 
 export const requestAnswer = async (
   baseUrl: string,
+  app: string,
   stream: string,
   offer: string,
   signal: AbortSignal,
 ) => {
   const response = await fetch(
-    `${baseUrl}/index/api/webrtc?app=live&stream=${encodeURIComponent(stream)}&type=play`,
+    `${baseUrl}/index/api/webrtc?app=${encodeURIComponent(app)}&stream=${encodeURIComponent(stream)}&type=play`,
     {
       method: "POST",
       body: offer,
