@@ -385,19 +385,18 @@ Pilih variant `Button` berdasarkan fungsinya, bukan selera tampilan.
   satu per area. Aksi "buat baru" di sidebar berupa tombol berlabel
   `w-full` di bawah daftar yang diisinya.
 - `secondary`: perintah biasa yang bukan aksi utama (Edit, Restart,
-  Scan, Register, Fullscreen, Cancel).
-- `destructive`: aksi menghapus atau tidak bisa dibatalkan. Selalu
-  berlabel, jangan icon-only, dan jangan ditaruh menempel pada tombol
-  tambah.
-- `outline`: kontrol netral yang menyatu dengan input, seperti
-  pagination dan pemicu pencarian. Bukan untuk perintah.
+  Scan, Register, Fullscreen, Cancel), serta kontrol netral seperti
+  pagination, pemicu pencarian, dan pilihan mode yang tidak aktif.
+- `destructive`: aksi menghapus atau tidak bisa dibatalkan. Utamakan
+  berlabel; icon-only hanya jika ada `aria-label` dan tooltip, dan
+  jangan ditaruh menempel pada tombol tambah.
 - `ghost`: hanya untuk aksi icon-only di dalam baris yang padat, atau
   aksi berprioritas rendah di baris judul (Clear, Mark all as read).
 - `link`: navigasi inline ke detail (Open).
 - Baris judul section hanya memuat aksi kecil yang berlaku untuk
   section itu. Jangan taruh aksi "buat baru" di sana.
-- Jangan memakai `outline` atau `ghost` sebagai pengganti `secondary`
-  hanya agar tombol terlihat lebih ringan.
+- Tidak ada variant `outline`. Jangan memakai `ghost` sebagai
+  pengganti `secondary` hanya agar tombol terlihat lebih ringan.
 
 ### 8.2 Overlay Forms
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { deviceSchema } from "@/lib/api/central-devices";
+import { perimetersSchema } from "@/lib/api/perimeters";
 
 export const deviceResponseSchema = z.object({ data: deviceSchema });
 
@@ -18,5 +19,6 @@ export const updateDeviceInputSchema = z.strictObject({
   sourceMain: z.string().optional(),
   sourceSub: z.string().nullable().optional(),
   analyticId: z.string().nullable().optional(),
+  perimeters: perimetersSchema.optional(),
   isRecordingEnabled: z.boolean().optional(),
 });

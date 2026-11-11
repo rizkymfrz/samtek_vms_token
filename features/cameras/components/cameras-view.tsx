@@ -5,6 +5,7 @@ import {
   PlusIcon,
   VideoIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
@@ -79,6 +80,7 @@ export const CamerasView = ({
   const [view, setView] = useState<View>("grid");
   const [grid, setGrid] = useState(DEFAULT_GRID);
   const [page, setPage] = useState(0);
+  const router = useRouter();
   const [dialog, setDialog] = useState<DialogTarget>(null);
   const { save, remove, toggle, saveError, toggleError } =
     useCameraActions(isLive);
@@ -153,7 +155,7 @@ export const CamerasView = ({
                 : `${safePage * pageSize + 1}–${Math.min((safePage + 1) * pageSize, matches.length)} of ${matches.length}`}
             </span>
             <Button
-              variant="outline"
+              variant="secondary"
               size="icon"
               aria-label="Previous page"
               disabled={safePage === 0}
@@ -162,7 +164,7 @@ export const CamerasView = ({
               <ChevronLeftIcon />
             </Button>
             <Button
-              variant="outline"
+              variant="secondary"
               size="icon"
               aria-label="Next page"
               disabled={safePage >= pages - 1}
@@ -219,7 +221,7 @@ export const CamerasView = ({
                 subtitle={`${serverName.get(camera.edgeServerId) ?? "Unknown"} · ${analyticName(camera.analyticId)}`}
                 state={cameraState(camera, servers)}
                 recording={camera.isRecordingEnabled}
-                onSelect={() => setDialog(camera)}
+                onSelect={() => router.push(`/cameras/${camera.id}`)}
                 className="lg:aspect-auto lg:h-full lg:min-h-0"
               />
             ))}
@@ -235,9 +237,7 @@ export const CamerasView = ({
             <CameraTable
               cameras={visible}
               servers={servers}
-              onSelect={(id) =>
-                setDialog(cameras.find((c) => c.id === id) ?? null)
-              }
+              onSelect={(id) => router.push(`/cameras/${id}`)}
               onToggle={(id, patch) => toggle.mutate({ id, patch })}
             />
           </div>

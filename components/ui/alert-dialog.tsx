@@ -30,7 +30,7 @@ const AlertDialogOverlay = ({
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 isolate z-50 bg-overlay duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className,
       )}
       {...props}
@@ -147,7 +147,7 @@ const AlertDialogAction = ({
 
 const AlertDialogCancel = ({
   className,
-  variant = "outline",
+  variant = "secondary",
   size = "md",
   ...props
 }: AlertDialogPrimitive.Close.Props &

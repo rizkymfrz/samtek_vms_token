@@ -378,8 +378,6 @@ const sampleVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
@@ -664,7 +662,7 @@ export const SampleView = ({ data }: { data: RowsData }) => {
               : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, matches.length)} of ${matches.length}`}
           </span>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             aria-label="Previous page"
             disabled={page === 0}

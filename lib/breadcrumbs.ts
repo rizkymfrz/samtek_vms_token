@@ -5,7 +5,10 @@ export type Crumb = { label: string; href?: string };
 const humanize = (segment: string) =>
   segment.replace(/[-_]/g, " ").replace(/^\w/, (char) => char.toUpperCase());
 
-export const getBreadcrumbs = (pathname: string): Crumb[] => {
+export const getBreadcrumbs = (
+  pathname: string,
+  labels: Readonly<Record<string, string>> = {},
+): Crumb[] => {
   const [root, ...rest] = pathname.split("/").filter(Boolean);
   if (!root) return [];
   const group = NAV_GROUPS.find((g) =>
@@ -16,10 +19,8 @@ export const getBreadcrumbs = (pathname: string): Crumb[] => {
   if (group) crumbs.push({ label: group.label });
   crumbs.push({ label: page?.title ?? humanize(root), href: `/${root}` });
   rest.forEach((segment, index) => {
-    crumbs.push({
-      label: humanize(segment),
-      href: `/${[root, ...rest.slice(0, index + 1)].join("/")}`,
-    });
+    const href = `/${[root, ...rest.slice(0, index + 1)].join("/")}`;
+    crumbs.push({ label: labels[href] ?? humanize(segment), href });
   });
   return crumbs;
 };

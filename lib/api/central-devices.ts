@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createCentralClient, failureMessage } from "./central-client";
 import { fetchAllPages } from "./central-pages";
 import type { CentralServer } from "./edge-registry";
+import { perimetersSchema } from "./perimeters";
 
 export const deviceSchema = z.object({
   id: z.coerce.string(),
@@ -11,6 +12,7 @@ export const deviceSchema = z.object({
   sourceMain: z.string(),
   sourceSub: z.string().nullable(),
   analyticId: z.string().nullable(),
+  perimeters: perimetersSchema.nullable().default(null),
   isRecordingEnabled: z.boolean(),
 });
 

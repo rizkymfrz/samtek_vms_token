@@ -110,7 +110,7 @@ import {
 export const DialogDemo = () => {
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" />}>
+      <DialogTrigger render={<Button variant="secondary" />}>
         {dialog.trigger}
       </DialogTrigger>
       <DialogContent>
@@ -120,7 +120,7 @@ export const DialogDemo = () => {
         </DialogHeader>
         <Separator />
         <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>
+          <DialogClose render={<Button variant="secondary" />}>
             {common.cancel}
           </DialogClose>
           <Button>{common.save}</Button>
@@ -157,7 +157,7 @@ export const SheetDemo = () => {
     <Row>
       {sheet.side.map((side) => (
         <Sheet key={side}>
-          <SheetTrigger render={<Button variant="outline" />}>
+          <SheetTrigger render={<Button variant="secondary" />}>
             {side}
           </SheetTrigger>
           <SheetContent side={side}>
@@ -166,7 +166,7 @@ export const SheetDemo = () => {
               <SheetDescription>{dialog.description}</SheetDescription>
             </SheetHeader>
             <SheetFooter>
-              <SheetClose render={<Button variant="outline" />}>
+              <SheetClose render={<Button variant="secondary" />}>
                 {common.close}
               </SheetClose>
             </SheetFooter>
@@ -180,7 +180,7 @@ export const SheetDemo = () => {
 export const DrawerDemo = () => {
   return (
     <Drawer>
-      <DrawerTrigger render={<Button variant="outline" />}>
+      <DrawerTrigger render={<Button variant="secondary" />}>
         {drawer.trigger}
       </DrawerTrigger>
       <DrawerContent>
@@ -190,7 +190,7 @@ export const DrawerDemo = () => {
         </DrawerHeader>
         <DrawerFooter>
           <Button>{common.confirm}</Button>
-          <DrawerClose render={<Button variant="outline" />}>
+          <DrawerClose render={<Button variant="secondary" />}>
             {common.cancel}
           </DrawerClose>
         </DrawerFooter>
@@ -202,7 +202,7 @@ export const DrawerDemo = () => {
 export const PopoverDemo = () => {
   return (
     <Popover>
-      <PopoverTrigger render={<Button variant="outline" />}>
+      <PopoverTrigger render={<Button variant="secondary" />}>
         {popover.trigger}
       </PopoverTrigger>
       <PopoverContent>
@@ -219,7 +219,7 @@ export const TooltipDemo = () => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="outline" />}>
+        <TooltipTrigger render={<Button variant="secondary" />}>
           {tooltip.trigger}
         </TooltipTrigger>
         <TooltipContent>{tooltip.body}</TooltipContent>
@@ -245,7 +245,7 @@ export const HoverCardDemo = () => {
 export const DropdownMenuDemo = () => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="outline" />}>
+      <DropdownMenuTrigger render={<Button variant="secondary" />}>
         {menu.trigger}
       </DropdownMenuTrigger>
       <DropdownMenuContent>

@@ -25,7 +25,6 @@ import { cn } from "@/lib/utils";
 import { MetricChart } from "./metric-chart";
 import { Stats } from "./stats";
 import { StorageCard } from "./storage-card";
-import { canDelete } from "../lib/edit-server";
 import { percentLevel, TEMP_LIMIT, tempLevel } from "../lib/metric-level";
 import type { Metrics, ServerGroup, ServerRecord } from "../types";
 
@@ -58,9 +57,7 @@ export const ServerDetail = ({
   onRestartEdge: () => void;
   onDelete: () => void;
 }) => {
-  const [confirm, setConfirm] = useState<"restart" | "edge" | "delete" | null>(
-    null,
-  );
+  const [confirm, setConfirm] = useState<"restart" | "edge" | null>(null);
   const group = groups.find((g) => g.id === server.groupId)?.name;
   const empty = !online
     ? "No data. The server is offline."
@@ -126,7 +123,7 @@ export const ServerDetail = ({
               Restart Server
             </Button>
           )}
-          <Button variant="destructive" onClick={() => setConfirm("delete")}>
+          <Button variant="destructive" onClick={onDelete}>
             <Trash2Icon />
             Delete Server
           </Button>
@@ -240,34 +237,6 @@ export const ServerDetail = ({
               }}
             >
               Restart Edge
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog
-        open={confirm === "delete"}
-        onOpenChange={(open) => !open && setConfirm(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete {server.name}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {canDelete(server)
-                ? "The server is removed from the system. This cannot be undone."
-                : `It still has ${server.cameraCount} cameras. Move or delete them first; a server with cameras cannot be deleted.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              disabled={!canDelete(server)}
-              onClick={() => {
-                setConfirm(null);
-                onDelete();
-              }}
-            >
-              Delete server
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

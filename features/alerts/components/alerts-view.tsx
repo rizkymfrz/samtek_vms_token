@@ -100,7 +100,7 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
               : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, matches.length)} of ${matches.length}`}
           </span>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             aria-label="Previous page"
             disabled={page === 0}
@@ -109,7 +109,7 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
             <ChevronLeftIcon />
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             aria-label="Next page"
             disabled={page >= pages - 1}

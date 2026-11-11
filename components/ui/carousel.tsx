@@ -173,7 +173,7 @@ const CarouselItem = ({ className, ...props }: ComponentProps<"div">) => {
 
 const CarouselPrevious = ({
   className,
-  variant = "outline",
+  variant = "secondary",
   size = "icon-sm",
   ...props
 }: ComponentProps<typeof Button>) => {
@@ -202,7 +202,7 @@ const CarouselPrevious = ({
 
 const CarouselNext = ({
   className,
-  variant = "outline",
+  variant = "secondary",
   size = "icon-sm",
   ...props
 }: ComponentProps<typeof Button>) => {

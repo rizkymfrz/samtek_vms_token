@@ -47,7 +47,12 @@ export const ButtonDemo = () => {
       <Labelled label="icon size">
         <Row>
           {buttonIconSizeNames.map((size) => (
-            <Button key={size} size={size} variant="outline" aria-label={size}>
+            <Button
+              key={size}
+              size={size}
+              variant="secondary"
+              aria-label={size}
+            >
               <PlusIcon />
             </Button>
           ))}
@@ -59,7 +64,7 @@ export const ButtonDemo = () => {
             <MailIcon data-icon="inline-start" />
             {common.continue}
           </Button>
-          <Button variant="outline">
+          <Button variant="secondary">
             {common.continue}
             <ChevronDownIcon data-icon="inline-end" />
           </Button>
@@ -74,14 +79,14 @@ export const ButtonGroupDemo = () => {
   return (
     <Row>
       <ButtonGroup>
-        <Button variant="outline">{common.edit}</Button>
-        <Button variant="outline">{common.copy}</Button>
-        <Button variant="outline">{common.share}</Button>
+        <Button variant="secondary">{common.edit}</Button>
+        <Button variant="secondary">{common.copy}</Button>
+        <Button variant="secondary">{common.share}</Button>
       </ButtonGroup>
       <ButtonGroup>
         <ButtonGroupText>{common.open}</ButtonGroupText>
         <ButtonGroupSeparator />
-        <Button variant="outline" size="icon" aria-label={common.open}>
+        <Button variant="secondary" size="icon" aria-label={common.open}>
           <ChevronDownIcon />
         </Button>
       </ButtonGroup>

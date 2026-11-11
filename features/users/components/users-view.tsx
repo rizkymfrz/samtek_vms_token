@@ -113,7 +113,7 @@ export const UsersView = ({
               : `${safePage * PAGE_SIZE + 1}–${Math.min((safePage + 1) * PAGE_SIZE, matches.length)} of ${matches.length}`}
           </span>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             aria-label="Previous page"
             disabled={safePage === 0}
@@ -122,7 +122,7 @@ export const UsersView = ({
             <ChevronLeftIcon />
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             aria-label="Next page"
             disabled={safePage >= pages - 1}

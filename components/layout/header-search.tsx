@@ -36,7 +36,7 @@ export const HeaderSearch = () => {
   return (
     <>
       <Button
-        variant="outline"
+        variant="secondary"
         className="w-8 justify-center text-muted-foreground lg:w-56 lg:justify-start"
         onClick={() => setOpen(true)}
         aria-label="Search"

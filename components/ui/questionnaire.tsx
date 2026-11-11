@@ -213,7 +213,7 @@ const QuestionnairePrevious = ({
   children,
   className,
   size = "md",
-  variant = "outline",
+  variant = "secondary",
   ...props
 }: ComponentProps<typeof QuestionnairePrimitive.Previous> &
   Pick<ComponentProps<typeof Button>, "size" | "variant">) => {
@@ -238,7 +238,7 @@ const QuestionnaireSkip = ({
   children,
   className,
   size = "md",
-  variant = "outline",
+  variant = "secondary",
   ...props
 }: ComponentProps<typeof QuestionnairePrimitive.Skip> &
   Pick<ComponentProps<typeof Button>, "size" | "variant">) => {

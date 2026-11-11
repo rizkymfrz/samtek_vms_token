@@ -120,11 +120,13 @@ export const DevicePanel = ({
           </Button>
           <Button
             variant="destructive"
+            size="icon"
+            aria-label="Delete layout"
+            title="Delete layout"
             disabled={layouts.length === 1}
             onClick={onDeleteLayout}
           >
             <Trash2Icon />
-            Delete
           </Button>
         </div>
       </PanelSection>

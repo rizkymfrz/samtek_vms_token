@@ -4,6 +4,7 @@ import {
   PlusIcon,
   RadarIcon,
   ServerIcon,
+  Trash2Icon,
 } from "lucide-react";
 import { PanelEmpty, PanelSection } from "@/components/layout/side-panel";
 import { StatusDot } from "@/components/shared/status-dot";
@@ -23,6 +24,7 @@ export const ServerListPanel = ({
   scanning,
   onSelect,
   onAdd,
+  onDelete,
   onTab,
   isLive,
   onScan,
@@ -37,6 +39,7 @@ export const ServerListPanel = ({
   scanning: boolean;
   onSelect: (id: string) => void;
   onAdd: () => void;
+  onDelete: () => void;
   onTab: (tab: DiscoverTab) => void;
   onScan: () => void;
   onRegister: (id: string) => void;
@@ -68,9 +71,11 @@ export const ServerListPanel = ({
                   <span className="truncate text-xs font-medium">
                     {server.name}
                   </span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {server.vendor ?? `ID ${server.id}`}
-                  </span>
+                  {server.vendor && (
+                    <span className="truncate text-xs text-muted-foreground">
+                      {server.vendor}
+                    </span>
+                  )}
                 </span>
                 <StatusDot
                   shape="square"
@@ -82,10 +87,22 @@ export const ServerListPanel = ({
             </li>
           ))}
         </ul>
-        <Button onClick={onAdd} className="w-full">
-          <PlusIcon />
-          Add server
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={onAdd} className="flex-1">
+            <PlusIcon />
+            Add server
+          </Button>
+          <Button
+            variant="destructive"
+            size="icon"
+            aria-label="Delete server"
+            title="Delete server"
+            disabled={selectedId === null}
+            onClick={onDelete}
+          >
+            <Trash2Icon />
+          </Button>
+        </div>
       </PanelSection>
       {!isLive && (
         <PanelSection

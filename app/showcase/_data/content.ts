@@ -35,7 +35,6 @@ export type GroupId = keyof typeof groups
 
 export const buttonVariantNames = [
   "default",
-  "outline",
   "secondary",
   "ghost",
   "destructive",

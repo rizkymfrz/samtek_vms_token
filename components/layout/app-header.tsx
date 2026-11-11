@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useBreadcrumbLabels } from "@/hooks/use-breadcrumb-labels";
 import { getBreadcrumbs } from "@/lib/breadcrumbs";
 import { HeaderActions } from "./header-actions";
 import { HeaderClock } from "./header-clock";
@@ -21,7 +22,8 @@ import { ThemeSwitcher } from "./theme-switcher";
 
 export const AppHeader = ({ status }: { status: ReactNode }) => {
   const pathname = usePathname();
-  const crumbs = getBreadcrumbs(pathname);
+  const labels = useBreadcrumbLabels();
+  const crumbs = getBreadcrumbs(pathname, labels);
   return (
     <header className="sticky top-0 z-20 flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background px-4">
       <SidebarTrigger />

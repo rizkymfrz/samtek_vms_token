@@ -133,7 +133,7 @@ export const CardDemo = () => {
         />
       </CardContent>
       <CardFooter className="justify-between">
-        <Button variant="outline">{cardContent.cancel}</Button>
+        <Button variant="secondary">{cardContent.cancel}</Button>
         <Button>{cardContent.deploy}</Button>
       </CardFooter>
     </Card>
@@ -212,7 +212,7 @@ export const ItemDemo = () => {
               <ItemDescription>{person.email}</ItemDescription>
             </ItemContent>
             <ItemActions>
-              <Button size="xs" variant="outline">
+              <Button size="xs" variant="secondary">
                 {item.action}
               </Button>
             </ItemActions>
@@ -390,7 +390,7 @@ export const AlertDemo = () => {
             <AlertTitle>{copy.title}</AlertTitle>
             <AlertDescription>{copy.body}</AlertDescription>
             <AlertAction>
-              <Button size="xs" variant="outline">
+              <Button size="xs" variant="secondary">
                 {alert.action}
               </Button>
             </AlertAction>
@@ -408,7 +408,7 @@ export const ToastDemo = () => {
         {toast.triggers.map(({ id, label, title, description }) => (
           <Button
             key={id}
-            variant="outline"
+            variant="secondary"
             onClick={() =>
               toastManager.add({
                 title,

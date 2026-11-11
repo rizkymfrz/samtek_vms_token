@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { mqttConfig } from "@/config/mqtt";
 import { isServerOnline } from "@/config/server-status";
 import { useEdgeStatus, useServerOnline } from "@/features/edge-status";
+import { DeleteServerDialog } from "./delete-server-dialog";
 import { LogDialog } from "./log-dialog";
 import { ServerDetail } from "./server-detail";
 import { type FormTarget, ServerFormDialog } from "./server-form-dialog";
@@ -47,6 +48,7 @@ export const ServersView = ({
   const [restartingId, setRestartingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormTarget>(null);
   const [logsOpen, setLogsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { entries, error: brokerError } = useEdgeStatus();
   const serverOnline = useServerOnline();
   const online = useMemo(
@@ -117,6 +119,7 @@ export const ServersView = ({
           scanning={scanning}
           onSelect={setSelectedId}
           onAdd={() => setForm("new")}
+          onDelete={() => setIsDeleting(true)}
           onTab={setTab}
           isLive={isLive}
           onScan={() => setScanning(true)}
@@ -180,7 +183,7 @@ export const ServersView = ({
             isRestartingEdge={actions.restartEdge.isPending}
             onRestart={() => setRestartingId(selected.id)}
             onRestartEdge={() => actions.restartEdge.mutate(selected)}
-            onDelete={() => remove(selected.id)}
+            onDelete={() => setIsDeleting(true)}
           />
         ) : (
           <EmptyState
@@ -206,6 +209,12 @@ export const ServersView = ({
           setForm(null);
           actions.save.reset();
         }}
+      />
+      <DeleteServerDialog
+        server={selected}
+        isOpen={isDeleting}
+        onOpenChange={setIsDeleting}
+        onConfirm={() => selected && remove(selected.id)}
       />
       <LogDialog
         server={

@@ -46,7 +46,7 @@ const PaginationLink = ({
 }: PaginationLinkProps) => {
   return (
     <Button
-      variant={isActive ? "outline" : "ghost"}
+      variant={isActive ? "secondary" : "ghost"}
       size={size}
       className={cn(className)}
       nativeButton={false}
@@ -107,7 +107,7 @@ const PaginationEllipsis = ({
       aria-hidden
       data-slot="pagination-ellipsis"
       className={cn(
-        "flex size-8 items-center justify-center [&_svg:not([class*='size-'])]:size-4",
+        "flex size-10 items-center justify-center [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
