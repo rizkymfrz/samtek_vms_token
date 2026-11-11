@@ -19,6 +19,7 @@ import { HeaderClock } from "./header-clock";
 import { HeaderNotifications } from "./header-notifications";
 import { HeaderSearch } from "./header-search";
 import { ThemeSwitcher } from "./theme-switcher";
+import { WindowControls } from "./window-controls";
 
 export const AppHeader = ({ status }: { status: ReactNode }) => {
   const pathname = usePathname();
@@ -61,6 +62,7 @@ export const AppHeader = ({ status }: { status: ReactNode }) => {
         <ThemeSwitcher />
         <HeaderActions />
       </div>
+      <WindowControls />
     </header>
   );
 };
