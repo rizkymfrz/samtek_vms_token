@@ -67,6 +67,8 @@ export const saveCamera = (
     sourceSub: draft.sourceSub.trim() || null,
     analyticId: draft.analyticId,
     isRecordingEnabled: draft.isRecordingEnabled,
+    applyStatus: "applied",
+    applyError: null,
   });
   if (editingId === null) {
     const nextId = String(

@@ -35,6 +35,8 @@ const toRecord = (detail: CameraDetail) => ({
   sourceSub: detail.sourceSub,
   analyticId: detail.analyticId,
   isRecordingEnabled: detail.isRecordingEnabled,
+  applyStatus: detail.applyStatus,
+  applyError: detail.applyError,
 });
 
 export const CameraDetailView = ({

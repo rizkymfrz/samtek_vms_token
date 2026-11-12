@@ -1,3 +1,9 @@
+export type ApplyError = {
+  code: string;
+  field: string | null;
+  message: string;
+};
+
 export type CameraRecord = {
   id: string;
   edgeServerId: string;
@@ -7,6 +13,8 @@ export type CameraRecord = {
   sourceSub: string | null;
   analyticId: string | null;
   isRecordingEnabled: boolean;
+  applyStatus: "applied" | "rejected" | null;
+  applyError: ApplyError | null;
 };
 
 export type ServerOption = {
@@ -29,3 +37,4 @@ export type CameraData = {
 };
 
 export type StreamState = "live" | "disabled" | "server-offline";
+export type ApplyState = "applied" | "rejected" | "pending";

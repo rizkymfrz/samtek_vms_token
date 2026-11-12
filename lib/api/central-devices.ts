@@ -5,6 +5,12 @@ import { fetchAllPages } from "./central-pages";
 import type { CentralServer } from "./edge-registry";
 import { perimetersSchema } from "./perimeters";
 
+const applyErrorSchema = z.object({
+  code: z.string(),
+  field: z.string().nullable(),
+  message: z.string(),
+});
+
 export const deviceSchema = z.object({
   id: z.coerce.string(),
   edgeServerId: z.coerce.string(),
@@ -16,6 +22,8 @@ export const deviceSchema = z.object({
   analyticParams: analyticParamsSchema.nullable().default(null),
   perimeters: perimetersSchema.nullable().default(null),
   isRecordingEnabled: z.boolean(),
+  applyStatus: z.enum(["applied", "rejected"]).nullable().catch(null),
+  applyError: applyErrorSchema.nullable().catch(null),
 });
 
 export type CentralDevice = z.output<typeof deviceSchema>;

@@ -1,5 +1,6 @@
 import {
   ActivityIcon,
+  CircleCheckIcon,
   CircleDotIcon,
   PowerIcon,
   RadioIcon,
@@ -20,8 +21,19 @@ import {
 } from "@/components/ui/table";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { cn } from "@/lib/utils";
-import { cameraState, STATE_LABEL } from "../lib/camera-state";
+import {
+  APPLY_LABEL,
+  applyState,
+  cameraState,
+  STATE_LABEL,
+} from "../lib/camera-state";
 import type { CameraRecord, ServerOption } from "../types";
+
+const APPLY_DOT = {
+  applied: "live",
+  rejected: "danger",
+  pending: "caution",
+} as const;
 
 export const CameraTable = ({
   cameras,
@@ -46,6 +58,7 @@ export const CameraTable = ({
           <TableHead icon={ServerIcon}>Edge server</TableHead>
           <TableHead icon={ScanSearchIcon}>Analytic</TableHead>
           <TableHead icon={ActivityIcon}>Status</TableHead>
+          <TableHead icon={CircleCheckIcon}>Config</TableHead>
           <TableHead icon={RadioIcon}>Streams</TableHead>
           <TableHead icon={PowerIcon}>Enabled</TableHead>
           <TableHead icon={CircleDotIcon}>Recording</TableHead>
@@ -84,6 +97,15 @@ export const CameraTable = ({
                 <span className="flex items-center gap-2 whitespace-nowrap">
                   <StatusDot status={state === "live" ? "live" : "offline"} />
                   {STATE_LABEL[state]}
+                </span>
+              </TableCell>
+              <TableCell>
+                <span
+                  title={camera.applyError?.message}
+                  className="flex items-center gap-2 whitespace-nowrap"
+                >
+                  <StatusDot status={APPLY_DOT[applyState(camera)]} />
+                  {APPLY_LABEL[applyState(camera)]}
                 </span>
               </TableCell>
               <TableCell className="text-muted-foreground">

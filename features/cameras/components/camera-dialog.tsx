@@ -202,6 +202,13 @@ const Form = ({
               )}
             />
             {error && <FieldError>{error}</FieldError>}
+            {editing?.applyStatus === "rejected" && editing.applyError && (
+              <FieldError>
+                The edge server rejected this configuration:{" "}
+                {editing.applyError.message}
+                {editing.applyError.field && ` (${editing.applyError.field})`}
+              </FieldError>
+            )}
             {editing && (
               <p className="text-xs text-muted-foreground">
                 Currently {maskSource(editing.sourceMain)}. Analytic parameters

@@ -24,6 +24,8 @@ export const buildCameras = (now = Date.now()): CameraData => {
       sourceSub: d.sourceSub,
       analyticId: d.analyticId,
       isRecordingEnabled: d.isRecordingEnabled,
+      applyStatus: d.applyStatus,
+      applyError: d.applyError,
     })),
   };
 };

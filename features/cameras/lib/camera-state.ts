@@ -1,4 +1,9 @@
-import type { CameraRecord, ServerOption, StreamState } from "../types";
+import type {
+  ApplyState,
+  CameraRecord,
+  ServerOption,
+  StreamState,
+} from "../types";
 
 export const cameraState = (
   camera: CameraRecord,
@@ -14,4 +19,13 @@ export const STATE_LABEL: Record<StreamState, string> = {
   live: "Live",
   disabled: "Disabled",
   "server-offline": "Server offline",
+};
+
+export const applyState = (camera: CameraRecord): ApplyState =>
+  camera.applyStatus ?? "pending";
+
+export const APPLY_LABEL: Record<ApplyState, string> = {
+  applied: "Applied",
+  rejected: "Rejected",
+  pending: "Pending",
 };

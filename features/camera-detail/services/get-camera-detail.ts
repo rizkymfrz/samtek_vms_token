@@ -15,6 +15,8 @@ type Device = {
   sourceMain: string;
   sourceSub: string | null;
   isRecordingEnabled: boolean;
+  applyStatus: CameraDetail["applyStatus"];
+  applyError: CameraDetail["applyError"];
   analyticId: string | null;
   analyticParams?: CameraDetail["analyticParams"] | null;
   perimeters?: CameraDetail["perimeters"] | null;
@@ -39,6 +41,8 @@ const toDetail = (
   sourceMain: device.sourceMain,
   sourceSub: device.sourceSub,
   isRecordingEnabled: device.isRecordingEnabled,
+  applyStatus: device.applyStatus,
+  applyError: device.applyError,
   analyticId: device.analyticId,
   isEnabled: device.isEnabled,
   isServerActive: server.isActive,

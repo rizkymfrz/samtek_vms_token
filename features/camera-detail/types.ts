@@ -1,3 +1,4 @@
+import type { CameraRecord } from "@/features/cameras";
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
 
@@ -11,6 +12,8 @@ export type CameraDetail = {
   sourceMain: string;
   sourceSub: string | null;
   isRecordingEnabled: boolean;
+  applyStatus: CameraRecord["applyStatus"];
+  applyError: CameraRecord["applyError"];
   analyticId: string | null;
   isEnabled: boolean;
   isServerActive: boolean;

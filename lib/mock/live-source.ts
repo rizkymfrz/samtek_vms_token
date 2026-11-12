@@ -16,6 +16,8 @@ export type Device = {
   sourceSub: string | null;
   analyticId: string | null;
   isRecordingEnabled: boolean;
+  applyStatus: "applied" | "rejected" | null;
+  applyError: { code: string; field: string | null; message: string } | null;
 };
 
 export type Layout = {
@@ -78,6 +80,8 @@ export const buildLiveSource = (now: number) => {
     sourceSub: `rtsp://10.0.${edgeServerId}.${id}/stream2`,
     analyticId,
     isRecordingEnabled: options.isRecordingEnabled ?? true,
+    applyStatus: "applied",
+    applyError: null,
   });
   const devices: Device[] = [
     camera("1", "1", "Lobby Entrance", "people_counting_dwelling"),
