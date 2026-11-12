@@ -16,6 +16,11 @@ import type { AlertRow, AlertsData, AlertsQuery } from "../types";
 const EDGE_PAGE_LIMIT = 1000;
 const MAX_EDGE_PAGES = 10;
 
+const clipDurationMs = (alarm: EdgeAlarm) => {
+  const seconds = alarm.clip_window_seconds || alarm.clip_duration_seconds;
+  return seconds && seconds > 0 ? seconds * 1000 : null;
+};
+
 const toRow = (
   edge: EdgeTarget,
   alarm: EdgeAlarm,
@@ -47,6 +52,15 @@ const toRow = (
       ? {
           edgeId: edge.id,
           eventId: alarm.event_id,
+          startAt:
+            alarm.clip_offset_seconds === undefined
+              ? null
+              : occurredAt.getTime() -
+                alarm.clip_offset_seconds * 1000 +
+                (alarm.clip_window_seconds
+                  ? (alarm.clip_window_start_seconds ?? 0) * 1000
+                  : 0),
+          durationMs: clipDurationMs(alarm),
           relay: {
             webrtcUrl: edge.webrtcUrl,
             webrtcUrlLocal: edge.webrtcUrlLocal,

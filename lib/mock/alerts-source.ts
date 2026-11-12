@@ -23,6 +23,8 @@ const titleCase = (value: string) =>
 export type AlertClip = {
   edgeId: string;
   eventId: string;
+  startAt: number | null;
+  durationMs: number | null;
   relay: { webrtcUrl: string | null; webrtcUrlLocal: string | null };
 };
 

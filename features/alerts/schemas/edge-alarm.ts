@@ -26,6 +26,10 @@ export const edgeAlarmsResponseSchema = z.object({
         .default({}),
       image_path: z.string().optional(),
       clip_path: z.string().optional(),
+      clip_offset_seconds: z.number().optional(),
+      clip_duration_seconds: z.number().optional(),
+      clip_window_start_seconds: z.number().optional(),
+      clip_window_seconds: z.number().optional(),
     }),
   ),
 });
