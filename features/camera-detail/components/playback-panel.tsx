@@ -9,7 +9,6 @@ import {
   SkipForwardIcon,
 } from "lucide-react";
 import { type MouseEvent, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -36,6 +35,8 @@ const MINUTES_PER_HOUR = 60;
 const MS_PER_MINUTE = 60_000;
 const MINUTES_PER_DAY = HOURS_PER_DAY * MINUTES_PER_HOUR;
 const LABEL_STEP = 3;
+const SEGMENT_MINUTES = 15;
+const SEGMENT_COUNT = MINUTES_PER_DAY / SEGMENT_MINUTES;
 
 const LABEL_HOURS = Array.from(
   { length: HOURS_PER_DAY / LABEL_STEP + 1 },
@@ -72,23 +73,27 @@ const Timeline = ({
         type="button"
         aria-label="Seek recording timeline"
         onClick={seekAt}
-        className="relative h-8 w-full overflow-hidden rounded bg-muted-foreground/25"
+        className="relative flex h-8 w-full gap-0.5"
       >
-        {bars.map((bar) => (
-          <span
-            key={bar.startMinute}
-            className="absolute inset-y-0 bg-chart-3"
-            style={{
-              left: toPercent(Math.max(0, bar.startMinute)),
-              width: `${((Math.min(MINUTES_PER_DAY, bar.endMinute) - Math.max(0, bar.startMinute)) / MINUTES_PER_DAY) * 100}%`,
-            }}
-          />
-        ))}
+        {Array.from({ length: SEGMENT_COUNT }, (_, segment) => {
+          const start = segment * SEGMENT_MINUTES;
+          const end = start + SEGMENT_MINUTES;
+          const isRecorded = bars.some(
+            (bar) => bar.startMinute < end && bar.endMinute > start,
+          );
+          return (
+            <span
+              key={segment}
+              data-recorded={isRecorded ? "" : undefined}
+              className="h-full flex-1 rounded-[1px] bg-muted data-recorded:bg-chart-3"
+            />
+          );
+        })}
         {playheadMinute !== null &&
           playheadMinute >= 0 &&
           playheadMinute <= MINUTES_PER_DAY && (
             <span
-              className="absolute inset-y-0 w-0.5 bg-foreground"
+              className="absolute -inset-y-1 w-0.5 bg-foreground"
               style={{ left: toPercent(playheadMinute) }}
             />
           )}
@@ -149,11 +154,6 @@ const PlaybackScreen = ({
         isSeamless
         isPaused={isPaused}
       />
-      {isPaused && (
-        <Badge variant="overlay" className="absolute top-2 left-2">
-          Paused
-        </Badge>
-      )}
     </>
   );
 };
@@ -222,22 +222,12 @@ export const PlaybackPanel = ({
               <SkipBackIcon />
             </Button>
             <Button
-              variant={isPlaying ? "default" : "secondary"}
               size="icon"
-              aria-label="Play"
-              disabled={!canControl || ranges.length === 0}
-              onClick={onPlay}
+              aria-label={isPlaying ? "Pause" : "Play"}
+              disabled={!canControl || (!isPlaying && ranges.length === 0)}
+              onClick={() => void (isPlaying ? playback.pause() : onPlay())}
             >
-              <PlayIcon />
-            </Button>
-            <Button
-              variant={isPlaying ? "secondary" : "default"}
-              size="icon"
-              aria-label="Pause"
-              disabled={!canControl || !isPlaying}
-              onClick={() => void playback.pause()}
-            >
-              <PauseIcon />
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </Button>
             <Button
               variant="secondary"

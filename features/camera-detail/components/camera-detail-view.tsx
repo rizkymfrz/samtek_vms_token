@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { BreadcrumbTitle } from "@/components/shared/breadcrumb-title";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -48,6 +48,7 @@ export const CameraDetailView = ({
   const [saved, setSaved] = useState(detail.perimeters);
   const [perimeters, setPerimeters] = useState(detail.perimeters);
   const [tab, setTab] = useState<string | number | null>("configuration");
+  useEffect(() => () => setTab("configuration"), []);
   const [tool, setTool] = useState<Tool>(null);
   const [selection, setSelection] = useState<Selection>(null);
   const form = useForm<DetailDraft>({

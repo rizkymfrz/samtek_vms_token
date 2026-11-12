@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const ROOTS = ["app", "components", "hooks"];
+const ROOTS = ["app", "components", "features", "hooks"];
 const UNIT_PX = 4;
 const REM_PX = 16;
 const SCALE = [2, 4, 8, 16, 32, 64, 128, 256, 512];

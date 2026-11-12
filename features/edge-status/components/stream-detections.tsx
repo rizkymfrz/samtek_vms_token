@@ -50,7 +50,7 @@ const Box = ({ object }: { object: DetectionObject }) => {
           className={cn("absolute size-3 border-current", corner)}
         />
       ))}
-      <span className="absolute bottom-full -left-px mb-0.5 flex max-w-full items-center gap-1 border-l-2 border-current bg-background/70 px-1.5 font-mono text-[10px] leading-4 tracking-wider text-current uppercase backdrop-blur-sm">
+      <span className="absolute bottom-full -left-px mb-0.5 flex max-w-full items-center gap-1 border-l-2 border-current bg-background/70 px-2 font-mono text-[10px] leading-4 tracking-wider text-current uppercase backdrop-blur-sm">
         {object.trackId !== null && (
           <span className="text-muted-foreground">
             {String(object.trackId).padStart(2, "0")}
