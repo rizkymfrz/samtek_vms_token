@@ -36,6 +36,19 @@ export const startPlayback = async (
     }),
   );
 
+export const startClipPlayback = async (
+  edgeId: string,
+  sessionId: string,
+  eventId: string,
+) =>
+  toSession(
+    await sendEdgeCommand(edgeDownTopic(edgeId), "playback.start", {
+      session_id: sessionId,
+      event_id: eventId,
+      speed: 1,
+    }),
+  );
+
 export const controlPlayback = async (
   edgeId: string,
   sessionId: string,

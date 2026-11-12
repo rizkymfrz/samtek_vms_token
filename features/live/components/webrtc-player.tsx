@@ -1,6 +1,12 @@
 "use client";
-import { Loader2Icon, VideoOffIcon } from "lucide-react";
+import {
+  Loader2Icon,
+  VideoOffIcon,
+  Volume2Icon,
+  VolumeXIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useWebrtcStream } from "../hooks/use-webrtc-stream";
 
@@ -17,12 +23,14 @@ export const WebrtcPlayer = ({
   app = "live",
   isSeamless = false,
   isPaused = false,
+  withAudio = false,
 }: {
   relay: { webrtcUrl: string | null; webrtcUrlLocal: string | null };
   stream: string;
   app?: string;
   isSeamless?: boolean;
   isPaused?: boolean;
+  withAudio?: boolean;
 }) => {
   const { videoRef, status } = useWebrtcStream(
     relay,
@@ -30,9 +38,11 @@ export const WebrtcPlayer = ({
     app,
     isSeamless,
     isPaused,
+    withAudio,
   );
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isFrozen, setIsFrozen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const hint = HINT[status];
   useEffect(() => {
     const video = videoRef.current;
@@ -53,6 +63,9 @@ export const WebrtcPlayer = ({
     const handle = video.requestVideoFrameCallback(() => setIsFrozen(false));
     return () => video.cancelVideoFrameCallback(handle);
   }, [isPaused, videoRef]);
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = isMuted;
+  }, [isMuted, videoRef]);
   const isHolding = isSeamless && status === "reconnecting";
   return (
     <>
@@ -72,6 +85,17 @@ export const WebrtcPlayer = ({
           !isFrozen && "hidden",
         )}
       />
+      {withAudio && status === "playing" && (
+        <Button
+          variant="secondary"
+          size="icon-sm"
+          aria-label={isMuted ? "Unmute" : "Mute"}
+          className="absolute right-2 bottom-2"
+          onClick={() => setIsMuted((muted) => !muted)}
+        >
+          {isMuted ? <VolumeXIcon /> : <Volume2Icon />}
+        </Button>
+      )}
       {isHolding && (
         <Loader2Icon className="absolute top-2 right-2 size-4 animate-spin text-muted-foreground" />
       )}

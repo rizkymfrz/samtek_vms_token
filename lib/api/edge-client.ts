@@ -7,6 +7,8 @@ export type EdgeTarget = {
   name: string;
   hostAddress: string | null;
   localHostAddress: string | null;
+  webrtcUrl: string | null;
+  webrtcUrlLocal: string | null;
 };
 
 export class EdgeError extends Error {

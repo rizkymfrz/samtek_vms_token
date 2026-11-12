@@ -25,6 +25,7 @@ export const edgeAlarmsResponseSchema = z.object({
         )
         .default({}),
       image_path: z.string().optional(),
+      clip_path: z.string().optional(),
     }),
   ),
 });

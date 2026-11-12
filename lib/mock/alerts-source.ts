@@ -20,6 +20,12 @@ const date = new Intl.DateTimeFormat("en-GB", {
 const titleCase = (value: string) =>
   value.replace(/_/g, " ").replace(/^\w/, (char) => char.toUpperCase());
 
+export type AlertClip = {
+  edgeId: string;
+  eventId: string;
+  relay: { webrtcUrl: string | null; webrtcUrlLocal: string | null };
+};
+
 export type AlertRow = {
   id: string;
   at: number;
@@ -37,6 +43,7 @@ export type AlertRow = {
   frame: string;
   imagePath: string;
   imageUrl: string | null;
+  clip: AlertClip | null;
   details: { label: string; value: string }[];
 };
 
@@ -92,6 +99,7 @@ export const buildAlerts = (now = Date.now()): AlertsData => {
       frame: `${alarm.frame_width}×${alarm.frame_height}`,
       imagePath: alarm.image_path,
       imageUrl: null,
+      clip: null,
       details: formatDetails(alarm.event_id),
     }));
   return {

@@ -1,4 +1,7 @@
+import { PlayIcon } from "lucide-react";
+import { useState } from "react";
 import { RiskBadge } from "@/components/shared/risk-badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogBody,
@@ -10,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { AlertClipPlayer } from "./alert-clip-player";
 import { AlertImage } from "./alert-image";
 import type { AlertRow } from "../types";
 
@@ -29,8 +33,13 @@ export const AlertDetailDialog = ({
   alert: AlertRow | null;
   onClose: () => void;
 }) => {
+  const [clipId, setClipId] = useState<string | null>(null);
+  const close = () => {
+    setClipId(null);
+    onClose();
+  };
   return (
-    <Dialog open={alert !== null} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={alert !== null} onOpenChange={(open) => !open && close()}>
       <DialogContent className="md:max-w-2xl">
         {alert && (
           <>
@@ -45,14 +54,27 @@ export const AlertDetailDialog = ({
             <DialogBody>
               <DialogSection>
                 <div className="flex flex-col gap-2">
-                  <AlertImage
-                    path={alert.imagePath}
-                    src={alert.imageUrl}
-                    className="w-full"
-                  />
+                  {alert.clip && clipId === alert.id ? (
+                    <AlertClipPlayer clip={alert.clip} />
+                  ) : (
+                    <AlertImage
+                      path={alert.imagePath}
+                      src={alert.imageUrl}
+                      className="w-full"
+                    />
+                  )}
                   <span className="text-xs break-all text-muted-foreground">
                     {alert.imagePath}
                   </span>
+                  {alert.clip && clipId !== alert.id && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => setClipId(alert.id)}
+                    >
+                      <PlayIcon />
+                      Play clip
+                    </Button>
+                  )}
                 </div>
               </DialogSection>
               <DialogDivider />

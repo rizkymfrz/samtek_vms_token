@@ -37,6 +37,16 @@ const toRow = (edge: EdgeTarget, alarm: EdgeAlarm): AlertRow => {
     imageUrl: alarm.image_path
       ? `/api/edge/${edge.id}/alarms/${alarm.event_id}/image`
       : null,
+    clip: alarm.clip_path
+      ? {
+          edgeId: edge.id,
+          eventId: alarm.event_id,
+          relay: {
+            webrtcUrl: edge.webrtcUrl,
+            webrtcUrlLocal: edge.webrtcUrlLocal,
+          },
+        }
+      : null,
     details: Object.entries(alarm.detail).map(([key, value]) => ({
       label: titleCase(key),
       value: Array.isArray(value) ? value.join(", ") : String(value),

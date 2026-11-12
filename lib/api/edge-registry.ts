@@ -47,12 +47,23 @@ export const getCentralServers = async (token: string) => {
 export const getEdgeServers = async (token: string): Promise<EdgeTarget[]> =>
   (await getCentralServers(token))
     .filter((server) => server.isActive)
-    .map(({ id, name, hostAddress, localHostAddress }) => ({
-      id,
-      name,
-      hostAddress,
-      localHostAddress,
-    }));
+    .map(
+      ({
+        id,
+        name,
+        hostAddress,
+        localHostAddress,
+        webrtcUrl,
+        webrtcUrlLocal,
+      }) => ({
+        id,
+        name,
+        hostAddress,
+        localHostAddress,
+        webrtcUrl,
+        webrtcUrlLocal,
+      }),
+    );
 
 export const findEdgeServer = async (token: string, edgeId: string) =>
   (await getEdgeServers(token)).find((edge) => edge.id === edgeId) ?? null;

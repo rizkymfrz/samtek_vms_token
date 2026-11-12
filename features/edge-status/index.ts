@@ -30,6 +30,7 @@ export { sendEdgeCommand } from "./lib/edge-status-store";
 
 export {
   controlPlayback,
+  startClipPlayback,
   startPlayback,
   stopPlayback,
 } from "./lib/playback-commands";

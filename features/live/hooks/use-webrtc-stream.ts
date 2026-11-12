@@ -29,6 +29,7 @@ export const useWebrtcStream = (
   app = "live",
   isSeamless = false,
   isPaused = false,
+  withAudio = false,
 ) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isPausedRef = useRef(isPaused);
@@ -119,6 +120,7 @@ export const useWebrtcStream = (
       const current = new RTCPeerConnection();
       session = current;
       current.addTransceiver("video", { direction: "recvonly" });
+      if (withAudio) current.addTransceiver("audio", { direction: "recvonly" });
       current.ontrack = (event) => {
         video!.srcObject = event.streams[0] ?? new MediaStream([event.track]);
       };
@@ -156,6 +158,14 @@ export const useWebrtcStream = (
       close();
       video.srcObject = null;
     };
-  }, [webrtcUrl, webrtcUrlLocal, app, stream, stallMs, retryFirstMs]);
+  }, [
+    webrtcUrl,
+    webrtcUrlLocal,
+    app,
+    stream,
+    stallMs,
+    retryFirstMs,
+    withAudio,
+  ]);
   return { videoRef, status };
 };
