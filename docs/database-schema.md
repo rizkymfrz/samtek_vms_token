@@ -7,7 +7,7 @@ invent columns. When a real API replaces the dummy data, keep these names.
 |---|---|---|
 | Owner | the VMS backend | each edge (`samtek_edge_new`) |
 | Engine | MySQL, through Prisma | DuckDB (`<SAMTEK_STATS_DIR>/stats.duckdb`) |
-| Holds | users, roles, edge servers, devices (cameras), layouts | alarms, recognitions, counting statistics |
+| Holds | users, roles, edge servers, devices (cameras), layouts, floor plans | alarms, recognitions, counting statistics |
 | Naming | Prisma camelCase fields, snake_case columns | snake_case |
 | Keys | PK/FK/UNIQUE as in the schema below | **none**: no PK, FK or UNIQUE; relations only by `event_id` |
 
@@ -61,6 +61,8 @@ model EdgeServerGroup {
   name        String    @db.VarChar(100)
   code        String    @db.VarChar(100)
   description String?   @db.Text
+  latitude  Decimal?  @db.Decimal(10, 7)
+  longitude Decimal?  @db.Decimal(10, 7)
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamp(0)
@@ -68,6 +70,7 @@ model EdgeServerGroup {
   parent      EdgeServerGroup?  @relation("EdgeServerGroupHierarchy", fields: [parentId], references: [id], onDelete: Restrict, map: "fk_edge_server_groups_parent_id")
   children    EdgeServerGroup[] @relation("EdgeServerGroupHierarchy")
   edgeServers EdgeServer[]
+  floorplans  Floorplan[]
 
   @@unique([code], map: "uq_edge_server_groups_code")
   @@map("edge_server_groups")
@@ -86,6 +89,8 @@ model EdgeServer {
   credentialKey      String?   @map("credential_key") @db.VarChar(255)
   isActive           Boolean   @default(true) @map("is_active")
   lastSeenAt         DateTime? @map("last_seen_at") @db.Timestamp(0)
+  latitude           Decimal?  @db.Decimal(10, 7)
+  longitude          Decimal?  @db.Decimal(10, 7)
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt          DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
   deletedAt          DateTime? @map("deleted_at") @db.Timestamp(0)
@@ -168,12 +173,15 @@ model Device {
   applyErrorField    String?   @map("apply_error_field") @db.VarChar(128)
   applyErrorMessage  String?   @map("apply_error_message") @db.VarChar(512)
   applyReportedAt    DateTime? @map("apply_reported_at") @db.Timestamp(0)
+  latitude           Decimal?  @db.Decimal(10, 7)
+  longitude          Decimal?  @db.Decimal(10, 7)
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt          DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
   deletedAt          DateTime? @map("deleted_at") @db.Timestamp(0)
 
   edgeServer    EdgeServer     @relation(fields: [edgeServerId], references: [id], onDelete: Restrict, map: "fk_devices_edge_server_id")
-  layoutDevices LayoutDevice[]
+  layoutDevices    LayoutDevice[]
+  floorplanDevices FloorplanDevice[]
 
   @@map("devices")
 }
@@ -209,6 +217,45 @@ model LayoutDevice {
   @@unique([layoutId, position], map: "uq_layout_devices_layout_id_position")
   @@unique([layoutId, deviceRecordId], map: "uq_layout_devices_layout_id_device_record_id")
   @@map("layout_devices")
+}
+
+model Floorplan {
+  id        BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  groupId   BigInt    @map("group_id") @db.UnsignedBigInt
+  parentId  BigInt?   @map("parent_id") @db.UnsignedBigInt
+  name      String    @db.VarChar(100)
+  imageKey  String?   @map("image_key") @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(0)
+
+  group    EdgeServerGroup   @relation(fields: [groupId], references: [id], onDelete: Restrict, map: "fk_floorplans_group_id")
+  parent   Floorplan?        @relation("FloorplanHierarchy", fields: [parentId], references: [id], onDelete: Restrict, map: "fk_floorplans_parent_id")
+  children Floorplan[]       @relation("FloorplanHierarchy")
+  devices  FloorplanDevice[]
+
+  @@index([groupId], map: "idx_floorplans_group_id")
+  @@index([parentId], map: "idx_floorplans_parent_id")
+  @@map("floorplans")
+}
+
+model FloorplanDevice {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  floorplanId    BigInt    @map("floorplan_id") @db.UnsignedBigInt
+  deviceRecordId BigInt    @map("device_record_id") @db.UnsignedBigInt
+  xPosition      Decimal   @map("x_position") @db.Decimal(7, 6)
+  yPosition      Decimal   @map("y_position") @db.Decimal(7, 6)
+  rotationDegrees    Int       @default(0) @map("rotation_degrees") @db.UnsignedSmallInt
+  fieldOfViewDegrees Int       @default(90) @map("field_of_view_degrees") @db.UnsignedSmallInt
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt      DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  floorplan Floorplan @relation(fields: [floorplanId], references: [id], onDelete: Cascade, map: "fk_floorplan_devices_floorplan_id")
+  device    Device    @relation(fields: [deviceRecordId], references: [id], onDelete: Restrict, map: "fk_floorplan_devices_device_record_id")
+
+  @@unique([floorplanId, deviceRecordId], map: "uq_floorplan_devices_floorplan_id_device_record_id")
+  @@index([deviceRecordId], map: "idx_floorplan_devices_device_record_id")
+  @@map("floorplan_devices")
 }
 
 model UserActivity {
@@ -257,43 +304,47 @@ model RefreshToken {
   and a camera can appear once per layout). `isDefault` marks the layout opened first.
   **Unconfirmed:** whether `position` starts at 0 or 1 is not in the schema. The UI assumes 0-based, row by row
   (`app/(app)/live/_data/types.ts`); confirm with the backend before wiring real data.
+- **Geographic position** is stored directly on `EdgeServerGroup`, `EdgeServer` and `Device` as `latitude` / `longitude`
+  (nullable, one current position, no history). Either both are set or both are `null` (a database CHECK enforces it);
+  latitude is -90..90, longitude -180..180, at most 7 decimals. Prisma returns them as `Decimal`; the API sends plain numbers.
+- **Floor plans** (section below) are an image of a building or floor owned by one `EdgeServerGroup`. A camera is placed on a
+  plan by relative `x` / `y`, never by pixels.
 - **Never send** `User.password`, `RefreshToken.tokenHash` or `EdgeServer.credentialKey` to the browser.
 
 ---
 
-### Proposed: floor plans (not in the database yet)
+### Floor plans
 
-The Floorplan page needs two models the profile database does not have. The UI is built against the shapes below
-(`app/(app)/floorplan/_data/types.ts`); the backend should confirm or adjust them before real data is wired up.
+A floor plan is the image of a building or a floor, with cameras placed on it. It is not a geographic map: geographic
+positions are the `latitude` / `longitude` columns above. The models are in the schema (`Floorplan`, `FloorplanDevice`).
 
-```prisma
-model Floorplan {
-  id        BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
-  name      String  @db.VarChar(100)       // "Main Building"
-  level     String  @db.VarChar(100)       // "Floor 1"
-  imagePath String  @map("image_path") @db.VarChar(255)  // the uploaded plan image
-  width     Int     @db.UnsignedSmallInt   // image size; only the proportions matter
-  height    Int     @db.UnsignedSmallInt
-  // createdAt / updatedAt / deletedAt like the other tables
-  devices   FloorplanDevice[]
-}
+- **Owner and hierarchy.** Every plan belongs to one `EdgeServerGroup` (`groupId`, required, cannot change). `parentId` nests plans
+  inside the same group, up to 10 levels: `Main Building` (no image needed) -> `Floor 1`, `Floor 2`. A parent must be in the same group.
+- **Image.** Uploaded through the API (PNG, JPEG or WebP, up to 10 MB), stored on the backend disk. The database holds only
+  `imageKey` (an internal file key), which is never sent to the browser. The API sends `hasImage` and serves the file at
+  `GET /v1/floorplans/{id}/image`, which needs the `Authorization` header, so fetch it with the token and show it from a blob URL
+  instead of putting the URL in an `<img src>`. A plan without an image is valid (`hasImage: false`).
+- **Placement.** `FloorplanDevice` links a `Device` to a plan with `xPosition` / `yPosition`, each 0..1 (share of the image width and
+  height; 0 is left / top). The API calls them `x` and `y`.
+  `rotationDegrees` (0..359, 0 = up, 90 = right, default 0) and `fieldOfViewDegrees` (1..360, default 90) are whole degrees;
+  the API calls them `rotation` and `fieldOfView`, both optional on write. A camera appears at most once per plan but may be on several plans.
+  The cameras must belong to an edge server in the plan's group or its subgroups. The list is replaced as a whole
+  (`PUT /v1/floorplans/{id}/devices`).
+- **Access.** Plans use platform permissions `floorplans.read|create|update|delete`, like groups; a role on one server does not
+  grant them. Cameras the user cannot read come back as `"device": null`.
+- **Deleting** a plan soft-deletes it with all child plans and their placements. Deleting a device removes its placements.
 
-model FloorplanDevice {
-  id             BigInt @id @default(autoincrement()) @db.UnsignedBigInt
-  floorplanId    BigInt @map("floorplan_id") @db.UnsignedBigInt
-  deviceRecordId BigInt @map("device_record_id") @db.UnsignedBigInt   // Device.id
-  x              Float                    // 0..1, share of the plan's width
-  y              Float                    // 0..1, share of the plan's height
-  rotation       Int                      // degrees, 0 = up, 90 = right
-  fov            Int                      // field of view in degrees
+**Differences from the UI types** (`features/floorplan/types.ts`). The UI was built before the backend and still expects fields
+the database does not have. Decide per field before wiring real data:
 
-  @@unique([deviceRecordId])              // a camera is on at most one plan
-  @@unique([floorplanId, deviceRecordId])
-}
-```
-
-Open questions: whether `building` should be a relation to `EdgeServerGroup`, where plan images are stored and served from, and
-whether a camera may appear on several plans (the UI currently allows one).
+| UI field | Backend |
+|---|---|
+| `Floorplan.building` | Not stored. Use the parent plan's `name`, or the group's `name`. |
+| `Floorplan.level` | Not stored. Use `name` (`Floor 1`) and put the building in the parent plan. |
+| `Floorplan.width`, `height` | Not stored. Read the size from the loaded image. Only the proportions matter. |
+| `FloorplanDevice.id`, `floorplanId` | Not in the placement list; the plan detail returns `devices: [{ x, y, device }]`. |
+| `FloorplanDevice.rotation`, `fov` | Stored as `rotationDegrees` and `fieldOfViewDegrees`; the API names are `rotation` and `fieldOfView`. Rename `fov` to `fieldOfView` in the UI types. |
+| "A camera is on at most one plan" | The backend allows several plans per camera. |
 
 ## 2. Analytics database (DuckDB, written by the edge)
 
