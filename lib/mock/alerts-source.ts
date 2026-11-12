@@ -47,15 +47,21 @@ export type AlertRow = {
   details: { label: string; value: string }[];
 };
 
+export type AlertsQuery = { since: number; until: number | null };
+
 export type AlertsData = {
   now: number;
   rows: AlertRow[];
+  isTruncated: boolean;
   titles: string[];
   cameras: string[];
   failures: { edgeId: string; edgeName: string; message: string }[];
 };
 
-export const buildAlerts = (now = Date.now()): AlertsData => {
+export const buildAlerts = (
+  now = Date.now(),
+  query?: AlertsQuery,
+): AlertsData => {
   const devices = createDevices(ANALYTIC_IDS);
   const data = generateAnalytics(now, devices);
   const camera = new Map(devices.map((d) => [d.device_id, d.name]));
@@ -79,6 +85,12 @@ export const buildAlerts = (now = Date.now()): AlertsData => {
   };
   const rows: AlertRow[] = data.alarm_events
     .filter((alarm) => alarm.occurred_at.getTime() <= now)
+    .filter(
+      (alarm) =>
+        !query ||
+        (alarm.occurred_at.getTime() >= query.since &&
+          (query.until === null || alarm.occurred_at.getTime() < query.until)),
+    )
     .sort((a, b) => b.occurred_at.getTime() - a.occurred_at.getTime())
     .map((alarm) => ({
       id: alarm.event_id,
@@ -107,6 +119,7 @@ export const buildAlerts = (now = Date.now()): AlertsData => {
     rows,
     titles: [...new Set(rows.map((r) => r.title))].sort(),
     cameras: [...new Set(rows.map((r) => r.camera))].sort(),
+    isTruncated: false,
     failures: [],
   };
 };

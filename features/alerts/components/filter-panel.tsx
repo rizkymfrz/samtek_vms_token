@@ -1,13 +1,21 @@
-import { XIcon } from "lucide-react";
 import {
   PanelField,
   PanelOption,
+  PanelReset,
   PanelSearch,
   PanelSection,
 } from "@/components/layout/side-panel";
+import { DatePicker } from "@/components/shared/date-picker";
 import { Pick } from "@/components/shared/pick";
-import { Button } from "@/components/ui/button";
-import { ALL, type Filters, isFiltered, RANGES } from "../lib/filter-alerts";
+import {
+  ALL,
+  CUSTOM_RANGE,
+  type Filters,
+  isFiltered,
+  parseDateKey,
+  RANGES,
+  toDateKey,
+} from "../lib/filter-alerts";
 
 const RISK_ITEMS = [
   { value: ALL, label: "All risks" },
@@ -32,20 +40,12 @@ export const FilterPanel = ({
     { value: ALL, label: "All types" },
     ...titles.map((title) => ({ value: title, label: title })),
   ];
+  const fromDate = parseDateKey(filters.from);
+  const toDate = parseDateKey(filters.to);
   const total = cameras.reduce((sum, item) => sum + item.count, 0);
   return (
     <>
-      <PanelSection
-        title="Filters"
-        action={
-          isFiltered(filters) && (
-            <Button variant="ghost" onClick={onClear}>
-              <XIcon />
-              Clear
-            </Button>
-          )
-        }
-      >
+      <PanelSection title="Filters">
         <PanelSearch
           value={filters.query}
           onChange={(query) => onChange({ query })}
@@ -60,6 +60,26 @@ export const FilterPanel = ({
             className="w-full"
           />
         </PanelField>
+        {filters.range === CUSTOM_RANGE && (
+          <>
+            <PanelField label="From">
+              <DatePicker
+                label="From date"
+                value={fromDate}
+                disabled={toDate && { after: toDate }}
+                onChange={(date) => onChange({ from: toDateKey(date) })}
+              />
+            </PanelField>
+            <PanelField label="To">
+              <DatePicker
+                label="To date"
+                value={toDate}
+                disabled={fromDate && { before: fromDate }}
+                onChange={(date) => onChange({ to: toDateKey(date) })}
+              />
+            </PanelField>
+          </>
+        )}
         <PanelField label="Risk">
           <Pick
             label="Risk"
@@ -78,6 +98,7 @@ export const FilterPanel = ({
             className="w-full"
           />
         </PanelField>
+        <PanelReset isDisabled={!isFiltered(filters)} onClick={onClear} />
       </PanelSection>
       <PanelSection title="Cameras">
         <ul className="flex flex-col">

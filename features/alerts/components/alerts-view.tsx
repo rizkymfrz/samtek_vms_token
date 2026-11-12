@@ -1,10 +1,22 @@
 "use client";
-import { BellIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { type CSSProperties, useMemo, useState } from "react";
+import {
+  BellIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  TriangleAlertIcon,
+} from "lucide-react";
+import {
+  type CSSProperties,
+  type Dispatch,
+  type SetStateAction,
+  useMemo,
+  useState,
+} from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { AlertDetailDialog } from "./alert-detail-dialog";
@@ -44,12 +56,21 @@ const gridItems = GRID_PRESETS.map(([rows, columns]) => ({
   label: `${rows}×${columns}`,
 }));
 
-export const AlertsView = ({ data }: { data: AlertsData }) => {
+export const AlertsView = ({
+  data,
+  filters,
+  onFiltersChange,
+  isLoading,
+}: {
+  data: AlertsData;
+  filters: Filters;
+  onFiltersChange: Dispatch<SetStateAction<Filters>>;
+  isLoading: boolean;
+}) => {
   useFailureToast(
     "Some edge servers did not respond",
     data.failures.map((failure) => `${failure.edgeName}: ${failure.message}`),
   );
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [view, setView] = useState<View>("grid");
   const [grid, setGrid] = useState(DEFAULT_GRID);
   const [page, setPage] = useState(0);
@@ -69,7 +90,7 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
   const open: AlertRow | null =
     data.rows.find((row) => row.id === openId) ?? null;
   const change = (patch: Partial<Filters>) => {
-    setFilters((current) => ({ ...current, ...patch }));
+    onFiltersChange((current) => ({ ...current, ...patch }));
     setPage(0);
   };
   return (
@@ -81,17 +102,25 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
           cameras={cameras}
           onChange={change}
           onClear={() => {
-            setFilters(DEFAULT_FILTERS);
+            onFiltersChange(DEFAULT_FILTERS);
             setPage(0);
           }}
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
         <div className="flex flex-wrap items-center justify-end gap-2">
+          {data.isTruncated && (
+            <Badge variant="secondary" className="mr-auto">
+              <TriangleAlertIcon />
+              Results limited. Narrow the time range to see older alerts.
+            </Badge>
+          )}
           <span className="mr-2 text-xs text-muted-foreground tabular-nums">
-            {matches.length === 0
-              ? "0 alerts"
-              : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, matches.length)} of ${matches.length}`}
+            {isLoading
+              ? "Loading..."
+              : matches.length === 0
+                ? "0 alerts"
+                : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, matches.length)} of ${matches.length}`}
           </span>
           <Button
             variant="secondary"
@@ -164,7 +193,7 @@ export const AlertsView = ({ data }: { data: AlertsData }) => {
             ))}
           </div>
         ) : (
-          <div className="overflow-hidden rounded border lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+          <div className="flex flex-col overflow-hidden rounded border lg:min-h-0 lg:flex-1">
             <AlertsTable alerts={visible} onSelect={setOpenId} />
           </div>
         )}
