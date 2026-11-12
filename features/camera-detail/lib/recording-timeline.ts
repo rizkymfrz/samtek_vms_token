@@ -16,10 +16,9 @@ export const extendToNewest = (
   dayEnd: number,
 ) => {
   const last = ranges.at(-1);
-  if (!last || newestAt === null) return ranges;
-  const end = Math.min(newestAt, dayEnd);
-  if (end <= last.to) return ranges;
-  return [...ranges.slice(0, -1), { from: last.from, to: end }];
+  if (!last || newestAt === null || newestAt >= dayEnd) return ranges;
+  if (newestAt <= last.to) return ranges;
+  return [...ranges.slice(0, -1), { from: last.from, to: newestAt }];
 };
 
 export const toBars = (ranges: RecordingRange[], dayStart: number) =>
