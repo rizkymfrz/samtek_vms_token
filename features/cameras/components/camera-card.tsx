@@ -1,7 +1,7 @@
 import { ServerOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+import { MediaTile } from "@/components/shared/media-tile";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { STATE_LABEL } from "../lib/camera-state";
 import type { StreamState } from "../types";
 
@@ -27,36 +27,30 @@ export const CameraCard = ({
         ? VideoOffIcon
         : ServerOffIcon;
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-label={`${name}, ${STATE_LABEL[state]}`}
-      className={cn(
-        "relative aspect-video w-full overflow-hidden border-r border-b bg-sidebar text-left text-sidebar-foreground outline-none",
-        className,
-      )}
-    >
-      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-        <Icon className="size-8" />
-      </div>
-      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
+    <MediaTile
+      label={`${name}, ${STATE_LABEL[state]}`}
+      title={name}
+      subtitle={subtitle}
+      topStart={
         <Badge variant="overlay">
           <StatusDot status={state === "live" ? "live" : "offline"} />
           {STATE_LABEL[state]}
         </Badge>
-        {recording && (
+      }
+      topEnd={
+        recording && (
           <Badge variant="overlay">
             <StatusDot status="danger" />
             REC
           </Badge>
-        )}
+        )
+      }
+      onSelect={onSelect}
+      className={className}
+    >
+      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+        <Icon className="size-8" />
       </div>
-      <div className="absolute inset-x-0 bottom-0 flex flex-col p-2">
-        <span className="truncate text-sm font-medium">{name}</span>
-        <span className="truncate text-xs text-muted-foreground">
-          {subtitle}
-        </span>
-      </div>
-    </button>
+    </MediaTile>
   );
 };

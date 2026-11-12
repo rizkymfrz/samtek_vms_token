@@ -1,13 +1,12 @@
-import { XIcon } from "lucide-react";
 import {
   PanelField,
   PanelOption,
+  PanelReset,
   PanelSearch,
   PanelSection,
 } from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
-import { Button } from "@/components/ui/button";
 import { ANALYTICS } from "@/config/analytics-catalog";
 import { ALL, type Filters, isFiltered } from "../lib/filter-cameras";
 import type { ServerOption } from "../types";
@@ -61,17 +60,7 @@ export const CameraFilterPanel = ({
   ];
   return (
     <>
-      <PanelSection
-        title="Filters"
-        action={
-          isFiltered(filters) && (
-            <Button variant="ghost" onClick={onClear}>
-              <XIcon />
-              Clear
-            </Button>
-          )
-        }
-      >
+      <PanelSection title="Filters">
         <PanelSearch
           value={filters.query}
           onChange={(query) => onChange({ query })}
@@ -104,6 +93,7 @@ export const CameraFilterPanel = ({
             className="w-full"
           />
         </PanelField>
+        <PanelReset isDisabled={!isFiltered(filters)} onClick={onClear} />
       </PanelSection>
       <PanelSection title="Edge servers">
         <ul className="flex flex-col">

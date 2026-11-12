@@ -1,5 +1,6 @@
 import { SearchIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,27 @@ export const PanelSection = ({
       </div>
       {children}
     </section>
+  );
+};
+
+export const PanelReset = ({
+  isDisabled,
+  onClick,
+}: {
+  isDisabled: boolean;
+  onClick: () => void;
+}) => {
+  return (
+    <div className="flex">
+      <Button
+        variant="secondary"
+        className="flex-1"
+        disabled={isDisabled}
+        onClick={onClick}
+      >
+        Reset
+      </Button>
+    </div>
   );
 };
 
