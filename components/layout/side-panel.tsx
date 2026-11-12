@@ -1,5 +1,6 @@
-import { SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, Trash2Icon } from "lucide-react";
 import type { ReactNode } from "react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -119,8 +120,125 @@ export const PanelOption = ({
   );
 };
 
-export const PanelEmpty = ({ children }: { children: ReactNode }) => {
+export const PanelEmpty = ({
+  icon,
+  title,
+  description,
+}: {
+  icon: ReactNode;
+  title: string;
+  description?: string;
+}) => {
   return (
-    <p className="py-4 text-center text-xs text-muted-foreground">{children}</p>
+    <EmptyState
+      icon={icon}
+      title={title}
+      description={description}
+      className="border-0 p-4 max-lg:py-4"
+    />
+  );
+};
+
+export const PanelActions = ({
+  createLabel,
+  deleteLabel,
+  onCreate,
+  onDelete,
+  isCreateDisabled,
+  isDeleteDisabled,
+}: {
+  createLabel: string;
+  deleteLabel: string;
+  onCreate: () => void;
+  onDelete: () => void;
+  isCreateDisabled?: boolean;
+  isDeleteDisabled?: boolean;
+}) => {
+  return (
+    <div className="flex items-center gap-2">
+      <Button className="flex-1" disabled={isCreateDisabled} onClick={onCreate}>
+        <PlusIcon />
+        {createLabel}
+      </Button>
+      <Button
+        variant="destructive"
+        size="icon"
+        aria-label={deleteLabel}
+        title={deleteLabel}
+        disabled={isDeleteDisabled}
+        onClick={onDelete}
+      >
+        <Trash2Icon />
+      </Button>
+    </div>
+  );
+};
+
+export const PanelDetail = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) => {
+  return (
+    <div className="flex items-center justify-between gap-4 border-b py-2 text-xs last:border-b-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="flex items-center gap-2 text-right font-medium">
+        {children}
+      </span>
+    </div>
+  );
+};
+
+export const PanelIconAction = ({
+  label,
+  isDisabled,
+  onClick,
+  children,
+}: {
+  label: string;
+  isDisabled?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) => {
+  return (
+    <Button
+      variant="ghost"
+      size="icon-xs"
+      aria-label={label}
+      title={label}
+      disabled={isDisabled}
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  );
+};
+
+export const PanelList = ({
+  title,
+  isEmpty,
+  empty,
+  emptyIcon,
+  children,
+}: {
+  title: string;
+  isEmpty: boolean;
+  empty: string;
+  emptyIcon: ReactNode;
+  children: ReactNode;
+}) => {
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between border-b py-2 text-xs">
+        <span className="font-medium">{title}</span>
+      </div>
+      {isEmpty ? (
+        <PanelEmpty icon={emptyIcon} title={empty} />
+      ) : (
+        <ul className="flex flex-col">{children}</ul>
+      )}
+    </div>
   );
 };

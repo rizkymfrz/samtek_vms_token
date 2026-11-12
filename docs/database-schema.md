@@ -334,17 +334,10 @@ positions are the `latitude` / `longitude` columns above. The models are in the 
   grant them. Cameras the user cannot read come back as `"device": null`.
 - **Deleting** a plan soft-deletes it with all child plans and their placements. Deleting a device removes its placements.
 
-**Differences from the UI types** (`features/floorplan/types.ts`). The UI was built before the backend and still expects fields
-the database does not have. Decide per field before wiring real data:
-
-| UI field | Backend |
-|---|---|
-| `Floorplan.building` | Not stored. Use the parent plan's `name`, or the group's `name`. |
-| `Floorplan.level` | Not stored. Use `name` (`Floor 1`) and put the building in the parent plan. |
-| `Floorplan.width`, `height` | Not stored. Read the size from the loaded image. Only the proportions matter. |
-| `FloorplanDevice.id`, `floorplanId` | Not in the placement list; the plan detail returns `devices: [{ x, y, device }]`. |
-| `FloorplanDevice.rotation`, `fov` | Stored as `rotationDegrees` and `fieldOfViewDegrees`; the API names are `rotation` and `fieldOfView`. Rename `fov` to `fieldOfView` in the UI types. |
-| "A camera is on at most one plan" | The backend allows several plans per camera. |
+**UI types** (`features/floorplan/types.ts`) now follow the backend: `Floorplan` has `groupId`, `parentId`, `name`, `hasImage`
+and a computed `label` (parent names joined by ` · `); size is read from the loaded image. A placement is keyed by
+`floorplanId:deviceRecordId` on the client and uses `rotation` / `fieldOfView`. A camera may be on several plans.
+The image is shown through `/api/floorplans/{id}/image`, which adds the token server-side.
 
 ## 2. Analytics database (DuckDB, written by the edge)
 

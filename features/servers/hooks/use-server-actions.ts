@@ -12,6 +12,7 @@ import {
   toUpdatePayload,
 } from "../lib/edit-server";
 import {
+  createGroup,
   createServer,
   deleteServer,
   updateServer,
@@ -51,6 +52,27 @@ export const useServerActions = (isLive: boolean) => {
     },
     onSuccess: refresh,
   });
+  const addGroup = useMutation({
+    mutationFn: async (draft: {
+      name: string;
+      code: string;
+    }): Promise<string> => {
+      if (isLive) return createGroup(draft);
+      const groups =
+        queryClient.getQueryData<ServersData>(SERVERS_QUERY_KEY)?.groups ?? [];
+      const id = String(Math.max(0, ...groups.map((g) => Number(g.id))) + 1);
+      queryClient.setQueryData<ServersData>(
+        SERVERS_QUERY_KEY,
+        (current) =>
+          current && {
+            ...current,
+            groups: [...current.groups, { id, name: draft.name }],
+          },
+      );
+      return id;
+    },
+    onSuccess: refresh,
+  });
   const remove = useMutation({
     mutationFn: async (id: string) => {
       if (isLive) await deleteServer(id);
@@ -64,9 +86,11 @@ export const useServerActions = (isLive: boolean) => {
   });
   return {
     save,
+    addGroup,
     restartEdge,
     remove,
     replaceServers: edit,
+    addGroupError: addGroup.error ? messageOf(addGroup.error) : null,
     saveError: save.error ? messageOf(save.error) : null,
     restartEdgeError: restartEdge.error ? restartEdge.error.message : null,
     removeError: remove.error ? messageOf(remove.error) : null,

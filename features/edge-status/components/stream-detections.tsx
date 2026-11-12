@@ -82,11 +82,13 @@ const DetectionOverlay = ({
 export const StreamDetections = ({
   edgeId,
   deviceId,
+  isDefaultOn = false,
 }: {
   edgeId: string;
   deviceId: string;
+  isDefaultOn?: boolean;
 }) => {
-  const [hasDetections, setHasDetections] = useState(false);
+  const [hasDetections, setHasDetections] = useState(isDefaultOn);
   return (
     <>
       {hasDetections && (

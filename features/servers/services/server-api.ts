@@ -14,3 +14,6 @@ export const updateServer = async (id: string, payload: UpdatePayload) =>
 export const deleteServer = async (id: string) => {
   await http.delete(`/api/edge-servers/${id}`);
 };
+
+export const createGroup = async (payload: { name: string; code: string }) =>
+  (await http.post<{ id: string }>("/api/edge-server-groups", payload)).data.id;

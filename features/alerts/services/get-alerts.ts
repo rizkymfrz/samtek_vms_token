@@ -74,7 +74,7 @@ const toRow = (
   };
 };
 
-const listEdgeAlarms = async (edge: EdgeTarget, query: AlertsQuery) => {
+export const listEdgeAlarms = async (edge: EdgeTarget, query: AlertsQuery) => {
   const alarms = new Map<string, EdgeAlarm>();
   let until = query.until;
   let beforeEventId: string | undefined;

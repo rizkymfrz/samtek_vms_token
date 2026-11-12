@@ -169,7 +169,6 @@ export const ServersView = ({
             key={selected.id}
             server={selected}
             isLive={isLive}
-            groups={groups}
             online={online.has(selected.id)}
             restarting={restartingId === selected.id}
             metrics={selectedMetrics}
@@ -199,6 +198,12 @@ export const ServersView = ({
         groups={groups}
         isPending={actions.save.isPending}
         error={actions.saveError}
+        groupAction={{
+          isPending: actions.addGroup.isPending,
+          error: actions.addGroupError,
+          create: actions.addGroup.mutateAsync,
+          reset: actions.addGroup.reset,
+        }}
         onSave={save}
         onClose={() => {
           setForm(null);

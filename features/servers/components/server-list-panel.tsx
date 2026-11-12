@@ -1,12 +1,9 @@
+import { CctvIcon, Loader2Icon, RadarIcon, ServerIcon } from "lucide-react";
 import {
-  CctvIcon,
-  Loader2Icon,
-  PlusIcon,
-  RadarIcon,
-  ServerIcon,
-  Trash2Icon,
-} from "lucide-react";
-import { PanelEmpty, PanelSection } from "@/components/layout/side-panel";
+  PanelActions,
+  PanelEmpty,
+  PanelSection,
+} from "@/components/layout/side-panel";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,7 +47,13 @@ export const ServerListPanel = ({
   return (
     <>
       <PanelSection title="Servers">
-        {servers.length === 0 && <PanelEmpty>No servers yet.</PanelEmpty>}
+        {servers.length === 0 && (
+          <PanelEmpty
+            icon={<ServerIcon />}
+            title="No servers yet"
+            description="Add one to get started."
+          />
+        )}
         <ul className="flex flex-col gap-2">
           {servers.map((server) => (
             <li key={server.id}>
@@ -87,22 +90,13 @@ export const ServerListPanel = ({
             </li>
           ))}
         </ul>
-        <div className="flex items-center gap-2">
-          <Button onClick={onAdd} className="flex-1">
-            <PlusIcon />
-            Add server
-          </Button>
-          <Button
-            variant="destructive"
-            size="icon"
-            aria-label="Delete server"
-            title="Delete server"
-            disabled={selectedId === null}
-            onClick={onDelete}
-          >
-            <Trash2Icon />
-          </Button>
-        </div>
+        <PanelActions
+          createLabel="Add server"
+          deleteLabel="Delete server"
+          isDeleteDisabled={selectedId === null}
+          onCreate={onAdd}
+          onDelete={onDelete}
+        />
       </PanelSection>
       {!isLive && (
         <PanelSection
@@ -135,11 +129,19 @@ export const ServerListPanel = ({
           <ul className="flex flex-col gap-2">
             {shown.length === 0 && (
               <li>
-                <PanelEmpty>
-                  {tab === "registered"
-                    ? "Nothing registered from a scan yet."
-                    : "No new devices. Scan the network to look again."}
-                </PanelEmpty>
+                <PanelEmpty
+                  icon={<RadarIcon />}
+                  title={
+                    tab === "registered"
+                      ? "Nothing registered yet"
+                      : "No new devices"
+                  }
+                  description={
+                    tab === "registered"
+                      ? "Devices you register from a scan show up here."
+                      : "Scan the network to look again."
+                  }
+                />
               </li>
             )}
             {shown.map((device) => (

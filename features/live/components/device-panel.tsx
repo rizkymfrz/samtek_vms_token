@@ -5,16 +5,18 @@ import {
   ListPlusIcon,
   MinusIcon,
   PlusIcon,
+  SearchXIcon,
   ServerIcon,
-  Trash2Icon,
   VideoIcon,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import {
+  PanelActions,
   PanelEmpty,
   PanelSearch,
   PanelSection,
 } from "@/components/layout/side-panel";
+import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,14 +24,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { freeSlots } from "../lib/edit-layout";
 import type { LiveLayout, LiveLayoutSummary, ServerNode, Tile } from "../types";
@@ -93,42 +87,20 @@ export const DevicePanel = ({
   return (
     <>
       <PanelSection title="Layout">
-        <div className="flex items-center gap-2">
-          <Select
-            items={layoutItems}
-            value={layout.id}
-            onValueChange={(value) => onSelectLayout(String(value))}
-          >
-            <SelectTrigger className="min-w-0 flex-1" aria-label="Layout">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {layoutItems.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button className="flex-1" onClick={onNewLayout}>
-            <PlusIcon />
-            New layout
-          </Button>
-          <Button
-            variant="destructive"
-            size="icon"
-            aria-label="Delete layout"
-            title="Delete layout"
-            disabled={layouts.length === 1}
-            onClick={onDeleteLayout}
-          >
-            <Trash2Icon />
-          </Button>
-        </div>
+        <Pick
+          label="Layout"
+          items={layoutItems}
+          value={layout.id}
+          onChange={onSelectLayout}
+          className="w-full"
+        />
+        <PanelActions
+          createLabel="New layout"
+          deleteLabel="Delete layout"
+          isDeleteDisabled={layouts.length === 1}
+          onCreate={onNewLayout}
+          onDelete={onDeleteLayout}
+        />
       </PanelSection>
       <PanelSection title="Cameras">
         <PanelSearch
@@ -240,7 +212,13 @@ export const DevicePanel = ({
               `${tile.name} ${tile.analytic ?? ""}`
                 .toLowerCase()
                 .includes(needle),
-            ) && <PanelEmpty>No cameras match.</PanelEmpty>}
+            ) && (
+              <PanelEmpty
+                icon={<SearchXIcon />}
+                title="No cameras match"
+                description="Try a different search."
+              />
+            )}
         </div>
         {full && (
           <p className="text-xs text-muted-foreground">

@@ -1,7 +1,10 @@
-import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import type { ReactNode } from "react";
+import { ImageUpIcon, MinusIcon, PlusIcon, VideoIcon } from "lucide-react";
+import { useRef } from "react";
 import {
-  PanelEmpty,
+  PanelActions,
+  PanelDetail,
+  PanelIconAction,
+  PanelList,
   PanelSearch,
   PanelSection,
 } from "@/components/layout/side-panel";
@@ -19,51 +22,11 @@ const STATE_LABEL = {
   "server-offline": "Server offline",
 } as const;
 
-const Detail = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) => {
-  return (
-    <div className="flex items-center justify-between gap-4 border-b py-2 text-xs last:border-b-0">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="flex items-center gap-2 text-right font-medium">
-        {children}
-      </span>
-    </div>
-  );
-};
-
-const IconAction = ({
-  label,
-  onClick,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  children: ReactNode;
-}) => {
-  return (
-    <Button
-      variant="ghost"
-      size="icon-xs"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-    >
-      {children}
-    </Button>
-  );
-};
-
 export const FloorplanPanel = ({
   plans,
   planId,
   onPlan,
   here,
-  elsewhere,
   unplaced,
   cameras,
   selected,
@@ -74,12 +37,17 @@ export const FloorplanPanel = ({
   onRemove,
   onRotate,
   onFov,
+  isLive,
+  isBusy,
+  onCreate,
+  onUpload,
+  onDelete,
+  hasImage,
 }: {
   plans: Floorplan[];
   planId: string;
   onPlan: (id: string) => void;
   here: FloorplanDevice[];
-  elsewhere: { camera: PlanCamera; planName: string }[];
   unplaced: PlanCamera[];
   cameras: Map<string, PlanCamera>;
   selected: FloorplanDevice | null;
@@ -90,10 +58,17 @@ export const FloorplanPanel = ({
   onRemove: (id: string) => void;
   onRotate: (id: string, degrees: number) => void;
   onFov: (id: string, fov: number) => void;
+  isLive: boolean;
+  isBusy: boolean;
+  hasImage: boolean;
+  onCreate: () => void;
+  onUpload: (file: File) => void;
+  onDelete: () => void;
 }) => {
+  const fileInput = useRef<HTMLInputElement>(null);
   const planItems = plans.map((p) => ({
     value: p.id,
-    label: `${p.building} · ${p.level}`,
+    label: p.label,
   }));
   const fovItems = FOV_OPTIONS.map((fov) => ({
     value: String(fov),
@@ -113,7 +88,6 @@ export const FloorplanPanel = ({
       cameras.get(p.deviceRecordId) && matches(cameras.get(p.deviceRecordId)!),
   );
   const unplacedShown = unplaced.filter(matches);
-  const elsewhereShown = elsewhere.filter((item) => matches(item.camera));
   return (
     <>
       <PanelSection title="Floor plan">
@@ -124,6 +98,37 @@ export const FloorplanPanel = ({
           onChange={onPlan}
           className="w-full"
         />
+        {isLive && (
+          <>
+            <PanelActions
+              createLabel="New floor plan"
+              deleteLabel="Delete floor plan"
+              isDeleteDisabled={isBusy}
+              onCreate={onCreate}
+              onDelete={onDelete}
+            />
+            <input
+              ref={fileInput}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              aria-label="Floor plan image"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (file) onUpload(file);
+              }}
+            />
+            <Button
+              variant="secondary"
+              disabled={isBusy}
+              onClick={() => fileInput.current?.click()}
+            >
+              <ImageUpIcon />
+              {hasImage ? "Replace image" : "Upload image"}
+            </Button>
+          </>
+        )}
       </PanelSection>
       {selected && selectedCamera && (
         <section className="flex flex-col gap-2 rounded border p-4">
@@ -131,22 +136,22 @@ export const FloorplanPanel = ({
             <span className="truncate text-sm font-medium">
               {selectedCamera.name}
             </span>
-            <IconAction
-              label={`Remove ${selectedCamera.name} from this plan`}
-              onClick={() => onRemove(selected.id)}
-            >
-              <Trash2Icon />
-            </IconAction>
           </div>
-          <Detail label="Status">
+          <PanelDetail label="Status">
             <StatusDot
               status={selectedCamera.state === "live" ? "live" : "offline"}
             />
             {STATE_LABEL[selectedCamera.state]}
-          </Detail>
-          <Detail label="Edge server">{selectedCamera.serverName}</Detail>
-          <Detail label="Analytic">{selectedCamera.analytic ?? "None"}</Detail>
-          <Detail label="Alerts (24h)">{selectedCamera.alerts}</Detail>
+          </PanelDetail>
+          <PanelDetail label="Edge server">
+            {selectedCamera.serverName}
+          </PanelDetail>
+          <PanelDetail label="Analytic">
+            {selectedCamera.analytic ?? "None"}
+          </PanelDetail>
+          <PanelDetail label="Alerts (24h)">
+            {selectedCamera.alerts}
+          </PanelDetail>
           <div className="flex flex-col gap-2 pt-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Direction</span>
@@ -170,7 +175,7 @@ export const FloorplanPanel = ({
             <Pick
               label="Field of view"
               items={fovItems}
-              value={String(selected.fov)}
+              value={String(selected.fieldOfView)}
               onChange={(fov) => onFov(selected.id, Number(fov))}
               className="w-full"
             />
@@ -183,10 +188,11 @@ export const FloorplanPanel = ({
           onChange={onQuery}
           placeholder="Search cameras..."
         />
-        <List
+        <PanelList
           title="On this plan"
-          count={hereShown.length}
-          empty="No cameras on this plan yet."
+          isEmpty={hereShown.length === 0}
+          empty="No cameras on this plan"
+          emptyIcon={<VideoIcon />}
         >
           {hereShown.map((placement) => {
             const camera = cameras.get(placement.deviceRecordId)!;
@@ -219,20 +225,21 @@ export const FloorplanPanel = ({
                     {camera.alerts}
                   </Badge>
                 )}
-                <IconAction
+                <PanelIconAction
                   label={`Remove ${camera.name} from this plan`}
                   onClick={() => onRemove(placement.id)}
                 >
                   <MinusIcon />
-                </IconAction>
+                </PanelIconAction>
               </li>
             );
           })}
-        </List>
-        <List
-          title="Not placed"
-          count={unplacedShown.length}
-          empty="Every camera is on a plan."
+        </PanelList>
+        <PanelList
+          title="Not on this plan"
+          isEmpty={unplacedShown.length === 0}
+          empty="Every camera is on this plan"
+          emptyIcon={<VideoIcon />}
         >
           {unplacedShown.map((camera) => (
             <li key={camera.id} className="flex items-center gap-2 py-1">
@@ -245,60 +252,16 @@ export const FloorplanPanel = ({
                   {camera.serverName}
                 </span>
               </span>
-              <IconAction
+              <PanelIconAction
                 label={`Add ${camera.name} to this plan`}
                 onClick={() => onAdd(camera.id)}
               >
                 <PlusIcon />
-              </IconAction>
+              </PanelIconAction>
             </li>
           ))}
-        </List>
-        {elsewhereShown.length > 0 && (
-          <List title="On other plans" count={elsewhereShown.length} empty="">
-            {elsewhereShown.map(({ camera, planName }) => (
-              <li
-                key={camera.id}
-                className="flex items-center gap-2 py-1 text-muted-foreground"
-              >
-                <StatusDot
-                  status={camera.state === "live" ? "live" : "offline"}
-                />
-                <span className="min-w-0 flex-1 truncate text-xs">
-                  {camera.name}
-                </span>
-                <span className="truncate text-xs">{planName}</span>
-              </li>
-            ))}
-          </List>
-        )}
+        </PanelList>
       </PanelSection>
     </>
-  );
-};
-
-const List = ({
-  title,
-  count,
-  empty,
-  children,
-}: {
-  title: string;
-  count: number;
-  empty: string;
-  children: ReactNode;
-}) => {
-  return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between border-b py-2 text-xs">
-        <span className="font-medium">{title}</span>
-        <span className="text-muted-foreground tabular-nums">{count}</span>
-      </div>
-      {count === 0 ? (
-        <PanelEmpty>{empty}</PanelEmpty>
-      ) : (
-        <ul className="flex flex-col">{children}</ul>
-      )}
-    </div>
   );
 };

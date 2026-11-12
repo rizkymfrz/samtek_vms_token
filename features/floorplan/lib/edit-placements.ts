@@ -25,29 +25,30 @@ const CANDIDATES: [number, number][] = [
 
 const SPACING = 0.06;
 
+export const placementId = (floorplanId: string, deviceRecordId: string) =>
+  `${floorplanId}:${deviceRecordId}`;
+
 export const placeCamera = (
   placements: FloorplanDevice[],
   floorplanId: string,
   deviceRecordId: string,
 ): FloorplanDevice[] => {
-  if (placements.some((p) => p.deviceRecordId === deviceRecordId))
-    return placements;
   const here = placements.filter((p) => p.floorplanId === floorplanId);
+  if (here.some((p) => p.deviceRecordId === deviceRecordId)) return placements;
   const free =
     CANDIDATES.find(([x, y]) =>
       here.every((p) => Math.hypot(p.x - x, p.y - y) >= SPACING),
     ) ?? CANDIDATES[0];
-  const id = `new-${Date.now()}-${deviceRecordId}`;
   return [
     ...placements,
     {
-      id,
+      id: placementId(floorplanId, deviceRecordId),
       floorplanId,
       deviceRecordId,
       x: free[0],
       y: free[1],
       rotation: 0,
-      fov: DEFAULT_FOV,
+      fieldOfView: DEFAULT_FOV,
     },
   ];
 };
@@ -74,8 +75,8 @@ export const rotateCamera = (
 export const setFov = (
   placements: FloorplanDevice[],
   id: string,
-  fov: number,
-) => update(placements, id, { fov });
+  fieldOfView: number,
+) => update(placements, id, { fieldOfView });
 
 export const removeCamera = (placements: FloorplanDevice[], id: string) =>
   placements.filter((p) => p.id !== id);
@@ -84,7 +85,7 @@ export const coneGeometry = (
   cx: number,
   cy: number,
   rotation: number,
-  fov: number,
+  fieldOfView: number,
   range: number,
 ): string => {
   const point = (degrees: number) => {
@@ -93,11 +94,11 @@ export const coneGeometry = (
       (n) => Math.round(n * 100) / 100,
     );
   };
-  const [x1, y1] = point(rotation - fov / 2);
-  const [x2, y2] = point(rotation + fov / 2);
-  if (fov >= 360)
+  const [x1, y1] = point(rotation - fieldOfView / 2);
+  const [x2, y2] = point(rotation + fieldOfView / 2);
+  if (fieldOfView >= 360)
     return `M ${cx} ${cy} m ${-range} 0 a ${range} ${range} 0 1 0 ${range * 2} 0 a ${range} ${range} 0 1 0 ${-range * 2} 0 Z`;
-  return `M ${cx} ${cy} L ${x1} ${y1} A ${range} ${range} 0 ${fov > 180 ? 1 : 0} 1 ${x2} ${y2} Z`;
+  return `M ${cx} ${cy} L ${x1} ${y1} A ${range} ${range} 0 ${fieldOfView > 180 ? 1 : 0} 1 ${x2} ${y2} Z`;
 };
 
 export const pointToPlan = (
@@ -110,4 +111,22 @@ export const pointToPlan = (
     x: clamp((clientX - box.left) / box.width),
     y: clamp((clientY - box.top) / box.height),
   };
+};
+
+export const groupScope = (
+  groups: { id: string; parentId: string | null }[],
+  rootId: string,
+) => {
+  const scope = new Set([rootId]);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const group of groups) {
+      if (group.parentId && scope.has(group.parentId) && !scope.has(group.id)) {
+        scope.add(group.id);
+        grew = true;
+      }
+    }
+  }
+  return scope;
 };

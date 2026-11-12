@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PowerIcon, ServerIcon } from "lucide-react";
-import { useId } from "react";
+import { PlusIcon, PowerIcon, ServerIcon } from "lucide-react";
+import { useId, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
 import { ToggleCard } from "@/components/shared/toggle-card";
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { GroupFormDialog } from "./group-form-dialog";
 import {
   type Draft,
   emptyDraft,
@@ -32,6 +33,13 @@ import {
   toDraft,
 } from "../lib/edit-server";
 import type { ServerGroup, ServerRecord } from "../types";
+
+export type GroupAction = {
+  isPending: boolean;
+  error: string | null;
+  create: (draft: { name: string; code: string }) => Promise<string>;
+  reset: () => void;
+};
 
 export type FormTarget = "new" | ServerRecord | null;
 
@@ -80,6 +88,7 @@ const Form = ({
   groups,
   isPending,
   error,
+  groupAction,
   onSave,
   onClose,
 }: {
@@ -87,14 +96,17 @@ const Form = ({
   groups: ServerGroup[];
   isPending: boolean;
   error: string | null;
+  groupAction: GroupAction | null;
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
   onClose: () => void;
 }) => {
+  const [groupOpen, setGroupOpen] = useState(false);
   const editing = target === "new" ? null : target;
   const formId = useId();
   const {
     register,
     control,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<Draft>({
@@ -144,21 +156,34 @@ const Form = ({
             {FIELDS.slice(0, 2).map(renderField)}
             <Field>
               <FieldLabel>Group</FieldLabel>
-              <Controller
-                control={control}
-                name="groupId"
-                render={({ field }) => (
-                  <Pick
-                    label="Group"
-                    items={groupItems}
-                    value={field.value ?? "none"}
-                    onChange={(value) =>
-                      field.onChange(value === "none" ? null : value)
-                    }
-                    className="w-full"
-                  />
+              <div className="flex gap-2">
+                <Controller
+                  control={control}
+                  name="groupId"
+                  render={({ field }) => (
+                    <Pick
+                      label="Group"
+                      items={groupItems}
+                      value={field.value ?? "none"}
+                      onChange={(value) =>
+                        field.onChange(value === "none" ? null : value)
+                      }
+                      className="flex-1"
+                    />
+                  )}
+                />
+                {groupAction && (
+                  <Button
+                    type="button"
+                    size="icon"
+                    aria-label="New group"
+                    title="New group"
+                    onClick={() => setGroupOpen(true)}
+                  >
+                    <PlusIcon />
+                  </Button>
                 )}
-              />
+              </div>
             </Field>
           </DialogSection>
           <DialogDivider />
@@ -191,6 +216,26 @@ const Form = ({
           {editing ? "Save" : "Add server"}
         </Button>
       </DialogFooter>
+      {groupAction && (
+        <GroupFormDialog
+          open={groupOpen}
+          isPending={groupAction.isPending}
+          error={groupAction.error}
+          onSave={async (draft) => {
+            try {
+              const id = await groupAction.create(draft);
+              setValue("groupId", id, { shouldDirty: true });
+              setGroupOpen(false);
+            } catch {
+              return;
+            }
+          }}
+          onClose={() => {
+            setGroupOpen(false);
+            groupAction.reset();
+          }}
+        />
+      )}
     </>
   );
 };
@@ -200,6 +245,7 @@ export const ServerFormDialog = ({
   groups,
   isPending,
   error,
+  groupAction,
   onSave,
   onClose,
 }: {
@@ -207,6 +253,7 @@ export const ServerFormDialog = ({
   groups: ServerGroup[];
   isPending: boolean;
   error: string | null;
+  groupAction: GroupAction | null;
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
   onClose: () => void;
 }) => {
@@ -220,6 +267,7 @@ export const ServerFormDialog = ({
             groups={groups}
             isPending={isPending}
             error={error}
+            groupAction={groupAction}
             onSave={onSave}
             onClose={onClose}
           />

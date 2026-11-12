@@ -5,6 +5,15 @@ export const serverGroupSchema = z.object({
   name: z.string(),
 });
 
+export const createGroupInputSchema = z.object({
+  name: z.string().min(1).max(100),
+  code: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[A-Za-z0-9._-]+$/),
+});
+
 export const serverIdResponseSchema = z.object({
   data: z.object({ id: z.coerce.string() }),
 });

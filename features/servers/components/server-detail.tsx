@@ -3,7 +3,6 @@ import {
   PencilIcon,
   PowerIcon,
   RotateCwIcon,
-  TagIcon,
   TerminalIcon,
   Trash2Icon,
 } from "lucide-react";
@@ -26,14 +25,13 @@ import { MetricChart } from "./metric-chart";
 import { Stats } from "./stats";
 import { StorageCard } from "./storage-card";
 import { percentLevel, TEMP_LIMIT, tempLevel } from "../lib/metric-level";
-import type { Metrics, ServerGroup, ServerRecord } from "../types";
+import type { Metrics, ServerRecord } from "../types";
 
 const last = (points: number[]) => points[points.length - 1];
 
 export const ServerDetail = ({
   server,
   isLive,
-  groups,
   online,
   restarting,
   isRestartingEdge,
@@ -46,7 +44,6 @@ export const ServerDetail = ({
 }: {
   server: ServerRecord;
   isLive: boolean;
-  groups: ServerGroup[];
   online: boolean;
   restarting: boolean;
   isRestartingEdge: boolean;
@@ -58,7 +55,6 @@ export const ServerDetail = ({
   onDelete: () => void;
 }) => {
   const [confirm, setConfirm] = useState<"restart" | "edge" | null>(null);
-  const group = groups.find((g) => g.id === server.groupId)?.name;
   const empty = !online
     ? "No data. The server is offline."
     : !metrics
@@ -84,12 +80,6 @@ export const ServerDetail = ({
           </div>
           <div className="flex flex-wrap gap-2">
             {server.vendor && <Badge variant="outline">{server.vendor}</Badge>}
-            {group && (
-              <Badge variant="secondary">
-                <TagIcon />
-                {group}
-              </Badge>
-            )}
           </div>
         </div>
         <div className="flex flex-wrap gap-2">

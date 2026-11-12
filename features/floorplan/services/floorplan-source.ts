@@ -6,42 +6,32 @@ import type {
   Floorplan,
   FloorplanDevice,
   PlanCamera,
+  PlanGroup,
   PlanRoom,
+  PlanServer,
 } from "../types";
 
+const plan = (
+  id: string,
+  name: string,
+  label: string,
+  parentId: string | null = null,
+): Floorplan => ({
+  id,
+  groupId: "1",
+  parentId,
+  name,
+  label,
+  hasImage: false,
+  updatedAt: null,
+});
+
 const FLOORPLANS: Floorplan[] = [
-  {
-    id: "1",
-    name: "Main Building",
-    building: "Main Building",
-    level: "Floor 1",
-    width: 1000,
-    height: 600,
-  },
-  {
-    id: "2",
-    name: "Main Building",
-    building: "Main Building",
-    level: "Floor 2",
-    width: 1000,
-    height: 600,
-  },
-  {
-    id: "3",
-    name: "Parking & gate",
-    building: "Outdoor",
-    level: "Ground",
-    width: 1000,
-    height: 500,
-  },
-  {
-    id: "4",
-    name: "Warehouse",
-    building: "Warehouse",
-    level: "Ground",
-    width: 1000,
-    height: 640,
-  },
+  plan("1", "Floor 1", "Main Building · Floor 1", "5"),
+  plan("2", "Floor 2", "Main Building · Floor 2", "5"),
+  plan("3", "Parking & gate", "Parking & gate"),
+  plan("4", "Warehouse", "Warehouse"),
+  plan("5", "Main Building", "Main Building"),
 ];
 
 export const ROOMS: Record<string, PlanRoom[]> = {
@@ -83,7 +73,7 @@ const pin = (
   x: number,
   y: number,
   rotation: number,
-  fov = 90,
+  fieldOfView = 90,
 ): FloorplanDevice => ({
   id,
   floorplanId,
@@ -91,7 +81,7 @@ const pin = (
   x,
   y,
   rotation,
-  fov,
+  fieldOfView,
 });
 
 const INITIAL_PLACEMENTS: FloorplanDevice[] = [
@@ -113,6 +103,8 @@ export const buildFloorplanSource = (
   plans: Floorplan[];
   placements: FloorplanDevice[];
   cameras: PlanCamera[];
+  groups: PlanGroup[];
+  servers: PlanServer[];
 } => {
   const { edgeServers, devices } = buildLiveSource(now);
   const server = new Map(edgeServers.map((s) => [s.id, s]));
@@ -122,20 +114,40 @@ export const buildFloorplanSource = (
     if (row.at > dayAgo)
       alerts.set(row.camera, (alerts.get(row.camera) ?? 0) + 1);
   }
-  const cameras: PlanCamera[] = devices.map((d) => {
-    const s = server.get(d.edgeServerId)!;
-    const reachable = isServerOnline(
+  const reachableOf = (s: (typeof edgeServers)[number]) =>
+    isServerOnline(
       { isActive: s.isActive, lastSeenAt: s.lastSeenAt?.getTime() ?? null },
       now,
     );
+  const cameras: PlanCamera[] = devices.map((d) => {
+    const s = server.get(d.edgeServerId)!;
+    const reachable = reachableOf(s);
     return {
       id: d.id,
       name: d.name,
+      serverId: s.id,
       serverName: s.name,
+      groupId: "1",
+      hasSubStream: d.sourceSub !== null,
+      webrtcUrl: s.webrtcUrl,
+      webrtcUrlLocal: s.webrtcUrlLocal,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,
       state: !d.isEnabled ? "disabled" : reachable ? "live" : "server-offline",
       alerts: alerts.get(d.name) ?? 0,
     };
   });
-  return { plans: FLOORPLANS, placements: INITIAL_PLACEMENTS, cameras };
+  const groups: PlanGroup[] = [
+    { id: "1", parentId: null, name: "Head office" },
+  ];
+  return {
+    plans: FLOORPLANS,
+    placements: INITIAL_PLACEMENTS,
+    cameras,
+    groups,
+    servers: edgeServers.map((s) => ({
+      id: s.id,
+      isActive: s.isActive,
+      online: reachableOf(s),
+    })),
+  };
 };

@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { CameraMarker } from "./camera-marker";
 import { coneGeometry, pointToPlan } from "../lib/edit-placements";
@@ -11,25 +11,41 @@ import type {
 } from "../types";
 
 const RANGE = 0.12;
+const DEFAULT_SIZE = { width: 1000, height: 600 };
 
 export const PlanCanvas = ({
   plan,
+  imageSrc,
   rooms,
   placements,
   cameras,
   selectedId,
+  openIds,
   onSelect,
+  onOpenChange,
   onMove,
 }: {
   plan: Floorplan;
+  imageSrc: string | null;
   rooms: PlanRoom[];
   placements: FloorplanDevice[];
   cameras: Map<string, PlanCamera>;
   selectedId: string | null;
+  openIds: string[];
   onSelect: (id: string | null) => void;
+  onOpenChange: (id: string, open: boolean) => void;
   onMove: (id: string, x: number, y: number) => void;
 }) => {
   const box = useRef<HTMLDivElement>(null);
+  const image = useRef<HTMLImageElement>(null);
+  const [size, setSize] = useState(DEFAULT_SIZE);
+  const measure = (element: HTMLImageElement) => {
+    if (element.naturalWidth > 0 && element.naturalHeight > 0)
+      setSize({ width: element.naturalWidth, height: element.naturalHeight });
+  };
+  useEffect(() => {
+    if (image.current?.complete) measure(image.current);
+  }, []);
   const toPlan = (clientX: number, clientY: number) => {
     const rect = box.current?.getBoundingClientRect();
     return pointToPlan(
@@ -48,45 +64,59 @@ export const PlanCanvas = ({
           ref={box}
           className="relative"
           style={{
-            width: `min(100cqw, calc(100cqh * ${plan.width / plan.height}))`,
-            aspectRatio: `${plan.width} / ${plan.height}`,
+            width: `min(100cqw, calc(100cqh * ${size.width / size.height}))`,
+            aspectRatio: `${size.width} / ${size.height}`,
           }}
           onPointerDown={(event) =>
             event.target === event.currentTarget && onSelect(null)
           }
         >
+          {imageSrc && (
+            // eslint-disable-next-line @next/next/no-img-element -- authenticated proxy route, not optimizable
+            <img
+              ref={image}
+              src={imageSrc}
+              alt=""
+              draggable={false}
+              className="absolute inset-0 size-full select-none"
+              onLoad={(event) => measure(event.currentTarget)}
+            />
+          )}
           <svg
-            viewBox={`0 0 ${plan.width} ${plan.height}`}
+            viewBox={`0 0 ${size.width} ${size.height}`}
             className="absolute inset-0 size-full"
             role="img"
-            aria-label={`${plan.name}, ${plan.level}`}
+            aria-label={plan.label}
             onPointerDown={() => onSelect(null)}
           >
-            <rect
-              width={plan.width}
-              height={plan.height}
-              className="fill-background"
-            />
-            {rooms.map((room) => (
-              <g key={room.label}>
-                <rect
-                  x={room.x}
-                  y={room.y}
-                  width={room.w}
-                  height={room.h}
-                  strokeWidth={2}
-                  className="fill-card stroke-border"
-                />
-                <text
-                  x={room.x + 14}
-                  y={room.y + 28}
-                  fontSize={16}
-                  className="fill-muted-foreground"
-                >
-                  {room.label}
-                </text>
-              </g>
-            ))}
+            {!imageSrc && (
+              <rect
+                width={size.width}
+                height={size.height}
+                className="fill-background"
+              />
+            )}
+            {!imageSrc &&
+              rooms.map((room) => (
+                <g key={room.label}>
+                  <rect
+                    x={room.x}
+                    y={room.y}
+                    width={room.w}
+                    height={room.h}
+                    strokeWidth={2}
+                    className="fill-card stroke-border"
+                  />
+                  <text
+                    x={room.x + 14}
+                    y={room.y + 28}
+                    fontSize={16}
+                    className="fill-muted-foreground"
+                  >
+                    {room.label}
+                  </text>
+                </g>
+              ))}
             {placements.map((p) => {
               const camera = cameras.get(p.deviceRecordId);
               if (!camera) return null;
@@ -95,11 +125,11 @@ export const PlanCanvas = ({
                 <path
                   key={p.id}
                   d={coneGeometry(
-                    p.x * plan.width,
-                    p.y * plan.height,
+                    p.x * size.width,
+                    p.y * size.height,
                     p.rotation,
-                    p.fov,
-                    plan.width * RANGE,
+                    p.fieldOfView,
+                    size.width * RANGE,
                   )}
                   strokeWidth={1.5}
                   fillOpacity={selected ? 0.35 : 0.18}
@@ -125,7 +155,13 @@ export const PlanCanvas = ({
                 y={p.y}
                 selected={p.id === selectedId}
                 planBox={toPlan}
+                isOpen={openIds.includes(p.id)}
                 onSelect={() => onSelect(p.id)}
+                onOpen={() => {
+                  onSelect(p.id);
+                  onOpenChange(p.id, true);
+                }}
+                onClose={() => onOpenChange(p.id, false)}
                 onMove={(x, y) => onMove(p.id, x, y)}
               />
             );
