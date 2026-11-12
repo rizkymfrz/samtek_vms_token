@@ -1,5 +1,13 @@
 "use client"
-import { InboxIcon, InfoIcon, TriangleAlertIcon } from "lucide-react"
+import {
+  ActivityIcon,
+  BanknoteIcon,
+  CreditCardIcon,
+  InboxIcon,
+  InfoIcon,
+  ReceiptIcon,
+  TriangleAlertIcon,
+} from "lucide-react"
 import { Fragment } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
@@ -140,6 +148,13 @@ export const CardDemo = () => {
   )
 }
 
+const tableColumnIcons = {
+  invoice: ReceiptIcon,
+  status: ActivityIcon,
+  method: CreditCardIcon,
+  amount: BanknoteIcon,
+}
+
 export const TableDemo = () => {
   return (
     <Table>
@@ -147,7 +162,9 @@ export const TableDemo = () => {
       <TableHeader>
         <TableRow>
           {table.columns.map((column) => (
-            <TableHead key={column.id}>{column.label}</TableHead>
+            <TableHead key={column.id} icon={tableColumnIcons[column.id]}>
+              {column.label}
+            </TableHead>
           ))}
         </TableRow>
       </TableHeader>

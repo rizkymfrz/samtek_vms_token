@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PowerIcon } from "lucide-react";
+import { PowerIcon, ServerIcon } from "lucide-react";
 import { useId } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
@@ -124,7 +124,7 @@ const Form = ({
   );
   return (
     <>
-      <DialogHeader>
+      <DialogHeader icon={ServerIcon}>
         <DialogTitle>{editing ? "Edit server" : "Add server"}</DialogTitle>
         <DialogDescription>
           {editing
@@ -212,7 +212,7 @@ export const ServerFormDialog = ({
 }) => {
   return (
     <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="md:max-w-2xl">
+      <DialogContent size="md">
         {target && (
           <Form
             key={target === "new" ? "new" : target.id}

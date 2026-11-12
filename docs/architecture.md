@@ -409,8 +409,17 @@ Susun dialog dalam tiga bagian yang dipisah `Separator`: `DialogHeader`
 (title), `DialogBody` (isi), dan `DialogFooter` (tombol aksi, otomatis
 `flex-1`). Jika field banyak, bagi `DialogBody` menjadi beberapa
 `DialogSection` yang dipisah `DialogDivider`: berdampingan di layar
-`md` ke atas, bertumpuk di layar kecil. Lebarkan dialog dengan
-`md:max-w-2xl`.
+`md` ke atas, bertumpuk di layar kecil. Lebarkan dialog dengan prop
+`size` pada `DialogContent` (`sm` default, `md`, `lg`, `xl`), bukan
+dengan `className`. `DialogHeader` wajib menerima prop `icon` (ikon
+lucide), ditampilkan di kiri judul seperti header Setup Camera.
+
+### 8.3 Tabel
+
+`TableHead` wajib menerima prop `icon` (ikon lucide) yang tampil di kiri
+label kolom. Header tabel menempel di atas (sticky) selagi isi tabel
+di-scroll, jadi pembungkus tabel harus punya tinggi terbatas dan
+`Table` sendiri yang men-scroll isinya.
 
 ## 9. Naming and File Organization
 

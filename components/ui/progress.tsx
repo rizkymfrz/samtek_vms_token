@@ -6,20 +6,56 @@ const Progress = ({
   className,
   children,
   value,
+  min = 0,
+  max = 100,
+  variant = "line",
+  segments = 20,
   ...props
-}: ProgressPrimitive.Root.Props) => {
+}: ProgressPrimitive.Root.Props & {
+  variant?: "line" | "segmented";
+  segments?: number;
+}) => {
+  const ratio = value === null ? 0 : (value - min) / (max - min);
   return (
     <ProgressPrimitive.Root
       value={value}
+      min={min}
+      max={max}
       data-slot="progress"
       className={cn("flex flex-wrap gap-4", className)}
       {...props}
     >
       {children}
-      <ProgressTrack>
-        <ProgressIndicator />
-      </ProgressTrack>
+      {variant === "segmented" ? (
+        <ProgressSegments count={segments} ratio={ratio} />
+      ) : (
+        <ProgressTrack>
+          <ProgressIndicator />
+        </ProgressTrack>
+      )}
     </ProgressPrimitive.Root>
+  );
+};
+
+const ProgressSegments = ({
+  count,
+  ratio,
+}: {
+  count: number;
+  ratio: number;
+}) => {
+  const filled = Math.round(Math.min(1, Math.max(0, ratio)) * count);
+  return (
+    <ProgressTrack className="h-2 min-w-0 gap-0.5 overflow-visible rounded-none bg-transparent">
+      {Array.from({ length: count }, (_, segment) => segment).map((segment) => (
+        <div
+          key={segment}
+          data-slot="progress-segment"
+          data-filled={segment < filled ? "" : undefined}
+          className="h-full flex-1 rounded-[1px] bg-muted data-filled:bg-primary"
+        />
+      ))}
+    </ProgressTrack>
   );
 };
 

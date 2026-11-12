@@ -228,7 +228,7 @@ export const CamerasView = ({
             ))}
           </div>
         ) : (
-          <div className="overflow-hidden rounded border lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+          <div className="flex flex-col overflow-hidden rounded border lg:min-h-0 lg:flex-1">
             <CameraTable
               cameras={visible}
               servers={servers}

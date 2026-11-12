@@ -1,3 +1,12 @@
+import {
+  BoxIcon,
+  ClockIcon,
+  GaugeIcon,
+  ImageIcon,
+  ShieldAlertIcon,
+  TriangleAlertIcon,
+  VideoIcon,
+} from "lucide-react";
 import { RiskBadge } from "@/components/shared/risk-badge";
 import {
   Table,
@@ -21,13 +30,15 @@ export const AlertsTable = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Snapshot</TableHead>
-          <TableHead>Time</TableHead>
-          <TableHead>Alert</TableHead>
-          <TableHead>Camera</TableHead>
-          <TableHead>Object</TableHead>
-          <TableHead>Risk</TableHead>
-          <TableHead className="text-right">Score</TableHead>
+          <TableHead icon={ImageIcon}>Snapshot</TableHead>
+          <TableHead icon={ClockIcon}>Time</TableHead>
+          <TableHead icon={ShieldAlertIcon}>Alert</TableHead>
+          <TableHead icon={VideoIcon}>Camera</TableHead>
+          <TableHead icon={BoxIcon}>Object</TableHead>
+          <TableHead icon={TriangleAlertIcon}>Risk</TableHead>
+          <TableHead icon={GaugeIcon} className="text-right">
+            Score
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -66,7 +77,7 @@ export const AlertsTable = ({
               <RiskBadge level={row.risk} />
             </TableCell>
             <TableCell className="text-right tabular-nums">
-              {row.score.toFixed(2)}
+              {Math.round(row.score * 100)}%
             </TableCell>
           </TableRow>
         ))}

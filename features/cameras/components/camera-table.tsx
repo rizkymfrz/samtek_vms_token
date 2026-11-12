@@ -1,3 +1,12 @@
+import {
+  ActivityIcon,
+  CircleDotIcon,
+  PowerIcon,
+  RadioIcon,
+  ScanSearchIcon,
+  ServerIcon,
+  VideoIcon,
+} from "lucide-react";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Switch } from "@/components/ui/switch";
@@ -33,13 +42,13 @@ export const CameraTable = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Camera</TableHead>
-          <TableHead>Edge server</TableHead>
-          <TableHead>Analytic</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Streams</TableHead>
-          <TableHead>Enabled</TableHead>
-          <TableHead>Recording</TableHead>
+          <TableHead icon={VideoIcon}>Camera</TableHead>
+          <TableHead icon={ServerIcon}>Edge server</TableHead>
+          <TableHead icon={ScanSearchIcon}>Analytic</TableHead>
+          <TableHead icon={ActivityIcon}>Status</TableHead>
+          <TableHead icon={RadioIcon}>Streams</TableHead>
+          <TableHead icon={PowerIcon}>Enabled</TableHead>
+          <TableHead icon={CircleDotIcon}>Recording</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

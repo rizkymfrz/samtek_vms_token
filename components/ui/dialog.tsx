@@ -1,7 +1,7 @@
 "use client";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { cn } from "cn";
-import { XIcon } from "lucide-react";
+import { type LucideIcon, XIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -38,13 +38,22 @@ const DialogOverlay = ({
   );
 };
 
+const DIALOG_SIZES = {
+  sm: "sm:max-w-sm",
+  md: "md:max-w-2xl",
+  lg: "md:max-w-4xl",
+  xl: "md:max-w-6xl",
+} as const;
+
 const DialogContent = ({
   className,
   children,
   showCloseButton = true,
+  size = "sm",
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
+  size?: keyof typeof DIALOG_SIZES;
 }) => {
   return (
     <DialogPortal>
@@ -52,7 +61,8 @@ const DialogContent = ({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100svh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded bg-popover text-xs/relaxed text-popover-foreground duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100svh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded border border-border bg-popover text-xs/relaxed text-popover-foreground duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          DIALOG_SIZES[size],
           className,
         )}
         {...props}
@@ -78,13 +88,23 @@ const DialogContent = ({
   );
 };
 
-const DialogHeader = ({ className, ...props }: ComponentProps<"div">) => {
+const DialogHeader = ({
+  className,
+  icon: Icon,
+  children,
+  ...props
+}: ComponentProps<"div"> & { icon: LucideIcon }) => {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-1 p-4 pr-16 text-left", className)}
+      className={cn("flex items-center gap-4 p-4 pr-16 text-left", className)}
       {...props}
-    />
+    >
+      <span className="flex size-10 shrink-0 items-center justify-center rounded bg-primary text-primary-foreground">
+        <Icon className="size-4" />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">{children}</div>
+    </div>
   );
 };
 

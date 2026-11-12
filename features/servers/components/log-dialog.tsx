@@ -1,5 +1,5 @@
 "use client";
-import { PauseIcon, PlayIcon } from "lucide-react";
+import { PauseIcon, PlayIcon, ScrollTextIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -119,7 +119,7 @@ export const LogDialog = ({
       <DialogContent className="sm:max-w-xl">
         {server && (
           <>
-            <DialogHeader>
+            <DialogHeader icon={ScrollTextIcon}>
               <DialogTitle>Log stream</DialogTitle>
               <DialogDescription>
                 {server.name}. Sample lines only, until the edge exposes its

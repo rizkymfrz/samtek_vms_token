@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2Icon, UserCheckIcon } from "lucide-react";
+import { Trash2Icon, UserCheckIcon, UserIcon } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
@@ -83,7 +83,7 @@ const Form = ({
   ];
   return (
     <>
-      <DialogHeader>
+      <DialogHeader icon={UserIcon}>
         <DialogTitle>{editing ? "Edit user" : "Add user"}</DialogTitle>
         <DialogDescription>
           {editing ? editing.username : "Create an account for a teammate."}
@@ -254,7 +254,7 @@ export const UserDialog = ({
 }) => {
   return (
     <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="md:max-w-2xl">
+      <DialogContent size="md">
         {target && (
           <Form
             key={target === "new" ? "new" : target.id}

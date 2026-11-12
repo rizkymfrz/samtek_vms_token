@@ -1,3 +1,10 @@
+import {
+  ActivityIcon,
+  CalendarIcon,
+  MessageCircleIcon,
+  ShieldIcon,
+  UserIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -30,11 +37,11 @@ export const UserTable = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>User</TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead>WhatsApp</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Created</TableHead>
+          <TableHead icon={UserIcon}>User</TableHead>
+          <TableHead icon={ShieldIcon}>Role</TableHead>
+          <TableHead icon={MessageCircleIcon}>WhatsApp</TableHead>
+          <TableHead icon={ActivityIcon}>Status</TableHead>
+          <TableHead icon={CalendarIcon}>Created</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

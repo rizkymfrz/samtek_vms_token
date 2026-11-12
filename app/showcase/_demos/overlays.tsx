@@ -1,4 +1,5 @@
 "use client"
+import { InfoIcon } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -114,7 +115,7 @@ export const DialogDemo = () => {
         {dialog.trigger}
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader icon={InfoIcon}>
           <DialogTitle>{dialog.title}</DialogTitle>
           <DialogDescription>{dialog.description}</DialogDescription>
         </DialogHeader>
