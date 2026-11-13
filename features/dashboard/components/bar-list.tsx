@@ -1,3 +1,4 @@
+import { Progress } from "@/components/ui/progress";
 import type { BarItem } from "../types";
 
 export const BarList = ({
@@ -18,12 +19,13 @@ export const BarList = ({
               {format(item.value)}
             </span>
           </div>
-          <div className="h-2 overflow-hidden rounded bg-muted">
-            <div
-              className="h-full bg-chart-2"
-              style={{ width: `${(item.value / max) * 100}%` }}
-            />
-          </div>
+          <Progress
+            value={item.value}
+            max={max}
+            variant="segmented"
+            filledClassName="data-filled:bg-chart-2"
+            aria-label={item.label}
+          />
         </li>
       ))}
     </ul>

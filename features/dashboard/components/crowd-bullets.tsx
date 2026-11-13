@@ -1,3 +1,4 @@
+import { Progress } from "@/components/ui/progress";
 import type { Dashboard } from "../services/build-dashboard";
 
 export const CrowdBullets = ({
@@ -21,13 +22,16 @@ export const CrowdBullets = ({
                 {area.alarms === 1 ? "alarm" : "alarms"}
               </span>
             </div>
-            <div className="relative h-2 overflow-hidden rounded bg-muted">
-              <div
-                className="h-full bg-chart-2"
-                style={{ width: `${(area.peak / scale) * 100}%` }}
+            <div className="relative">
+              <Progress
+                value={area.peak}
+                max={scale}
+                variant="segmented"
+                filledClassName="data-filled:bg-chart-2"
+                aria-label={`${area.area} peak headcount`}
               />
               <span
-                className="absolute inset-y-0 w-0.5 bg-foreground"
+                className="absolute -inset-y-1 w-0.5 bg-foreground"
                 style={{ left: `${(area.max / scale) * 100}%` }}
                 title={`Limit: ${area.max}`}
               />

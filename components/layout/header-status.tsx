@@ -1,4 +1,5 @@
 import { CctvIcon, type LucideIcon, ServerIcon } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 type DeviceStatus = "online" | "offline";
@@ -10,12 +11,15 @@ const Bar = ({ items }: { items: Items }) => {
   const online = items.filter((item) => item.status === "online").length;
   if (items.length > MAX_SEGMENTS) {
     return (
-      <div className="flex h-1 w-24 overflow-hidden rounded bg-destructive">
-        <div
-          className="bg-chart-2"
-          style={{ width: `${(online / items.length) * 100}%` }}
-        />
-      </div>
+      <Progress
+        value={online}
+        max={items.length}
+        variant="segmented"
+        filledClassName="data-filled:bg-chart-2"
+        segments={MAX_SEGMENTS}
+        aria-label="Online"
+        className="w-24 flex-nowrap"
+      />
     );
   }
   return (

@@ -1,3 +1,5 @@
+import { Progress } from "@/components/ui/progress";
+
 export const NewPersons = ({
   value,
   total,
@@ -15,10 +17,12 @@ export const NewPersons = ({
         </span>
       </div>
       <div className="flex flex-col gap-1">
-        <div className="flex h-2 gap-0.5 overflow-hidden rounded">
-          <span className="bg-chart-2" style={{ width: `${share}%` }} />
-          <span className="flex-1 bg-muted" />
-        </div>
+        <Progress
+          value={share}
+          variant="segmented"
+          filledClassName="data-filled:bg-chart-2"
+          aria-label="Share of new people"
+        />
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>New</span>
           <span>Returning</span>

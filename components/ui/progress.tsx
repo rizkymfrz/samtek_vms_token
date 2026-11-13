@@ -10,10 +10,12 @@ const Progress = ({
   max = 100,
   variant = "line",
   segments = 20,
+  filledClassName,
   ...props
 }: ProgressPrimitive.Root.Props & {
   variant?: "line" | "segmented";
   segments?: number;
+  filledClassName?: string;
 }) => {
   const ratio = value === null ? 0 : (value - min) / (max - min);
   return (
@@ -27,7 +29,11 @@ const Progress = ({
     >
       {children}
       {variant === "segmented" ? (
-        <ProgressSegments count={segments} ratio={ratio} />
+        <ProgressSegments
+          count={segments}
+          ratio={ratio}
+          filledClassName={filledClassName}
+        />
       ) : (
         <ProgressTrack>
           <ProgressIndicator />
@@ -40,9 +46,11 @@ const Progress = ({
 const ProgressSegments = ({
   count,
   ratio,
+  filledClassName,
 }: {
   count: number;
   ratio: number;
+  filledClassName?: string;
 }) => {
   const filled = Math.round(Math.min(1, Math.max(0, ratio)) * count);
   return (
@@ -52,7 +60,10 @@ const ProgressSegments = ({
           key={segment}
           data-slot="progress-segment"
           data-filled={segment < filled ? "" : undefined}
-          className="h-full flex-1 rounded-[1px] bg-muted data-filled:bg-primary"
+          className={cn(
+            "h-full flex-1 rounded-[1px] bg-muted data-filled:bg-primary",
+            filledClassName,
+          )}
         />
       ))}
     </ProgressTrack>
