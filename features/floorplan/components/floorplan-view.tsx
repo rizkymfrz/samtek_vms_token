@@ -191,7 +191,7 @@ export const FloorplanView = ({
             </Button>
           </PanelSection>
         </SidePanel>
-        <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
           <EmptyState
             icon={<LayersIcon />}
             title="No floor plans yet"
@@ -268,7 +268,7 @@ export const FloorplanView = ({
           onDelete={() => setDeleting(true)}
         />
       </SidePanel>
-      <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
         <PlanCanvas
           key={`${plan.id}-${imageSrc}`}
           plan={plan}

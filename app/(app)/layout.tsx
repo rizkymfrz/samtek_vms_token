@@ -1,5 +1,6 @@
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toast";
 import { UserMenu } from "@/features/auth/components/user-menu";
@@ -14,7 +15,8 @@ const AppLayout = ({ children }: LayoutProps<"/">) => {
       <Toaster>
         <SidebarProvider>
           <AppSidebar footer={<UserMenu />} />
-          <SidebarInset className="min-w-0">
+          <SidebarInset className="isolate min-w-0">
+            <PageBackdrop />
             <AppHeader status={<DeviceStatus />} />
             <main className="flex-1">{children}</main>
           </SidebarInset>

@@ -131,7 +131,7 @@ export const CamerasView = ({
           }}
         />
       </SidePanel>
-      <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
         {toggleError && (
           <Alert variant="destructive">
             <AlertTitle>Could not update the camera</AlertTitle>

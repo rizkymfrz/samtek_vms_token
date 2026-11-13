@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export const SidePanel = ({ children }: { children: ReactNode }) => {
   return (
-    <aside className="w-full shrink-0 border-t max-lg:order-last lg:h-full lg:w-80 lg:overflow-y-auto lg:border-t-0 lg:border-r">
+    <aside className="w-full shrink-0 border-t bg-background max-lg:order-last lg:h-full lg:w-80 lg:overflow-y-auto lg:border-t-0 lg:border-r">
       <div className="flex min-h-full flex-col gap-4 p-4">{children}</div>
     </aside>
   );

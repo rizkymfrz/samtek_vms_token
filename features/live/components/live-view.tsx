@@ -87,7 +87,7 @@ export const LiveView = ({
   if (!summary) {
     return (
       <PageShell>
-        <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
           <EmptyState
             icon={<LayoutGridIcon />}
             title="No layouts yet"
@@ -146,7 +146,7 @@ export const LiveView = ({
       </SidePanel>
       <div
         ref={stage}
-        className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0"
+        className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0"
       >
         {actions.error && (
           <Alert variant="destructive">

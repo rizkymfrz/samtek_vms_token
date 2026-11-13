@@ -107,7 +107,7 @@ export const AlertsView = ({
           }}
         />
       </SidePanel>
-      <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
         <div className="flex flex-wrap items-center justify-end gap-2">
           {data.isTruncated && (
             <Badge variant="secondary" className="mr-auto">

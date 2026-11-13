@@ -143,7 +143,7 @@ export const ServersView = ({
           }}
         />
       </SidePanel>
-      <div className="flex min-w-0 flex-1 flex-col gap-4 bg-background p-4 lg:min-h-0 lg:overflow-y-auto">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0 lg:overflow-y-auto">
         {mqttConfig && brokerError && (
           <Alert variant="destructive">
             <AlertTitle>Could not reach the MQTT broker</AlertTitle>
