@@ -55,6 +55,7 @@ export const toRow = (
     description: alarm.description,
     risk: alarm.risk_level,
     camera: cameraNames.get(alarm.device_id) ?? alarm.device_id,
+    analyticId: alarm.analytic_id,
     analytic: titleCase(alarm.analytic_id),
     object: titleCase(alarm.object?.label ?? "unknown"),
     score: alarm.object?.confidence ?? 0,

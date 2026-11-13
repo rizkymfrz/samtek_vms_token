@@ -37,6 +37,7 @@ export type AlertRow = {
   description: string;
   risk: RiskLevel;
   camera: string;
+  analyticId: string;
   analytic: string;
   object: string;
   score: number;
@@ -105,6 +106,7 @@ export const buildAlerts = (
       description: alarm.description,
       risk: alarm.risk_level,
       camera: camera.get(alarm.device_id) ?? alarm.device_id,
+      analyticId: alarm.analytic_id,
       analytic: analyticLabel(alarm.analytic_id),
       object: titleCase(alarm.object_label),
       score: alarm.score,
