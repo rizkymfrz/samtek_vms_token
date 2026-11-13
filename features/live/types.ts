@@ -6,6 +6,7 @@ export type Tile = {
   serverId: string;
   serverName: string;
   analytic: string | null;
+  analyticId: string | null;
   isRecordingEnabled: boolean;
   state: StreamState;
   hasSubStream: boolean;

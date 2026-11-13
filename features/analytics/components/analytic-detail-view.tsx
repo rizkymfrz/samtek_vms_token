@@ -1,36 +1,159 @@
-import { ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
-import { BreadcrumbTitle } from "@/components/shared/breadcrumb-title";
+"use client";
+import { CctvIcon, MaximizeIcon } from "lucide-react";
+import { type CSSProperties, useMemo, useRef, useState } from "react";
+import type { DateRange } from "react-day-picker";
+import { SidePanel } from "@/components/layout/side-panel";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
-import { analyticLabel } from "@/config/analytics-catalog";
+import {
+  AlertDetailDialog,
+  type AlertsData,
+  CUSTOM_RANGE,
+  DEFAULT_FILTERS,
+  type Filters,
+  toDateKey,
+  useAlerts,
+} from "@/features/alerts";
+import { useServerOnline } from "@/features/edge-status";
+import {
+  CameraTile,
+  type LiveData,
+  type StreamQuality,
+  type Tile,
+  useLive,
+} from "@/features/live";
+import { useFailureToast } from "@/hooks/use-failure-toast";
+import { AnalyticAlertPanel } from "./analytic-alert-panel";
+import { gridSize } from "../lib/analytic-grid";
 import type { AnalyticGroup } from "../lib/analytic-groups";
 
-export const AnalyticDetailView = ({ group }: { group: AnalyticGroup }) => {
-  const Icon = group.icon;
+const QUALITY_ITEMS = [
+  { value: "sub", label: "Sub stream" },
+  { value: "main", label: "Main stream" },
+];
+
+export const AnalyticDetailView = ({
+  group,
+  live: initialLive,
+  alerts: initialAlerts,
+  isLive,
+}: {
+  group: Pick<AnalyticGroup, "slug" | "title" | "analyticIds">;
+  live: LiveData;
+  alerts: AlertsData;
+  isLive: boolean;
+}) => {
+  const { data: live } = useLive(initialLive, isLive);
+  const [range, setRange] = useState<DateRange>();
+  const filters = useMemo(
+    (): Filters =>
+      range?.from
+        ? {
+            ...DEFAULT_FILTERS,
+            range: CUSTOM_RANGE,
+            from: toDateKey(range.from),
+            to: toDateKey(range.to ?? range.from),
+          }
+        : DEFAULT_FILTERS,
+    [range],
+  );
+  const { data: alertsData } = useAlerts(initialAlerts, isLive, filters);
+  const alerts = alertsData ?? initialAlerts;
+  useFailureToast(
+    "Some edge servers did not respond",
+    live.failures.map((failure) => `${failure.serverName}: ${failure.message}`),
+  );
+  const serverOnline = useServerOnline();
+  const tiles = useMemo(
+    () =>
+      live.tiles
+        .filter(
+          (tile) =>
+            tile.state !== "disabled" &&
+            tile.analyticId !== null &&
+            group.analyticIds.includes(tile.analyticId),
+        )
+        .map((tile): Tile => {
+          const server = live.servers.find((s) => s.id === tile.serverId);
+          const online = server ? serverOnline(server, server.online) : false;
+          return { ...tile, state: online ? "live" : "server-offline" };
+        }),
+    [live.tiles, live.servers, group.analyticIds, serverOnline],
+  );
+  const rows = useMemo(
+    () =>
+      alerts.rows.filter((row) => group.analyticIds.includes(row.analyticId)),
+    [alerts.rows, group.analyticIds],
+  );
+  const [quality, setQuality] = useState<StreamQuality>("sub");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const size = gridSize(tiles.length);
+  const open = alerts.rows.find((row) => row.id === openId) ?? null;
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <BreadcrumbTitle href={`/analytics/${group.slug}`} label={group.title} />
-      <div>
-        <Button
-          variant="secondary"
-          size="sm"
-          nativeButton={false}
-          render={<Link href="/analytics" />}
-        >
-          <ArrowLeftIcon data-icon="inline-start" />
-          Analytics
-        </Button>
-      </div>
-      <div className="flex items-center gap-4">
-        <Icon className="size-8 text-primary" aria-hidden />
-        <div className="flex flex-col">
-          <h1 className="font-heading text-sm font-medium">{group.title}</h1>
-          <p className="text-xs text-muted-foreground">{group.description}</p>
+    <div className="flex min-h-full flex-1 flex-col lg:min-h-0 lg:flex-row">
+      <div
+        ref={stage}
+        className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0"
+      >
+        <div className="flex flex-wrap items-center justify-start gap-2">
+          <Pick
+            label="Stream"
+            items={QUALITY_ITEMS}
+            value={quality}
+            onChange={(next) => setQuality(next as StreamQuality)}
+          />
+          <Button
+            variant="secondary"
+            onClick={() => stage.current?.requestFullscreen?.()}
+          >
+            <MaximizeIcon />
+            Fullscreen
+          </Button>
         </div>
+        {tiles.length === 0 ? (
+          <EmptyState
+            icon={<CctvIcon />}
+            title="No cameras"
+            description={`No camera is using ${group.title} yet.`}
+          />
+        ) : (
+          <div
+            className="grid grid-cols-1 gap-0 border-t border-l sm:grid-cols-2 md:grid-cols-(--columns) lg:min-h-0 lg:flex-1 lg:grid-rows-(--rows)"
+            style={
+              {
+                "--columns": `repeat(${size}, minmax(0, 1fr))`,
+                "--rows": `repeat(${size}, minmax(0, 1fr))`,
+              } as CSSProperties
+            }
+          >
+            {tiles.map((tile) => (
+              <CameraTile
+                key={tile.id}
+                tile={tile}
+                quality={quality}
+                className="lg:aspect-auto lg:h-full lg:min-h-0"
+              />
+            ))}
+            {Array.from({ length: size * size - tiles.length }, (_, index) => (
+              <div
+                key={`empty-${index}`}
+                className="hidden border-r border-b md:block"
+              />
+            ))}
+          </div>
+        )}
       </div>
-      <p className="text-xs text-muted-foreground">
-        Covers {group.analyticIds.map(analyticLabel).join(", ")}.
-      </p>
+      <SidePanel side="right" isFixed>
+        <AnalyticAlertPanel
+          alerts={rows}
+          range={range}
+          onRangeChange={setRange}
+          onSelect={setOpenId}
+        />
+      </SidePanel>
+      <AlertDetailDialog alert={open} onClose={() => setOpenId(null)} />
     </div>
   );
 };

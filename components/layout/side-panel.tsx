@@ -5,10 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export const SidePanel = ({ children }: { children: ReactNode }) => {
+export const SidePanel = ({
+  side = "left",
+  isFixed,
+  children,
+}: {
+  side?: "left" | "right";
+  isFixed?: boolean;
+  children: ReactNode;
+}) => {
   return (
-    <aside className="w-full shrink-0 border-t bg-background max-lg:order-last lg:h-full lg:w-80 lg:overflow-y-auto lg:border-t-0 lg:border-r">
-      <div className="flex min-h-full flex-col gap-4 p-4">{children}</div>
+    <aside
+      className={cn(
+        "w-full shrink-0 border-t bg-background max-lg:order-last lg:h-full lg:w-80 lg:border-t-0",
+        isFixed ? "lg:overflow-hidden" : "lg:overflow-y-auto",
+        side === "left" ? "lg:border-r" : "lg:border-l",
+      )}
+    >
+      <div
+        className={cn(
+          "flex flex-col gap-4 p-4",
+          isFixed ? "lg:h-full" : "min-h-full",
+        )}
+      >
+        {children}
+      </div>
     </aside>
   );
 };

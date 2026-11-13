@@ -58,7 +58,7 @@ export const AnalyticsTabs = () => {
   return (
     <nav
       aria-label="Analytics tabs"
-      className="flex items-center overflow-x-auto border-b bg-sidebar"
+      className="flex shrink-0 items-center overflow-x-auto border-b bg-sidebar"
     >
       <Link
         href={overviewHref}
