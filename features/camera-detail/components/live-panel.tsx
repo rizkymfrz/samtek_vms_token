@@ -42,13 +42,12 @@ export const LivePanel = ({
         {isLive && (
           <StreamDetections edgeId={detail.edgeServerId} deviceId={detail.id} />
         )}
-        <Badge variant="overlay" className="absolute top-2 left-2">
-          <StatusDot
-            status={isLive ? "live" : "offline"}
-            className={isLive ? "animate-pulse" : undefined}
-          />
-          {isLive ? "Live" : "Offline"}
-        </Badge>
+        {!isLive && (
+          <Badge variant="overlay" className="absolute top-2 left-2">
+            <StatusDot status="offline" />
+            Offline
+          </Badge>
+        )}
       </div>
       <PtzControls />
     </section>
