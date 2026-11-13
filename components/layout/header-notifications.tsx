@@ -1,7 +1,6 @@
 "use client";
 import { BellIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,12 +11,28 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ALERTS } from "@/lib/mock/header-data";
 import { cn } from "@/lib/utils";
 
-export const HeaderNotifications = () => {
-  const [alerts, setAlerts] = useState(ALERTS);
-  const unread = alerts.filter((alert) => !alert.read).length;
+const MAX_BADGE = 99;
+
+export type HeaderAlert = {
+  id: string;
+  title: string;
+  source: string;
+  time: string;
+  severity: "critical" | "info";
+  read: boolean;
+};
+
+export const HeaderNotifications = ({
+  alerts,
+  unread,
+  onMarkAllRead,
+}: {
+  alerts: HeaderAlert[];
+  unread: number;
+  onMarkAllRead: () => void;
+}) => {
   return (
     <Popover>
       <PopoverTrigger
@@ -36,7 +51,7 @@ export const HeaderNotifications = () => {
             variant="destructive"
             className="absolute top-0.5 right-0.5 h-4 min-w-4 px-0.5 tabular-nums"
           >
-            {unread}
+            {unread > MAX_BADGE ? `${MAX_BADGE}+` : unread}
           </Badge>
         )}
       </PopoverTrigger>
@@ -46,13 +61,14 @@ export const HeaderNotifications = () => {
           <Button
             variant="ghost"
             disabled={unread === 0}
-            onClick={() =>
-              setAlerts((items) => items.map((i) => ({ ...i, read: true })))
-            }
+            onClick={onMarkAllRead}
           >
             Mark all as read
           </Button>
         </PopoverHeader>
+        {alerts.length === 0 && (
+          <p className="p-4 text-center text-muted-foreground">No alerts.</p>
+        )}
         <ul className="max-h-80 overflow-auto">
           {alerts.map((alert) => (
             <li

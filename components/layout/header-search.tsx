@@ -1,5 +1,5 @@
 "use client";
-import { CctvIcon, SearchIcon, ServerIcon } from "lucide-react";
+import { Building2Icon, CctvIcon, SearchIcon, ServerIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,18 @@ import {
 } from "@/components/ui/command";
 import { Kbd } from "@/components/ui/kbd";
 import { NAV_ITEMS, SETTINGS_ITEM } from "@/config/navigation";
-import { CAMERAS, SERVERS } from "@/lib/mock/header-data";
 
-export const HeaderSearch = () => {
+type Entry = { id: string; name: string };
+
+export const HeaderSearch = ({
+  cameras,
+  servers,
+  floorplans,
+}: {
+  cameras: Entry[];
+  servers: Entry[];
+  floorplans: Entry[];
+}) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -49,10 +58,10 @@ export const HeaderSearch = () => {
         open={open}
         onOpenChange={setOpen}
         title="Search"
-        description="Jump to a page, camera or server."
+        description="Jump to a page, camera, floor plan or server."
       >
         <Command>
-          <CommandInput placeholder="Search pages, cameras, servers..." />
+          <CommandInput placeholder="Search pages, cameras, floor plans, servers..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Pages">
@@ -70,19 +79,31 @@ export const HeaderSearch = () => {
               )}
             </CommandGroup>
             <CommandGroup heading="Cameras">
-              {CAMERAS.map((camera) => (
+              {cameras.map((camera) => (
                 <CommandItem
                   key={camera.id}
                   value={`camera ${camera.name}`}
-                  onSelect={() => go("/cameras")}
+                  onSelect={() => go(`/cameras/${camera.id}`)}
                 >
                   <CctvIcon />
                   {camera.name}
                 </CommandItem>
               ))}
             </CommandGroup>
+            <CommandGroup heading="Floorplans">
+              {floorplans.map((plan) => (
+                <CommandItem
+                  key={plan.id}
+                  value={`floorplan ${plan.name}`}
+                  onSelect={() => go(`/floorplan?id=${plan.id}`)}
+                >
+                  <Building2Icon />
+                  {plan.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
             <CommandGroup heading="Servers">
-              {SERVERS.map((server) => (
+              {servers.map((server) => (
                 <CommandItem
                   key={server.id}
                   value={`server ${server.name}`}

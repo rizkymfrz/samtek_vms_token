@@ -14,14 +14,15 @@ import {
 } from "../schemas/edge-alarm-summary";
 import type { BarItem } from "../types";
 
+const HOURS = 24;
+const HEATMAP_CAMERAS = 12;
+const KIND_ITEMS = 5;
+
 const relayOf = (edge: EdgeTarget) => ({
   webrtcUrl: edge.webrtcUrl,
   webrtcUrlLocal: edge.webrtcUrlLocal,
 });
 
-const HOURS = 24;
-const HEATMAP_CAMERAS = 12;
-const KIND_ITEMS = 5;
 const sum = (values: number[]) => values.reduce((a, b) => a + b, 0);
 
 const queryEdge = (edge: EdgeTarget, since: string, until: string) =>

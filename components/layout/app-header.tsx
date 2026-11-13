@@ -16,12 +16,18 @@ import { useBreadcrumbLabels } from "@/hooks/use-breadcrumb-labels";
 import { getBreadcrumbs } from "@/lib/breadcrumbs";
 import { HeaderActions } from "./header-actions";
 import { HeaderClock } from "./header-clock";
-import { HeaderNotifications } from "./header-notifications";
-import { HeaderSearch } from "./header-search";
 import { ThemeSwitcher } from "./theme-switcher";
 import { WindowControls } from "./window-controls";
 
-export const AppHeader = ({ status }: { status: ReactNode }) => {
+export const AppHeader = ({
+  status,
+  search,
+  notifications,
+}: {
+  status: ReactNode;
+  search: ReactNode;
+  notifications: ReactNode;
+}) => {
   const pathname = usePathname();
   const labels = useBreadcrumbLabels();
   const crumbs = getBreadcrumbs(pathname, labels);
@@ -57,8 +63,8 @@ export const AppHeader = ({ status }: { status: ReactNode }) => {
       <div className="ml-auto flex items-center gap-4">
         {status}
         <HeaderClock />
-        <HeaderSearch />
-        <HeaderNotifications />
+        {search}
+        {notifications}
         <ThemeSwitcher />
         <HeaderActions />
       </div>
