@@ -1,62 +1,31 @@
-import {
-  BoxIcon,
-  CctvIcon,
-  ClockIcon,
-  GaugeIcon,
-  ShieldAlertIcon,
-  TriangleAlertIcon,
-} from "lucide-react";
-import { RiskBadge } from "@/components/shared/risk-badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+"use client";
+import { useState } from "react";
+import { AlertDetailDialog, AlertsTable } from "@/features/alerts";
+import { NoData } from "./no-data";
+import { useLiveAlarms } from "../hooks/use-live-alarms";
 import type { Dashboard } from "../services/build-dashboard";
 
 export const RecentAlarms = ({
-  alarms,
+  alarms: initial,
+  deviceNames,
+  relays,
 }: {
   alarms: Dashboard["recentAlarms"];
+  deviceNames: Dashboard["deviceNames"];
+  relays: Dashboard["relays"];
 }) => {
+  const alarms = useLiveAlarms(initial, deviceNames, relays);
+  const [openId, setOpenId] = useState<string | null>(null);
+  if (!alarms.length) return <NoData>No alarms.</NoData>;
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead icon={ClockIcon}>Time</TableHead>
-          <TableHead icon={ShieldAlertIcon}>Alarm</TableHead>
-          <TableHead icon={CctvIcon}>Camera</TableHead>
-          <TableHead icon={BoxIcon}>Object</TableHead>
-          <TableHead icon={TriangleAlertIcon}>Risk</TableHead>
-          <TableHead icon={GaugeIcon} className="text-right">
-            Score
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {alarms.map((alarm) => (
-          <TableRow key={alarm.id}>
-            <TableCell className="tabular-nums">{alarm.time}</TableCell>
-            <TableCell>
-              <div className="flex flex-col">
-                <span>{alarm.title}</span>
-                <span className="text-muted-foreground">{alarm.detail}</span>
-              </div>
-            </TableCell>
-            <TableCell>{alarm.device}</TableCell>
-            <TableCell>{alarm.object}</TableCell>
-            <TableCell>
-              <RiskBadge level={alarm.risk} />
-            </TableCell>
-            <TableCell className="text-right tabular-nums">
-              {alarm.score.toFixed(2)}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <>
+      <div className="overflow-hidden rounded border">
+        <AlertsTable alerts={alarms} onSelect={setOpenId} />
+      </div>
+      <AlertDetailDialog
+        alert={alarms.find((row) => row.id === openId) ?? null}
+        onClose={() => setOpenId(null)}
+      />
+    </>
   );
 };

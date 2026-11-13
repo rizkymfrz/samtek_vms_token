@@ -1,5 +1,6 @@
 import {
   BellRingIcon,
+  GaugeIcon,
   HardHatIcon,
   ScanFaceIcon,
   ScanLineIcon,
@@ -47,6 +48,22 @@ export const SECTIONS = [
 ] as const;
 
 const always = () => true;
+const hours = (d: Dashboard) => d.timeline.map((b) => b.label);
+const SHOW_ANALYTIC_WIDGETS = false;
+
+export const GENERAL_WIDGET_IDS = new Set([
+  "kpi-alarms",
+  "kpi-high",
+  "kpi-average",
+  "alarms-timeline",
+  "risk",
+  "heatmap",
+  "alarms-by-type",
+  "recent-alarms",
+]);
+
+export const isShown = (widget: { id: string }) =>
+  SHOW_ANALYTIC_WIDGETS || GENERAL_WIDGET_IDS.has(widget.id);
 
 export const WIDGETS: Widget[] = [
   {
@@ -62,6 +79,7 @@ export const WIDGETS: Widget[] = [
         change={d.kpis.alarms.change}
         icon={BellRingIcon}
         spark={d.timeline.map((b) => b.medium + b.high)}
+        labels={hours(d)}
       />
     ),
   },
@@ -78,6 +96,27 @@ export const WIDGETS: Widget[] = [
         change={d.kpis.severe.change}
         icon={TriangleAlertIcon}
         spark={d.timeline.map((b) => b.high)}
+        labels={hours(d)}
+      />
+    ),
+  },
+  {
+    id: "kpi-average",
+    section: "Overview",
+    group: "kpi",
+    span: 3,
+    when: always,
+    render: (d) => (
+      <KpiCard
+        label="Avg alarms per hour"
+        value={(d.kpis.alarms.value / d.timeline.length).toLocaleString(
+          "en-US",
+          { maximumFractionDigits: 1 },
+        )}
+        change={d.kpis.alarms.change}
+        icon={GaugeIcon}
+        spark={d.timeline.map((b) => b.medium + b.high)}
+        labels={hours(d)}
       />
     ),
   },
@@ -94,6 +133,7 @@ export const WIDGETS: Widget[] = [
         change={d.counting.change}
         icon={ScanLineIcon}
         spark={d.counting.hourly}
+        labels={hours(d)}
       />
     ),
   },
@@ -110,6 +150,7 @@ export const WIDGETS: Widget[] = [
         change={d.ppe.change}
         icon={HardHatIcon}
         spark={d.ppe.timeline.map((b) => b.violations)}
+        labels={hours(d)}
       />
     ),
   },
@@ -126,6 +167,7 @@ export const WIDGETS: Widget[] = [
         change={d.visitors.change}
         icon={UserCheckIcon}
         spark={d.visitors.hourly}
+        labels={hours(d)}
       />
     ),
   },
@@ -142,6 +184,7 @@ export const WIDGETS: Widget[] = [
         change={d.kpis.recognitions.change}
         icon={ScanFaceIcon}
         spark={d.recognitionsTimeline}
+        labels={hours(d)}
       />
     ),
   },
@@ -244,11 +287,11 @@ export const WIDGETS: Widget[] = [
     when: always,
     render: (d) => (
       <Panel title="Recent alarms">
-        {d.recentAlarms.length ? (
-          <RecentAlarms alarms={d.recentAlarms} />
-        ) : (
-          <NoData>No alarms.</NoData>
-        )}
+        <RecentAlarms
+          alarms={d.recentAlarms}
+          deviceNames={d.deviceNames}
+          relays={d.relays}
+        />
       </Panel>
     ),
   },

@@ -1,3 +1,4 @@
+import { type AlertClip, buildAlerts } from "@/lib/mock/alerts-source";
 import {
   canRaiseAlarms,
   COUNTING_ANALYTICS,
@@ -8,15 +9,8 @@ import {
   PPE_ANALYTICS,
 } from "@/lib/mock/dashboard-source";
 import { countBy, withOther } from "../lib/aggregate";
-import {
-  clock,
-  clockSeconds,
-  DAY,
-  delta,
-  HOUR,
-  plainLabel,
-  titleCase,
-} from "../lib/format";
+import { clock, DAY, delta, HOUR, plainLabel, titleCase } from "../lib/format";
+import { RECENT_ALARMS } from "../lib/recent-alarms";
 
 export const buildDashboard = (devices: DeviceInfo[], now = Date.now()) => {
   const data = generateAnalytics(now, devices);
@@ -100,43 +94,9 @@ export const buildDashboard = (devices: DeviceInfo[], now = Date.now()) => {
   const numberDetail = (id: string, key: string) =>
     detailsByEvent.get(id)?.find((d) => d.detail_key === key)?.number_value ??
     null;
-  const describe = (alarm: (typeof alarms)[number]) => {
-    const details = detailsByEvent.get(alarm.event_id) ?? [];
-    switch (alarm.kind) {
-      case "ppe_missing":
-        return `Missing ${details
-          .filter((d) => d.detail_key === "missing_items")
-          .map((d) => d.text_value)
-          .join(", ")}`;
-      case "area_dwell":
-        return `${alarm.perimeter_name} · ${numberDetail(alarm.event_id, "stay_seconds")}s`;
-      case "crowd_limit_exceeded":
-        return `${numberDetail(alarm.event_id, "people_count")}/${numberDetail(alarm.event_id, "max_people")} people · ${alarm.perimeter_name}`;
-      case "worker_absent":
-        return `Absent ${numberDetail(alarm.event_id, "absent_seconds")}s · ${alarm.perimeter_name}`;
-      case "face_not_in_whitelist":
-        return (
-          details.find((d) => d.detail_key === "person_name")?.text_value ?? ""
-        );
-      case "dust_detected":
-        return `Dust level ${Math.round((numberDetail(alarm.event_id, "dust_score") ?? 0) * 100)}%`;
-      default:
-        return alarm.perimeter_name;
-    }
-  };
-  const recentAlarms = [...alarms]
-    .sort((a, b) => b.occurred_at.getTime() - a.occurred_at.getTime())
-    .slice(0, 8)
-    .map((alarm) => ({
-      id: alarm.event_id,
-      time: clockSeconds.format(alarm.occurred_at),
-      device: deviceName.get(alarm.device_id) ?? alarm.device_id,
-      title: alarm.title,
-      detail: describe(alarm),
-      object: titleCase(alarm.object_label),
-      risk: alarm.risk_level,
-      score: alarm.score,
-    }));
+  const recentAlarms = buildAlerts(now, { since: now - DAY, until: null })
+    .rows.filter((row) => row.risk !== "low")
+    .slice(0, RECENT_ALARMS);
   const heatmap = devices
     .filter((d) => d.is_enabled && canRaiseAlarms(d))
     .map((device) => ({
@@ -484,6 +444,7 @@ export const buildDashboard = (devices: DeviceInfo[], now = Date.now()) => {
     recognitionsByType: countBy(recognitions, (r) => r.recognizer),
     deviceNames: Object.fromEntries(deviceName),
     recentAlarms,
+    relays: {} as Record<string, AlertClip["relay"]>,
     recentPlates,
     recentFaces,
     attributes: {

@@ -1,4 +1,5 @@
 export { AlertImage } from "./components/alert-image";
+export { AlertsTable } from "./components/alerts-table";
 export { AlertDetailDialog } from "./components/alert-detail-dialog";
 export { useAlerts } from "./hooks/use-alerts";
 
@@ -9,4 +10,11 @@ export {
   toDateKey,
 } from "./lib/filter-alerts";
 
-export type { AlertRow, AlertsData } from "./types";
+export {
+  alarmFromMessage,
+  clipFromMessage,
+  toRow as toAlertRow,
+} from "./lib/alarm-row";
+
+export { edgeAlarmsResponseSchema } from "./schemas/edge-alarm";
+export type { AlertClip, AlertRow, AlertsData } from "./types";

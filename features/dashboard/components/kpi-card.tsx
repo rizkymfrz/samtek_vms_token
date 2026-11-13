@@ -12,12 +12,14 @@ export const KpiCard = ({
   icon: Icon,
   change,
   spark,
+  labels,
 }: {
   label: string;
   value: string | number;
   icon: LucideIcon;
   change: number;
   spark: number[];
+  labels: string[];
 }) => {
   const ChangeIcon = change < 0 ? ArrowDownRightIcon : ArrowUpRightIcon;
   return (
@@ -35,7 +37,7 @@ export const KpiCard = ({
           </span>
         </div>
         <div className="mt-auto">
-          <Sparkline data={spark} />
+          <Sparkline data={spark} labels={labels} />
         </div>
       </CardContent>
     </Card>

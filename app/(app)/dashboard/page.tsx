@@ -12,7 +12,7 @@ const DashboardContent = async ({
 }) => {
   await connection();
   const selected = parseSelection((await searchParams).analytics);
-  return <DashboardView data={getDashboard(selected)} />;
+  return <DashboardView data={await getDashboard(selected)} />;
 };
 
 const Page = ({ searchParams }: PageProps<"/dashboard">) => {
