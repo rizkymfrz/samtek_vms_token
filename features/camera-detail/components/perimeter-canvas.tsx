@@ -28,7 +28,7 @@ const STROKE = "stroke-2 [vector-effect:non-scaling-stroke]";
 const HALO =
   "stroke-[5px] stroke-background [vector-effect:non-scaling-stroke]";
 
-const DRAFT = `${STROKE} animate-dash-flow stroke-chart-1 [filter:drop-shadow(0_0_3px_var(--chart-1))]`;
+const DRAFT = `${STROKE} animate-dash-flow stroke-chart-1`;
 
 const DrawingLayer = ({
   perimeters,
@@ -249,7 +249,7 @@ const DrawingLayer = ({
           key={index}
           style={{ left: percent(point.x), top: percent(point.y) }}
           className={cn(
-            "pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-chart-1 shadow-[0_0_8px_var(--chart-1)]",
+            "pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-chart-1",
             index === 0 ? "size-2" : "size-1",
           )}
         />

@@ -512,7 +512,7 @@ export const MapCanvas = ({
           >
             <span
               className={cn(
-                "absolute inset-0 rotate-45 rounded-full rounded-br-none border-2 shadow-md transition-colors",
+                "absolute inset-0 rotate-45 rounded-full rounded-br-none border-2 transition-colors",
                 isActive(marker) ? "bg-primary" : "bg-secondary",
                 key === selectedKey ? "border-foreground" : "border-background",
               )}

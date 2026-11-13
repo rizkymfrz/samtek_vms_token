@@ -7,11 +7,11 @@ import { useDetections } from "../hooks/use-detections";
 import type { DetectionObject } from "../types";
 
 const TONES = [
-  "text-chart-1 bg-chart-1/10 shadow-[0_0_12px_-2px_var(--chart-1)]",
-  "text-chart-2 bg-chart-2/10 shadow-[0_0_12px_-2px_var(--chart-2)]",
-  "text-chart-3 bg-chart-3/10 shadow-[0_0_12px_-2px_var(--chart-3)]",
-  "text-chart-4 bg-chart-4/10 shadow-[0_0_12px_-2px_var(--chart-4)]",
-  "text-chart-5 bg-chart-5/10 shadow-[0_0_12px_-2px_var(--chart-5)]",
+  "text-chart-1 bg-chart-1/10",
+  "text-chart-2 bg-chart-2/10",
+  "text-chart-3 bg-chart-3/10",
+  "text-chart-4 bg-chart-4/10",
+  "text-chart-5 bg-chart-5/10",
 ];
 
 const CORNERS = [

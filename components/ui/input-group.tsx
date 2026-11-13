@@ -63,22 +63,19 @@ const InputGroupAddon = ({
   );
 };
 
-const inputGroupButtonVariants = cva(
-  "flex items-center gap-2 text-xs shadow-none",
-  {
-    variants: {
-      size: {
-        xs: "h-6 gap-1 rounded px-2 [&>svg:not([class*='size-'])]:size-3.5",
-        sm: "gap-1",
-        "icon-xs": "size-6 rounded p-0 has-[>svg]:p-0",
-        "icon-sm": "size-7 p-0 has-[>svg]:p-0",
-      },
-    },
-    defaultVariants: {
-      size: "xs",
+const inputGroupButtonVariants = cva("flex items-center gap-2 text-xs", {
+  variants: {
+    size: {
+      xs: "h-6 gap-1 rounded px-2 [&>svg:not([class*='size-'])]:size-3.5",
+      sm: "gap-1",
+      "icon-xs": "size-6 rounded p-0 has-[>svg]:p-0",
+      "icon-sm": "size-7 p-0 has-[>svg]:p-0",
     },
   },
-);
+  defaultVariants: {
+    size: "xs",
+  },
+});
 
 const InputGroupButton = ({
   className,
@@ -121,7 +118,7 @@ const InputGroupInput = ({
     <Input
       data-slot="input-group-control"
       className={cn(
-        "flex-1 rounded border-0 bg-transparent shadow-none disabled:bg-transparent dark:bg-transparent dark:disabled:bg-transparent",
+        "flex-1 rounded border-0 bg-transparent disabled:bg-transparent dark:bg-transparent dark:disabled:bg-transparent",
         className,
       )}
       {...props}
@@ -137,7 +134,7 @@ const InputGroupTextarea = ({
     <Textarea
       data-slot="input-group-control"
       className={cn(
-        "flex-1 resize-none rounded border-0 bg-transparent py-2 shadow-none disabled:bg-transparent dark:bg-transparent dark:disabled:bg-transparent",
+        "flex-1 resize-none rounded border-0 bg-transparent py-2 disabled:bg-transparent dark:bg-transparent dark:disabled:bg-transparent",
         className,
       )}
       {...props}
