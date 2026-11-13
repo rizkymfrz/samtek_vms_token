@@ -1,12 +1,12 @@
 import {
   ActivityIcon,
+  CctvIcon,
   CircleCheckIcon,
   CircleDotIcon,
   PowerIcon,
   RadioIcon,
   ScanSearchIcon,
   ServerIcon,
-  VideoIcon,
 } from "lucide-react";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
@@ -54,7 +54,7 @@ export const CameraTable = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead icon={VideoIcon}>Camera</TableHead>
+          <TableHead icon={CctvIcon}>Camera</TableHead>
           <TableHead icon={ServerIcon}>Edge server</TableHead>
           <TableHead icon={ScanSearchIcon}>Analytic</TableHead>
           <TableHead icon={ActivityIcon}>Status</TableHead>

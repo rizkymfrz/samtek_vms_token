@@ -4,13 +4,16 @@ import { Suspense } from "react";
 import { BreadcrumbTitle } from "@/components/shared/breadcrumb-title";
 import { isLiveSource } from "@/config/env";
 import { getAlerts } from "@/features/alerts/services/get-alerts";
+import { AnalyticAlertHistory } from "@/features/analytics/components/analytic-alert-history";
 import { AnalyticDetailSkeleton } from "@/features/analytics/components/analytic-detail-skeleton";
 import { AnalyticDetailView } from "@/features/analytics/components/analytic-detail-view";
+import { AnalyticRecognitionHistory } from "@/features/analytics/components/analytic-recognition-history";
 import {
   ANALYTIC_GROUPS,
   findAnalyticGroup,
 } from "@/features/analytics/lib/analytic-groups";
 import { getLive } from "@/features/live/services/get-live";
+import { getRecognitions } from "@/features/recognitions/services/get-recognitions";
 import { redirectIfUnauthorized } from "@/lib/auth/guard";
 
 export const generateStaticParams = () =>
@@ -38,8 +41,20 @@ const AnalyticDetailContent = async ({
   const { slug } = await params;
   const group = findAnalyticGroup(slug);
   if (!group) notFound();
-  const [live, alerts] = await redirectIfUnauthorized(
-    Promise.all([getLive(), getAlerts()]),
+  const { recognizer } = group;
+  const [live, history] = await redirectIfUnauthorized(
+    Promise.all([
+      getLive(),
+      recognizer
+        ? Promise.all([getRecognitions(recognizer), getAlerts()]).then(
+            ([recognitions, alerts]) => ({ recognizer, recognitions, alerts }),
+          )
+        : getAlerts().then((alerts) => ({
+            recognizer: null,
+            recognitions: null,
+            alerts,
+          })),
+    ]),
   );
   return (
     <AnalyticDetailView
@@ -49,9 +64,23 @@ const AnalyticDetailContent = async ({
         analyticIds: group.analyticIds,
       }}
       live={live}
-      alerts={alerts}
       isLive={isLiveSource}
-    />
+    >
+      {history.recognizer === null ? (
+        <AnalyticAlertHistory
+          analyticIds={group.analyticIds}
+          initialAlerts={history.alerts}
+          isLive={isLiveSource}
+        />
+      ) : (
+        <AnalyticRecognitionHistory
+          recognizer={history.recognizer}
+          initialRecognitions={history.recognitions}
+          initialAlerts={history.alerts}
+          isLive={isLiveSource}
+        />
+      )}
+    </AnalyticDetailView>
   );
 };
 

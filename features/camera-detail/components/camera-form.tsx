@@ -1,5 +1,5 @@
 "use client";
-import { CameraIcon, CircleDotIcon, PowerIcon, Trash2Icon } from "lucide-react";
+import { CctvIcon, CircleDotIcon, PowerIcon, Trash2Icon } from "lucide-react";
 import { useId, useState } from "react";
 import { Controller, type UseFormReturn, useWatch } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
@@ -77,7 +77,7 @@ export const CameraForm = ({
       <CardContent className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <span className="flex size-10 shrink-0 items-center justify-center rounded bg-primary text-primary-foreground">
-            <CameraIcon className="size-4" />
+            <CctvIcon className="size-4" />
           </span>
           <div className="flex min-w-0 flex-1 flex-col">
             <h2 className="text-sm font-medium">Setup Camera</h2>

@@ -1,5 +1,6 @@
 "use client";
 import {
+  CctvIcon,
   ChevronDownIcon,
   ListMinusIcon,
   ListPlusIcon,
@@ -7,7 +8,6 @@ import {
   PlusIcon,
   SearchXIcon,
   ServerIcon,
-  VideoIcon,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import {
@@ -161,7 +161,7 @@ export const DevicePanel = ({
                           key={tile.id}
                           className="flex items-center gap-2 py-1 pl-8"
                         >
-                          <VideoIcon className="size-4 shrink-0 text-muted-foreground" />
+                          <CctvIcon className="size-4 shrink-0 text-muted-foreground" />
                           <div className="flex min-w-0 flex-1 flex-col">
                             <span
                               className={cn(

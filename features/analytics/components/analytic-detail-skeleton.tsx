@@ -14,7 +14,7 @@ export const AnalyticDetailSkeleton = () => {
           ))}
         </div>
       </div>
-      <div className="flex w-full shrink-0 flex-col gap-4 border-t p-4 lg:w-80 lg:border-t-0 lg:border-l">
+      <div className="flex w-full shrink-0 flex-col gap-4 border-t p-4 lg:w-88 lg:border-t-0 lg:border-l">
         <div className="flex h-10 items-center justify-between">
           <Skeleton className="h-4 w-28" />
           <Skeleton className="size-10" />

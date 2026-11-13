@@ -1,4 +1,4 @@
-import { CameraIcon, type LucideIcon, ServerIcon } from "lucide-react";
+import { CctvIcon, type LucideIcon, ServerIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type DeviceStatus = "online" | "offline";
@@ -64,7 +64,7 @@ export const HeaderStatus = ({
 }) => {
   return (
     <div className="hidden items-center gap-4 text-xs xl:flex">
-      <Status icon={CameraIcon} label="Cameras" items={cameras} />
+      <Status icon={CctvIcon} label="Cameras" items={cameras} />
       <Status icon={ServerIcon} label="Servers" items={servers} />
     </div>
   );

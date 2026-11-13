@@ -1,4 +1,4 @@
-import { ServerOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+import { CctvIcon, CctvOffIcon, ServerOffIcon } from "lucide-react";
 import { MediaTile } from "@/components/shared/media-tile";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +22,9 @@ export const CameraCard = ({
 }) => {
   const Icon =
     state === "live"
-      ? VideoIcon
+      ? CctvIcon
       : state === "disabled"
-        ? VideoOffIcon
+        ? CctvOffIcon
         : ServerOffIcon;
   return (
     <MediaTile

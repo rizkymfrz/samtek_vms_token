@@ -10,6 +10,7 @@ export const edgeAlarmsResponseSchema = z.object({
       description: z.string().default(""),
       risk_level: z.enum(["low", "medium", "high"]),
       analytic_id: z.string(),
+      kind: z.string().default(""),
       object: z
         .object({
           label: z.string(),

@@ -56,6 +56,7 @@ export const toRow = (
     risk: alarm.risk_level,
     camera: cameraNames.get(alarm.device_id) ?? alarm.device_id,
     analyticId: alarm.analytic_id,
+    kind: alarm.kind,
     analytic: titleCase(alarm.analytic_id),
     object: titleCase(alarm.object?.label ?? "unknown"),
     score: alarm.object?.confidence ?? 0,
@@ -86,6 +87,7 @@ export const alarmFromMessage = (message: EdgeAlarmMessage): EdgeAlarm => ({
   description: message.description,
   risk_level: message.risk_level,
   analytic_id: message.analytic_id,
+  kind: message.kind,
   object: message.object,
   perimeter: message.perimeter,
   detail: Object.fromEntries(

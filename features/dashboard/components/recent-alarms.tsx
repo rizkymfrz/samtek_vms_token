@@ -1,10 +1,10 @@
 import {
   BoxIcon,
+  CctvIcon,
   ClockIcon,
   GaugeIcon,
   ShieldAlertIcon,
   TriangleAlertIcon,
-  VideoIcon,
 } from "lucide-react";
 import { RiskBadge } from "@/components/shared/risk-badge";
 import {
@@ -28,7 +28,7 @@ export const RecentAlarms = ({
         <TableRow>
           <TableHead icon={ClockIcon}>Time</TableHead>
           <TableHead icon={ShieldAlertIcon}>Alarm</TableHead>
-          <TableHead icon={VideoIcon}>Camera</TableHead>
+          <TableHead icon={CctvIcon}>Camera</TableHead>
           <TableHead icon={BoxIcon}>Object</TableHead>
           <TableHead icon={TriangleAlertIcon}>Risk</TableHead>
           <TableHead icon={GaugeIcon} className="text-right">

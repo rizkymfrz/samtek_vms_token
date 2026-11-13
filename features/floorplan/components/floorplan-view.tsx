@@ -1,6 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FolderIcon, LayersIcon, PlusIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import {
@@ -55,9 +56,18 @@ export const FloorplanView = ({
 }) => {
   const queryClient = useQueryClient();
   const { data } = useFloorplan(initial, isLive);
+  const linkedId = useSearchParams().get("id");
   const [planId, setPlanId] = useState(
-    () => (initial.plans.find((p) => p.hasImage) ?? initial.plans[0])?.id ?? "",
+    () =>
+      linkedId ??
+      (initial.plans.find((p) => p.hasImage) ?? initial.plans[0])?.id ??
+      "",
   );
+  const [syncedId, setSyncedId] = useState(linkedId);
+  if (linkedId !== syncedId) {
+    setSyncedId(linkedId);
+    if (linkedId) setPlanId(linkedId);
+  }
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [query, setQuery] = useState("");

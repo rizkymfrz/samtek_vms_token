@@ -120,13 +120,16 @@ Rules:
   alasan arsitektural yang jelas.
 - Pengecualian yang diterima: route handler di `app/api/auth/`,
   `app/api/alerts/`, `app/api/cameras/`, `app/api/edge-servers/`,
-  `app/api/servers/`, `app/api/live/`, `app/api/layouts/`, dan
-  `app/api/users/` dipakai sebagai lapisan tipis (BFF) di depan API
-  central dan Edge.
+  `app/api/servers/`, `app/api/live/`, `app/api/layouts/`,
+  `app/api/users/`, `app/api/faces/`, dan `app/api/recognitions/` dipakai sebagai lapisan tipis
+  (BFF) di depan API central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
   Handler hanya memvalidasi input, meneruskan permintaan, dan memetakan
   error; aturan bisnis tetap berada di API backend.
+  `app/api/faces/` dan `app/api/recognitions/` meneruskan ke API HTTP
+  Edge (`/v1/faces`, `/v1/recognitions`), yang tidak punya autentikasi dan hanya menerima `Host`/`Origin` lokal, sehingga
+  browser tidak boleh memanggilnya langsung.
 
 ### 3.2 `features/`
 

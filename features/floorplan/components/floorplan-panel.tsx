@@ -1,4 +1,4 @@
-import { ImageUpIcon, MinusIcon, PlusIcon, VideoIcon } from "lucide-react";
+import { CctvIcon, ImageUpIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { useRef } from "react";
 import {
   PanelActions,
@@ -192,7 +192,7 @@ export const FloorplanPanel = ({
           title="On this plan"
           isEmpty={hereShown.length === 0}
           empty="No cameras on this plan"
-          emptyIcon={<VideoIcon />}
+          emptyIcon={<CctvIcon />}
         >
           {hereShown.map((placement) => {
             const camera = cameras.get(placement.deviceRecordId)!;
@@ -239,7 +239,7 @@ export const FloorplanPanel = ({
           title="Not on this plan"
           isEmpty={unplacedShown.length === 0}
           empty="Every camera is on this plan"
-          emptyIcon={<VideoIcon />}
+          emptyIcon={<CctvIcon />}
         >
           {unplacedShown.map((camera) => (
             <li key={camera.id} className="flex items-center gap-2 py-1">

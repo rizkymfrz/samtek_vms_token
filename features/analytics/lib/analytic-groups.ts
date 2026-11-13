@@ -23,6 +23,7 @@ export type AnalyticGroup = {
   description: string;
   icon: LucideIcon;
   analyticIds: string[];
+  recognizer?: string;
 };
 
 export const ANALYTIC_GROUPS: AnalyticGroup[] = [
@@ -95,6 +96,7 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
       "Recognizes and matches faces for identification and verification.",
     icon: ScanFaceIcon,
     analyticIds: ["face_recognition"],
+    recognizer: "face_recognition",
   },
   {
     slug: "face-visitor-attendance",
@@ -145,6 +147,8 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
     analyticIds: ["cat_detection"],
   },
 ];
+
+export const FACE_RECOGNITION_SLUG = "face-recognition";
 
 export const findAnalyticGroup = (slug: string) =>
   ANALYTIC_GROUPS.find((group) => group.slug === slug);

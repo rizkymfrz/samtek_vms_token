@@ -1,9 +1,7 @@
 "use client";
-import { TriangleAlertIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Pager } from "@/components/shared/pager";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AnalyticCard } from "./analytic-card";
 import { useLiveOverview } from "../hooks/use-live-overview";
 import { ANALYTIC_GROUPS } from "../lib/analytic-groups";
@@ -39,16 +37,6 @@ export const AnalyticsView = ({ initial }: { initial: AnalyticsOverview }) => {
   );
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-      {overview.failedEdges.length > 0 && (
-        <Alert>
-          <TriangleAlertIcon />
-          <AlertTitle>Some edge servers could not be reached</AlertTitle>
-          <AlertDescription>
-            Alarm counts may be lower than actual. Unreachable:{" "}
-            {overview.failedEdges.join(", ")}.
-          </AlertDescription>
-        </Alert>
-      )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:min-h-0 lg:flex-1 lg:grid-cols-4 lg:grid-rows-3">
         {visible.map((group) => (
           <AnalyticCard

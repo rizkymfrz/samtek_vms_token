@@ -1,5 +1,5 @@
 "use client";
-import { ServerOffIcon, VideoOffIcon } from "lucide-react";
+import { CctvOffIcon, ServerOffIcon } from "lucide-react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { StreamDetections } from "@/features/edge-status";
@@ -24,7 +24,7 @@ export const CameraTile = ({
   className?: string;
 }) => {
   const { label, hint } = STATE[tile.state];
-  const Icon = tile.state === "disabled" ? VideoOffIcon : ServerOffIcon;
+  const Icon = tile.state === "disabled" ? CctvOffIcon : ServerOffIcon;
   const isLive = tile.state === "live";
   return (
     <div

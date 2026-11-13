@@ -1,9 +1,9 @@
-import { ServerOffIcon, VideoOffIcon } from "lucide-react";
+import { CctvOffIcon, ServerOffIcon } from "lucide-react";
 import { streamName, WebrtcPlayer } from "@/features/live";
 import type { CameraDetail, StreamState } from "../types";
 
 const HINT = {
-  disabled: { Icon: VideoOffIcon, label: "Camera is disabled" },
+  disabled: { Icon: CctvOffIcon, label: "Camera is disabled" },
   "server-offline": { Icon: ServerOffIcon, label: "Edge server is offline" },
 } as const;
 

@@ -1,5 +1,5 @@
 "use client";
-import { CameraIcon, SearchIcon, ServerIcon } from "lucide-react";
+import { CctvIcon, SearchIcon, ServerIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -76,7 +76,7 @@ export const HeaderSearch = () => {
                   value={`camera ${camera.name}`}
                   onSelect={() => go("/cameras")}
                 >
-                  <CameraIcon />
+                  <CctvIcon />
                   {camera.name}
                 </CommandItem>
               ))}

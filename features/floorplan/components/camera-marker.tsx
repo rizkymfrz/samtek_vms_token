@@ -1,5 +1,5 @@
 "use client";
-import { ServerOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+import { CctvIcon, CctvOffIcon, ServerOffIcon } from "lucide-react";
 import { useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils";
 import type { PlanCamera } from "../types";
 
 const ICON = {
-  live: VideoIcon,
-  disabled: VideoOffIcon,
+  live: CctvIcon,
+  disabled: CctvOffIcon,
   "server-offline": ServerOffIcon,
 };
 

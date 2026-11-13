@@ -1,9 +1,9 @@
 "use client";
 import {
+  CctvIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   PlusIcon,
-  VideoIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type CSSProperties, useMemo, useState } from "react";
@@ -191,7 +191,7 @@ export const CamerasView = ({
         </div>
         {matches.length === 0 ? (
           <EmptyState
-            icon={<VideoIcon />}
+            icon={<CctvIcon />}
             title={cameras.length === 0 ? "No cameras yet" : "No cameras found"}
             description={
               cameras.length === 0

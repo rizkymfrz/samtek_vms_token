@@ -1,5 +1,5 @@
 "use client";
-import { ServerOffIcon, VideoOffIcon, XIcon } from "lucide-react";
+import { CctvOffIcon, ServerOffIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import { WebrtcPlayer } from "./webrtc-player";
@@ -23,7 +23,7 @@ export const CameraPreview = ({
   camera: PreviewCamera;
   onClose: () => void;
 }) => {
-  const Icon = camera.state === "disabled" ? VideoOffIcon : ServerOffIcon;
+  const Icon = camera.state === "disabled" ? CctvOffIcon : ServerOffIcon;
   return (
     <>
       <div className="flex items-center justify-between gap-2 border-b p-2">

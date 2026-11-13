@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CameraIcon, CircleDotIcon, PowerIcon, Trash2Icon } from "lucide-react";
+import { CctvIcon, CircleDotIcon, PowerIcon, Trash2Icon } from "lucide-react";
 import { useId, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pick } from "@/components/shared/pick";
@@ -79,7 +79,7 @@ const Form = ({
   const serverItems = servers.map((s) => ({ value: s.id, label: s.name }));
   return (
     <>
-      <DialogHeader icon={CameraIcon}>
+      <DialogHeader icon={CctvIcon}>
         <DialogTitle>{editing ? "Edit camera" : "Add camera"}</DialogTitle>
         <DialogDescription>
           {editing

@@ -1,8 +1,7 @@
 import {
   BoxIcon,
-  CheckIcon,
+  CctvIcon,
   ClockIcon,
-  CopyIcon,
   DownloadIcon,
   FingerprintIcon,
   HashIcon,
@@ -10,9 +9,8 @@ import {
   ScanSearchIcon,
   ShieldAlertIcon,
   SquareDashedIcon,
-  VideoIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { CopyButton } from "@/components/shared/copy-button";
 import { RiskBadge } from "@/components/shared/risk-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,29 +64,6 @@ const Label = ({ children }: { children: string }) => {
   return <span className="text-sm font-medium">{children}</span>;
 };
 
-const CopyId = ({ value }: { value: string }) => {
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1200);
-    } catch {
-      setCopied(false);
-    }
-  };
-  return (
-    <Button
-      variant="ghost"
-      size="icon-xs"
-      onClick={copy}
-      aria-label="Copy event ID"
-    >
-      {copied ? <CheckIcon /> : <CopyIcon />}
-    </Button>
-  );
-};
-
 export const AlertDetailDialog = ({
   alert,
   onClose,
@@ -136,7 +111,7 @@ export const AlertDetailDialog = ({
                   <Label>Summary</Label>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-4">
                     <Field
-                      icon={VideoIcon}
+                      icon={CctvIcon}
                       label="Camera"
                       value={alert.camera}
                     />
@@ -198,7 +173,7 @@ export const AlertDetailDialog = ({
                     </span>
                     <span className="flex items-center gap-1">
                       {alert.id}
-                      <CopyId value={alert.id} />
+                      <CopyButton value={alert.id} label="Copy event ID" />
                     </span>
                   </div>
                 </div>

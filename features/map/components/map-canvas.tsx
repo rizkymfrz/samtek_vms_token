@@ -1,14 +1,14 @@
 "use client";
 import type { Feature } from "geojson";
 import {
+  CctvIcon,
+  CctvOffIcon,
   MapPinIcon,
   MinusIcon,
   NavigationIcon,
   PlusIcon,
   ServerIcon,
   ServerOffIcon,
-  VideoIcon,
-  VideoOffIcon,
 } from "lucide-react";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -43,8 +43,8 @@ const iconOf = (marker: MapMarker) =>
         ? ServerIcon
         : ServerOffIcon
       : isActive(marker)
-        ? VideoIcon
-        : VideoOffIcon;
+        ? CctvIcon
+        : CctvOffIcon;
 
 const cssVar = (name: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim();

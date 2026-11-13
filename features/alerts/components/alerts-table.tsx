@@ -1,11 +1,11 @@
 import {
   BoxIcon,
+  CctvIcon,
   ClockIcon,
   GaugeIcon,
   ImageIcon,
   ShieldAlertIcon,
   TriangleAlertIcon,
-  VideoIcon,
 } from "lucide-react";
 import { RiskBadge } from "@/components/shared/risk-badge";
 import {
@@ -33,7 +33,7 @@ export const AlertsTable = ({
           <TableHead icon={ImageIcon}>Snapshot</TableHead>
           <TableHead icon={ClockIcon}>Time</TableHead>
           <TableHead icon={ShieldAlertIcon}>Alert</TableHead>
-          <TableHead icon={VideoIcon}>Camera</TableHead>
+          <TableHead icon={CctvIcon}>Camera</TableHead>
           <TableHead icon={BoxIcon}>Object</TableHead>
           <TableHead icon={TriangleAlertIcon}>Risk</TableHead>
           <TableHead icon={GaugeIcon} className="text-right">

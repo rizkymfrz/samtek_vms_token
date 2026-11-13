@@ -17,7 +17,7 @@ export const SidePanel = ({
   return (
     <aside
       className={cn(
-        "w-full shrink-0 border-t bg-background max-lg:order-last lg:h-full lg:w-80 lg:border-t-0",
+        "w-full shrink-0 border-t bg-background max-lg:order-last lg:h-full lg:w-88 lg:border-t-0",
         isFixed ? "lg:overflow-hidden" : "lg:overflow-y-auto",
         side === "left" ? "lg:border-r" : "lg:border-l",
       )}

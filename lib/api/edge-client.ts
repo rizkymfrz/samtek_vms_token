@@ -29,13 +29,20 @@ const baseUrl = (edge: EdgeTarget) => {
   return /^https?:\/\//.test(address) ? address : `http://${address}`;
 };
 
-const toEdgeError = (edge: EdgeTarget, error: unknown) => {
+const bodyMessage = (data: unknown) => {
+  const message = (data as { error?: { message?: unknown } } | null)?.error
+    ?.message;
+  return typeof message === "string" ? message : null;
+};
+
+const toEdgeError = (edge: EdgeTarget, error: unknown, isExposed = false) => {
   if (error instanceof EdgeError) return error;
   if (isAxiosError(error)) {
     if (error.response) {
       return new EdgeError(
         edge.id,
-        `Edge responded with ${error.response.status}`,
+        (isExposed ? bodyMessage(error.response.data) : null) ??
+          `Edge responded with ${error.response.status}`,
         error.response.status,
       );
     }
@@ -73,5 +80,29 @@ export const getBinaryFromEdge = async (edge: EdgeTarget, path: string) => {
     return data;
   } catch (error) {
     throw toEdgeError(edge, error);
+  }
+};
+
+export const postFormToEdge = async <S extends z.ZodType>(
+  edge: EdgeTarget,
+  path: string,
+  form: FormData,
+  schema: S,
+): Promise<z.output<S>> => {
+  try {
+    const { data } = await http.post<unknown>(path, form, {
+      baseURL: baseUrl(edge),
+    });
+    return schema.parse(data);
+  } catch (error) {
+    throw toEdgeError(edge, error, true);
+  }
+};
+
+export const deleteFromEdge = async (edge: EdgeTarget, path: string) => {
+  try {
+    await http.delete(path, { baseURL: baseUrl(edge) });
+  } catch (error) {
+    throw toEdgeError(edge, error, true);
   }
 };

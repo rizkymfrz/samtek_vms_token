@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toast";
+import { isLiveSource } from "@/config/env";
 import { UserMenu } from "@/features/auth/components/user-menu";
 import { DeviceStatus } from "@/features/cameras/components/device-status";
 import { EdgeStatusConnector } from "@/features/edge-status";
@@ -14,7 +16,9 @@ const AppLayout = ({ children }: LayoutProps<"/">) => {
       <EdgeStatusConnector />
       <Toaster>
         <SidebarProvider>
-          <AppSidebar footer={<UserMenu />} />
+          <Suspense fallback={null}>
+            <AppSidebar footer={<UserMenu />} isLive={isLiveSource} />
+          </Suspense>
           <SidebarInset className="isolate min-w-0">
             <PageBackdrop />
             <AppHeader status={<DeviceStatus />} />

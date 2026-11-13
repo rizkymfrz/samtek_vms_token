@@ -1,11 +1,11 @@
 import {
+  CctvIcon,
   ChevronDownIcon,
   MapPinIcon,
   MinusIcon,
   PlusIcon,
   SearchXIcon,
   ServerIcon,
-  VideoIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import {
@@ -27,7 +27,7 @@ import { markerKey } from "./map-canvas";
 import type { MapMarker, MapPlace } from "../types";
 
 const TYPE_LABEL = { group: "Group", server: "Edge server", device: "Camera" };
-const ICON = { group: MapPinIcon, server: ServerIcon, device: VideoIcon };
+const ICON = { group: MapPinIcon, server: ServerIcon, device: CctvIcon };
 
 type Node = {
   key: string;

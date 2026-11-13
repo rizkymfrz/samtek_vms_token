@@ -2,7 +2,7 @@ import {
   BarChart3Icon,
   BellIcon,
   Building2Icon,
-  CameraIcon,
+  CctvIcon,
   LayoutDashboardIcon,
   type LucideIcon,
   MapIcon,
@@ -12,7 +12,15 @@ import {
   UsersIcon,
 } from "lucide-react";
 
-export type NavItem = { href: string; title: string; icon: LucideIcon };
+export type NavChildren = "floorplan" | "cameras" | "servers";
+
+export type NavItem = {
+  href: string;
+  title: string;
+  icon: LucideIcon;
+  children?: NavChildren;
+};
+
 type NavGroup = { label: string; items: NavItem[] };
 
 export const NAV_GROUPS: NavGroup[] = [
@@ -27,15 +35,30 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Locations",
     items: [
-      { href: "/floorplan", title: "Floorplan", icon: Building2Icon },
+      {
+        href: "/floorplan",
+        title: "Floorplan",
+        icon: Building2Icon,
+        children: "floorplan",
+      },
       { href: "/map", title: "Map", icon: MapIcon },
     ],
   },
   {
     label: "Devices",
     items: [
-      { href: "/cameras", title: "Cameras", icon: CameraIcon },
-      { href: "/servers", title: "Servers", icon: ServerIcon },
+      {
+        href: "/cameras",
+        title: "Cameras",
+        icon: CctvIcon,
+        children: "cameras",
+      },
+      {
+        href: "/servers",
+        title: "Servers",
+        icon: ServerIcon,
+        children: "servers",
+      },
     ],
   },
   {

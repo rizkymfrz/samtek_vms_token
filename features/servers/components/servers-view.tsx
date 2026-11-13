@@ -1,5 +1,6 @@
 "use client";
 import { ServerIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
@@ -44,9 +45,15 @@ export const ServersView = ({
   );
   const actions = useServerActions(isLive);
   const [discovered, setDiscovered] = useState(data.discovered);
+  const linkedId = useSearchParams().get("id");
   const [selectedId, setSelectedId] = useState<string | null>(
-    data.servers[0]?.id ?? null,
+    linkedId ?? data.servers[0]?.id ?? null,
   );
+  const [syncedId, setSyncedId] = useState(linkedId);
+  if (linkedId !== syncedId) {
+    setSyncedId(linkedId);
+    if (linkedId) setSelectedId(linkedId);
+  }
   const [tab, setTab] = useState<DiscoverTab>("discovered");
   const [scanning, setScanning] = useState(false);
   const [scanCount, setScanCount] = useState(0);

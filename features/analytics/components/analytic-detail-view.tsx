@@ -1,20 +1,17 @@
 "use client";
-import { CctvIcon, MaximizeIcon } from "lucide-react";
-import { type CSSProperties, useMemo, useRef, useState } from "react";
-import type { DateRange } from "react-day-picker";
+import { CctvIcon, MaximizeIcon, ScanFaceIcon } from "lucide-react";
+import Link from "next/link";
+import {
+  type CSSProperties,
+  type ReactNode,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDetailDialog,
-  type AlertsData,
-  CUSTOM_RANGE,
-  DEFAULT_FILTERS,
-  type Filters,
-  toDateKey,
-  useAlerts,
-} from "@/features/alerts";
 import { useServerOnline } from "@/features/edge-status";
 import {
   CameraTile,
@@ -24,9 +21,11 @@ import {
   useLive,
 } from "@/features/live";
 import { useFailureToast } from "@/hooks/use-failure-toast";
-import { AnalyticAlertPanel } from "./analytic-alert-panel";
 import { gridSize } from "../lib/analytic-grid";
-import type { AnalyticGroup } from "../lib/analytic-groups";
+import {
+  type AnalyticGroup,
+  FACE_RECOGNITION_SLUG,
+} from "../lib/analytic-groups";
 
 const QUALITY_ITEMS = [
   { value: "sub", label: "Sub stream" },
@@ -36,30 +35,15 @@ const QUALITY_ITEMS = [
 export const AnalyticDetailView = ({
   group,
   live: initialLive,
-  alerts: initialAlerts,
   isLive,
+  children,
 }: {
   group: Pick<AnalyticGroup, "slug" | "title" | "analyticIds">;
   live: LiveData;
-  alerts: AlertsData;
   isLive: boolean;
+  children: ReactNode;
 }) => {
   const { data: live } = useLive(initialLive, isLive);
-  const [range, setRange] = useState<DateRange>();
-  const filters = useMemo(
-    (): Filters =>
-      range?.from
-        ? {
-            ...DEFAULT_FILTERS,
-            range: CUSTOM_RANGE,
-            from: toDateKey(range.from),
-            to: toDateKey(range.to ?? range.from),
-          }
-        : DEFAULT_FILTERS,
-    [range],
-  );
-  const { data: alertsData } = useAlerts(initialAlerts, isLive, filters);
-  const alerts = alertsData ?? initialAlerts;
   useFailureToast(
     "Some edge servers did not respond",
     live.failures.map((failure) => `${failure.serverName}: ${failure.message}`),
@@ -81,16 +65,9 @@ export const AnalyticDetailView = ({
         }),
     [live.tiles, live.servers, group.analyticIds, serverOnline],
   );
-  const rows = useMemo(
-    () =>
-      alerts.rows.filter((row) => group.analyticIds.includes(row.analyticId)),
-    [alerts.rows, group.analyticIds],
-  );
   const [quality, setQuality] = useState<StreamQuality>("sub");
-  const [openId, setOpenId] = useState<string | null>(null);
   const stage = useRef<HTMLDivElement>(null);
   const size = gridSize(tiles.length);
-  const open = alerts.rows.find((row) => row.id === openId) ?? null;
   return (
     <div className="flex min-h-full flex-1 flex-col lg:min-h-0 lg:flex-row">
       <div
@@ -98,19 +75,32 @@ export const AnalyticDetailView = ({
         className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0"
       >
         <div className="flex flex-wrap items-center justify-start gap-2">
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="Fullscreen"
+            title="Fullscreen"
+            onClick={() => stage.current?.requestFullscreen?.()}
+          >
+            <MaximizeIcon />
+          </Button>
           <Pick
             label="Stream"
             items={QUALITY_ITEMS}
             value={quality}
             onChange={(next) => setQuality(next as StreamQuality)}
           />
-          <Button
-            variant="secondary"
-            onClick={() => stage.current?.requestFullscreen?.()}
-          >
-            <MaximizeIcon />
-            Fullscreen
-          </Button>
+          {group.slug === FACE_RECOGNITION_SLUG && (
+            <Button
+              variant="secondary"
+              className="ml-auto"
+              nativeButton={false}
+              render={<Link href={`/analytics/${group.slug}/faces`} />}
+            >
+              <ScanFaceIcon />
+              Manage faces
+            </Button>
+          )}
         </div>
         {tiles.length === 0 ? (
           <EmptyState
@@ -146,14 +136,8 @@ export const AnalyticDetailView = ({
         )}
       </div>
       <SidePanel side="right" isFixed>
-        <AnalyticAlertPanel
-          alerts={rows}
-          range={range}
-          onRangeChange={setRange}
-          onSelect={setOpenId}
-        />
+        {children}
       </SidePanel>
-      <AlertDetailDialog alert={open} onClose={() => setOpenId(null)} />
     </div>
   );
 };

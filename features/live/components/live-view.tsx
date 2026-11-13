@@ -173,10 +173,13 @@ export const LiveView = ({
           />
           <Button
             variant="secondary"
+            size="icon"
+            className="ml-auto"
+            aria-label="Fullscreen"
+            title="Fullscreen"
             onClick={() => stage.current?.requestFullscreen?.()}
           >
             <MaximizeIcon />
-            Fullscreen
           </Button>
         </div>
         {detail ? (
