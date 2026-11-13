@@ -78,12 +78,12 @@ export const AnalyticsTabs = () => {
           <div
             key={slug}
             data-active={isActive}
-            className={cn(tabClassName, "max-w-72 pr-2")}
+            className={cn(tabClassName, "max-w-72 px-0 pr-2")}
           >
             <Link
               href={`${ROOT}/${slug}`}
               aria-current={isActive ? "page" : undefined}
-              className="flex min-w-0 items-center gap-2"
+              className="flex h-full min-w-0 flex-1 items-center gap-2 pl-4"
             >
               <Icon className="size-5 shrink-0" aria-hidden />
               <span className="truncate">{group.title}</span>
