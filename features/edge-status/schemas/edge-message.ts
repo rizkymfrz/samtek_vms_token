@@ -127,3 +127,85 @@ export const detectionBboxesSchema = z.object({
     ),
   }),
 });
+
+const eventEnvelope = {
+  id: z.string().min(1),
+};
+
+const evidenceImageSchema = z.object({
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+});
+
+export const eventAlarmSchema = z.object({
+  type: z.literal("event.alarm"),
+  ...eventEnvelope,
+  data: z.object({
+    event_id: z.string().min(1),
+    device_id: z.string().min(1),
+    occurred_at: z.iso.datetime(),
+    analytic_id: z.string().min(1),
+    kind: z.string(),
+    title: z.string(),
+    description: z.string().default(""),
+    risk_level: z.enum(["low", "medium", "high"]),
+    object: z
+      .object({
+        label: z.string(),
+        confidence: z.number(),
+        track_id: z.number().optional(),
+      })
+      .optional(),
+    perimeter: z.object({ shape: z.string(), name: z.string() }).optional(),
+    detail: z
+      .record(
+        z.string(),
+        z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
+      )
+      .default({}),
+    image: evidenceImageSchema.optional().catch(undefined),
+  }),
+});
+
+export const eventClipSchema = z.object({
+  type: z.literal("event.clip"),
+  ...eventEnvelope,
+  data: z.object({
+    event_id: z.string().min(1),
+    device_id: z.string().min(1),
+    status: z.enum(["ready", "failed"]),
+    clip: z
+      .object({
+        offset_seconds: z.number(),
+        duration_seconds: z.number(),
+        window_start_seconds: z.number().optional(),
+        window_seconds: z.number().optional(),
+      })
+      .optional(),
+  }),
+});
+
+const recognitionResult = z.record(z.string(), z.unknown());
+
+export const eventRecognitionSchema = z.object({
+  type: z.literal("event.recognition"),
+  ...eventEnvelope,
+  data: z.object({
+    event_id: z.string().min(1),
+    device_id: z.string().min(1),
+    occurred_at: z.iso.datetime(),
+    recognizer: z.string().min(1),
+    object: z.object({
+      label: z.string(),
+      confidence: z.number(),
+    }),
+    result: recognitionResult.default({}),
+  }),
+});
+
+export type EdgeAlarmMessage = z.output<typeof eventAlarmSchema>["data"];
+export type EdgeClipMessage = z.output<typeof eventClipSchema>["data"];
+
+export type EdgeRecognitionMessage = z.output<
+  typeof eventRecognitionSchema
+>["data"];

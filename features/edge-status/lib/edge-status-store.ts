@@ -5,6 +5,7 @@ import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
 import { toDescriptors } from "./analytic-catalog";
 import { ingestDetections } from "./detection-store";
+import { publishEdgeEvent, publishEdgeReconnect } from "./edge-event-bus";
 import { appendSample, toSeries } from "./edge-series";
 import { ulid } from "./ulid";
 import {
@@ -14,6 +15,9 @@ import {
   edgeStateSchema,
   type EdgeStatusMessage,
   edgeStatusSchema,
+  eventAlarmSchema,
+  eventClipSchema,
+  eventRecognitionSchema,
   recordingStatusSchema,
 } from "../schemas/edge-message";
 import type {
@@ -196,6 +200,33 @@ const receive = (topic: string, payload: Uint8Array) => {
     }
     return;
   }
+  const alarm = eventAlarmSchema.safeParse(json);
+  if (alarm.success) {
+    publishEdgeEvent(alarm.data.id, {
+      kind: "alarm",
+      edgeId: topicEdge,
+      data: alarm.data.data,
+    });
+    return;
+  }
+  const clip = eventClipSchema.safeParse(json);
+  if (clip.success) {
+    publishEdgeEvent(clip.data.id, {
+      kind: "clip",
+      edgeId: topicEdge,
+      data: clip.data.data,
+    });
+    return;
+  }
+  const recognition = eventRecognitionSchema.safeParse(json);
+  if (recognition.success) {
+    publishEdgeEvent(recognition.data.id, {
+      kind: "recognition",
+      edgeId: topicEdge,
+      data: recognition.data.data,
+    });
+    return;
+  }
   const recordingStatus = recordingStatusSchema.safeParse(json);
   if (recordingStatus.success) {
     setRecordingStatus(topicEdge, recordingStatus.data.data.devices);
@@ -247,13 +278,11 @@ const receive = (topic: string, payload: Uint8Array) => {
     }
     return;
   }
-  if (
-    typeof json === "object" &&
-    json !== null &&
-    "type" in json &&
-    json.type === "edge.status"
-  ) {
-    warnOnce(topic, "edge.status does not match the contract");
+  if (typeof json === "object" && json !== null && "type" in json) {
+    const type = String(json.type);
+    if (type === "edge.status" || type.startsWith("event.")) {
+      warnOnce(topic, `${type} does not match the contract`);
+    }
   }
 };
 
@@ -267,9 +296,12 @@ export const startEdgeStatus = () => {
   client = connectMqtt();
   if (!client) return;
   isStarted = true;
+  let hasConnected = false;
   client.on("connect", () => {
-    client?.subscribe(EDGE_UP_TOPIC, { qos: 0 });
+    client?.subscribe(EDGE_UP_TOPIC, { qos: 1 });
     setState({ isConnected: true, error: null });
+    if (hasConnected) publishEdgeReconnect();
+    hasConnected = true;
   });
   client.on("close", () => {
     setState({ isConnected: false, online: new Set() });

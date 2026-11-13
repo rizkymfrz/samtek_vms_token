@@ -57,6 +57,8 @@ export type AlertsData = {
   isTruncated: boolean;
   titles: string[];
   cameras: string[];
+  cameraNames: Record<string, string>;
+  relays: Record<string, AlertClip["relay"]>;
   failures: { edgeId: string; edgeName: string; message: string }[];
 };
 
@@ -122,6 +124,8 @@ export const buildAlerts = (
     titles: [...new Set(rows.map((r) => r.title))].sort(),
     cameras: [...new Set(rows.map((r) => r.camera))].sort(),
     isTruncated: false,
+    cameraNames: {},
+    relays: {},
     failures: [],
   };
 };

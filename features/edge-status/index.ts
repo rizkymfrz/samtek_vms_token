@@ -1,6 +1,8 @@
 export { EdgeStatusConnector } from "./components/edge-status-connector";
 export { StreamDetections } from "./components/stream-detections";
 export { useDetections } from "./hooks/use-detections";
+export { useRecognitions } from "./hooks/use-recognitions";
+export type { RecognitionEntry } from "./lib/recognition-store";
 
 export {
   useAnalyticCatalog,
@@ -25,6 +27,18 @@ export type {
   RecordingState,
   RecordingStream,
 } from "./types";
+
+export {
+  type EdgeEvent,
+  subscribeEdgeEvents,
+  subscribeEdgeReconnect,
+} from "./lib/edge-event-bus";
+
+export type {
+  EdgeAlarmMessage,
+  EdgeClipMessage,
+  EdgeRecognitionMessage,
+} from "./schemas/edge-message";
 
 export { sendEdgeCommand } from "./lib/edge-status-store";
 

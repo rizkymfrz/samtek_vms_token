@@ -1,6 +1,15 @@
+"use client";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
-import type { Dashboard } from "../services/build-dashboard";
+import { mqttConfig } from "@/config/mqtt";
+import { useRecognitions } from "@/features/edge-status";
+import { NoData } from "./no-data";
+import {
+  type RecentFace,
+  type RecentPlate,
+  toLiveFaces,
+  toLivePlates,
+} from "../lib/live-recognitions";
 
 const Row = ({ children }: { children: ReactNode }) => {
   return (
@@ -10,7 +19,8 @@ const Row = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const RecentFaces = ({ faces }: { faces: Dashboard["recentFaces"] }) => {
+const RecentFaceList = ({ faces }: { faces: RecentFace[] }) => {
+  if (!faces.length) return <NoData />;
   return (
     <ul>
       {faces.map((face) => (
@@ -37,11 +47,8 @@ export const RecentFaces = ({ faces }: { faces: Dashboard["recentFaces"] }) => {
   );
 };
 
-export const RecentPlates = ({
-  plates,
-}: {
-  plates: Dashboard["recentPlates"];
-}) => {
+const RecentPlateList = ({ plates }: { plates: RecentPlate[] }) => {
+  if (!plates.length) return <NoData />;
   return (
     <ul>
       {plates.map((plate) => (
@@ -58,5 +65,35 @@ export const RecentPlates = ({
         </Row>
       ))}
     </ul>
+  );
+};
+
+export const RecentFaces = ({
+  faces,
+  deviceNames,
+}: {
+  faces: RecentFace[];
+  deviceNames: Record<string, string>;
+}) => {
+  const entries = useRecognitions();
+  return (
+    <RecentFaceList
+      faces={mqttConfig ? toLiveFaces(entries, deviceNames) : faces}
+    />
+  );
+};
+
+export const RecentPlates = ({
+  plates,
+  deviceNames,
+}: {
+  plates: RecentPlate[];
+  deviceNames: Record<string, string>;
+}) => {
+  const entries = useRecognitions();
+  return (
+    <RecentPlateList
+      plates={mqttConfig ? toLivePlates(entries, deviceNames) : plates}
+    />
   );
 };

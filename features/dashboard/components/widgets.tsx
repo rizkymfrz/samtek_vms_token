@@ -364,11 +364,7 @@ export const WIDGETS: Widget[] = [
     when: (d) => d.modules.faceRecognition,
     render: (d) => (
       <Panel title="Recognized faces">
-        {d.recentFaces.length ? (
-          <RecentFaces faces={d.recentFaces} />
-        ) : (
-          <NoData />
-        )}
+        <RecentFaces faces={d.recentFaces} deviceNames={d.deviceNames} />
       </Panel>
     ),
   },
@@ -572,11 +568,7 @@ export const WIDGETS: Widget[] = [
     when: (d) => d.modules.licensePlate,
     render: (d) => (
       <Panel title="License plates">
-        {d.recentPlates.length ? (
-          <RecentPlates plates={d.recentPlates} />
-        ) : (
-          <NoData />
-        )}
+        <RecentPlates plates={d.recentPlates} deviceNames={d.deviceNames} />
       </Panel>
     ),
   },

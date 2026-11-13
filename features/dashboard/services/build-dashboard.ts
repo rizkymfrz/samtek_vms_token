@@ -482,6 +482,7 @@ export const buildDashboard = (devices: DeviceInfo[], now = Date.now()) => {
       "types",
     ),
     recognitionsByType: countBy(recognitions, (r) => r.recognizer),
+    deviceNames: Object.fromEntries(deviceName),
     recentAlarms,
     recentPlates,
     recentFaces,
