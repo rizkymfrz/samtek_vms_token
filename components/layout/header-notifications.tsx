@@ -3,6 +3,7 @@ import { BellIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { StatusDot } from "@/components/shared/status-dot";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -31,9 +32,12 @@ export const HeaderNotifications = () => {
       >
         <BellIcon />
         {unread > 0 && (
-          <span className="absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded bg-destructive px-0.5 text-xs font-medium text-destructive-foreground tabular-nums">
+          <Badge
+            variant="destructive"
+            className="absolute top-0.5 right-0.5 h-4 min-w-4 px-0.5 tabular-nums"
+          >
             {unread}
-          </span>
+          </Badge>
         )}
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 gap-0 p-0">
