@@ -53,17 +53,25 @@ const placeOf = (marker: MapMarker): MapPlace => ({
         : true,
 });
 
-const stateLabel = (node: Node) =>
-  node.place.type === "group"
+const statusOf = (
+  place: MapPlace,
+  online: ReadonlySet<string>,
+  isFaulty: (edgeId: string, deviceId: string) => boolean,
+) =>
+  place.type === "group"
     ? null
-    : node.place.isActive
-      ? "Active"
-      : node.place.type === "server"
-        ? "Inactive"
-        : "Disabled";
+    : place.type === "device" && !place.isActive
+      ? "Disabled"
+      : !online.has(place.type === "server" ? place.id : (place.parentId ?? ""))
+        ? "Offline"
+        : place.type === "device" && isFaulty(place.parentId ?? "", place.id)
+          ? "Offline"
+          : "Online";
 
 export const MapPanel = ({
   markers,
+  online,
+  isFaulty,
   unplaced,
   selectedKey,
   query,
@@ -77,6 +85,8 @@ export const MapPanel = ({
   onRemove,
 }: {
   markers: MapMarker[];
+  online: ReadonlySet<string>;
+  isFaulty: (edgeId: string, deviceId: string) => boolean;
   unplaced: MapPlace[];
   selectedKey: string | null;
   query: string;
@@ -177,7 +187,7 @@ export const MapPanel = ({
       ? "Click the map to place it"
       : !node.marker
         ? "Not on the map"
-        : (stateLabel(node) ?? "On the map");
+        : (statusOf(node.place, online, isFaulty) ?? "On the map");
   const renderLeaf = (node: Node) => {
     const Icon = ICON[node.place.type];
     const isSelected = node.key === selectedKey;
@@ -187,7 +197,13 @@ export const MapPanel = ({
         <NodeButton node={node} isSelected={isSelected} onSelect={onSelect}>
           {subtitle(node)}
         </NodeButton>
-        <StatusDot status={node.place.isActive ? "live" : "offline"} />
+        <StatusDot
+          status={
+            statusOf(node.place, online, isFaulty) === "Online"
+              ? "live"
+              : "offline"
+          }
+        />
         {renderActions(node)}
       </li>
     );
@@ -222,7 +238,13 @@ export const MapPanel = ({
             {count} {node.place.type === "group" ? "servers" : "cameras"}
           </NodeButton>
           {node.place.type !== "group" && (
-            <StatusDot status={node.place.isActive ? "live" : "offline"} />
+            <StatusDot
+              status={
+                statusOf(node.place, online, isFaulty) === "Online"
+                  ? "live"
+                  : "offline"
+              }
+            />
           )}
           {renderActions(node)}
         </div>
@@ -247,12 +269,14 @@ export const MapPanel = ({
           <PanelDetail label="Type">{TYPE_LABEL[selected.type]}</PanelDetail>
           {selected.type !== "group" && (
             <PanelDetail label="Status">
-              <StatusDot status={selectedPlace.isActive ? "live" : "offline"} />
-              {selectedPlace.isActive
-                ? "Active"
-                : selected.type === "server"
-                  ? "Inactive"
-                  : "Disabled"}
+              <StatusDot
+                status={
+                  statusOf(selectedPlace, online, isFaulty) === "Online"
+                    ? "live"
+                    : "offline"
+                }
+              />
+              {statusOf(selectedPlace, online, isFaulty)}
             </PanelDetail>
           )}
           {selectedParent && (

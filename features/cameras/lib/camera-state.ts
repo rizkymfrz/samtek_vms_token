@@ -10,15 +10,17 @@ export const cameraState = (
   servers: ServerOption[],
 ): StreamState => {
   if (!camera.isEnabled) return "disabled";
-  return servers.find((s) => s.id === camera.edgeServerId)?.online
-    ? "live"
-    : "server-offline";
+  if (!servers.find((s) => s.id === camera.edgeServerId)?.online) {
+    return "server-offline";
+  }
+  return camera.isFaulty ? "stream-offline" : "live";
 };
 
 export const STATE_LABEL: Record<StreamState, string> = {
   live: "Live",
   disabled: "Disabled",
   "server-offline": "Server offline",
+  "stream-offline": "Stream offline",
 };
 
 export const applyState = (camera: CameraRecord): ApplyState =>

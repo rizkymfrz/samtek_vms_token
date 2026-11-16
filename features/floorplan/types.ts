@@ -36,7 +36,7 @@ export type PlanCamera = {
   hasSubStream: boolean;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
-  state: "live" | "disabled" | "server-offline";
+  state: "live" | "disabled" | "server-offline" | "stream-offline";
   alerts: number;
 };
 

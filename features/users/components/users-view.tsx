@@ -9,7 +9,6 @@ import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { type DialogTarget, UserDialog } from "./user-dialog";
@@ -46,6 +45,8 @@ export const UsersView = ({
   const [page, setPage] = useState(0);
   const [dialog, setDialog] = useState<DialogTarget>(null);
   const [warning, setWarning] = useState<string | null>(null);
+  useFailureToast("Saved with a problem", [warning]);
+  useFailureToast("Could not delete the user", [removeError]);
   const matches = useMemo(() => filterUsers(users, filters), [users, filters]);
   const counts = useMemo(() => countByRole(users, filters), [users, filters]);
   const change = (patch: Partial<Filters>) => {
@@ -73,18 +74,6 @@ export const UsersView = ({
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-        {warning && (
-          <Alert variant="destructive">
-            <AlertTitle>Saved with a problem</AlertTitle>
-            <AlertDescription>{warning}</AlertDescription>
-          </Alert>
-        )}
-        {removeError && (
-          <Alert variant="destructive">
-            <AlertTitle>Could not delete the user</AlertTitle>
-            <AlertDescription>{removeError}</AlertDescription>
-          </Alert>
-        )}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button onClick={() => setDialog("new")}>
             <PlusIcon />

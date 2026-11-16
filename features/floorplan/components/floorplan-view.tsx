@@ -12,7 +12,7 @@ import {
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import { useServerOnline } from "@/features/edge-status";
+import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { messageOf } from "@/lib/axios/browser-client";
 import { DeleteFloorplanDialog } from "./delete-floorplan-dialog";
@@ -80,6 +80,7 @@ export const FloorplanView = ({
   );
   const plan = data.plans.find((p) => p.id === planId) ?? data.plans[0];
   const serverOnline = useServerOnline();
+  const isFaulty = useDeviceFaulty();
   const cameras = useMemo(() => {
     const online = new Map(
       data.servers.map((s) => [s.id, serverOnline(s, s.online)]),
@@ -89,10 +90,17 @@ export const FloorplanView = ({
         c.id,
         c.state === "disabled"
           ? c
-          : { ...c, state: online.get(c.serverId) ? "live" : "server-offline" },
+          : {
+              ...c,
+              state: !online.get(c.serverId)
+                ? "server-offline"
+                : isFaulty(c.serverId, c.id)
+                  ? "stream-offline"
+                  : "live",
+            },
       ]),
     );
-  }, [data.cameras, data.servers, serverOnline]);
+  }, [data.cameras, data.servers, serverOnline, isFaulty]);
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: FLOORPLAN_QUERY_KEY });
   const save = useMutation({

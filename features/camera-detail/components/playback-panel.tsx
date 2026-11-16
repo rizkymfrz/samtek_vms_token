@@ -4,11 +4,11 @@ import {
   PauseIcon,
   PlayIcon,
   RewindIcon,
-  ServerOffIcon,
   SkipBackIcon,
   SkipForwardIcon,
 } from "lucide-react";
 import { type MouseEvent, useState } from "react";
+import { EdgeOffline } from "@/components/shared/edge-offline";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -127,14 +127,7 @@ const PlaybackScreen = ({
   error: string | null;
   isOnline: boolean;
 }) => {
-  if (!isOnline) {
-    return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-        <ServerOffIcon className="size-8" />
-        <span>Edge server is offline</span>
-      </div>
-    );
-  }
+  if (!isOnline) return <EdgeOffline />;
   if (error) {
     return (
       <span role="alert" className="px-4 text-center">

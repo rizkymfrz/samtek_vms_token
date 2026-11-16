@@ -39,6 +39,7 @@ const EMPTY: EdgeStatusState = {
   error: null,
   entries: new Map(),
   online: new Set(),
+  faulty: new Set(),
   catalog: new Map(),
   recording: new Map(),
   recordingStatus: new Map(),
@@ -104,10 +105,12 @@ const toSample = (data: EdgeStatusMessage, now: number): EdgeSample => ({
 
 const setState = (next: Partial<EdgeStatusState>) => {
   const online = next.online ?? state.online;
+  const faulty = next.faulty ?? state.faulty;
   state = {
     ...state,
     ...next,
     online: sameSet(online, state.online) ? state.online : online,
+    faulty: sameSet(faulty, state.faulty) ? state.faulty : faulty,
   };
   emit();
 };
@@ -145,6 +148,25 @@ const setRecording = (edgeId: string, next: EdgeRecording | null) => {
   if (next === null) recording.delete(edgeId);
   else recording.set(edgeId, next);
   setState({ recording });
+};
+
+export const faultKey = (edgeId: string, deviceId: string) =>
+  `${edgeId}:${deviceId}`;
+
+const setFaulty = (
+  edgeId: string,
+  devices: { device_id: string; status: string }[],
+) => {
+  const prefix = faultKey(edgeId, "");
+  const faulty = new Set(
+    [...state.faulty].filter((key) => !key.startsWith(prefix)),
+  );
+  for (const device of devices) {
+    if (device.status === "error") {
+      faulty.add(faultKey(edgeId, device.device_id));
+    }
+  }
+  setState({ faulty });
 };
 
 const toTime = (value: string | undefined) =>
@@ -262,7 +284,8 @@ const receive = (topic: string, payload: Uint8Array) => {
   }
   const announced = edgeStateSchema.safeParse(json);
   if (announced.success) {
-    const { online, analytics, recording } = announced.data.data;
+    const { online, analytics, recording, devices } = announced.data.data;
+    setFaulty(topicEdge, online ? (devices ?? []) : []);
     if (online && analytics) setCatalog(topicEdge, toDescriptors(analytics));
     if (online && recording) {
       setRecording(topicEdge, {
@@ -350,6 +373,7 @@ export const getEdgeStatus = () => state;
 export const getServerEdgeStatus = () => EMPTY;
 export const getServerEdgeCatalog = () => NO_CATALOG;
 export const getOnlineEdges = () => state.online;
+export const getFaultyDevices = () => state.faulty;
 
 export const getEdgeCatalog = (edgeId: string) =>
   state.catalog.get(edgeId) ?? NO_CATALOG;
@@ -366,3 +390,4 @@ export const getEdgeRecording = (edgeId: string) =>
 
 export const getServerEdgeRecording = () => NO_RECORDING;
 export const getServerOnlineEdges = () => EMPTY.online;
+export const getServerFaultyDevices = () => EMPTY.faulty;

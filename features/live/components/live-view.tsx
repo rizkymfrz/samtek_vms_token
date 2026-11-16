@@ -10,9 +10,8 @@ import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { useServerOnline } from "@/features/edge-status";
+import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
@@ -58,6 +57,7 @@ export const LiveView = ({
       live.servers.map((s) => ({ ...s, online: serverOnline(s, s.online) })),
     [live.servers, serverOnline],
   );
+  const isFaulty = useDeviceFaulty();
   const tiles = useMemo(() => {
     const online = new Map(servers.map((s) => [s.id, s.online]));
     return live.tiles.map((tile): Tile =>
@@ -65,11 +65,16 @@ export const LiveView = ({
         ? tile
         : {
             ...tile,
-            state: online.get(tile.serverId) ? "live" : "server-offline",
+            state: !online.get(tile.serverId)
+              ? "server-offline"
+              : isFaulty(tile.serverId, tile.id)
+                ? "stream-offline"
+                : "live",
           },
     );
-  }, [live.tiles, servers]);
+  }, [live.tiles, servers, isFaulty]);
   const actions = useLayoutActions(isLive);
+  useFailureToast("Could not update the layout", [actions.error]);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [quality, setQuality] = useState<StreamQuality>("sub");
   const stage = useRef<HTMLDivElement>(null);
@@ -148,12 +153,6 @@ export const LiveView = ({
         ref={stage}
         className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0"
       >
-        {actions.error && (
-          <Alert variant="destructive">
-            <AlertTitle>Could not update the layout</AlertTitle>
-            <AlertDescription>{actions.error}</AlertDescription>
-          </Alert>
-        )}
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Pick
             label="Grid"

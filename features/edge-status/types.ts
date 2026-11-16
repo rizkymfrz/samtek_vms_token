@@ -56,6 +56,7 @@ export type EdgeStatusState = {
   error: string | null;
   entries: ReadonlyMap<string, EdgeEntry>;
   online: ReadonlySet<string>;
+  faulty: ReadonlySet<string>;
   catalog: ReadonlyMap<string, AnalyticDescriptor[]>;
   recording: ReadonlyMap<string, EdgeRecording>;
   recordingStatus: ReadonlyMap<string, ReadonlyMap<string, RecordingDevice>>;

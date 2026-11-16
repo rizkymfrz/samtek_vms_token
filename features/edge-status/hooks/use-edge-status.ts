@@ -2,14 +2,17 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { mqttConfig } from "@/config/mqtt";
 import {
+  faultKey,
   getEdgeCatalog,
   getEdgeRecording,
   getEdgeStatus,
+  getFaultyDevices,
   getOnlineEdges,
   getRecordingDevice,
   getServerEdgeCatalog,
   getServerEdgeRecording,
   getServerEdgeStatus,
+  getServerFaultyDevices,
   getServerOnlineEdges,
   getServerRecordingDevice,
   subscribeEdgeStatus,
@@ -28,6 +31,19 @@ export const useServerOnline = () => {
     (server: { id: string; isActive: boolean }, fallback: boolean) =>
       mqttConfig ? server.isActive && online.has(server.id) : fallback,
     [online],
+  );
+};
+
+export const useDeviceFaulty = () => {
+  const faulty = useSyncExternalStore(
+    subscribeEdgeStatus,
+    getFaultyDevices,
+    getServerFaultyDevices,
+  );
+  return useCallback(
+    (edgeId: string, deviceId: string) =>
+      mqttConfig ? faulty.has(faultKey(edgeId, deviceId)) : false,
+    [faulty],
   );
 };
 

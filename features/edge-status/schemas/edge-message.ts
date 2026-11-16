@@ -52,6 +52,10 @@ export const edgeStateSchema = z.object({
     edge_id: z.string(),
     online: z.boolean(),
     analytics: z.array(announcedAnalyticSchema).optional().catch(undefined),
+    devices: z
+      .array(z.object({ device_id: z.string(), status: z.string() }))
+      .optional()
+      .catch(undefined),
     recording: z
       .object({
         available: z.boolean(),

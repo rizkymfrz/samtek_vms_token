@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { BreadcrumbTitle } from "@/components/shared/breadcrumb-title";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { analyticLabel } from "@/config/analytics-catalog";
-import { useServerOnline } from "@/features/edge-status";
+import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraForm } from "./camera-form";
 import { LivePanel } from "./live-panel";
 import { PerimeterPanel } from "./perimeter-panel";
@@ -62,13 +62,16 @@ export const CameraDetailView = ({
   const analyticId = useWatch({ control: form.control, name: "analyticId" });
   const { specs, isKnown } = useParamSpecs(detail.edgeServerId, analyticId);
   const serverOnline = useServerOnline();
+  const isFaulty = useDeviceFaulty();
   const state: StreamState = !detail.isEnabled
     ? "disabled"
     : serverOnline(
           { id: detail.edgeServerId, isActive: detail.isServerActive },
           detail.isServerOnline,
         )
-      ? "live"
+      ? isFaulty(detail.edgeServerId, detail.id)
+        ? "stream-offline"
+        : "live"
       : "server-offline";
   const isPerimetersChanged = !isSamePerimeters(perimeters, saved);
   const params = useWatch({ control: form.control, name: "analyticParams" });
@@ -98,6 +101,7 @@ export const CameraDetailView = ({
   );
   const isConfiguration = tab === "configuration";
   const error = actions.saveError ?? actions.removeError;
+  useFailureToast("Could not save the changes", [error]);
   return (
     <div className="flex min-h-full flex-col gap-4 bg-background p-4 lg:h-[calc(100svh-var(--header-height))] lg:min-h-0">
       <BreadcrumbTitle href={`/cameras/${detail.id}`} label={detail.name} />
@@ -146,12 +150,6 @@ export const CameraDetailView = ({
           value="configuration"
           className="flex flex-col gap-4 pt-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto [&>*]:shrink-0"
         >
-          {error && (
-            <Alert variant="destructive">
-              <AlertTitle>Could not save the changes</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
           <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr]">
             <LivePanel detail={detail} state={state} />
             <Separator orientation="vertical" className="max-lg:hidden" />

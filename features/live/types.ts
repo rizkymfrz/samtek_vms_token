@@ -1,4 +1,5 @@
-export type StreamState = "live" | "disabled" | "server-offline";
+export type StreamState =
+  "live" | "disabled" | "server-offline" | "stream-offline";
 
 export type Tile = {
   id: string;

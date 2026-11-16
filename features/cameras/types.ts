@@ -16,6 +16,7 @@ export type CameraRecord = {
   isRecordingEnabled: boolean;
   applyStatus: "applied" | "rejected" | null;
   applyError: ApplyError | null;
+  isFaulty?: boolean;
 };
 
 export type ServerOption = {
@@ -37,5 +38,7 @@ export type CameraData = {
   failures: CameraFailure[];
 };
 
-export type StreamState = "live" | "disabled" | "server-offline";
+export type StreamState =
+  "live" | "disabled" | "server-offline" | "stream-offline";
+
 export type ApplyState = "applied" | "rejected" | "pending";

@@ -1,5 +1,7 @@
 "use client";
-import { CctvOffIcon, ServerOffIcon, XIcon } from "lucide-react";
+import { CctvOffIcon, XIcon } from "lucide-react";
+import { EdgeOffline } from "@/components/shared/edge-offline";
+import { StreamOffline } from "@/components/shared/stream-offline";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import { WebrtcPlayer } from "./webrtc-player";
@@ -10,7 +12,7 @@ export type PreviewCamera = {
   name: string;
   serverId: string;
   serverName: string;
-  state: "live" | "disabled" | "server-offline";
+  state: "live" | "disabled" | "server-offline" | "stream-offline";
   hasSubStream: boolean;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
@@ -23,7 +25,6 @@ export const CameraPreview = ({
   camera: PreviewCamera;
   onClose: () => void;
 }) => {
-  const Icon = camera.state === "disabled" ? CctvOffIcon : ServerOffIcon;
   return (
     <>
       <div className="flex items-center justify-between gap-2 border-b p-2">
@@ -56,15 +57,15 @@ export const CameraPreview = ({
               isDefaultOn
             />
           </>
-        ) : (
+        ) : camera.state === "disabled" ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-            <Icon className="size-8" />
-            <span className="text-xs">
-              {camera.state === "disabled"
-                ? "Camera is disabled"
-                : "Edge server is offline"}
-            </span>
+            <CctvOffIcon className="size-8" />
+            <span className="text-xs">Camera is disabled</span>
           </div>
+        ) : camera.state === "stream-offline" ? (
+          <StreamOffline />
+        ) : (
+          <EdgeOffline />
         )}
       </div>
     </>

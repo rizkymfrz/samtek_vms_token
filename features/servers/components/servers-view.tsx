@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { mqttConfig } from "@/config/mqtt";
 import { isServerOnline } from "@/config/server-status";
 import { useEdgeStatus, useServerOnline } from "@/features/edge-status";
@@ -62,6 +61,14 @@ export const ServersView = ({
   const [logsOpen, setLogsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { entries, recording, error: brokerError } = useEdgeStatus();
+  useFailureToast(
+    "Could not reach the MQTT broker",
+    mqttConfig && brokerError
+      ? [`Server status and metrics are unavailable. ${brokerError}`]
+      : [],
+  );
+  useFailureToast("Could not restart the edge", [actions.restartEdgeError]);
+  useFailureToast("Could not delete the server", [actions.removeError]);
   const serverOnline = useServerOnline();
   const online = useMemo(
     () =>
@@ -151,26 +158,6 @@ export const ServersView = ({
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0 lg:overflow-y-auto">
-        {mqttConfig && brokerError && (
-          <Alert variant="destructive">
-            <AlertTitle>Could not reach the MQTT broker</AlertTitle>
-            <AlertDescription>
-              Server status and metrics are unavailable. {brokerError}
-            </AlertDescription>
-          </Alert>
-        )}
-        {actions.restartEdgeError && (
-          <Alert variant="destructive">
-            <AlertTitle>Could not restart the edge</AlertTitle>
-            <AlertDescription>{actions.restartEdgeError}</AlertDescription>
-          </Alert>
-        )}
-        {actions.removeError && (
-          <Alert variant="destructive">
-            <AlertTitle>Could not delete the server</AlertTitle>
-            <AlertDescription>{actions.removeError}</AlertDescription>
-          </Alert>
-        )}
         {selected ? (
           <ServerDetail
             key={selected.id}

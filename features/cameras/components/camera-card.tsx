@@ -1,6 +1,8 @@
-import { CctvIcon, CctvOffIcon, ServerOffIcon } from "lucide-react";
+import { CctvIcon, CctvOffIcon } from "lucide-react";
+import { EdgeOffline } from "@/components/shared/edge-offline";
 import { MediaTile } from "@/components/shared/media-tile";
 import { StatusDot } from "@/components/shared/status-dot";
+import { StreamOffline } from "@/components/shared/stream-offline";
 import { Badge } from "@/components/ui/badge";
 import { STATE_LABEL } from "../lib/camera-state";
 import type { StreamState } from "../types";
@@ -20,12 +22,7 @@ export const CameraCard = ({
   onSelect: () => void;
   className?: string;
 }) => {
-  const Icon =
-    state === "live"
-      ? CctvIcon
-      : state === "disabled"
-        ? CctvOffIcon
-        : ServerOffIcon;
+  const Icon = state === "live" ? CctvIcon : CctvOffIcon;
   return (
     <MediaTile
       label={`${name}, ${STATE_LABEL[state]}`}
@@ -48,9 +45,15 @@ export const CameraCard = ({
       onSelect={onSelect}
       className={className}
     >
-      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-        <Icon className="size-8" />
-      </div>
+      {state === "server-offline" ? (
+        <EdgeOffline />
+      ) : state === "stream-offline" ? (
+        <StreamOffline />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+          <Icon className="size-8" />
+        </div>
+      )}
     </MediaTile>
   );
 };

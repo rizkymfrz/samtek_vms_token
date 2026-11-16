@@ -176,7 +176,9 @@ export const DevicePanel = ({
                                 ? "Disabled"
                                 : tile.state === "server-offline"
                                   ? "Server offline"
-                                  : (tile.analytic ?? "No analytic")}
+                                  : tile.state === "stream-offline"
+                                    ? "Stream offline"
+                                    : (tile.analytic ?? "No analytic")}
                             </span>
                           </div>
                           <StatusDot

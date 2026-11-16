@@ -6,6 +6,7 @@ export type { RecognitionEntry } from "./lib/recognition-store";
 
 export {
   useAnalyticCatalog,
+  useDeviceFaulty,
   useEdgeRecording,
   useEdgeStatus,
   useRecordingDevice,

@@ -20,6 +20,7 @@ const STATE_LABEL = {
   live: "Live",
   disabled: "Disabled",
   "server-offline": "Server offline",
+  "stream-offline": "Stream offline",
 } as const;
 
 export const FloorplanPanel = ({

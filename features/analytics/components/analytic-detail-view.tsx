@@ -12,7 +12,7 @@ import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
-import { useServerOnline } from "@/features/edge-status";
+import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import {
   CameraTile,
   type LiveData,
@@ -49,6 +49,7 @@ export const AnalyticDetailView = ({
     live.failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
   const serverOnline = useServerOnline();
+  const isFaulty = useDeviceFaulty();
   const tiles = useMemo(
     () =>
       live.tiles
@@ -61,9 +62,16 @@ export const AnalyticDetailView = ({
         .map((tile): Tile => {
           const server = live.servers.find((s) => s.id === tile.serverId);
           const online = server ? serverOnline(server, server.online) : false;
-          return { ...tile, state: online ? "live" : "server-offline" };
+          return {
+            ...tile,
+            state: !online
+              ? "server-offline"
+              : isFaulty(tile.serverId, tile.id)
+                ? "stream-offline"
+                : "live",
+          };
         }),
-    [live.tiles, live.servers, group.analyticIds, serverOnline],
+    [live.tiles, live.servers, group.analyticIds, serverOnline, isFaulty],
   );
   const [quality, setQuality] = useState<StreamQuality>("sub");
   const stage = useRef<HTMLDivElement>(null);

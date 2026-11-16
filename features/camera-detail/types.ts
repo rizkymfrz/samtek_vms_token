@@ -2,7 +2,8 @@ import type { CameraRecord } from "@/features/cameras";
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
 
-export type StreamState = "live" | "disabled" | "server-offline";
+export type StreamState =
+  "live" | "disabled" | "server-offline" | "stream-offline";
 
 export type CameraDetail = {
   id: string;

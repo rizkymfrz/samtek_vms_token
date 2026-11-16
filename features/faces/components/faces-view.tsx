@@ -9,7 +9,6 @@ import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,6 +53,7 @@ export const FacesView = ({
     failures.map((failure) => `${failure.edgeName}: ${failure.message}`),
   );
   const { save, remove, saveError, removeError } = useFaceActions(isLive);
+  useFailureToast("Could not delete", [removeError]);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(0);
   const [dialog, setDialog] = useState<DialogTarget>(null);
@@ -98,12 +98,6 @@ export const FacesView = ({
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-        {removeError && (
-          <Alert variant="destructive">
-            <AlertTitle>Could not delete</AlertTitle>
-            <AlertDescription>{removeError}</AlertDescription>
-          </Alert>
-        )}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button
             disabled={edges.length === 0}

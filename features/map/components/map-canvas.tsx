@@ -28,21 +28,33 @@ const ORBIT_DEG_PER_MS = 0.01;
 const ZOOM = { group: 13, server: 16, device: 17.5 } as const;
 export const markerKey = (marker: MapMarker) => `${marker.type}:${marker.id}`;
 
-const isActive = (marker: MapMarker) =>
+type FaultCheck = (edgeId: string, deviceId: string) => boolean;
+
+const isActive = (
+  marker: MapMarker,
+  online: ReadonlySet<string>,
+  isFaulty: FaultCheck,
+) =>
   marker.type === "server"
-    ? marker.isActive
+    ? online.has(marker.id)
     : marker.type === "device"
-      ? marker.isEnabled
+      ? marker.isEnabled &&
+        online.has(marker.edgeServerId) &&
+        !isFaulty(marker.edgeServerId, marker.id)
       : true;
 
-const iconOf = (marker: MapMarker) =>
+const iconOf = (
+  marker: MapMarker,
+  online: ReadonlySet<string>,
+  isFaulty: FaultCheck,
+) =>
   marker.type === "group"
     ? MapPinIcon
     : marker.type === "server"
-      ? isActive(marker)
+      ? isActive(marker, online, isFaulty)
         ? ServerIcon
         : ServerOffIcon
-      : isActive(marker)
+      : isActive(marker, online, isFaulty)
         ? CctvIcon
         : CctvOffIcon;
 
@@ -271,6 +283,8 @@ const addBuildings = (map: MapLibreMap) => {
 
 export const MapCanvas = ({
   markers,
+  online,
+  isFaulty,
   selectedKey,
   onSelect,
   isDraggable,
@@ -280,6 +294,8 @@ export const MapCanvas = ({
   popup,
 }: {
   markers: MapMarker[];
+  online: ReadonlySet<string>;
+  isFaulty: FaultCheck;
   selectedKey: string | null;
   onSelect: (key: string | null) => void;
   isDraggable: boolean;
@@ -494,7 +510,7 @@ export const MapCanvas = ({
       </div>
       {popupElement && popup && createPortal(popup, popupElement)}
       {pinElements.map(({ marker, element }) => {
-        const Icon = iconOf(marker);
+        const Icon = iconOf(marker, online, isFaulty);
         const key = markerKey(marker);
         return createPortal(
           <div
@@ -504,7 +520,7 @@ export const MapCanvas = ({
             title={marker.name}
             className={cn(
               "relative flex size-8 cursor-grab touch-none items-center justify-center active:cursor-grabbing",
-              isActive(marker)
+              isActive(marker, online, isFaulty)
                 ? "text-primary-foreground"
                 : "text-muted-foreground",
               key === selectedKey && "z-10 scale-110",
@@ -513,7 +529,9 @@ export const MapCanvas = ({
             <span
               className={cn(
                 "absolute inset-0 rotate-45 rounded-full rounded-br-none border-2 transition-colors",
-                isActive(marker) ? "bg-primary" : "bg-secondary",
+                isActive(marker, online, isFaulty)
+                  ? "bg-primary"
+                  : "bg-secondary",
                 key === selectedKey ? "border-foreground" : "border-background",
               )}
             />

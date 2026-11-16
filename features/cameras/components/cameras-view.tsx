@@ -11,10 +11,9 @@ import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
-import { useServerOnline } from "@/features/edge-status";
+import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraCard } from "./camera-card";
 import { CameraDialog, type DialogTarget } from "./camera-dialog";
@@ -67,12 +66,21 @@ export const CamerasView = ({
   isLive: boolean;
 }) => {
   const { data: current } = useCameras(data, isLive);
-  const { cameras, failures } = current;
+  const { failures } = current;
   useFailureToast(
     "Some edge servers did not respond",
     failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
   const serverOnline = useServerOnline();
+  const isFaulty = useDeviceFaulty();
+  const cameras = useMemo(
+    () =>
+      current.cameras.map((camera) => ({
+        ...camera,
+        isFaulty: isFaulty(camera.edgeServerId, camera.id),
+      })),
+    [current.cameras, isFaulty],
+  );
   const servers = useMemo(
     () =>
       current.servers.map((s) => ({
@@ -89,6 +97,7 @@ export const CamerasView = ({
   const [dialog, setDialog] = useState<DialogTarget>(null);
   const { save, remove, toggle, saveError, toggleError } =
     useCameraActions(isLive);
+  useFailureToast("Could not update the camera", [toggleError]);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
   const matches = useMemo(
@@ -132,12 +141,6 @@ export const CamerasView = ({
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-        {toggleError && (
-          <Alert variant="destructive">
-            <AlertTitle>Could not update the camera</AlertTitle>
-            <AlertDescription>{toggleError}</AlertDescription>
-          </Alert>
-        )}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Button onClick={() => setDialog("new")}>
             <PlusIcon />

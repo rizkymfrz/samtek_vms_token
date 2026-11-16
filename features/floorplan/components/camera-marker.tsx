@@ -15,6 +15,7 @@ const ICON = {
   live: CctvIcon,
   disabled: CctvOffIcon,
   "server-offline": ServerOffIcon,
+  "stream-offline": CctvOffIcon,
 };
 
 const STEP = 0.01;
@@ -59,7 +60,7 @@ export const CameraMarker = ({
     >
       <PopoverTrigger
         type="button"
-        aria-label={`${camera.name}, ${camera.state === "live" ? "live" : camera.state === "disabled" ? "disabled" : "server offline"}${camera.alerts ? `, ${camera.alerts} alerts` : ""}`}
+        aria-label={`${camera.name}, ${camera.state === "live" ? "live" : camera.state === "disabled" ? "disabled" : camera.state === "stream-offline" ? "stream offline" : "server offline"}${camera.alerts ? `, ${camera.alerts} alerts` : ""}`}
         aria-pressed={selected}
         title={camera.name}
         style={{ left: `${x * 100}%`, top: `${y * 100}%` }}

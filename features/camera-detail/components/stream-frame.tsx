@@ -1,11 +1,8 @@
-import { CctvOffIcon, ServerOffIcon } from "lucide-react";
+import { CctvOffIcon } from "lucide-react";
+import { EdgeOffline } from "@/components/shared/edge-offline";
+import { StreamOffline } from "@/components/shared/stream-offline";
 import { streamName, WebrtcPlayer } from "@/features/live";
 import type { CameraDetail, StreamState } from "../types";
-
-const HINT = {
-  disabled: { Icon: CctvOffIcon, label: "Camera is disabled" },
-  "server-offline": { Icon: ServerOffIcon, label: "Edge server is offline" },
-} as const;
 
 export const StreamFrame = ({
   detail,
@@ -16,12 +13,13 @@ export const StreamFrame = ({
   state: StreamState;
   quality: "main" | "sub";
 }) => {
-  if (state !== "live") {
-    const { Icon, label } = HINT[state];
+  if (state === "server-offline") return <EdgeOffline />;
+  if (state === "stream-offline") return <StreamOffline />;
+  if (state === "disabled") {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-        <Icon className="size-8" />
-        <span className="text-xs">{label}</span>
+        <CctvOffIcon className="size-8" />
+        <span className="text-xs">Camera is disabled</span>
       </div>
     );
   }

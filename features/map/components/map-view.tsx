@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { toast } from "@/components/ui/toast";
-import { useServerOnline } from "@/features/edge-status";
+import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import { CameraPreview } from "@/features/live";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { messageOf } from "@/lib/axios/browser-client";
@@ -61,6 +61,10 @@ export const MapView = ({
   const [query, setQuery] = useState("");
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const serverOnline = useServerOnline();
+  const isFaulty = useDeviceFaulty();
+  const online = new Set(
+    data.servers.filter((s) => serverOnline(s, s.online)).map((s) => s.id),
+  );
   const selected = data.markers.find((m) => markerKey(m) === selectedKey);
   const server =
     selected?.type === "device"
@@ -76,9 +80,11 @@ export const MapView = ({
           serverName: server?.name ?? "Unknown",
           state: !selected.isEnabled
             ? "disabled"
-            : server && serverOnline(server, server.online)
-              ? "live"
-              : "server-offline",
+            : !server || !online.has(server.id)
+              ? "server-offline"
+              : isFaulty(server.id, selected.id)
+                ? "stream-offline"
+                : "live",
           hasSubStream: selected.hasSubStream,
           webrtcUrl: server?.webrtcUrl ?? null,
           webrtcUrlLocal: server?.webrtcUrlLocal ?? null,
@@ -95,6 +101,8 @@ export const MapView = ({
       <SidePanel>
         <MapPanel
           markers={data.markers}
+          online={online}
+          isFaulty={isFaulty}
           selectedKey={selectedKey}
           query={query}
           onQuery={setQuery}
@@ -110,6 +118,8 @@ export const MapView = ({
       </SidePanel>
       <MapCanvas
         markers={data.markers}
+        online={online}
+        isFaulty={isFaulty}
         selectedKey={selectedKey}
         onSelect={setSelectedKey}
         isDraggable={isLive}
