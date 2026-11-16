@@ -3,6 +3,8 @@ import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
+import { SpeakerToggle } from "@/features/live";
+import { TalkControl } from "@/features/talk";
 import { PtzControls } from "./ptz-controls";
 import { StreamFrame } from "./stream-frame";
 import type { CameraDetail, StreamState } from "../types";
@@ -40,7 +42,10 @@ export const LivePanel = ({
       <div className="group/tile relative aspect-video w-full overflow-hidden border bg-sidebar">
         <StreamFrame detail={detail} state={state} quality="main" />
         {isLive && (
-          <StreamDetections edgeId={detail.edgeServerId} deviceId={detail.id} />
+          <StreamDetections edgeId={detail.edgeServerId} deviceId={detail.id}>
+            <SpeakerToggle audioId={detail.id} />
+            <TalkControl edgeId={detail.edgeServerId} deviceId={detail.id} />
+          </StreamDetections>
         )}
         {!isLive && (
           <Badge variant="overlay" className="absolute top-2 left-2">

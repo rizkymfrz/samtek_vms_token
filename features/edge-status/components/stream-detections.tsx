@@ -1,7 +1,7 @@
 "use client";
 import { ScanEyeIcon } from "lucide-react";
-import { useState } from "react";
-import { Toggle } from "@/components/ui/toggle";
+import { type ReactNode, useState } from "react";
+import { ToolbarToggle } from "@/components/shared/toolbar-toggle";
 import { cn } from "@/lib/utils";
 import { useDetections } from "../hooks/use-detections";
 import type { DetectionObject } from "../types";
@@ -83,10 +83,12 @@ export const StreamDetections = ({
   edgeId,
   deviceId,
   isDefaultOn = false,
+  children,
 }: {
   edgeId: string;
   deviceId: string;
   isDefaultOn?: boolean;
+  children?: ReactNode;
 }) => {
   const [hasDetections, setHasDetections] = useState(isDefaultOn);
   return (
@@ -94,17 +96,15 @@ export const StreamDetections = ({
       {hasDetections && (
         <DetectionOverlay edgeId={edgeId} deviceId={deviceId} />
       )}
-      <div className="absolute right-2 bottom-2 flex items-center rounded border bg-background opacity-0 transition-opacity group-hover/tile:opacity-100 focus-within:opacity-100">
-        <Toggle
-          size="sm"
+      <div className="absolute right-2 bottom-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/tile:opacity-100 focus-within:opacity-100 has-data-[talk=live]:opacity-100">
+        {children}
+        <ToolbarToggle
           pressed={hasDetections}
           onPressedChange={setHasDetections}
-          aria-label="Detections"
-          title="Detections"
-          className="aria-pressed:text-primary"
+          label="Detections"
         >
           <ScanEyeIcon />
-        </Toggle>
+        </ToolbarToggle>
       </div>
     </>
   );

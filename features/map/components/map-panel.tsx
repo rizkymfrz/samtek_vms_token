@@ -1,33 +1,21 @@
-import {
-  CctvIcon,
-  ChevronDownIcon,
-  MapPinIcon,
-  MinusIcon,
-  PlusIcon,
-  SearchXIcon,
-  ServerIcon,
-} from "lucide-react";
-import type { ReactNode } from "react";
+import { MapPinIcon } from "lucide-react";
 import {
   PanelDetail,
-  PanelEmpty,
-  PanelIconAction,
-  PanelSearch,
   PanelSection,
+  PanelSelected,
+  PlacementAction,
 } from "@/components/layout/side-panel";
-import { StatusDot } from "@/components/shared/status-dot";
-import { Badge } from "@/components/ui/badge";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
+  DeviceTree,
+  type DeviceTreeNode,
+  matchesQuery,
+} from "@/components/shared/device-tree";
+import { Badge } from "@/components/ui/badge";
+import type { DeviceState } from "@/lib/device-state";
 import { markerKey } from "./map-canvas";
 import type { MapMarker, MapPlace } from "../types";
 
 const TYPE_LABEL = { group: "Group", server: "Edge server", device: "Camera" };
-const ICON = { group: MapPinIcon, server: ServerIcon, device: CctvIcon };
 
 type Node = {
   key: string;
@@ -51,22 +39,23 @@ const placeOf = (marker: MapMarker): MapPlace => ({
       : marker.type === "device"
         ? marker.isEnabled
         : true,
+  analytic: marker.type === "device" ? marker.analytic : null,
 });
 
-const statusOf = (
+const stateOf = (
   place: MapPlace,
   online: ReadonlySet<string>,
   isFaulty: (edgeId: string, deviceId: string) => boolean,
-) =>
+): DeviceState | null =>
   place.type === "group"
     ? null
     : place.type === "device" && !place.isActive
-      ? "Disabled"
+      ? "disabled"
       : !online.has(place.type === "server" ? place.id : (place.parentId ?? ""))
-        ? "Offline"
+        ? "server-offline"
         : place.type === "device" && isFaulty(place.parentId ?? "", place.id)
-          ? "Offline"
-          : "Online";
+          ? "stream-offline"
+          : "live";
 
 export const MapPanel = ({
   markers,
@@ -118,9 +107,7 @@ export const MapPanel = ({
         (parentId === undefined || node.place.parentId === parentId),
     );
   const groupIds = new Set(ofType("group").map((node) => node.place.id));
-  const needle = query.trim().toLowerCase();
-  const matches = (node: Node) =>
-    !needle || node.place.name.toLowerCase().includes(needle);
+  const matches = (node: Node) => matchesQuery(query, node.place.name);
   const devicesOf = (server: Node) =>
     ofType("device", server.place.id).filter(
       (device) => matches(server) || matches(device),
@@ -138,7 +125,6 @@ export const MapPanel = ({
     (group) => matches(group) || serversOf(group).length > 0,
   );
   const loose = serversOf(null);
-  const isEmpty = groups.length === 0 && loose.length === 0;
   const selected = markers.find((m) => markerKey(m) === selectedKey);
   const name = (type: MapPlace["type"], id: string | null) =>
     nodes.find((n) => n.place.type === type && n.place.id === id)?.place.name ??
@@ -153,132 +139,70 @@ export const MapPanel = ({
       : null;
   const renderActions = (node: Node) => {
     if (!isLive) return null;
+    const { name } = node.place;
     if (!node.marker) {
       const isPlacing =
         placing?.type === node.place.type && placing.id === node.place.id;
       return (
-        <PanelIconAction
-          label={
-            isPlacing
-              ? `Cancel placing ${node.place.name}`
-              : `Place ${node.place.name} on the map`
+        <PlacementAction
+          isPlaced={false}
+          addLabel={
+            isPlacing ? `Cancel placing ${name}` : `Place ${name} on the map`
           }
+          removeLabel=""
           isDisabled={isBusy}
           onClick={() => onPlacing(isPlacing ? null : node.place)}
-        >
-          <PlusIcon />
-        </PanelIconAction>
+        />
       );
     }
     const marker = node.marker;
     if (marker.type === "device" && marker.inherited) return null;
     return (
-      <PanelIconAction
-        label={`Remove ${node.place.name} from the map`}
+      <PlacementAction
+        isPlaced
+        addLabel=""
+        removeLabel={`Remove ${name} from the map`}
         isDisabled={isBusy}
         onClick={() => onRemove(marker)}
-      >
-        <MinusIcon />
-      </PanelIconAction>
+      />
     );
   };
   const subtitle = (node: Node) =>
     placing?.type === node.place.type && placing.id === node.place.id
       ? "Click the map to place it"
-      : !node.marker
-        ? "Not on the map"
-        : (statusOf(node.place, online, isFaulty) ?? "On the map");
-  const renderLeaf = (node: Node) => {
-    const Icon = ICON[node.place.type];
-    const isSelected = node.key === selectedKey;
-    return (
-      <li key={node.key} className="flex items-center gap-2 py-1 pl-8">
-        <Icon className="size-4 shrink-0 text-muted-foreground" />
-        <NodeButton node={node} isSelected={isSelected} onSelect={onSelect}>
-          {subtitle(node)}
-        </NodeButton>
-        <StatusDot
-          status={
-            statusOf(node.place, online, isFaulty) === "Online"
-              ? "live"
-              : "offline"
-          }
-        />
-        {renderActions(node)}
-      </li>
-    );
-  };
-  const renderBranch = (
-    node: Node,
-    children: ReactNode,
-    count: number,
-    indent: string,
-  ) => {
-    const Icon = ICON[node.place.type];
-    return (
-      <Collapsible
-        key={node.key}
-        defaultOpen
-        className={cn("border-b last:border-b-0", indent)}
-      >
-        <div className="flex items-center gap-2 py-2">
-          <CollapsibleTrigger
-            aria-label={`Toggle ${node.place.name}`}
-            className="group flex size-4 shrink-0 items-center justify-center outline-none focus-visible:text-foreground"
-          >
-            <ChevronDownIcon className="size-4 -rotate-90 text-muted-foreground transition-transform group-aria-expanded:rotate-0" />
-          </CollapsibleTrigger>
-          <Icon className="size-4 shrink-0 text-muted-foreground" />
-          <NodeButton
-            node={node}
-            isSelected={node.key === selectedKey}
-            onSelect={onSelect}
-            isTitle
-          >
-            {count} {node.place.type === "group" ? "servers" : "cameras"}
-          </NodeButton>
-          {node.place.type !== "group" && (
-            <StatusDot
-              status={
-                statusOf(node.place, online, isFaulty) === "Online"
-                  ? "live"
-                  : "offline"
-              }
-            />
-          )}
-          {renderActions(node)}
-        </div>
-        <CollapsibleContent>{children}</CollapsibleContent>
-      </Collapsible>
-    );
-  };
-  const renderServer = (server: Node, indent: string) => {
-    const devices = devicesOf(server);
-    return renderBranch(
+      : (node.place.analytic ?? "No analytic");
+  const toTree = (node: Node, children?: DeviceTreeNode[]): DeviceTreeNode => ({
+    id: node.key,
+    kind: node.place.type,
+    title: node.place.name,
+    subtitle:
+      children === undefined
+        ? subtitle(node)
+        : `${children.length} ${node.place.type === "group" ? "servers" : "cameras"}`,
+    state: stateOf(node.place, online, isFaulty) ?? undefined,
+    isSelected: node.key === selectedKey,
+    isMuted: !node.marker,
+    onSelect: node.marker ? () => onSelect(node.marker!) : undefined,
+    actions: renderActions(node),
+    children,
+  });
+  const toServerTree = (server: Node) =>
+    toTree(
       server,
-      <ul className="flex flex-col pb-2">{devices.map(renderLeaf)}</ul>,
-      devices.length,
-      indent,
+      devicesOf(server).map((device) => toTree(device)),
     );
-  };
+  const tree = [
+    ...groups.map((group) => toTree(group, serversOf(group).map(toServerTree))),
+    ...loose.map(toServerTree),
+  ];
   return (
     <>
       {selected && selectedPlace && (
-        <section className="flex flex-col gap-2 rounded border p-4">
-          <span className="truncate text-sm font-medium">{selected.name}</span>
+        <PanelSelected
+          title={selected.name}
+          state={stateOf(selectedPlace, online, isFaulty) ?? undefined}
+        >
           <PanelDetail label="Type">{TYPE_LABEL[selected.type]}</PanelDetail>
-          {selected.type !== "group" && (
-            <PanelDetail label="Status">
-              <StatusDot
-                status={
-                  statusOf(selectedPlace, online, isFaulty) === "Online"
-                    ? "live"
-                    : "offline"
-                }
-              />
-              {statusOf(selectedPlace, online, isFaulty)}
-            </PanelDetail>
-          )}
           {selectedParent && (
             <PanelDetail
               label={selected.type === "device" ? "Edge server" : "Group"}
@@ -299,34 +223,16 @@ export const MapPanel = ({
               <Badge variant="secondary">From server</Badge>
             </PanelDetail>
           )}
-        </section>
+        </PanelSelected>
       )}
       <PanelSection title="Locations">
-        <PanelSearch
-          value={query}
-          onChange={onQuery}
-          placeholder="Search locations..."
+        <DeviceTree
+          nodes={tree}
+          query={query}
+          onQuery={onQuery}
+          noun="locations"
+          emptyIcon={<MapPinIcon />}
         />
-        <div className="flex flex-col">
-          {groups.map((group) =>
-            renderBranch(
-              group,
-              <div className="pl-4">
-                {serversOf(group).map((server) => renderServer(server, ""))}
-              </div>,
-              serversOf(group).length,
-              "",
-            ),
-          )}
-          {loose.map((server) => renderServer(server, ""))}
-          {isEmpty && (
-            <PanelEmpty
-              icon={needle ? <SearchXIcon /> : <MapPinIcon />}
-              title={needle ? "No locations match" : "No locations"}
-              description={needle ? "Try a different search." : undefined}
-            />
-          )}
-        </div>
         {truncated && (
           <p className="text-xs text-muted-foreground">
             Only the first locations are shown. Zoom in to see more.
@@ -334,44 +240,5 @@ export const MapPanel = ({
         )}
       </PanelSection>
     </>
-  );
-};
-
-const NodeButton = ({
-  node,
-  isSelected,
-  isTitle,
-  onSelect,
-  children,
-}: {
-  node: Node;
-  isSelected: boolean;
-  isTitle?: boolean;
-  onSelect: (marker: MapMarker) => void;
-  children: ReactNode;
-}) => {
-  const { marker } = node;
-  return (
-    <button
-      type="button"
-      disabled={!marker}
-      aria-pressed={isSelected}
-      onClick={() => marker && onSelect(marker)}
-      className="flex min-w-0 flex-1 flex-col text-left outline-none enabled:hover:underline focus-visible:underline"
-    >
-      <span
-        className={cn(
-          "truncate",
-          isTitle ? "text-sm font-medium" : "text-xs",
-          isSelected && "font-medium",
-          !marker && "text-muted-foreground",
-        )}
-      >
-        {node.place.name}
-      </span>
-      <span className="truncate text-xs font-normal text-muted-foreground">
-        {children}
-      </span>
-    </button>
   );
 };

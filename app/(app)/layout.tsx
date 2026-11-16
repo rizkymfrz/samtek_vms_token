@@ -22,7 +22,7 @@ const AppLayout = ({ children }: LayoutProps<"/">) => {
             <AppSidebar footer={<UserMenu />} isLive={isLiveSource} />
           </Suspense>
           <SidebarInset className="isolate min-w-0">
-            <PageBackdrop />
+            <PageBackdrop intensity={4} />
             <AppHeader
               status={<DeviceStatus />}
               search={<GlobalSearch />}

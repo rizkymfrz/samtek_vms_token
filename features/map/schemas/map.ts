@@ -28,6 +28,7 @@ export const mapDeviceSchema = z.object({
   edgeServerId: z.coerce.string(),
   isEnabled: z.boolean(),
   sourceSub: z.string().nullable().default(null),
+  analyticId: z.string().nullable().default(null),
   ...coordinates,
 });
 

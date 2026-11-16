@@ -53,7 +53,16 @@ export const edgeStateSchema = z.object({
     online: z.boolean(),
     analytics: z.array(announcedAnalyticSchema).optional().catch(undefined),
     devices: z
-      .array(z.object({ device_id: z.string(), status: z.string() }))
+      .array(
+        z.object({
+          device_id: z.string(),
+          status: z.string(),
+          talk: z
+            .object({ supported: z.boolean() })
+            .optional()
+            .catch(undefined),
+        }),
+      )
       .optional()
       .catch(undefined),
     recording: z
@@ -100,6 +109,7 @@ export const edgeResultSchema = z.object({
     error: z.object({ code: z.string(), message: z.string() }).optional(),
     recording: z.unknown().optional(),
     playback: z.unknown().optional(),
+    talk: z.unknown().optional(),
   }),
 });
 

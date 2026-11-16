@@ -15,11 +15,11 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { MAP_STYLE_URL } from "../map-style";
 import type { MapMarker } from "../types";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 const WORKER_URL = "/maplibre-gl-worker.mjs";
-const STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const BUILDINGS_LAYER = "building-3d";
 const GRID_SOURCE = "grid";
 const GRID_LINES = "grid-lines";
@@ -314,6 +314,12 @@ export const MapCanvas = ({
   const orbit = useRef<number | null>(null);
   const [bearing, setBearing] = useState(0);
   const fitted = useRef(false);
+  const home = useRef<{
+    center: [number, number];
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  } | null>(null);
   const [popupElement, setPopupElement] = useState<HTMLElement | null>(null);
   const hasPopup = popup !== null;
   const onSelectRef = useRef(onSelect);
@@ -338,12 +344,35 @@ export const MapCanvas = ({
     let disposed = false;
     ready.current = import("maplibre-gl").then((maplibregl) => {
       maplibregl.setWorkerUrl(WORKER_URL);
+      const initial = markersRef.current;
+      const start =
+        initial.length > 1
+          ? {
+              bounds: initial.reduce(
+                (box, marker) =>
+                  box.extend([marker.longitude, marker.latitude]),
+                new maplibregl.LngLatBounds(
+                  [initial[0].longitude, initial[0].latitude],
+                  [initial[0].longitude, initial[0].latitude],
+                ),
+              ),
+              fitBoundsOptions: { padding: 80, maxZoom: 15 },
+            }
+          : initial.length === 1
+            ? {
+                center: [initial[0].longitude, initial[0].latitude] as [
+                  number,
+                  number,
+                ],
+                zoom: 13,
+              }
+            : { center: [106.8456, -6.2088] as [number, number], zoom: 11 };
+      if (initial.length > 1) fitted.current = true;
       const instance = new maplibregl.Map({
         container: node,
-        style: STYLE_URL,
-        center: [106.8456, -6.2088],
-        zoom: 11,
+        style: MAP_STYLE_URL,
         attributionControl: false,
+        ...start,
       });
       instance.on("rotate", () => setBearing(instance.getBearing()));
       instance.on("load", () => {
@@ -460,18 +489,46 @@ export const MapCanvas = ({
   }, [selectedKey, hasPopup]);
   useEffect(() => {
     stopOrbit();
-    if (!selectedKey) return;
+    if (!selectedKey) {
+      const view = home.current;
+      if (!view) return;
+      home.current = null;
+      void ready.current?.then((instance) => {
+        if (map.current !== instance) return;
+        const turn = ((view.bearing - instance.getBearing() + 540) % 360) - 180;
+        instance.flyTo({
+          center: view.center,
+          zoom: view.zoom,
+          pitch: view.pitch,
+          bearing: instance.getBearing() + turn,
+          speed: 0.9,
+          curve: 1.2,
+          essential: true,
+        });
+      });
+      return;
+    }
     const marker = markersRef.current.find((m) => markerKey(m) === selectedKey);
     if (!marker) return;
     let cancelled = false;
     void ready.current?.then((instance) => {
       if (cancelled || map.current !== instance) return;
+      if (!home.current) {
+        const c = instance.getCenter();
+        home.current = {
+          center: [c.lng, c.lat],
+          zoom: instance.getZoom(),
+          pitch: instance.getPitch(),
+          bearing: instance.getBearing(),
+        };
+      }
       const isDevice = marker.type === "device";
       instance.flyTo({
         center: [marker.longitude, marker.latitude],
         zoom: ZOOM[marker.type],
         pitch: isDevice ? 60 : 30,
-        speed: 1.2,
+        speed: 0.9,
+        curve: 1.2,
         essential: true,
       });
       if (!isDevice) return;

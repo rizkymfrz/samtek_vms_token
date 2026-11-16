@@ -12,7 +12,7 @@ import type {
 import { PerimeterCanvas } from "./perimeter-canvas";
 import { PerimeterForm } from "./perimeter-form";
 import { PerimeterList } from "./perimeter-list";
-import { StreamFrame } from "./stream-frame";
+import { PerimeterSnapshot } from "./perimeter-snapshot";
 import {
   addArea,
   addLine,
@@ -120,7 +120,7 @@ export const PerimeterPanel = ({
           onChange(movePoint(perimeters, selection, pointIndex, point))
         }
       >
-        <StreamFrame detail={detail} state={state} quality="sub" />
+        <PerimeterSnapshot detail={detail} state={state} />
       </PerimeterCanvas>
       <div className="@container">
         <Card className="h-64 py-0 @xl:h-48">

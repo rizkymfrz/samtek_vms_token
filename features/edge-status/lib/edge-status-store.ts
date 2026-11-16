@@ -5,9 +5,13 @@ import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
 import { toDescriptors } from "./analytic-catalog";
 import { ingestDetections } from "./detection-store";
-import { publishEdgeEvent, publishEdgeReconnect } from "./edge-event-bus";
+import {
+  publishEdgeEvent,
+  publishEdgeReconnect,
+  publishEdgeTalk,
+} from "./edge-event-bus";
 import { appendSample, toSeries } from "./edge-series";
-import { ulid } from "./ulid";
+import { buildEnvelope } from "./envelope";
 import {
   detectionBboxesSchema,
   type EdgeResultData,
@@ -40,6 +44,7 @@ const EMPTY: EdgeStatusState = {
   entries: new Map(),
   online: new Set(),
   faulty: new Set(),
+  talk: new Map(),
   catalog: new Map(),
   recording: new Map(),
   recordingStatus: new Map(),
@@ -169,6 +174,25 @@ const setFaulty = (
   setState({ faulty });
 };
 
+const setTalk = (
+  edgeId: string,
+  devices: { device_id: string; talk?: { supported: boolean } }[] | null,
+) => {
+  const current = state.talk.get(edgeId);
+  if (devices === null) {
+    if (!current) return;
+    const talk = new Map(state.talk);
+    talk.delete(edgeId);
+    setState({ talk });
+    return;
+  }
+  const supported = new Set(
+    devices.filter((d) => d.talk?.supported).map((d) => d.device_id),
+  );
+  if (current && sameSet(current, supported)) return;
+  setState({ talk: new Map(state.talk).set(edgeId, supported) });
+};
+
 const toTime = (value: string | undefined) =>
   value === undefined ? null : Date.parse(value);
 
@@ -208,6 +232,16 @@ const receive = (topic: string, payload: Uint8Array) => {
     return;
   }
   const topicEdge = topic.split("/")[2];
+  if (
+    typeof json === "object" &&
+    json !== null &&
+    "type" in json &&
+    typeof json.type === "string" &&
+    json.type.startsWith("talk.")
+  ) {
+    publishEdgeTalk(topicEdge, json);
+    return;
+  }
   const result = edgeResultSchema.safeParse(json);
   if (result.success) {
     const waiting = pending.get(result.data.reply_to);
@@ -217,7 +251,10 @@ const receive = (topic: string, payload: Uint8Array) => {
     if (result.data.data.ok) waiting.resolve(result.data.data);
     else {
       waiting.reject(
-        new Error(result.data.data.error?.message ?? "The edge refused"),
+        Object.assign(
+          new Error(result.data.data.error?.message ?? "The edge refused"),
+          { code: result.data.data.error?.code },
+        ),
       );
     }
     return;
@@ -286,6 +323,7 @@ const receive = (topic: string, payload: Uint8Array) => {
   if (announced.success) {
     const { online, analytics, recording, devices } = announced.data.data;
     setFaulty(topicEdge, online ? (devices ?? []) : []);
+    setTalk(topicEdge, online ? (devices ?? []) : null);
     if (online && analytics) setCatalog(topicEdge, toDescriptors(analytics));
     if (online && recording) {
       setRecording(topicEdge, {
@@ -347,13 +385,13 @@ export const sendEdgeCommand = (
       reject(new Error("Not connected to the MQTT broker"));
       return;
     }
-    const id = ulid();
+    const message = buildEnvelope(type, data);
+    const { id } = message;
     const timer = window.setTimeout(() => {
       pending.delete(id);
       reject(new Error("The edge did not answer"));
     }, COMMAND_TIMEOUT_MS);
     pending.set(id, { resolve, reject, timer });
-    const message = { v: 1, type, id, ts: new Date().toISOString(), data };
     client.publish(topic, JSON.stringify(message), { qos: 1 }, (error) => {
       if (!error) return;
       pending.delete(id);
@@ -361,6 +399,15 @@ export const sendEdgeCommand = (
       reject(error);
     });
   });
+
+export const sendEdgeAudio = (
+  topic: string,
+  type: string,
+  data: Record<string, unknown>,
+) => {
+  if (!client || !state.isConnected) return;
+  client.publish(topic, JSON.stringify(buildEnvelope(type, data)), { qos: 0 });
+};
 
 export const subscribeEdgeStatus = (listener: () => void) => {
   listeners.add(listener);
@@ -374,6 +421,8 @@ export const getServerEdgeStatus = () => EMPTY;
 export const getServerEdgeCatalog = () => NO_CATALOG;
 export const getOnlineEdges = () => state.online;
 export const getFaultyDevices = () => state.faulty;
+export const getTalkDevices = () => state.talk;
+export const getServerTalkDevices = () => EMPTY.talk;
 
 export const getEdgeCatalog = (edgeId: string) =>
   state.catalog.get(edgeId) ?? NO_CATALOG;

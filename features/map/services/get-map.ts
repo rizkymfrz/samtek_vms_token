@@ -1,3 +1,4 @@
+import { analyticLabel } from "@/config/analytics-catalog";
 import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
 import { createCentralClient, failureMessage } from "@/lib/api/central-client";
@@ -110,6 +111,7 @@ export const getMap = async (): Promise<MapData> => {
           name: device.name,
           parentId: device.edgeServerId,
           isActive: device.isEnabled,
+          analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
         });
         continue;
       }
@@ -120,6 +122,7 @@ export const getMap = async (): Promise<MapData> => {
         edgeServerId: device.edgeServerId,
         isEnabled: device.isEnabled,
         hasSubStream: device.sourceSub !== null,
+        analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
         inherited: !own,
         latitude,
         longitude,

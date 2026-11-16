@@ -29,6 +29,21 @@ export const publishEdgeEvent = (messageId: string, event: EdgeEvent) => {
   for (const listener of listeners) listener(event);
 };
 
+type TalkListener = (edgeId: string, message: unknown) => void;
+
+const talkListeners = new Set<TalkListener>();
+
+export const publishEdgeTalk = (edgeId: string, message: unknown) => {
+  for (const listener of talkListeners) listener(edgeId, message);
+};
+
+export const subscribeEdgeTalk = (listener: TalkListener) => {
+  talkListeners.add(listener);
+  return () => {
+    talkListeners.delete(listener);
+  };
+};
+
 export const publishEdgeReconnect = () => {
   for (const listener of reconnectListeners) listener();
 };

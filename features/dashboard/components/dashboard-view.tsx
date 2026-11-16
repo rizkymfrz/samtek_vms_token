@@ -1,5 +1,5 @@
 import { isShown, SECTIONS, WIDGETS } from "./widgets";
-import { packRows, spanClass } from "../lib/layout";
+import { packRows } from "../lib/layout";
 import type { Dashboard } from "../services/build-dashboard";
 
 export const DashboardView = ({ data }: { data: Dashboard }) => {
@@ -7,7 +7,7 @@ export const DashboardView = ({ data }: { data: Dashboard }) => {
     (widget) => isShown(widget) && widget.when(data),
   );
   return (
-    <div className="flex flex-col gap-8 p-4">
+    <div className="flex min-h-full flex-col gap-8 p-4">
       {SECTIONS.map((section) => {
         const inSection = visible.filter(
           (widget) => widget.section === section,
@@ -18,19 +18,19 @@ export const DashboardView = ({ data }: { data: Dashboard }) => {
           packRows(inSection.filter((widget) => widget.group === group)),
         );
         return (
-          <section key={section} className="flex flex-col gap-4">
+          <section key={section} className="flex flex-1 flex-col gap-4">
             <h2 className="text-sm font-medium text-muted-foreground">
               {section}
             </h2>
             {rows.map((row) => (
               <div
                 key={row.map((widget) => widget.id).join()}
-                className="grid gap-4 md:grid-cols-2 xl:grid-cols-12"
+                className="flex flex-1 flex-wrap gap-4"
               >
                 {row.map((widget) => (
                   <div
                     key={widget.id}
-                    className={`flex min-w-0 flex-col ${spanClass(widget.cols)}`}
+                    className="flex min-w-0 flex-1 basis-72 flex-col *:flex-1"
                   >
                     {widget.render(data)}
                   </div>

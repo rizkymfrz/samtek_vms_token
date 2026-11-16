@@ -1,5 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import { useSyncExternalStore } from "react";
 import type { NavChildren } from "@/config/navigation";
 import { LIVE_STALE_TIME_MS } from "@/config/query";
 import { CAMERAS_QUERY_KEY } from "@/features/cameras/hooks/use-cameras";
@@ -9,9 +10,16 @@ import { fetchFloorplan } from "@/features/floorplan/services/floorplan-api";
 import { SERVERS_QUERY_KEY } from "@/features/servers/hooks/use-servers";
 import { fetchServers } from "@/features/servers/services/fetch-servers";
 
+const subscribe = () => () => {};
+
 export type NavChild = { id: string; title: string; href: string };
 
 export const useNavChildren = (isLive: boolean) => {
+  const hydrated = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
   const staleTime = isLive ? LIVE_STALE_TIME_MS : Number.POSITIVE_INFINITY;
   const servers = useQuery({
     queryKey: SERVERS_QUERY_KEY,
@@ -29,20 +37,26 @@ export const useNavChildren = (isLive: boolean) => {
     staleTime,
   });
   return {
-    servers: (servers.data?.servers ?? []).map(({ id, name }) => ({
-      id,
-      title: name,
-      href: `/servers?id=${id}`,
-    })),
-    cameras: (cameras.data?.cameras ?? []).map(({ id, name }) => ({
-      id,
-      title: name,
-      href: `/cameras/${id}`,
-    })),
-    floorplan: (floorplan.data?.plans ?? []).map(({ id, name }) => ({
-      id,
-      title: name,
-      href: `/floorplan?id=${id}`,
-    })),
+    servers: (hydrated ? (servers.data?.servers ?? []) : []).map(
+      ({ id, name }) => ({
+        id,
+        title: name,
+        href: `/servers?id=${id}`,
+      }),
+    ),
+    cameras: (hydrated ? (cameras.data?.cameras ?? []) : []).map(
+      ({ id, name }) => ({
+        id,
+        title: name,
+        href: `/cameras/${id}`,
+      }),
+    ),
+    floorplan: (hydrated ? (floorplan.data?.plans ?? []) : []).map(
+      ({ id, name }) => ({
+        id,
+        title: name,
+        href: `/floorplan?id=${id}`,
+      }),
+    ),
   } satisfies Record<NavChildren, NavChild[]>;
 };

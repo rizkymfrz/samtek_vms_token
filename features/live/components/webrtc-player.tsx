@@ -5,10 +5,16 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { captureFrame, saveThumbnail } from "@/lib/storage/thumbnail-store";
 import { cn } from "@/lib/utils";
+import { useAudioFocus } from "../hooks/use-audio-focus";
 import { useWebrtcStream } from "../hooks/use-webrtc-stream";
+import { releaseAudio, setAudioAvailable } from "../lib/audio-focus";
+
+const FIRST_CAPTURE_MS = 1500;
+const CAPTURE_EVERY_MS = 5 * 60 * 1000;
 
 const HINT = {
   connecting: "Connecting…",
@@ -25,6 +31,8 @@ export const WebrtcPlayer = ({
   isQuiet = false,
   isPaused = false,
   withAudio = false,
+  audioId,
+  thumbnailId,
   onFrame,
 }: {
   relay: { webrtcUrl: string | null; webrtcUrlLocal: string | null };
@@ -34,15 +42,25 @@ export const WebrtcPlayer = ({
   isQuiet?: boolean;
   isPaused?: boolean;
   withAudio?: boolean;
+  audioId?: string;
+  thumbnailId?: string;
   onFrame?: (at: number) => void;
 }) => {
+  const { activeId } = useAudioFocus();
+  const onAudio = useCallback(
+    (hasAudio: boolean) => {
+      if (audioId !== undefined) setAudioAvailable(audioId, hasAudio);
+    },
+    [audioId],
+  );
   const { videoRef, status } = useWebrtcStream(
     relay,
     stream,
     app,
     isSeamless,
     isPaused,
-    withAudio,
+    withAudio || audioId !== undefined,
+    onAudio,
   );
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isFrozen, setIsFrozen] = useState(false);
@@ -78,8 +96,37 @@ export const WebrtcPlayer = ({
     return () => video.cancelVideoFrameCallback(handle);
   }, [isPaused, videoRef]);
   useEffect(() => {
-    if (videoRef.current) videoRef.current.muted = isMuted;
-  }, [isMuted, videoRef]);
+    if (videoRef.current) {
+      videoRef.current.muted =
+        audioId === undefined ? isMuted : activeId !== audioId;
+    }
+  }, [isMuted, audioId, activeId, videoRef]);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!thumbnailId || !video || status !== "playing") return;
+    const capture = async () => {
+      const blob = await captureFrame(video);
+      if (blob) await saveThumbnail(thumbnailId, blob);
+    };
+    const run = () => {
+      capture().catch((error: unknown) => {
+        console.warn(`[thumbnail] ${thumbnailId}: could not save`, error);
+      });
+    };
+    const first = setTimeout(run, FIRST_CAPTURE_MS);
+    const every = setInterval(run, CAPTURE_EVERY_MS);
+    return () => {
+      clearTimeout(first);
+      clearInterval(every);
+    };
+  }, [thumbnailId, status, videoRef]);
+  useEffect(
+    () => () => {
+      if (audioId === undefined) return;
+      releaseAudio(audioId);
+    },
+    [audioId],
+  );
   const isHolding = isSeamless && status === "reconnecting";
   return (
     <>

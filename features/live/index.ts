@@ -5,3 +5,6 @@ export type { PreviewCamera } from "./components/camera-preview";
 export { CameraTile } from "./components/camera-tile";
 export { useLive } from "./hooks/use-live";
 export type { LiveData, StreamQuality, Tile } from "./types";
+export { SpeakerToggle } from "./components/speaker-toggle";
+export { Thumbnail } from "./components/thumbnail";
+export { useThumbnail } from "./hooks/use-thumbnail";

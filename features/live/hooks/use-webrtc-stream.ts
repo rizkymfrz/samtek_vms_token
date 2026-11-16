@@ -30,8 +30,13 @@ export const useWebrtcStream = (
   isSeamless = false,
   isPaused = false,
   withAudio = false,
+  onAudio?: (hasAudio: boolean) => void,
 ) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const onAudioRef = useRef(onAudio);
+  useEffect(() => {
+    onAudioRef.current = onAudio;
+  }, [onAudio]);
   const isPausedRef = useRef(isPaused);
   const resumeRef = useRef<(() => void) | null>(null);
   const [status, setStatus] = useState<PlayerStatus>("connecting");
@@ -66,6 +71,7 @@ export const useWebrtcStream = (
       clearInterval(watcher);
       session?.close();
       session = null;
+      onAudioRef.current?.(false);
     };
     const retry = () => {
       close();
@@ -122,6 +128,7 @@ export const useWebrtcStream = (
       current.addTransceiver("video", { direction: "recvonly" });
       if (withAudio) current.addTransceiver("audio", { direction: "recvonly" });
       current.ontrack = (event) => {
+        if (event.track.kind === "audio") onAudioRef.current?.(true);
         video!.srcObject = event.streams[0] ?? new MediaStream([event.track]);
       };
       current.onconnectionstatechange = () => {

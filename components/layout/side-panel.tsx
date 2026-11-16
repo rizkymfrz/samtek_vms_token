@@ -1,8 +1,15 @@
-import { PlusIcon, SearchIcon, Trash2Icon } from "lucide-react";
-import type { ReactNode } from "react";
+import { MinusIcon, PlusIcon, SearchIcon, Trash2Icon } from "lucide-react";
+import type { ComponentProps, ReactNode } from "react";
 import { EmptyState } from "@/components/shared/empty-state";
+import { Pick } from "@/components/shared/pick";
+import { StatusDot } from "@/components/shared/status-dot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  DEVICE_STATE_LABEL,
+  deviceDot,
+  type DeviceState,
+} from "@/lib/device-state";
 import { cn } from "@/lib/utils";
 
 export const SidePanel = ({
@@ -261,5 +268,82 @@ export const PanelList = ({
         <ul className="flex flex-col">{children}</ul>
       )}
     </div>
+  );
+};
+
+export const PlacementAction = ({
+  isPlaced,
+  addLabel,
+  removeLabel,
+  isDisabled,
+  onClick,
+}: {
+  isPlaced: boolean;
+  addLabel: string;
+  removeLabel: string;
+  isDisabled?: boolean;
+  onClick: () => void;
+}) => {
+  return (
+    <PanelIconAction
+      label={isPlaced ? removeLabel : addLabel}
+      isDisabled={isDisabled}
+      onClick={onClick}
+    >
+      {isPlaced ? <MinusIcon /> : <PlusIcon />}
+    </PanelIconAction>
+  );
+};
+
+export const PanelSelected = ({
+  title,
+  state,
+  children,
+}: {
+  title: string;
+  state?: DeviceState;
+  children?: ReactNode;
+}) => {
+  return (
+    <section className="flex flex-col gap-2 rounded border p-4">
+      <span className="truncate text-sm font-medium">{title}</span>
+      {state && (
+        <PanelDetail label="Status">
+          <StatusDot status={deviceDot(state)} />
+          {DEVICE_STATE_LABEL[state]}
+        </PanelDetail>
+      )}
+      {children}
+    </section>
+  );
+};
+
+export const PanelPicker = ({
+  title,
+  items,
+  value,
+  onChange,
+  actions,
+  children,
+}: {
+  title: string;
+  items: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  actions?: ComponentProps<typeof PanelActions>;
+  children?: ReactNode;
+}) => {
+  return (
+    <PanelSection title={title}>
+      <Pick
+        label={title}
+        items={items}
+        value={value}
+        onChange={onChange}
+        className="w-full"
+      />
+      {actions && <PanelActions {...actions} />}
+      {children}
+    </PanelSection>
   );
 };

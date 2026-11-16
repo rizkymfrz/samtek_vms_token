@@ -1,3 +1,4 @@
+import { analyticLabel } from "@/config/analytics-catalog";
 import type { MapData } from "../types";
 
 export const buildMap = (): MapData => ({
@@ -72,6 +73,7 @@ export const buildMap = (): MapData => ({
       edgeServerId: "1",
       isEnabled: true,
       hasSubStream: true,
+      analytic: analyticLabel("people_counting_dwelling"),
       inherited: true,
       latitude: -6.2146,
       longitude: 106.8451,
@@ -83,6 +85,7 @@ export const buildMap = (): MapData => ({
       edgeServerId: "1",
       isEnabled: true,
       hasSubStream: true,
+      analytic: analyticLabel("vehicle_counting_dwelling"),
       inherited: false,
       latitude: -6.2152,
       longitude: 106.8463,
@@ -94,6 +97,7 @@ export const buildMap = (): MapData => ({
       edgeServerId: "2",
       isEnabled: true,
       hasSubStream: true,
+      analytic: analyticLabel("ppe_violation"),
       inherited: false,
       latitude: -6.1749,
       longitude: 106.8281,
@@ -105,6 +109,7 @@ export const buildMap = (): MapData => ({
       edgeServerId: "3",
       isEnabled: false,
       hasSubStream: true,
+      analytic: null,
       inherited: true,
       latitude: -6.2297,
       longitude: 106.8261,

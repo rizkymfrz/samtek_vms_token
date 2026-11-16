@@ -15,7 +15,7 @@ import {
   type PlaybackSession,
   useRecordingDevice,
 } from "@/features/edge-status";
-import { WebrtcPlayer } from "@/features/live";
+import { SpeakerToggle, WebrtcPlayer } from "@/features/live";
 import { cn } from "@/lib/utils";
 import { usePlaybackSession } from "../hooks/use-playback-session";
 import { useRecordingRanges } from "../hooks/use-recording-ranges";
@@ -146,7 +146,11 @@ const PlaybackScreen = ({
         stream={session.stream}
         isSeamless
         isPaused={isPaused}
+        audioId={`${detail.id}:playback`}
       />
+      <div className="absolute right-2 bottom-2 flex items-center rounded border bg-background">
+        <SpeakerToggle audioId={`${detail.id}:playback`} />
+      </div>
     </>
   );
 };

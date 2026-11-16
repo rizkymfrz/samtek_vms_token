@@ -5,7 +5,9 @@ import { StatusDot } from "@/components/shared/status-dot";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Badge } from "@/components/ui/badge";
 import { StreamDetections } from "@/features/edge-status";
+import { TalkControl } from "@/features/talk";
 import { cn } from "@/lib/utils";
+import { SpeakerToggle } from "./speaker-toggle";
 import { WebrtcPlayer } from "./webrtc-player";
 import { streamName } from "../lib/relay-url";
 import type { StreamQuality, StreamState, Tile } from "../types";
@@ -41,6 +43,7 @@ export const CameraTile = ({
         <WebrtcPlayer
           relay={tile}
           stream={streamName(tile.id, quality, tile.hasSubStream)}
+          audioId={tile.id}
         />
       ) : tile.state === "disabled" ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -52,7 +55,12 @@ export const CameraTile = ({
       ) : (
         <EdgeOffline />
       )}
-      {isLive && <StreamDetections edgeId={tile.serverId} deviceId={tile.id} />}
+      {isLive && (
+        <StreamDetections edgeId={tile.serverId} deviceId={tile.id}>
+          <SpeakerToggle audioId={tile.id} />
+          <TalkControl edgeId={tile.serverId} deviceId={tile.id} />
+        </StreamDetections>
+      )}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
         {!isLive && (
           <Badge variant="overlay">

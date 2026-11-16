@@ -11,6 +11,7 @@ export {
   useEdgeStatus,
   useRecordingDevice,
   useServerOnline,
+  useTalkSupported,
 } from "./hooks/use-edge-status";
 
 export type {
@@ -33,7 +34,10 @@ export {
   type EdgeEvent,
   subscribeEdgeEvents,
   subscribeEdgeReconnect,
+  subscribeEdgeTalk,
 } from "./lib/edge-event-bus";
+
+export { ulid } from "./lib/ulid";
 
 export type {
   EdgeAlarmMessage,
@@ -41,7 +45,12 @@ export type {
   EdgeRecognitionMessage,
 } from "./schemas/edge-message";
 
-export { sendEdgeCommand } from "./lib/edge-status-store";
+export {
+  getEdgeStatus,
+  sendEdgeAudio,
+  sendEdgeCommand,
+  subscribeEdgeStatus,
+} from "./lib/edge-status-store";
 
 export {
   controlPlayback,

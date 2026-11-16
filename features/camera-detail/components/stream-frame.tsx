@@ -8,10 +8,12 @@ export const StreamFrame = ({
   detail,
   state,
   quality,
+  isCapturing = false,
 }: {
   detail: CameraDetail;
   state: StreamState;
   quality: "main" | "sub";
+  isCapturing?: boolean;
 }) => {
   if (state === "server-offline") return <EdgeOffline />;
   if (state === "stream-offline") return <StreamOffline />;
@@ -27,6 +29,8 @@ export const StreamFrame = ({
     <WebrtcPlayer
       relay={detail}
       stream={streamName(detail.id, quality, detail.hasSubStream)}
+      audioId={quality === "main" && !isCapturing ? detail.id : undefined}
+      thumbnailId={detail.id}
     />
   );
 };

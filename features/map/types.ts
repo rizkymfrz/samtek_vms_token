@@ -22,6 +22,7 @@ export type MapMarker =
       edgeServerId: string;
       isEnabled: boolean;
       hasSubStream: boolean;
+      analytic: string | null;
       inherited: boolean;
       latitude: number;
       longitude: number;
@@ -33,6 +34,7 @@ export type MapPlace = {
   name: string;
   parentId: string | null;
   isActive: boolean;
+  analytic?: string | null;
 };
 
 export type MapLocation = {

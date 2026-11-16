@@ -15,6 +15,8 @@ import {
   getServerFaultyDevices,
   getServerOnlineEdges,
   getServerRecordingDevice,
+  getServerTalkDevices,
+  getTalkDevices,
   subscribeEdgeStatus,
 } from "../lib/edge-status-store";
 
@@ -44,6 +46,19 @@ export const useDeviceFaulty = () => {
     (edgeId: string, deviceId: string) =>
       mqttConfig ? faulty.has(faultKey(edgeId, deviceId)) : false,
     [faulty],
+  );
+};
+
+export const useTalkSupported = () => {
+  const talk = useSyncExternalStore(
+    subscribeEdgeStatus,
+    getTalkDevices,
+    getServerTalkDevices,
+  );
+  return useCallback(
+    (edgeId: string, deviceId: string) =>
+      talk.get(edgeId)?.has(deviceId) ?? false,
+    [talk],
   );
 };
 
