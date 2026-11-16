@@ -30,7 +30,7 @@ const Row = ({
   label: string;
   value: string;
 }) => (
-  <div className="flex items-center gap-2">
+  <div className="flex min-w-0 items-center gap-2">
     <Icon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
     <dt className="sr-only">{label}</dt>
     <dd className="truncate font-medium" title={label}>
@@ -43,7 +43,7 @@ export const BodywornDetails = ({ state }: { state: BodywornState }) => {
   const { isOnline, network, policeNumber, name, batteryPercent, position } =
     state;
   return (
-    <dl className="flex flex-col gap-1 border-t p-2 text-xs">
+    <dl className="grid grid-cols-2 gap-x-4 gap-y-1 border-t p-2 text-xs">
       {name !== null && <Row icon={UserIcon} label="Name" value={name} />}
       {policeNumber !== null && (
         <Row icon={IdCardIcon} label="Police No." value={policeNumber} />
