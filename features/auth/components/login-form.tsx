@@ -2,10 +2,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useId } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ForgotPasswordDialog } from "./forgot-password-dialog";
 import { useSignIn } from "../hooks/use-sign-in";
 import { type LoginInput, loginInputSchema } from "../schemas/login";
 
@@ -20,11 +23,12 @@ export const LoginForm = () => {
   const { signIn, isPending, error } = useSignIn();
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginInputSchema),
-    defaultValues: { identifier: "", password: "" },
+    defaultValues: { identifier: "", password: "", remember: false },
   });
   const submit = handleSubmit(async (credentials) => {
     try {
@@ -38,18 +42,14 @@ export const LoginForm = () => {
   });
   const passwordError = errors.password?.message ?? error;
   return (
-    <form
-      noValidate
-      onSubmit={submit}
-      className="flex w-full max-w-sm flex-col gap-4 rounded border bg-card p-4"
-    >
-      <h1 className="text-sm font-medium">Sign in</h1>
+    <form noValidate onSubmit={submit} className="flex w-full flex-col gap-4">
       <Field data-invalid={!!errors.identifier}>
         <FieldLabel htmlFor={`${formId}-identifier`}>
           Username or email
         </FieldLabel>
         <Input
           id={`${formId}-identifier`}
+          className="h-11"
           autoComplete="username"
           {...register("identifier")}
           aria-invalid={!!errors.identifier}
@@ -60,16 +60,34 @@ export const LoginForm = () => {
       </Field>
       <Field data-invalid={!!passwordError}>
         <FieldLabel htmlFor={`${formId}-password`}>Password</FieldLabel>
-        <Input
+        <PasswordInput
           id={`${formId}-password`}
-          type="password"
+          className="h-11"
           autoComplete="current-password"
           {...register("password")}
           aria-invalid={!!passwordError}
         />
         {passwordError && <FieldError>{passwordError}</FieldError>}
       </Field>
-      <Button type="submit" disabled={isPending}>
+      <div className="flex items-center justify-between gap-2">
+        <Controller
+          control={control}
+          name="remember"
+          render={({ field }) => (
+            <FieldLabel className="cursor-pointer font-normal">
+              <Checkbox
+                checked={field.value ?? false}
+                onCheckedChange={field.onChange}
+                onBlur={field.onBlur}
+                ref={field.ref}
+              />
+              Remember me
+            </FieldLabel>
+          )}
+        />
+        <ForgotPasswordDialog />
+      </div>
+      <Button type="submit" className="h-11" disabled={isPending}>
         Sign in
       </Button>
     </form>

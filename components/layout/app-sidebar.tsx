@@ -1,6 +1,5 @@
 "use client";
 import { ChevronRightIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { type ReactNode, useState } from "react";
@@ -25,6 +24,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { NAV_GROUPS } from "@/config/navigation";
+import { BrandLogo } from "./brand-logo";
 import { useNavChildren } from "./use-nav-children";
 
 export const AppSidebar = ({
@@ -49,14 +49,7 @@ export const AppSidebar = ({
               render={<Link href="/dashboard" />}
             >
               <div className="flex aspect-square size-8 items-center justify-center">
-                <Image
-                  src="/logo.svg"
-                  alt="Samtek"
-                  width={627}
-                  height={659}
-                  className="size-6 object-contain"
-                  unoptimized
-                />
+                <BrandLogo className="size-6" />
               </div>
               <span className="font-semibold tracking-wide">SAMTEK</span>
             </SidebarMenuButton>

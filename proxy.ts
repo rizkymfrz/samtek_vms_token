@@ -4,6 +4,7 @@ import {
   ACCESS_TOKEN_COOKIE,
   clearAuthCookies,
   REFRESH_TOKEN_COOKIE,
+  REMEMBER_COOKIE,
   setAuthCookies,
 } from "@/lib/auth/session";
 import { type AuthTokens, refresh } from "@/lib/auth/tokens";
@@ -43,10 +44,16 @@ export const proxy = async (request: NextRequest) => {
   request.cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken);
   request.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken);
   const response = NextResponse.next({ request });
-  setAuthCookies(response.cookies, tokens);
+  setAuthCookies(
+    response.cookies,
+    tokens,
+    request.cookies.get(REMEMBER_COOKIE)?.value === "1",
+  );
   return response;
 };
 
 export const config = {
-  matcher: ["/((?!login|showcase|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!login|showcase|earth\\.webm|logo\\.svg|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

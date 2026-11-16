@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2Icon, UserCheckIcon, UserIcon } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Pick } from "@/components/shared/pick";
 import { ToggleCard } from "@/components/shared/toggle-card";
 import {
@@ -142,9 +143,8 @@ const Form = ({
             {!editing && (
               <Field data-invalid={!!errors.password}>
                 <FieldLabel htmlFor={`${formId}-password`}>Password</FieldLabel>
-                <Input
+                <PasswordInput
                   id={`${formId}-password`}
-                  type="password"
                   autoComplete="new-password"
                   {...register("password")}
                   aria-invalid={!!errors.password}

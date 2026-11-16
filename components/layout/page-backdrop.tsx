@@ -37,13 +37,36 @@ const NODES: [x: number, y: number][] = [
   [160, 288],
 ];
 
-const GLOWS = [
-  "radial-gradient(ellipse 60% 45% at 0% 0%, color-mix(in oklch, var(--primary) 3.5%, transparent), transparent)",
-  "radial-gradient(ellipse 50% 40% at 100% 100%, color-mix(in oklch, var(--primary) 3%, transparent), transparent)",
-  "radial-gradient(ellipse 35% 30% at 85% 30%, color-mix(in oklch, var(--chart-2) 2%, transparent), transparent)",
-].join(", ");
+const TONES = {
+  1: {
+    grid: "stroke-foreground/2.5",
+    strongCell: "fill-primary/2.5",
+    softCell: "fill-primary/1",
+    trace: "stroke-primary/6",
+    node: "fill-primary/7.5",
+  },
+  4: {
+    grid: "stroke-foreground/10",
+    strongCell: "fill-primary/10",
+    softCell: "fill-primary/4",
+    trace: "stroke-primary/24",
+    node: "fill-primary/30",
+  },
+} as const;
 
-export const PageBackdrop = () => {
+const glows = (intensity: number) =>
+  [
+    `radial-gradient(ellipse 60% 45% at 0% 0%, color-mix(in oklch, var(--primary) ${3.5 * intensity}%, transparent), transparent)`,
+    `radial-gradient(ellipse 50% 40% at 100% 100%, color-mix(in oklch, var(--primary) ${3 * intensity}%, transparent), transparent)`,
+    `radial-gradient(ellipse 35% 30% at 85% 30%, color-mix(in oklch, var(--chart-2) ${2 * intensity}%, transparent), transparent)`,
+  ].join(", ");
+
+export const PageBackdrop = ({
+  intensity = 1,
+}: {
+  intensity?: keyof typeof TONES;
+}) => {
+  const tone = TONES[intensity];
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
       <svg className="absolute inset-0 size-full">
@@ -57,7 +80,7 @@ export const PageBackdrop = () => {
             <path
               d={`M 0 0.5 H ${CELL} M 0.5 0 V ${CELL}`}
               fill="none"
-              className="stroke-foreground/2.5"
+              className={tone.grid}
             />
           </pattern>
           <pattern
@@ -73,7 +96,7 @@ export const PageBackdrop = () => {
                 y={row * CELL}
                 width={CELL}
                 height={CELL}
-                className={isStrong ? "fill-primary/2.5" : "fill-primary/1"}
+                className={isStrong ? tone.strongCell : tone.softCell}
               />
             ))}
             {TRACES.map((d) => (
@@ -82,7 +105,7 @@ export const PageBackdrop = () => {
                 d={d}
                 fill="none"
                 strokeWidth={1.5}
-                className="stroke-primary/6"
+                className={tone.trace}
               />
             ))}
             {NODES.map(([x, y]) => (
@@ -91,7 +114,7 @@ export const PageBackdrop = () => {
                 cx={x}
                 cy={y}
                 r={3}
-                className="fill-primary/7.5"
+                className={tone.node}
               />
             ))}
           </pattern>
@@ -99,7 +122,10 @@ export const PageBackdrop = () => {
         <rect width="100%" height="100%" fill="url(#backdrop-grid)" />
         <rect width="100%" height="100%" fill="url(#backdrop-tile)" />
       </svg>
-      <div className="absolute inset-0" style={{ backgroundImage: GLOWS }} />
+      <div
+        className="absolute inset-0"
+        style={{ backgroundImage: glows(intensity) }}
+      />
     </div>
   );
 };

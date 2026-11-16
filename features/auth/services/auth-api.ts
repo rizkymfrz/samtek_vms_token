@@ -1,6 +1,10 @@
 import { http } from "@/lib/axios/browser-client";
 
-export type Credentials = { identifier: string; password: string };
+export type Credentials = {
+  identifier: string;
+  password: string;
+  remember?: boolean;
+};
 
 export const signIn = async (credentials: Credentials) => {
   await http.post("/api/auth/login", credentials);

@@ -4,6 +4,7 @@ import type { AuthTokens } from "./tokens";
 
 export const ACCESS_TOKEN_COOKIE = "access_token";
 export const REFRESH_TOKEN_COOKIE = "refresh_token";
+export const REMEMBER_COOKIE = "remember_me";
 const REFRESH_MAX_AGE_SECONDS = 30 * 24 * 3600;
 const ACCESS_EXPIRY_MARGIN_SECONDS = 30;
 
@@ -16,7 +17,7 @@ type CookieStore = {
       secure: boolean;
       sameSite: "lax";
       path: string;
-      maxAge: number;
+      maxAge?: number;
     },
   ) => unknown;
 };
@@ -27,15 +28,19 @@ export class UnauthorizedError extends Error {
   }
 }
 
-const options = (maxAge: number) => ({
+const options = (maxAge?: number) => ({
   httpOnly: true,
   secure: isSecureCookie,
   sameSite: "lax" as const,
   path: "/",
-  maxAge,
+  ...(maxAge === undefined ? {} : { maxAge }),
 });
 
-export const setAuthCookies = (store: CookieStore, tokens: AuthTokens) => {
+export const setAuthCookies = (
+  store: CookieStore,
+  tokens: AuthTokens,
+  remember: boolean,
+) => {
   store.set(
     ACCESS_TOKEN_COOKIE,
     tokens.accessToken,
@@ -44,13 +49,19 @@ export const setAuthCookies = (store: CookieStore, tokens: AuthTokens) => {
   store.set(
     REFRESH_TOKEN_COOKIE,
     tokens.refreshToken,
-    options(REFRESH_MAX_AGE_SECONDS),
+    options(remember ? REFRESH_MAX_AGE_SECONDS : undefined),
+  );
+  store.set(
+    REMEMBER_COOKIE,
+    remember ? "1" : "",
+    options(remember ? REFRESH_MAX_AGE_SECONDS : 0),
   );
 };
 
 export const clearAuthCookies = (store: CookieStore) => {
   store.set(ACCESS_TOKEN_COOKIE, "", options(0));
   store.set(REFRESH_TOKEN_COOKIE, "", options(0));
+  store.set(REMEMBER_COOKIE, "", options(0));
 };
 
 export const requireAccessToken = async () => {

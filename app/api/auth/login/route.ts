@@ -18,7 +18,7 @@ export const POST = async (request: Request) => {
   if (!isLiveSource) return Response.json({ ok: true });
   try {
     const tokens = await login(body.data.identifier, body.data.password);
-    setAuthCookies(await cookies(), tokens);
+    setAuthCookies(await cookies(), tokens, body.data.remember);
     return Response.json({ ok: true });
   } catch (error) {
     if (error instanceof CentralError && error.status < 500) {

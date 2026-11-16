@@ -10,6 +10,7 @@ export const loginInputSchema = z.object({
     .string()
     .min(1, "Enter your password.")
     .max(1024, "Use at most 1024 characters."),
+  remember: z.boolean().default(false),
 });
 
 export type LoginInput = z.input<typeof loginInputSchema>;
