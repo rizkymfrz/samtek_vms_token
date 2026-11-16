@@ -62,12 +62,6 @@ export const CameraTile = ({
         </StreamDetections>
       )}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
-        {!isLive && (
-          <Badge variant="overlay">
-            <StatusDot status="offline" />
-            {label}
-          </Badge>
-        )}
         <div className="ml-auto flex items-center gap-2">
           {tile.isRecordingEnabled && (
             <Badge variant="overlay">

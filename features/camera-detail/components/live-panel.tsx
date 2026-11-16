@@ -1,6 +1,4 @@
 import { PauseIcon, RotateCcwIcon, ScanEyeIcon } from "lucide-react";
-import { StatusDot } from "@/components/shared/status-dot";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import { SpeakerToggle } from "@/features/live";
@@ -46,12 +44,6 @@ export const LivePanel = ({
             <SpeakerToggle audioId={detail.id} />
             <TalkControl edgeId={detail.edgeServerId} deviceId={detail.id} />
           </StreamDetections>
-        )}
-        {!isLive && (
-          <Badge variant="overlay" className="absolute top-2 left-2">
-            <StatusDot status="offline" />
-            Offline
-          </Badge>
         )}
       </div>
       <PtzControls />

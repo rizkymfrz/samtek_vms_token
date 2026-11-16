@@ -31,12 +31,6 @@ export const CameraCard = ({
       label={`${name}, ${STATE_LABEL[state]}`}
       title={name}
       subtitle={subtitle}
-      topStart={
-        <Badge variant="overlay">
-          <StatusDot status={state === "live" ? "live" : "offline"} />
-          {STATE_LABEL[state]}
-        </Badge>
-      }
       topEnd={
         recording && (
           <Badge variant="overlay">
