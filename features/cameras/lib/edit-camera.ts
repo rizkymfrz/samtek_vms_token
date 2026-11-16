@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { requiredText } from "@/lib/forms/required-text";
-import type { CameraRecord, ServerOption } from "../types";
 import { isStreamSource, STREAM_MESSAGE } from "./stream-source";
+import type { CameraRecord, ServerOption } from "../types";
 
 export type Draft = {
   name: string;
