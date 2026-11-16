@@ -42,9 +42,7 @@ export const usePtz = (edgeId: string, deviceId: string) => {
     let isCurrent = true;
     listPtzPresets(edgeId, deviceId)
       .then((list) => isCurrent && setPresets(list))
-      .catch((failure) => {
-        if (isCurrent) fail("Could not load PTZ presets", failure);
-      })
+      .catch(() => undefined)
       .finally(() => isCurrent && setIsLoading(false));
     return () => {
       isCurrent = false;
