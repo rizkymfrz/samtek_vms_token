@@ -4,6 +4,7 @@ import { parseSelection } from "@/config/analytics-catalog";
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
 import { DashboardView } from "@/features/dashboard/components/dashboard-view";
 import { getDashboard } from "@/features/dashboard/services/get-dashboard";
+import { redirectIfUnauthorized } from "@/lib/auth/guard";
 
 const DashboardContent = async ({
   searchParams,
@@ -12,7 +13,7 @@ const DashboardContent = async ({
 }) => {
   await connection();
   const selected = parseSelection((await searchParams).analytics);
-  return <DashboardView data={await getDashboard(selected)} />;
+  return <DashboardView data={await redirectIfUnauthorized(getDashboard(selected))} />;
 };
 
 const Page = ({ searchParams }: PageProps<"/dashboard">) => {
