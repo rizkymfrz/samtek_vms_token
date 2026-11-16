@@ -26,12 +26,17 @@ import {
 } from "../schemas/edge-message";
 import type {
   AnalyticDescriptor,
+  BodywornState,
   EdgeEntry,
   EdgeRecording,
   EdgeSample,
   EdgeStatusState,
   RecordingDevice,
 } from "../types";
+
+type BodywornInput = NonNullable<
+  z.infer<typeof edgeStateSchema>["data"]["devices"]
+>[number]["bodyworn"];
 
 const NO_CATALOG: AnalyticDescriptor[] = [];
 const NO_RECORDING: EdgeRecording = { isAvailable: false, retentionDays: null };
@@ -45,6 +50,7 @@ const EMPTY: EdgeStatusState = {
   online: new Set(),
   faulty: new Set(),
   talk: new Map(),
+  bodyworn: new Map(),
   catalog: new Map(),
   recording: new Map(),
   recordingStatus: new Map(),
@@ -193,6 +199,57 @@ const setTalk = (
   setState({ talk: new Map(state.talk).set(edgeId, supported) });
 };
 
+const sameBodyworn = (a: BodywornState, b: BodywornState) =>
+  a.isOnline === b.isOnline &&
+  a.network === b.network &&
+  a.policeNumber === b.policeNumber &&
+  a.name === b.name &&
+  a.batteryPercent === b.batteryPercent &&
+  a.position?.latitude === b.position?.latitude &&
+  a.position?.longitude === b.position?.longitude &&
+  a.position?.fixedAt === b.position?.fixedAt;
+
+const setBodyworn = (
+  edgeId: string,
+  devices: { device_id: string; bodyworn?: BodywornInput }[] | null,
+) => {
+  const prefix = faultKey(edgeId, "");
+  const next = new Map<string, BodywornState>();
+  for (const device of devices ?? []) {
+    const { bodyworn } = device;
+    if (!bodyworn) continue;
+    next.set(faultKey(edgeId, device.device_id), {
+      isOnline: bodyworn.online ?? null,
+      network: bodyworn.network ?? null,
+      policeNumber: bodyworn.police_number ?? null,
+      name: bodyworn.name ?? null,
+      batteryPercent: bodyworn.battery_percent ?? null,
+      position: bodyworn.position
+        ? {
+            latitude: bodyworn.position.latitude,
+            longitude: bodyworn.position.longitude,
+            fixedAt: toTime(bodyworn.position.fixed_at),
+          }
+        : null,
+    });
+  }
+  const current = [...state.bodyworn].filter(([key]) => key.startsWith(prefix));
+  if (
+    current.length === next.size &&
+    current.every(([key, value]) => {
+      const other = next.get(key);
+      return other !== undefined && sameBodyworn(value, other);
+    })
+  ) {
+    return;
+  }
+  const bodyworn = new Map(
+    [...state.bodyworn].filter(([key]) => !key.startsWith(prefix)),
+  );
+  for (const [key, value] of next) bodyworn.set(key, value);
+  setState({ bodyworn });
+};
+
 const toTime = (value: string | undefined) =>
   value === undefined ? null : Date.parse(value);
 
@@ -324,6 +381,7 @@ const receive = (topic: string, payload: Uint8Array) => {
     const { online, analytics, recording, devices } = announced.data.data;
     setFaulty(topicEdge, online ? (devices ?? []) : []);
     setTalk(topicEdge, online ? (devices ?? []) : null);
+    setBodyworn(topicEdge, devices ?? null);
     if (online && analytics) setCatalog(topicEdge, toDescriptors(analytics));
     if (online && recording) {
       setRecording(topicEdge, {
@@ -422,6 +480,8 @@ export const getServerEdgeCatalog = () => NO_CATALOG;
 export const getOnlineEdges = () => state.online;
 export const getFaultyDevices = () => state.faulty;
 export const getTalkDevices = () => state.talk;
+export const getBodyworn = () => state.bodyworn;
+export const getServerBodyworn = () => EMPTY.bodyworn;
 export const getServerTalkDevices = () => EMPTY.talk;
 
 export const getEdgeCatalog = (edgeId: string) =>

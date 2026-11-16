@@ -4,12 +4,13 @@ const MAX_BODYWORN_CHANNEL = 63;
 const MASKED_PASSWORD = "***";
 const BODYWORN_SCHEME = "bodyworn://";
 const BODYWORN_DEVICE = /^[A-Za-z0-9_-]{1,64}$/;
+const BODYWORN_PLATE = /^[A-Za-z0-9_-]{1,32}$/;
 const BODYWORN_CHANNEL = /^[0-9]{1,2}$/;
 const PASSWORD = /^[a-z][a-z0-9+.-]*:\/\/[^/?#@:]*:([^/?#@]*)@/i;
 const FORBIDDEN = /[\u0000- \u007f]/;
 
 export const STREAM_MESSAGE =
-  "Use rtsp://host/path or bodyworn://<device>?channel=<0-63>&stream=main|sub.";
+  "Use rtsp://host/path or bodyworn://<device>?channel=<0-63>&stream=main|sub&plate=<plate>.";
 
 const isBodyworn = (value: string) => {
   const [device, query, ...extra] = value
@@ -22,6 +23,7 @@ const isBodyworn = (value: string) => {
     const [key, entry, ...more] = pair.split("=");
     if (more.length > 0 || entry === undefined || seen.has(key)) return false;
     seen.add(key);
+    if (key === "plate") return BODYWORN_PLATE.test(entry);
     return key === "channel"
       ? BODYWORN_CHANNEL.test(entry) && Number(entry) <= MAX_BODYWORN_CHANNEL
       : key === "stream" && (entry === "main" || entry === "sub");

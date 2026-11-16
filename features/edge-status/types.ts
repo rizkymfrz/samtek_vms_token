@@ -28,6 +28,19 @@ export type EdgeRecording = {
   retentionDays: number | null;
 };
 
+export type BodywornState = {
+  isOnline: boolean | null;
+  network: string | null;
+  policeNumber: string | null;
+  name: string | null;
+  batteryPercent: number | null;
+  position: {
+    latitude: number;
+    longitude: number;
+    fixedAt: number | null;
+  } | null;
+};
+
 export type RecordingState = "off" | "idle" | "recording" | "stalled";
 
 export type RecordingDevice = {
@@ -58,6 +71,7 @@ export type EdgeStatusState = {
   online: ReadonlySet<string>;
   faulty: ReadonlySet<string>;
   talk: ReadonlyMap<string, ReadonlySet<string>>;
+  bodyworn: ReadonlyMap<string, BodywornState>;
   catalog: ReadonlyMap<string, AnalyticDescriptor[]>;
   recording: ReadonlyMap<string, EdgeRecording>;
   recordingStatus: ReadonlyMap<string, ReadonlyMap<string, RecordingDevice>>;

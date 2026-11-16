@@ -1,5 +1,6 @@
 "use client";
 import { CctvOffIcon, XIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Button } from "@/components/ui/button";
@@ -21,9 +22,11 @@ export type PreviewCamera = {
 export const CameraPreview = ({
   camera,
   onClose,
+  details,
 }: {
   camera: PreviewCamera;
   onClose: () => void;
+  details?: ReactNode;
 }) => {
   return (
     <>
@@ -68,6 +71,7 @@ export const CameraPreview = ({
           <EdgeOffline />
         )}
       </div>
+      {details}
     </>
   );
 };

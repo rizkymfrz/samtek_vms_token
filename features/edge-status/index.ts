@@ -6,6 +6,7 @@ export type { RecognitionEntry } from "./lib/recognition-store";
 
 export {
   useAnalyticCatalog,
+  useBodyworn,
   useDeviceFaulty,
   useEdgeRecording,
   useEdgeStatus,
@@ -16,6 +17,7 @@ export {
 
 export type {
   AnalyticDescriptor,
+  BodywornState,
   DetectionObject,
   EdgeEntry,
   EdgeRecording,

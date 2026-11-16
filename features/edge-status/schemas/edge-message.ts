@@ -46,6 +46,22 @@ const announcedAnalyticSchema = z.object({
 
 export type AnnouncedAnalytic = z.infer<typeof announcedAnalyticSchema>;
 
+const bodywornSchema = z.object({
+  online: z.boolean().optional(),
+  network: z.string().min(1).optional().catch(undefined),
+  police_number: z.string().min(1).optional().catch(undefined),
+  name: z.string().min(1).optional().catch(undefined),
+  battery_percent: z.number().min(0).max(100).optional(),
+  position: z
+    .object({
+      latitude: z.number().min(-90).max(90),
+      longitude: z.number().min(-180).max(180),
+      fixed_at: z.iso.datetime().optional(),
+    })
+    .optional()
+    .catch(undefined),
+});
+
 export const edgeStateSchema = z.object({
   type: z.literal("edge.state"),
   data: z.object({
@@ -61,6 +77,7 @@ export const edgeStateSchema = z.object({
             .object({ supported: z.boolean() })
             .optional()
             .catch(undefined),
+          bodyworn: bodywornSchema.optional().catch(undefined),
         }),
       )
       .optional()

@@ -1,13 +1,18 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { toast } from "@/components/ui/toast";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import {
+  useBodyworn,
+  useDeviceFaulty,
+  useServerOnline,
+} from "@/features/edge-status";
 import { CameraPreview } from "@/features/live";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { messageOf } from "@/lib/axios/browser-client";
+import { BodywornDetails } from "./bodyworn-details";
 import { MapCanvas, markerKey } from "./map-canvas";
 import { MapPanel } from "./map-panel";
 import { MAP_QUERY_KEY, useMap } from "../hooks/use-map";
@@ -22,7 +27,48 @@ export const MapView = ({
   isLive: boolean;
 }) => {
   const queryClient = useQueryClient();
-  const { data } = useMap(initial, isLive);
+  const { data: fetched } = useMap(initial, isLive);
+  const bodyworn = useBodyworn();
+  const data = useMemo(() => {
+    const live = (edgeId: string, deviceId: string) =>
+      bodyworn(edgeId, deviceId)?.position ?? null;
+    const markers = fetched.markers.map((marker) => {
+      if (marker.type !== "device") return marker;
+      const position = live(marker.edgeServerId, marker.id);
+      return position
+        ? {
+            ...marker,
+            latitude: position.latitude,
+            longitude: position.longitude,
+            inherited: false,
+          }
+        : marker;
+    });
+    const unplaced: MapPlace[] = [];
+    for (const place of fetched.unplaced) {
+      const position =
+        place.type === "device" && place.parentId
+          ? live(place.parentId, place.id)
+          : null;
+      if (!position || !place.parentId) {
+        unplaced.push(place);
+        continue;
+      }
+      markers.push({
+        type: "device",
+        id: place.id,
+        name: place.name,
+        edgeServerId: place.parentId,
+        isEnabled: place.isActive,
+        hasSubStream: false,
+        analytic: place.analytic ?? null,
+        inherited: false,
+        latitude: position.latitude,
+        longitude: position.longitude,
+      });
+    }
+    return { ...fetched, markers, unplaced };
+  }, [fetched, bodyworn]);
   const [placing, setPlacing] = useState<MapPlace | null>(null);
   const save = useMutation({
     mutationFn: saveLocationRequest,
@@ -70,6 +116,10 @@ export const MapView = ({
     selected?.type === "device"
       ? data.servers.find((s) => s.id === selected.edgeServerId)
       : undefined;
+  const selectedBodyworn =
+    selected?.type === "device"
+      ? bodyworn(selected.edgeServerId, selected.id)
+      : null;
   const popup =
     selected?.type === "device" ? (
       <CameraPreview
@@ -90,6 +140,9 @@ export const MapView = ({
           webrtcUrlLocal: server?.webrtcUrlLocal ?? null,
         }}
         onClose={() => setSelectedKey(null)}
+        details={
+          selectedBodyworn && <BodywornDetails state={selectedBodyworn} />
+        }
       />
     ) : null;
   const select = (marker: MapMarker) =>
