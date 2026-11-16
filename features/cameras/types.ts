@@ -11,6 +11,7 @@ export type CameraRecord = {
   isEnabled: boolean;
   sourceMain: string;
   sourceSub: string | null;
+  sourceThird: string | null;
   analyticId: string | null;
   isRecordingEnabled: boolean;
   applyStatus: "applied" | "rejected" | null;

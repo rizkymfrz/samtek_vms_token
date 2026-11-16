@@ -14,6 +14,7 @@ type Device = {
   isEnabled: boolean;
   sourceMain: string;
   sourceSub: string | null;
+  sourceThird: string | null;
   isRecordingEnabled: boolean;
   applyStatus: CameraDetail["applyStatus"];
   applyError: CameraDetail["applyError"];
@@ -40,6 +41,7 @@ const toDetail = (
   serverName: server.name,
   sourceMain: device.sourceMain,
   sourceSub: device.sourceSub,
+  sourceThird: device.sourceThird,
   isRecordingEnabled: device.isRecordingEnabled,
   applyStatus: device.applyStatus,
   applyError: device.applyError,

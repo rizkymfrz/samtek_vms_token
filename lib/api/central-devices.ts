@@ -18,6 +18,7 @@ export const deviceSchema = z.object({
   isEnabled: z.boolean(),
   sourceMain: z.string(),
   sourceSub: z.string().nullable(),
+  sourceThird: z.string().nullable().default(null),
   analyticId: z.string().nullable(),
   analyticParams: analyticParamsSchema.nullable().default(null),
   perimeters: perimetersSchema.nullable().default(null),

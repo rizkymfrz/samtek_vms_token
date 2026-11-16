@@ -11,6 +11,7 @@ export type CameraDetail = {
   serverName: string;
   sourceMain: string;
   sourceSub: string | null;
+  sourceThird: string | null;
   isRecordingEnabled: boolean;
   applyStatus: CameraRecord["applyStatus"];
   applyError: CameraRecord["applyError"];

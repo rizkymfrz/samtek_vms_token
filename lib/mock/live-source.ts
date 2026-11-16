@@ -14,6 +14,7 @@ export type Device = {
   isEnabled: boolean;
   sourceMain: string;
   sourceSub: string | null;
+  sourceThird: string | null;
   analyticId: string | null;
   isRecordingEnabled: boolean;
   applyStatus: "applied" | "rejected" | null;
@@ -78,6 +79,7 @@ export const buildLiveSource = (now: number) => {
     isEnabled: options.isEnabled ?? true,
     sourceMain: `rtsp://10.0.${edgeServerId}.${id}/stream1`,
     sourceSub: `rtsp://10.0.${edgeServerId}.${id}/stream2`,
+    sourceThird: null,
     analyticId,
     isRecordingEnabled: options.isRecordingEnabled ?? true,
     applyStatus: "applied",

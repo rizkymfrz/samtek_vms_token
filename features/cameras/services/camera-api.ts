@@ -8,6 +8,7 @@ type CreatePayload = {
   isEnabled: boolean;
   sourceMain: string;
   sourceSub?: string;
+  sourceThird?: string;
   analyticId?: string;
   isRecordingEnabled: boolean;
 };
@@ -17,6 +18,7 @@ type UpdatePayload = {
   isEnabled?: boolean;
   sourceMain?: string;
   sourceSub?: string | null;
+  sourceThird?: string | null;
   analyticId?: string | null;
   isRecordingEnabled?: boolean;
   analyticParams?: AnalyticParams;

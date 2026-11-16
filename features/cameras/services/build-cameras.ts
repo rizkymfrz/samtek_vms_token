@@ -22,6 +22,7 @@ export const buildCameras = (now = Date.now()): CameraData => {
       isEnabled: d.isEnabled,
       sourceMain: d.sourceMain,
       sourceSub: d.sourceSub,
+      sourceThird: d.sourceThird,
       analyticId: d.analyticId,
       isRecordingEnabled: d.isRecordingEnabled,
       applyStatus: d.applyStatus,

@@ -142,6 +142,20 @@ export const CameraForm = ({
                 <FieldError>{errors.sourceSub.message}</FieldError>
               )}
             </Field>
+            <Field data-invalid={!!errors.sourceThird}>
+              <FieldLabel htmlFor={`${formId}-third`}>
+                Third stream (optional)
+              </FieldLabel>
+              <Input
+                id={`${formId}-third`}
+                {...register("sourceThird")}
+                placeholder="bodyworn://1001?channel=0&stream=main"
+                aria-invalid={!!errors.sourceThird}
+              />
+              {errors.sourceThird && (
+                <FieldError>{errors.sourceThird.message}</FieldError>
+              )}
+            </Field>
             <Controller
               control={control}
               name="isEnabled"

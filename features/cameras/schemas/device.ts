@@ -10,6 +10,7 @@ export const createDeviceInputSchema = z.object({
   isEnabled: z.boolean().optional(),
   sourceMain: z.string(),
   sourceSub: z.string().optional(),
+  sourceThird: z.string().optional(),
   analyticId: z.string().optional(),
   isRecordingEnabled: z.boolean().optional(),
 });
@@ -19,6 +20,7 @@ export const updateDeviceInputSchema = z.strictObject({
   isEnabled: z.boolean().optional(),
   sourceMain: z.string().optional(),
   sourceSub: z.string().nullable().optional(),
+  sourceThird: z.string().nullable().optional(),
   analyticId: z.string().nullable().optional(),
   analyticParams: analyticParamsSchema.optional(),
   perimeters: perimetersSchema.optional(),

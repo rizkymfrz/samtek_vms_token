@@ -33,6 +33,7 @@ const toRecord = (detail: CameraDetail) => ({
   isEnabled: detail.isEnabled,
   sourceMain: detail.sourceMain,
   sourceSub: detail.sourceSub,
+  sourceThird: detail.sourceThird,
   analyticId: detail.analyticId,
   isRecordingEnabled: detail.isRecordingEnabled,
   applyStatus: detail.applyStatus,

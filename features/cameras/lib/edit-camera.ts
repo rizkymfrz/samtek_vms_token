@@ -1,12 +1,14 @@
 import { z } from "zod";
 import { requiredText } from "@/lib/forms/required-text";
 import type { CameraRecord, ServerOption } from "../types";
+import { isStreamSource, STREAM_MESSAGE } from "./stream-source";
 
 export type Draft = {
   name: string;
   edgeServerId: string;
   sourceMain: string;
   sourceSub: string;
+  sourceThird: string;
   analyticId: string | null;
   isEnabled: boolean;
   isRecordingEnabled: boolean;
@@ -17,6 +19,7 @@ export const emptyDraft = (servers: ServerOption[]): Draft => ({
   edgeServerId: servers[0]?.id ?? "",
   sourceMain: "",
   sourceSub: "",
+  sourceThird: "",
   analyticId: null,
   isEnabled: true,
   isRecordingEnabled: false,
@@ -27,31 +30,42 @@ export const toDraft = (camera: CameraRecord): Draft => ({
   edgeServerId: camera.edgeServerId,
   sourceMain: camera.sourceMain,
   sourceSub: camera.sourceSub ?? "",
+  sourceThird: camera.sourceThird ?? "",
   analyticId: camera.analyticId,
   isEnabled: camera.isEnabled,
   isRecordingEnabled: camera.isRecordingEnabled,
 });
 
-const STREAM_URL = /^(rtsp|rtsps|rtmp|rtmps|http|https|srt|udp|rtp):\/\/\S+$/i;
-const STREAM_MESSAGE = "Use a stream address such as rtsp:// or http(s)://.";
+const optionalSource = z
+  .string()
+  .refine(
+    (value) => !value.trim() || isStreamSource(value.trim()),
+    STREAM_MESSAGE,
+  );
 
-export const cameraDraftSchema = z.object({
-  name: requiredText("Name", 100),
-  edgeServerId: z.string().min(1, "Choose an edge server."),
-  sourceMain: z
-    .string()
-    .refine((value) => value.trim() !== "", "The main stream is required.")
-    .refine((value) => STREAM_URL.test(value.trim()), STREAM_MESSAGE),
-  sourceSub: z
-    .string()
-    .refine(
-      (value) => !value.trim() || STREAM_URL.test(value.trim()),
-      STREAM_MESSAGE,
-    ),
-  analyticId: z.string().nullable(),
-  isEnabled: z.boolean(),
-  isRecordingEnabled: z.boolean(),
-});
+export const cameraDraftSchema = z
+  .object({
+    name: requiredText("Name", 100),
+    edgeServerId: z.string().min(1, "Choose an edge server."),
+    sourceMain: z
+      .string()
+      .refine((value) => value.trim() !== "", "The main stream is required.")
+      .refine((value) => isStreamSource(value.trim()), STREAM_MESSAGE),
+    sourceSub: optionalSource,
+    sourceThird: optionalSource,
+    analyticId: z.string().nullable(),
+    isEnabled: z.boolean(),
+    isRecordingEnabled: z.boolean(),
+  })
+  .refine(
+    (draft) =>
+      !draft.sourceSub.trim() ||
+      draft.sourceSub.trim() !== draft.sourceMain.trim(),
+    {
+      path: ["sourceSub"],
+      message: "The sub stream must differ from the main stream.",
+    },
+  );
 
 export const saveCamera = (
   cameras: CameraRecord[],
@@ -65,6 +79,7 @@ export const saveCamera = (
     isEnabled: draft.isEnabled,
     sourceMain: draft.sourceMain.trim(),
     sourceSub: draft.sourceSub.trim() || null,
+    sourceThird: draft.sourceThird.trim() || null,
     analyticId: draft.analyticId,
     isRecordingEnabled: draft.isRecordingEnabled,
     applyStatus: "applied",
@@ -92,12 +107,14 @@ export const toCreatePayload = (draft: Draft) => ({
   isEnabled: draft.isEnabled,
   sourceMain: draft.sourceMain.trim(),
   sourceSub: draft.sourceSub.trim() || undefined,
+  sourceThird: draft.sourceThird.trim() || undefined,
   analyticId: draft.analyticId ?? undefined,
   isRecordingEnabled: draft.isRecordingEnabled,
 });
 
 export const toUpdatePayload = (draft: Draft, original: CameraRecord) => {
   const sourceSub = draft.sourceSub.trim();
+  const sourceThird = draft.sourceThird.trim();
   return {
     name: draft.name.trim() !== original.name ? draft.name.trim() : undefined,
     isEnabled:
@@ -112,6 +129,10 @@ export const toUpdatePayload = (draft: Draft, original: CameraRecord) => {
         : undefined,
     sourceSub:
       sourceSub !== (original.sourceSub ?? "") ? sourceSub || null : undefined,
+    sourceThird:
+      sourceThird !== (original.sourceThird ?? "")
+        ? sourceThird || null
+        : undefined,
     analyticId:
       draft.analyticId !== original.analyticId ? draft.analyticId : undefined,
   };
