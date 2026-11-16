@@ -1,6 +1,6 @@
 import type { MqttClient } from "mqtt";
 import type { z } from "zod";
-import { EDGE_UP_TOPIC } from "@/config/mqtt";
+import { EDGE_UP_TOPIC, mqttConfig } from "@/config/mqtt";
 import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
 import { toDescriptors } from "./analytic-catalog";
@@ -42,6 +42,7 @@ const NO_CATALOG: AnalyticDescriptor[] = [];
 const NO_RECORDING: EdgeRecording = { isAvailable: false, retentionDays: null };
 const TICK_MS = 1000;
 const COMMAND_TIMEOUT_MS = 5000;
+const CONNECT_WAIT_MS = 5000;
 
 const EMPTY: EdgeStatusState = {
   isConnected: false,
@@ -433,13 +434,40 @@ export const startEdgeStatus = () => {
   setInterval(tick, TICK_MS);
 };
 
-export const sendEdgeCommand = (
+const whenConnected = () =>
+  new Promise<void>((resolve, reject) => {
+    if (state.isConnected) {
+      resolve();
+      return;
+    }
+    if (!mqttConfig) {
+      reject(new Error("Not connected to the MQTT broker"));
+      return;
+    }
+    const done = (error?: Error) => {
+      listeners.delete(onChange);
+      clearTimeout(timer);
+      if (error) reject(error);
+      else resolve();
+    };
+    const onChange = () => {
+      if (state.isConnected) done();
+    };
+    const timer = window.setTimeout(
+      () => done(new Error("Not connected to the MQTT broker")),
+      CONNECT_WAIT_MS,
+    );
+    listeners.add(onChange);
+  });
+
+export const sendEdgeCommand = async (
   topic: string,
   type: string,
   data: Record<string, unknown> = {},
-) =>
-  new Promise<EdgeResultData>((resolve, reject) => {
-    if (!client || !state.isConnected) {
+) => {
+  await whenConnected();
+  return new Promise<EdgeResultData>((resolve, reject) => {
+    if (!client) {
       reject(new Error("Not connected to the MQTT broker"));
       return;
     }
@@ -457,6 +485,7 @@ export const sendEdgeCommand = (
       reject(error);
     });
   });
+};
 
 export const sendEdgeAudio = (
   topic: string,

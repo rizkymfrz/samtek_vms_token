@@ -26,6 +26,7 @@ export type {
   ParamKind,
   ParamSpec,
   PlaybackSession,
+  PtzPreset,
   RecordingDevice,
   RecordingRange,
   RecordingState,
@@ -62,3 +63,14 @@ export {
 } from "./lib/playback-commands";
 
 export { queryRecording } from "./lib/recording-query";
+
+export {
+  callPtzPreset,
+  deletePtzPreset,
+  focusPtz,
+  homePtz,
+  listPtzPresets,
+  movePtz,
+  setPtzPreset,
+  stopPtz,
+} from "./lib/ptz-commands";

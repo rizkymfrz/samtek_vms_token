@@ -46,7 +46,7 @@ export const LivePanel = ({
           </StreamDetections>
         )}
       </div>
-      <PtzControls />
+      <PtzControls edgeId={detail.edgeServerId} deviceId={detail.id} />
     </section>
   );
 };

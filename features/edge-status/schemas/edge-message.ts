@@ -127,6 +127,7 @@ export const edgeResultSchema = z.object({
     recording: z.unknown().optional(),
     playback: z.unknown().optional(),
     talk: z.unknown().optional(),
+    ptz: z.unknown().optional(),
   }),
 });
 
@@ -137,6 +138,16 @@ export const playbackResultSchema = z.object({
   state: z.enum(["playing", "paused", "ended"]),
   position: z.iso.datetime(),
   speed: z.number().positive(),
+});
+
+export const ptzPresetSchema = z.object({
+  token: z.string().min(1),
+  name: z.string(),
+});
+
+export const ptzResultSchema = z.object({
+  presets: z.array(ptzPresetSchema).optional(),
+  preset: ptzPresetSchema.optional(),
 });
 
 export type EdgeResultData = z.infer<typeof edgeResultSchema>["data"];

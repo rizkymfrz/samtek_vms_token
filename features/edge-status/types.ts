@@ -113,3 +113,5 @@ export type AnalyticDescriptor = {
   name: string;
   params: ParamSpec[];
 };
+
+export type PtzPreset = { token: string; name: string };
