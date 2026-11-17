@@ -6,13 +6,7 @@ import { cn } from "@/lib/utils";
 import { useDetections } from "../hooks/use-detections";
 import type { DetectionObject } from "../types";
 
-const TONES = [
-  "text-chart-1 bg-chart-1/10",
-  "text-chart-2 bg-chart-2/10",
-  "text-chart-3 bg-chart-3/10",
-  "text-chart-4 bg-chart-4/10",
-  "text-chart-5 bg-chart-5/10",
-];
+const TONES = ["text-detect-red", "text-detect-green", "text-detect-blue"];
 
 const CORNERS = [
   "top-0 left-0 border-t-2 border-l-2",
@@ -34,7 +28,7 @@ const Box = ({ object }: { object: DetectionObject }) => {
   return (
     <div
       className={cn(
-        "absolute border border-current/30 transition-[left,top,width,height] duration-100 ease-linear",
+        "absolute border-2 border-current transition-[left,top,width,height] duration-100 ease-linear",
         toneOf(object.label),
       )}
       style={{
