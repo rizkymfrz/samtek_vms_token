@@ -25,6 +25,7 @@ const GRID_SOURCE = "grid";
 const GRID_LINES = "grid-lines";
 const GRID_LABELS = "grid-labels";
 const TRAIL_SOURCE = "trail";
+const TRAIL_CASING = "trail-casing";
 const TRAIL_LINE = "trail-line";
 const ORBIT_DEG_PER_MS = 0.01;
 const FOLLOW_EASE = 0.05;
@@ -89,7 +90,7 @@ const themeColors = () => ({
   text: tokenColor("--muted-foreground"),
   building: resolveColor(mix("--primary", 35, "--accent")),
   grid: resolveColor(mix("--primary", 45, "transparent")),
-  trail: tokenColor("--primary"),
+  trail: tokenColor("--color-detect-red"),
 });
 
 const applyTheme = (map: MapLibreMap) => {
@@ -137,6 +138,7 @@ const applyTheme = (map: MapLibreMap) => {
         break;
     }
   }
+  map.setPaintProperty(TRAIL_CASING, "line-color", color.background);
   map.setPaintProperty(TRAIL_LINE, "line-color", color.trail);
   map.setPaintProperty(GRID_LINES, "line-color", color.grid);
   map.setPaintProperty(GRID_LABELS, "text-color", color.text);
@@ -267,11 +269,18 @@ const addTrail = (map: MapLibreMap) => {
     data: { type: "FeatureCollection", features: [] },
   });
   map.addLayer({
+    id: TRAIL_CASING,
+    source: TRAIL_SOURCE,
+    type: "line",
+    layout: { "line-cap": "round", "line-join": "round" },
+    paint: { "line-width": 8 },
+  });
+  map.addLayer({
     id: TRAIL_LINE,
     source: TRAIL_SOURCE,
     type: "line",
     layout: { "line-cap": "round", "line-join": "round" },
-    paint: { "line-width": 4, "line-opacity": 0.9 },
+    paint: { "line-width": 4 },
   });
 };
 

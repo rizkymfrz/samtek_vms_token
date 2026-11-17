@@ -7,7 +7,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
+@theme static {
   --color-detect-red: rgb(255 0 0);
   --color-detect-green: rgb(0 255 0);
   --color-detect-blue: rgb(0 0 255);
