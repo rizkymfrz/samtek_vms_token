@@ -63,3 +63,11 @@ export type MapData = {
   failures: MapFailure[];
   truncated: boolean;
 };
+
+export type DevicePosition = {
+  latitude: number;
+  longitude: number;
+  fixedAt: number;
+};
+
+export type TrackTarget = { edgeServerId: string; deviceId: string };

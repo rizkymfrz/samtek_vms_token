@@ -48,3 +48,21 @@ export const locationInputSchema = z
   .refine((value) => value.type !== "device" || value.edgeServerId, {
     message: "A device needs its edge server",
   });
+
+export const devicePositionsResponseSchema = z.object({
+  data: z.object({
+    items: z.array(
+      z.object({
+        latitude: z.number().min(-90).max(90),
+        longitude: z.number().min(-180).max(180),
+        fixedAt: z.iso.datetime().transform((value) => Date.parse(value)),
+      }),
+    ),
+  }),
+});
+
+export const devicePositionsQuerySchema = z.object({
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
+  limit: z.coerce.number().int().min(1).max(5000).optional(),
+});

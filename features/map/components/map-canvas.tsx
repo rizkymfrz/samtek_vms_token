@@ -24,7 +24,10 @@ const BUILDINGS_LAYER = "building-3d";
 const GRID_SOURCE = "grid";
 const GRID_LINES = "grid-lines";
 const GRID_LABELS = "grid-labels";
+const TRAIL_SOURCE = "trail";
+const TRAIL_LINE = "trail-line";
 const ORBIT_DEG_PER_MS = 0.01;
+const FOLLOW_EASE = 0.05;
 const ZOOM = { group: 13, server: 16, device: 17.5 } as const;
 export const markerKey = (marker: MapMarker) => `${marker.type}:${marker.id}`;
 
@@ -86,13 +89,14 @@ const themeColors = () => ({
   text: tokenColor("--muted-foreground"),
   building: resolveColor(mix("--primary", 35, "--accent")),
   grid: resolveColor(mix("--primary", 45, "transparent")),
+  trail: tokenColor("--primary"),
 });
 
 const applyTheme = (map: MapLibreMap) => {
   const color = themeColors();
   for (const layer of map.getStyle().layers) {
     const { id } = layer;
-    if (id.startsWith("grid-")) continue;
+    if (id.startsWith("grid-") || id.startsWith("trail-")) continue;
     switch (layer.type) {
       case "background":
         map.setPaintProperty(id, "background-color", color.background);
@@ -133,6 +137,7 @@ const applyTheme = (map: MapLibreMap) => {
         break;
     }
   }
+  map.setPaintProperty(TRAIL_LINE, "line-color", color.trail);
   map.setPaintProperty(GRID_LINES, "line-color", color.grid);
   map.setPaintProperty(GRID_LABELS, "text-color", color.text);
   map.setPaintProperty(GRID_LABELS, "text-halo-color", color.background);
@@ -240,6 +245,36 @@ const addGrid = (map: MapLibreMap) => {
   updateGrid(map);
 };
 
+const setTrail = (map: MapLibreMap, line: [number, number][]) => {
+  map.getSource<GeoJSONSource>(TRAIL_SOURCE)?.setData({
+    type: "FeatureCollection",
+    features:
+      line.length > 1
+        ? [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: { type: "LineString", coordinates: line },
+            },
+          ]
+        : [],
+  });
+};
+
+const addTrail = (map: MapLibreMap) => {
+  map.addSource(TRAIL_SOURCE, {
+    type: "geojson",
+    data: { type: "FeatureCollection", features: [] },
+  });
+  map.addLayer({
+    id: TRAIL_LINE,
+    source: TRAIL_SOURCE,
+    type: "line",
+    layout: { "line-cap": "round", "line-join": "round" },
+    paint: { "line-width": 4, "line-opacity": 0.9 },
+  });
+};
+
 const addBuildings = (map: MapLibreMap) => {
   if (map.getLayer(BUILDINGS_LAYER)) map.removeLayer(BUILDINGS_LAYER);
   const layers = map.getStyle().layers;
@@ -292,6 +327,7 @@ export const MapCanvas = ({
   onPlace,
   onMove,
   popup,
+  trail,
 }: {
   markers: MapMarker[];
   online: ReadonlySet<string>;
@@ -303,6 +339,7 @@ export const MapCanvas = ({
   onPlace: (latitude: number, longitude: number) => void;
   onMove: (marker: MapMarker, latitude: number, longitude: number) => void;
   popup: ReactNode | null;
+  trail: [number, number][];
 }) => {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibreMap | null>(null);
@@ -327,12 +364,14 @@ export const MapCanvas = ({
   const onMoveRef = useRef(onMove);
   const isPlacingRef = useRef(isPlacing);
   const markersRef = useRef(markers);
+  const trailRef = useRef(trail);
   useEffect(() => {
     onSelectRef.current = onSelect;
     onPlaceRef.current = onPlace;
     onMoveRef.current = onMove;
     isPlacingRef.current = isPlacing;
     markersRef.current = markers;
+    trailRef.current = trail;
   });
   const stopOrbit = () => {
     if (orbit.current !== null) cancelAnimationFrame(orbit.current);
@@ -378,6 +417,8 @@ export const MapCanvas = ({
       instance.on("load", () => {
         addGrid(instance);
         addBuildings(instance);
+        addTrail(instance);
+        setTrail(instance, trailRef.current);
         applyTheme(instance);
       });
       const observer = new MutationObserver(() => {
@@ -409,6 +450,11 @@ export const MapCanvas = ({
       map.current = null;
     };
   }, []);
+  useEffect(() => {
+    void ready.current?.then((instance) => {
+      if (map.current === instance) setTrail(instance, trail);
+    });
+  }, [trail]);
   useEffect(() => {
     let cancelled = false;
     void ready.current?.then(async (instance) => {
@@ -537,10 +583,20 @@ export const MapCanvas = ({
         const startedAt = performance.now();
         const startBearing = instance.getBearing();
         const frame = (now: number) => {
-          instance.rotateTo(
-            (startBearing + (now - startedAt) * ORBIT_DEG_PER_MS) % 360,
-            { duration: 0 },
+          const target = markersRef.current.find(
+            (m) => markerKey(m) === selectedKey,
           );
+          const center = instance.getCenter();
+          instance.jumpTo({
+            bearing:
+              (startBearing + (now - startedAt) * ORBIT_DEG_PER_MS) % 360,
+            center: target
+              ? [
+                  center.lng + (target.longitude - center.lng) * FOLLOW_EASE,
+                  center.lat + (target.latitude - center.lat) * FOLLOW_EASE,
+                ]
+              : center,
+          });
           orbit.current = requestAnimationFrame(frame);
         };
         orbit.current = requestAnimationFrame(frame);

@@ -15,7 +15,9 @@ import { messageOf } from "@/lib/axios/browser-client";
 import { BodywornDetails } from "./bodyworn-details";
 import { MapCanvas, markerKey } from "./map-canvas";
 import { MapPanel } from "./map-panel";
+import { useDevicePositions } from "../hooks/use-device-positions";
 import { MAP_QUERY_KEY, useMap } from "../hooks/use-map";
+import { trailOf } from "../lib/trail";
 import { saveLocationRequest } from "../services/map-api";
 import type { MapData, MapMarker, MapPlace } from "../types";
 
@@ -120,6 +122,16 @@ export const MapView = ({
     selected?.type === "device"
       ? bodyworn(selected.edgeServerId, selected.id)
       : null;
+  const history = useDevicePositions(
+    isLive && selected?.type === "device" && selectedBodyworn
+      ? { edgeServerId: selected.edgeServerId, deviceId: selected.id }
+      : null,
+  );
+  useFailureToast("Could not load the movement trail", [
+    history.error && messageOf(history.error),
+  ]);
+  const livePosition = selectedBodyworn?.position ?? null;
+  const trail = history.data ? trailOf(history.data, livePosition) : [];
   const popup =
     selected?.type === "device" ? (
       <CameraPreview
@@ -183,6 +195,7 @@ export const MapView = ({
         }}
         onMove={saveLocation}
         popup={popup}
+        trail={trail}
       />
     </PageShell>
   );
