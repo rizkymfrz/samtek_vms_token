@@ -1,6 +1,6 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { toast } from "@/components/ui/toast";
@@ -15,11 +15,15 @@ import { messageOf } from "@/lib/axios/browser-client";
 import { BodywornDetails } from "./bodyworn-details";
 import { MapCanvas, markerKey } from "./map-canvas";
 import { MapPanel } from "./map-panel";
-import { useDevicePositions } from "../hooks/use-device-positions";
+import {
+  devicePositionsKey,
+  useDevicePositions,
+} from "../hooks/use-device-positions";
 import { MAP_QUERY_KEY, useMap } from "../hooks/use-map";
-import { trailOf } from "../lib/trail";
+import { useMatchedTrail } from "../hooks/use-matched-trail";
+import { appendFix, msUntilNextDay, startOfDay, trailOf } from "../lib/trail";
 import { saveLocationRequest } from "../services/map-api";
-import type { MapData, MapMarker, MapPlace } from "../types";
+import type { DevicePosition, MapData, MapMarker, MapPlace } from "../types";
 
 export const MapView = ({
   data: initial,
@@ -122,16 +126,66 @@ export const MapView = ({
     selected?.type === "device"
       ? bodyworn(selected.edgeServerId, selected.id)
       : null;
-  const history = useDevicePositions(
+  const [dayStart, setDayStart] = useState(() => startOfDay(Date.now()));
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setDayStart(startOfDay(Date.now())),
+      msUntilNextDay(Date.now()) + 1000,
+    );
+    return () => clearTimeout(timer);
+  }, [dayStart]);
+  const trackTarget =
     isLive && selected?.type === "device" && selectedBodyworn
       ? { edgeServerId: selected.edgeServerId, deviceId: selected.id }
-      : null,
-  );
+      : null;
+  const history = useDevicePositions(trackTarget, dayStart);
   useFailureToast("Could not load the movement trail", [
     history.error && messageOf(history.error),
   ]);
   const livePosition = selectedBodyworn?.position ?? null;
-  const trail = history.data ? trailOf(history.data, livePosition) : [];
+  const liveLatitude = livePosition?.latitude;
+  const liveLongitude = livePosition?.longitude;
+  const liveFixedAt = livePosition?.fixedAt ?? null;
+  const historyLoaded = history.data !== undefined;
+  useEffect(() => {
+    if (
+      !trackTarget ||
+      !historyLoaded ||
+      liveLatitude === undefined ||
+      liveLongitude === undefined
+    ) {
+      return;
+    }
+    queryClient.setQueryData<DevicePosition[]>(
+      devicePositionsKey(trackTarget, dayStart),
+      (old) =>
+        old &&
+        appendFix(
+          old,
+          {
+            latitude: liveLatitude,
+            longitude: liveLongitude,
+            fixedAt: liveFixedAt,
+          },
+          Date.now(),
+        ),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    trackTarget?.edgeServerId,
+    trackTarget?.deviceId,
+    dayStart,
+    historyLoaded,
+    liveLatitude,
+    liveLongitude,
+    liveFixedAt,
+    queryClient,
+  ]);
+  const rawTrail = history.data ? trailOf(history.data, livePosition) : [];
+  const trail = useMatchedTrail(
+    rawTrail,
+    `${trackTarget?.edgeServerId}-${trackTarget?.deviceId}-${dayStart}`,
+  );
   const popup =
     selected?.type === "device" ? (
       <CameraPreview

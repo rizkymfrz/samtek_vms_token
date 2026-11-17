@@ -66,3 +66,16 @@ export const devicePositionsQuerySchema = z.object({
   to: z.iso.datetime().optional(),
   limit: z.coerce.number().int().min(1).max(5000).optional(),
 });
+
+export const matchInputSchema = z.object({
+  points: z
+    .array(
+      z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(90)]),
+    )
+    .min(2)
+    .max(1000),
+});
+
+export const matchResponseSchema = z.object({
+  trip: z.object({ legs: z.array(z.object({ shape: z.string() })) }),
+});

@@ -121,10 +121,13 @@ Rules:
 - Pengecualian yang diterima: route handler di `app/api/auth/`,
   `app/api/alerts/`, `app/api/cameras/`, `app/api/edge-servers/`,
   `app/api/servers/`, `app/api/live/`, `app/api/layouts/`,
-  `app/api/users/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, dan `app/api/recognitions/` dipakai sebagai lapisan tipis
+  `app/api/map/`, `app/api/users/`, `app/api/roles/`, `app/api/permissions/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, dan `app/api/recognitions/` dipakai sebagai lapisan tipis
   (BFF) di depan API central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
+  `app/api/map/match/` meneruskan jejak bodyworn ke Valhalla
+  (`MAP_MATCHING_URL`, opsional) agar garis menempel ke jalan; tanpa env itu
+  jejak tetap garis lurus.
   Handler hanya memvalidasi input, meneruskan permintaan, dan memetakan
   error; aturan bisnis tetap berada di API backend.
   `app/api/ticket-link/` dan halaman `/t` sengaja publik (tanpa login): otorisasinya token link per tiket (header `X-Ticket-Link`), bukan cookie.
