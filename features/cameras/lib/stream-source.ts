@@ -1,12 +1,10 @@
 const MAX_LENGTH = 2048;
 const MAX_PORT = 65535;
 const MAX_BODYWORN_CHANNEL = 63;
-const MASKED_PASSWORD = "***";
 const BODYWORN_SCHEME = "bodyworn://";
 const BODYWORN_DEVICE = /^[A-Za-z0-9_-]{1,64}$/;
 const BODYWORN_PLATE = /^[A-Za-z0-9_-]{1,32}$/;
 const BODYWORN_CHANNEL = /^[0-9]{1,2}$/;
-const PASSWORD = /^[a-z][a-z0-9+.-]*:\/\/[^/?#@:]*:([^/?#@]*)@/i;
 const FORBIDDEN = /[\u0000- \u007f]/;
 
 export const STREAM_MESSAGE =
@@ -51,5 +49,5 @@ export const isStreamSource = (value: string) => {
   ) {
     return false;
   }
-  return PASSWORD.exec(value)?.[1] !== MASKED_PASSWORD;
+  return true;
 };
