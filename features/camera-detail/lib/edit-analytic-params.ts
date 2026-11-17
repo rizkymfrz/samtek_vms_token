@@ -1,7 +1,12 @@
 import type { ParamSpec } from "@/features/edge-status";
 import type { AnalyticParams, ParamValue } from "@/lib/api/analytic-params";
 
+const LABELS: Record<string, string> = {
+  max_stay_seconds: "Max stay in seconds (0 = off)",
+};
+
 export const paramLabel = (key: string) =>
+  LABELS[key] ??
   key.replace(/[-_]/g, " ").replace(/^\w/, (char) => char.toUpperCase());
 
 export const paramError = (

@@ -10,7 +10,6 @@ const pointSchema = z.object({ x: unit, y: unit });
 export const areaSchema = z.object({
   name: z.string().trim().min(1),
   polygon: z.array(pointSchema).min(MIN_POLYGON_POINTS).max(MAX_POLYGON_POINTS),
-  max_stay_seconds: z.number().int().min(1).optional(),
 });
 
 export const lineSchema = z.object({

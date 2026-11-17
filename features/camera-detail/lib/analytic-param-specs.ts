@@ -26,6 +26,11 @@ const list = (key: string, options: string[], fallback: string[] = options) =>
 
 const flag = (key: string, fallback: boolean) => spec(key, "boolean", fallback);
 
+const maxStay = spec("max_stay_seconds", "integer", 0, {
+  min: 0,
+  max: 1_000_000_000,
+});
+
 const counting = [
   time("counting_start", "00:00:00"),
   time("counting_end", "23:59:59"),
@@ -45,11 +50,13 @@ export const ANALYTIC_PARAM_SPECS: Record<string, ParamSpec[]> = {
     ...counting,
     list("labels", ["person"]),
     sensitivity(0),
+    maxStay,
   ],
   vehicle_counting_dwelling: [
     ...counting,
     list("labels", ["bus", "car", "motorbike", "truck"]),
     sensitivity(0),
+    maxStay,
   ],
   ppe_violation: [
     list("required_items", ["helmet", "vest", "mask"]),

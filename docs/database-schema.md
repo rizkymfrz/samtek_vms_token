@@ -654,8 +654,11 @@ Defined in `duckdb_database.cpp:78-92`. They are plain indexes, not constraints.
 `vehicle_license_plate_recognition`, `people_reidentification`.
 
 - `analyticParams` (JSON): flat object of bool, number, string or list of strings. Unknown keys are rejected by the edge.
-  Every parameter has a default, so none is required.
-- `perimeters` (JSON): `{ areas: [{ name, polygon: [{x, y}, ...], max_stay_seconds? }], lines: [{ name, line: {x1, y1, x2, y2},
+  Every parameter has a default, so none is required. `max_stay_seconds` (integer 0..1000000000, default 0 = off) is one stay
+  limit per camera and exists only on `people_counting_dwelling` and `vehicle_counting_dwelling`; any other analytic rejects it.
+  It used to be set per area inside `perimeters`, which the edge now rejects. A limit above 0 needs at least one area. The
+  VMS drops a leftover `max_stay_seconds` from areas when it saves a camera's perimeters.
+- `perimeters` (JSON): `{ areas: [{ name, polygon: [{x, y}, ...] }], lines: [{ name, line: {x1, y1, x2, y2},
   direction_a_name, direction_b_name }] }`. Coordinates are normalized 0..1. At most 32 areas and 32 lines; a polygon has 3 to 256 points.
 - Not stored anywhere (so not available to the UI): PPE "people checked" denominators, real-time occupancy per area,
   heatmap positions, and alarm bounding boxes (`alarm_events` has none).

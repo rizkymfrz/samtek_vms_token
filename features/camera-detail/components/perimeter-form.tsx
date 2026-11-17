@@ -71,28 +71,6 @@ export const PerimeterForm = ({
           </Field>
         </>
       )}
-      {area && (
-        <Field>
-          <FieldLabel htmlFor="shape-max-stay">
-            Max stay in seconds (optional)
-          </FieldLabel>
-          <Input
-            id="shape-max-stay"
-            type="number"
-            min={1}
-            step={1}
-            value={area.max_stay_seconds ?? ""}
-            onChange={(event) =>
-              onChangeArea(selection.index, {
-                max_stay_seconds:
-                  event.target.value === ""
-                    ? undefined
-                    : Math.max(1, Math.floor(Number(event.target.value))),
-              })
-            }
-          />
-        </Field>
-      )}
     </div>
   );
 };
