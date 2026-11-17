@@ -5,6 +5,7 @@ import {
   HeaderNotifications,
 } from "@/components/layout/header-notifications";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
+import { AlertImage } from "./alert-image";
 import { useNotifications } from "../hooks/use-notifications";
 import { notificationStore } from "../lib/notification-store";
 import { timeAgo } from "../lib/time-ago";
@@ -34,6 +35,7 @@ export const AlertNotifications = () => {
     time: now === null ? "" : timeAgo(row.at, now),
     severity: row.risk === "high" ? "critical" : "info",
     read: !isReady || row.at <= value.readAt,
+    image: <AlertImage path={row.imagePath} src={row.imageUrl} />,
   }));
   const unread = isReady
     ? rows.filter((row) => row.at > value.readAt).length

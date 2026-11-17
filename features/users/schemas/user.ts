@@ -16,6 +16,11 @@ export const roleSchema = z.object({
   name: z.string(),
 });
 
+export const serverOptionSchema = z.object({
+  id: z.coerce.string(),
+  name: z.string(),
+});
+
 export const userIdResponseSchema = z.object({
   data: z.object({ id: z.coerce.string() }),
 });
@@ -36,4 +41,19 @@ export const updateUserInputSchema = z.strictObject({
 
 export const assignRoleInputSchema = z.strictObject({
   roleId: z.string().nullable(),
+});
+
+export const permissionSchema = z.object({
+  code: z.string(),
+  description: z.string().nullable().default(null),
+});
+
+export const createRoleInputSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  description: z.string().trim().max(1000).optional(),
+  permissions: z.array(z.string()).optional(),
+});
+
+export const assignServerRoleInputSchema = z.strictObject({
+  roleId: z.string().regex(/^[0-9]+$/),
 });

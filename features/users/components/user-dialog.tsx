@@ -1,21 +1,12 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2Icon, UserCheckIcon, UserIcon } from "lucide-react";
+import { PlusIcon, UserCheckIcon, UserIcon } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DialogToggles } from "@/components/shared/dialog-toggles";
 import { PasswordInput } from "@/components/shared/password-input";
 import { Pick } from "@/components/shared/pick";
 import { ToggleCard } from "@/components/shared/toggle-card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,39 +22,43 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { type RoleAction, RoleFormDialog } from "./role-form-dialog";
 import {
   type Draft,
   emptyDraft,
   toDraft,
   userDraftSchema,
 } from "../lib/edit-user";
-import type { RoleOption, UserRecord } from "../types";
+import type { RoleOption, ServerOption, UserRecord } from "../types";
 
 export type DialogTarget = "new" | UserRecord | null;
 
 const NO_ROLE = "none";
+const NO_SERVER = "none";
 
 const Form = ({
   target,
   users,
   roles,
+  servers,
   isPending,
   error,
+  roleAction,
   onSave,
-  onDelete,
   onClose,
 }: {
   target: "new" | UserRecord;
   users: UserRecord[];
   roles: RoleOption[];
+  servers: ServerOption[];
   isPending: boolean;
   error: string | null;
+  roleAction: RoleAction;
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
-  onDelete: (id: string) => void | Promise<void>;
   onClose: () => void;
 }) => {
+  const [isRoleOpen, setIsRoleOpen] = useState(false);
   const editing = target === "new" ? null : target;
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const formId = useId();
   const schema = useMemo(
     () => userDraftSchema(users, editing?.id ?? null),
@@ -73,13 +68,19 @@ const Form = ({
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Draft>({
     resolver: zodResolver(schema),
     defaultValues: editing ? toDraft(editing) : emptyDraft(),
   });
+  const roleField = editing ? "platformRoleId" : "serverRoleId";
+  const serverItems = [
+    { value: NO_SERVER, label: "Select a server" },
+    ...servers.map((server) => ({ value: server.id, label: server.name })),
+  ];
   const roleItems = [
-    { value: NO_ROLE, label: "No role" },
+    { value: NO_ROLE, label: editing ? "No role" : "Select a role" },
     ...roles.map((role) => ({ value: role.id, label: role.name })),
   ];
   return (
@@ -154,54 +155,83 @@ const Form = ({
                 )}
               </Field>
             )}
-            <Field>
-              <FieldLabel>Role</FieldLabel>
-              <Controller
-                control={control}
-                name="platformRoleId"
-                render={({ field }) => (
-                  <Pick
-                    label="Role"
-                    items={roleItems}
-                    value={field.value ?? NO_ROLE}
-                    onChange={(value) =>
-                      field.onChange(value === NO_ROLE ? null : value)
-                    }
-                    className="w-full"
-                  />
-                )}
-              />
-            </Field>
-            <Controller
-              control={control}
-              name="isActive"
-              render={({ field }) => (
-                <ToggleCard
-                  id={`${formId}-active`}
-                  icon={<UserCheckIcon />}
-                  label="Active"
-                  description="An inactive user can no longer sign in."
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+            {!editing && (
+              <Field data-invalid={!!errors.serverId}>
+                <FieldLabel>Server</FieldLabel>
+                <Controller
+                  control={control}
+                  name="serverId"
+                  render={({ field }) => (
+                    <Pick
+                      label="Server"
+                      items={serverItems}
+                      value={field.value ?? NO_SERVER}
+                      onChange={(value) =>
+                        field.onChange(value === NO_SERVER ? null : value)
+                      }
+                      className="w-full"
+                    />
+                  )}
                 />
+                {errors.serverId && (
+                  <FieldError>{errors.serverId.message}</FieldError>
+                )}
+              </Field>
+            )}
+            <Field data-invalid={!!errors.serverRoleId}>
+              <FieldLabel>{editing ? "Platform role" : "Role"}</FieldLabel>
+              <div className="flex gap-2">
+                <Controller
+                  control={control}
+                  name={roleField}
+                  render={({ field }) => (
+                    <Pick
+                      label="Role"
+                      items={roleItems}
+                      value={field.value ?? NO_ROLE}
+                      onChange={(value) =>
+                        field.onChange(value === NO_ROLE ? null : value)
+                      }
+                      className="flex-1"
+                    />
+                  )}
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  aria-label="New role"
+                  title="New role"
+                  onClick={() => setIsRoleOpen(true)}
+                >
+                  <PlusIcon />
+                </Button>
+              </div>
+              {errors.serverRoleId && (
+                <FieldError>{errors.serverRoleId.message}</FieldError>
               )}
-            />
+            </Field>
             {error && <FieldError>{error}</FieldError>}
           </DialogSection>
         </form>
       </DialogBody>
+      <DialogToggles>
+        <Controller
+          control={control}
+          name="isActive"
+          render={({ field }) => (
+            <ToggleCard
+              id={`${formId}-active`}
+              icon={<UserCheckIcon />}
+              label="Active"
+              description="An inactive user can no longer sign in."
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+      </DialogToggles>
       <Separator />
       <DialogFooter>
-        {editing ? (
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => setConfirmDelete(true)}
-          >
-            <Trash2Icon />
-            Delete
-          </Button>
-        ) : null}
         <Button type="button" variant="secondary" onClick={onClose}>
           Cancel
         </Button>
@@ -209,26 +239,23 @@ const Form = ({
           {editing ? "Save" : "Add user"}
         </Button>
       </DialogFooter>
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete {editing?.username}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              The account can no longer sign in. Its username and email stay
-              reserved.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={() => editing && onDelete(editing.id)}
-            >
-              Delete user
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <RoleFormDialog
+        open={isRoleOpen}
+        action={roleAction}
+        onSave={async (draft) => {
+          try {
+            const id = await roleAction.create(draft);
+            setValue(roleField, id, { shouldDirty: true });
+            setIsRoleOpen(false);
+          } catch {
+            return;
+          }
+        }}
+        onClose={() => {
+          setIsRoleOpen(false);
+          roleAction.reset();
+        }}
+      />
     </>
   );
 };
@@ -237,19 +264,21 @@ export const UserDialog = ({
   target,
   users,
   roles,
+  servers,
   isPending,
   error,
+  roleAction,
   onSave,
-  onDelete,
   onClose,
 }: {
   target: DialogTarget;
   users: UserRecord[];
   roles: RoleOption[];
+  servers: ServerOption[];
   isPending: boolean;
   error: string | null;
+  roleAction: RoleAction;
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
-  onDelete: (id: string) => void | Promise<void>;
   onClose: () => void;
 }) => {
   return (
@@ -261,10 +290,11 @@ export const UserDialog = ({
             target={target}
             users={users}
             roles={roles}
+            servers={servers}
             isPending={isPending}
             error={error}
+            roleAction={roleAction}
             onSave={onSave}
-            onDelete={onDelete}
             onClose={onClose}
           />
         )}

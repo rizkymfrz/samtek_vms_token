@@ -2,6 +2,11 @@ import type { UsersData } from "../types";
 
 export const buildUsers = (): UsersData => ({
   failures: [],
+  servers: [
+    { id: "1", name: "Main Building" },
+    { id: "2", name: "Parking" },
+    { id: "3", name: "Warehouse" },
+  ],
   roles: [
     { id: "1", name: "super_admin" },
     { id: "2", name: "operator" },

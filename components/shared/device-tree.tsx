@@ -28,6 +28,7 @@ export type DeviceTreeNode = {
   isMuted?: boolean;
   onSelect?: () => void;
   actions?: ReactNode;
+  badge?: ReactNode;
   children?: DeviceTreeNode[];
 };
 
@@ -71,8 +72,9 @@ const Leaf = ({ node }: { node: DeviceTreeNode }) => {
     <li className="flex items-center gap-2 py-1 pl-8">
       <Icon className="size-4 shrink-0 text-muted-foreground" />
       <NodeButton node={node} />
-      {node.state && <StatusDot status={deviceDot(node.state)} />}
       {node.actions}
+      {node.badge}
+      {node.state && <StatusDot status={deviceDot(node.state)} />}
     </li>
   );
 };
@@ -92,8 +94,9 @@ const Branch = ({ node }: { node: DeviceTreeNode }) => {
         </CollapsibleTrigger>
         <Icon className="size-4 shrink-0 text-muted-foreground" />
         <NodeButton node={node} isTitle />
-        {node.state && <StatusDot status={deviceDot(node.state)} />}
         {node.actions}
+        {node.badge}
+        {node.state && <StatusDot status={deviceDot(node.state)} />}
       </div>
       <CollapsibleContent>
         {isNested ? (

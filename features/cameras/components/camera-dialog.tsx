@@ -1,20 +1,11 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CctvIcon, CircleDotIcon, PowerIcon, Trash2Icon } from "lucide-react";
-import { useId, useState } from "react";
+import { CctvIcon, CircleDotIcon, PowerIcon } from "lucide-react";
+import { useId } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DialogToggles } from "@/components/shared/dialog-toggles";
 import { Pick } from "@/components/shared/pick";
 import { ToggleCard } from "@/components/shared/toggle-card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -53,7 +44,6 @@ const Form = ({
   isPending,
   error,
   onSave,
-  onDelete,
   onClose,
 }: {
   target: "new" | CameraRecord;
@@ -61,11 +51,9 @@ const Form = ({
   error: string | null;
   servers: ServerOption[];
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
-  onDelete: (id: string) => void | Promise<void>;
   onClose: () => void;
 }) => {
   const editing = target === "new" ? null : target;
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const formId = useId();
   const {
     register,
@@ -187,34 +175,6 @@ const Form = ({
                 <FieldError>{errors.sourceThird.message}</FieldError>
               )}
             </Field>
-            <Controller
-              control={control}
-              name="isEnabled"
-              render={({ field }) => (
-                <ToggleCard
-                  id={`${formId}-enabled`}
-                  icon={<PowerIcon />}
-                  label="Enabled"
-                  description="Turn the camera on or off. A disabled camera stops streaming and analyzing."
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="isRecordingEnabled"
-              render={({ field }) => (
-                <ToggleCard
-                  id={`${formId}-recording`}
-                  icon={<CircleDotIcon />}
-                  label="Recording"
-                  description="Record this camera's footage on the edge server."
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
             {error && <FieldError>{error}</FieldError>}
             {editing?.applyStatus === "rejected" && editing.applyError && (
               <FieldError>
@@ -232,18 +192,38 @@ const Form = ({
           </DialogSection>
         </form>
       </DialogBody>
+      <DialogToggles>
+        <Controller
+          control={control}
+          name="isEnabled"
+          render={({ field }) => (
+            <ToggleCard
+              id={`${formId}-enabled`}
+              icon={<PowerIcon />}
+              label="Enabled"
+              description="Turn the camera on or off. A disabled camera stops streaming and analyzing."
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="isRecordingEnabled"
+          render={({ field }) => (
+            <ToggleCard
+              id={`${formId}-recording`}
+              icon={<CircleDotIcon />}
+              label="Recording"
+              description="Record this camera's footage on the edge server."
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+      </DialogToggles>
       <Separator />
       <DialogFooter>
-        {editing ? (
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => setConfirmDelete(true)}
-          >
-            <Trash2Icon />
-            Delete
-          </Button>
-        ) : null}
         <Button type="button" variant="secondary" onClick={onClose}>
           Cancel
         </Button>
@@ -251,26 +231,6 @@ const Form = ({
           {editing ? "Save" : "Add camera"}
         </Button>
       </DialogFooter>
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete {editing?.name}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              The camera is removed from every layout and stops streaming.
-              Alerts it already raised are kept.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={() => editing && onDelete(editing.id)}
-            >
-              Delete camera
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
@@ -281,7 +241,6 @@ export const CameraDialog = ({
   isPending,
   error,
   onSave,
-  onDelete,
   onClose,
 }: {
   target: DialogTarget;
@@ -289,7 +248,6 @@ export const CameraDialog = ({
   error: string | null;
   servers: ServerOption[];
   onSave: (draft: Draft, id: string | null) => void | Promise<void>;
-  onDelete: (id: string) => void | Promise<void>;
   onClose: () => void;
 }) => {
   return (
@@ -303,7 +261,6 @@ export const CameraDialog = ({
             isPending={isPending}
             error={error}
             onSave={onSave}
-            onDelete={onDelete}
             onClose={onClose}
           />
         )}

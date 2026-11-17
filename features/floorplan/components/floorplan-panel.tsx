@@ -105,22 +105,20 @@ export const FloorplanPanel = ({
           isSelected: placement ? selected?.id === placement.id : false,
           isMuted: !placement,
           onSelect: placement ? () => onSelect(placement.id) : undefined,
+          badge: camera.alerts > 0 && (
+            <Badge variant="destructive" className="tabular-nums">
+              {camera.alerts}
+            </Badge>
+          ),
           actions: (
-            <>
-              {camera.alerts > 0 && (
-                <Badge variant="destructive" className="tabular-nums">
-                  {camera.alerts}
-                </Badge>
-              )}
-              <PlacementAction
-                isPlaced={!!placement}
-                addLabel={`Add ${camera.name} to this plan`}
-                removeLabel={`Remove ${camera.name} from this plan`}
-                onClick={() =>
-                  placement ? onRemove(placement.id) : onAdd(camera.id)
-                }
-              />
-            </>
+            <PlacementAction
+              isPlaced={!!placement}
+              addLabel={`Add ${camera.name} to this plan`}
+              removeLabel={`Remove ${camera.name} from this plan`}
+              onClick={() =>
+                placement ? onRemove(placement.id) : onAdd(camera.id)
+              }
+            />
           ),
         };
       }),

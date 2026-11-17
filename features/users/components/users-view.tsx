@@ -8,12 +8,15 @@ import {
 import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { useFailureToast } from "@/hooks/use-failure-toast";
+import { messageOf } from "@/lib/axios/browser-client";
 import { type DialogTarget, UserDialog } from "./user-dialog";
 import { UserFilterPanel } from "./user-filter-panel";
 import { UserTable } from "./user-table";
+import { usePermissions } from "../hooks/use-permissions";
 import { useUserActions } from "../hooks/use-user-actions";
 import { useUsers } from "../hooks/use-users";
 import type { Draft } from "../lib/edit-user";
@@ -23,7 +26,7 @@ import {
   type Filters,
   filterUsers,
 } from "../lib/filter-users";
-import type { UsersData } from "../types";
+import type { UserRecord, UsersData } from "../types";
 
 const PAGE_SIZE = 20;
 
@@ -35,15 +38,18 @@ export const UsersView = ({
   isLive: boolean;
 }) => {
   const { data: current } = useUsers(data, isLive);
-  const { users, roles, failures } = current;
+  const { users, roles, servers, failures } = current;
   useFailureToast(
     "Some data could not be loaded",
     failures.map((failure) => `${failure.source}: ${failure.message}`),
   );
-  const { save, remove, saveError, removeError } = useUserActions(isLive);
+  const { save, addRole, remove, addRoleError, saveError, removeError } =
+    useUserActions(isLive);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(0);
   const [dialog, setDialog] = useState<DialogTarget>(null);
+  const permissions = usePermissions(isLive && dialog !== null);
+  const [pendingDelete, setPendingDelete] = useState<UserRecord | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   useFailureToast("Saved with a problem", [warning]);
   useFailureToast("Could not delete the user", [removeError]);
@@ -123,6 +129,7 @@ export const UsersView = ({
               onSelect={(id) =>
                 setDialog(users.find((user) => user.id === id) ?? null)
               }
+              onDelete={setPendingDelete}
             />
           </div>
         )}
@@ -130,8 +137,19 @@ export const UsersView = ({
           target={dialog}
           users={users}
           roles={roles}
+          servers={servers}
           isPending={save.isPending || remove.isPending}
           error={saveError}
+          roleAction={{
+            isPending: addRole.isPending,
+            error: addRoleError,
+            permissions: permissions.data ?? [],
+            permissionsError: permissions.error
+              ? messageOf(permissions.error)
+              : null,
+            create: addRole.mutateAsync,
+            reset: addRole.reset,
+          }}
           onClose={() => {
             setDialog(null);
             save.reset();
@@ -145,13 +163,16 @@ export const UsersView = ({
               return;
             }
           }}
-          onDelete={async (id) => {
-            try {
-              await remove.mutateAsync(id);
-              setDialog(null);
-            } catch {
-              setDialog(null);
-            }
+        />
+        <DeleteConfirmDialog
+          isOpen={pendingDelete !== null}
+          title={`Delete ${pendingDelete?.username}?`}
+          description="The account can no longer sign in. Its username and email stay reserved."
+          confirmLabel="Delete user"
+          onClose={() => setPendingDelete(null)}
+          onConfirm={() => {
+            if (pendingDelete) remove.mutate(pendingDelete.id);
+            setPendingDelete(null);
           }}
         />
       </div>

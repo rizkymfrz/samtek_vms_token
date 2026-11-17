@@ -3,14 +3,17 @@ import {
   CctvIcon,
   ClockIcon,
   DownloadIcon,
-  FingerprintIcon,
   HashIcon,
-  type LucideIcon,
   ScanSearchIcon,
   ShieldAlertIcon,
   SquareDashedIcon,
 } from "lucide-react";
-import { CopyButton } from "@/components/shared/copy-button";
+import {
+  DetailField,
+  DetailIdBox,
+  DetailLabel,
+  DetailRow,
+} from "@/components/shared/detail-fields";
 import { RiskBadge } from "@/components/shared/risk-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,39 +33,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertClipPlayer } from "./alert-clip-player";
 import { AlertImage } from "./alert-image";
 import type { AlertRow } from "../types";
-
-const Row = ({ label, value }: { label: string; value: string }) => {
-  return (
-    <div className="flex items-start justify-between gap-4 border-b py-2 text-xs last:border-b-0">
-      <span className="shrink-0 text-muted-foreground">{label}</span>
-      <span className="text-right font-medium break-words">{value}</span>
-    </div>
-  );
-};
-
-const Field = ({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-}) => {
-  return (
-    <div className="flex min-w-0 flex-col gap-0.5">
-      <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-        <Icon className="size-3 shrink-0" />
-        {label}
-      </span>
-      <span className="text-xs font-medium break-words">{value}</span>
-    </div>
-  );
-};
-
-const Label = ({ children }: { children: string }) => {
-  return <span className="text-sm font-medium">{children}</span>;
-};
 
 export const AlertDetailDialog = ({
   alert,
@@ -108,30 +78,34 @@ export const AlertDetailDialog = ({
               <DialogDivider />
               <DialogSection>
                 <div className="flex flex-col gap-2">
-                  <Label>Summary</Label>
+                  <DetailLabel>Summary</DetailLabel>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                    <Field
+                    <DetailField
                       icon={CctvIcon}
                       label="Camera"
                       value={alert.camera}
                     />
-                    <Field
+                    <DetailField
                       icon={ClockIcon}
                       label="Time"
                       value={`${alert.date} ${alert.time}`}
                     />
-                    <Field
+                    <DetailField
                       icon={ScanSearchIcon}
                       label="Analytic"
                       value={alert.analytic}
                     />
-                    <Field icon={BoxIcon} label="Object" value={alert.object} />
-                    <Field
+                    <DetailField
+                      icon={BoxIcon}
+                      label="Object"
+                      value={alert.object}
+                    />
+                    <DetailField
                       icon={SquareDashedIcon}
                       label="Perimeter"
                       value={alert.perimeter}
                     />
-                    <Field
+                    <DetailField
                       icon={HashIcon}
                       label="Track ID"
                       value={
@@ -141,7 +115,7 @@ export const AlertDetailDialog = ({
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label>Confidence</Label>
+                  <DetailLabel>Confidence</DetailLabel>
                   <Progress
                     value={Math.round(alert.score * 100)}
                     variant="segmented"
@@ -155,9 +129,9 @@ export const AlertDetailDialog = ({
                 </div>
                 {alert.details.length > 0 && (
                   <div className="flex flex-col">
-                    <Label>Details</Label>
+                    <DetailLabel>Details</DetailLabel>
                     {alert.details.map((detail) => (
-                      <Row
+                      <DetailRow
                         key={detail.label}
                         label={detail.label}
                         value={detail.value}
@@ -165,18 +139,11 @@ export const AlertDetailDialog = ({
                     ))}
                   </div>
                 )}
-                <div className="flex flex-col rounded bg-muted px-4 py-1">
-                  <div className="flex items-center justify-between gap-4 py-1 text-[11px]">
-                    <span className="flex items-center gap-1 text-muted-foreground">
-                      <FingerprintIcon className="size-3 shrink-0" />
-                      Event ID
-                    </span>
-                    <span className="flex items-center gap-1">
-                      {alert.id}
-                      <CopyButton value={alert.id} label="Copy event ID" />
-                    </span>
-                  </div>
-                </div>
+                <DetailIdBox
+                  label="Event ID"
+                  value={alert.id}
+                  copyLabel="Copy event ID"
+                />
               </DialogSection>
             </DialogBody>
             <Separator />

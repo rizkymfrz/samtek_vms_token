@@ -23,11 +23,11 @@ import {
 import { FieldError } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
+import { TicketDetailSummary } from "./ticket-detail-summary";
 import { TicketEvidence } from "./ticket-evidence";
 import { type NoteAction, TicketNoteForm } from "./ticket-note-form";
 import { TicketPhoto } from "./ticket-photo";
 import { TicketStatusBadge } from "./ticket-status-badge";
-import { TicketSummary } from "./ticket-summary";
 import { TicketTimeline } from "./ticket-timeline";
 import { useTicketActions } from "../hooks/use-ticket-actions";
 import { useTicketDetail } from "../hooks/use-tickets";
@@ -72,38 +72,18 @@ const Body = ({
           <RiskBadge level={ticket.riskLevel} />
           <TicketStatusBadge status={ticket.status} />
         </div>
-        <DialogDescription>
-          {ticket.description ?? `Ticket #${ticket.id}`}
-        </DialogDescription>
+        {ticket.description && (
+          <DialogDescription>{ticket.description}</DialogDescription>
+        )}
       </DialogHeader>
       <Separator />
       <DialogBody>
-        <DialogSection>
-          <TicketSummary
-            ticket={ticket}
-            serverName={serverName}
-            image={
-              <TicketPhoto
-                src={ticket.hasImage ? `/api/tickets/${ticket.id}/image` : null}
-                alt={`Snapshot of ticket ${ticket.id}`}
-              />
-            }
+        <DialogSection className="md:flex-[1.35]">
+          <TicketPhoto
+            src={ticket.hasImage ? `/api/tickets/${ticket.id}/image` : null}
+            alt={`Snapshot of ticket ${ticket.id}`}
+            className="w-full"
           />
-        </DialogSection>
-        <DialogDivider />
-        <DialogSection>
-          {ticket.resolutionNote && (
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">
-                {ticket.resolutionType === "false_alarm"
-                  ? "False alarm"
-                  : "Resolution"}
-              </span>
-              <p className="text-xs break-words text-muted-foreground">
-                {ticket.resolutionNote}
-              </p>
-            </div>
-          )}
           <TicketEvidence
             evidence={ticket.evidence}
             canUpload={isAssignee && canAddEvidence(ticket.status)}
@@ -117,6 +97,22 @@ const Body = ({
               />
             )}
           />
+        </DialogSection>
+        <DialogDivider />
+        <DialogSection>
+          <TicketDetailSummary ticket={ticket} serverName={serverName} />
+          {ticket.resolutionNote && (
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium">
+                {ticket.resolutionType === "false_alarm"
+                  ? "False alarm"
+                  : "Resolution"}
+              </span>
+              <p className="text-xs break-words text-muted-foreground">
+                {ticket.resolutionNote}
+              </p>
+            </div>
+          )}
           {noteAction && (
             <TicketNoteForm
               key={noteAction}

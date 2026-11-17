@@ -1,11 +1,14 @@
 import {
   ActivityIcon,
   CalendarIcon,
+  EllipsisIcon,
   MessageCircleIcon,
   ShieldIcon,
+  Trash2Icon,
   UserIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -27,10 +30,12 @@ export const UserTable = ({
   users,
   roles,
   onSelect,
+  onDelete,
 }: {
   users: UserRecord[];
   roles: RoleOption[];
   onSelect: (id: string) => void;
+  onDelete: (user: UserRecord) => void;
 }) => {
   const roleName = new Map(roles.map((role) => [role.id, role.name]));
   return (
@@ -42,6 +47,9 @@ export const UserTable = ({
           <TableHead icon={MessageCircleIcon}>WhatsApp</TableHead>
           <TableHead icon={ActivityIcon}>Status</TableHead>
           <TableHead icon={CalendarIcon}>Created</TableHead>
+          <TableHead icon={EllipsisIcon} className="text-right">
+            Actions
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -76,12 +84,25 @@ export const UserTable = ({
               {user.whatsapp ?? "—"}
             </TableCell>
             <TableCell>
-              <Badge variant={user.isActive ? "outline" : "secondary"}>
+              <Badge variant={user.isActive ? "default" : "secondary"}>
                 {user.isActive ? "Active" : "Disabled"}
               </Badge>
             </TableCell>
             <TableCell className="text-muted-foreground tabular-nums">
               {formatDate(user.createdAt)}
+            </TableCell>
+            <TableCell onClick={(event) => event.stopPropagation()}>
+              <div className="flex items-center justify-end gap-2">
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  aria-label={`Delete ${user.username}`}
+                  title="Delete"
+                  onClick={() => onDelete(user)}
+                >
+                  <Trash2Icon />
+                </Button>
+              </div>
             </TableCell>
           </TableRow>
         ))}

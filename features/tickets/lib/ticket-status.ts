@@ -21,7 +21,6 @@ export const STATUS_VARIANT = {
 
 const EVENT_LABEL: Record<string, string> = {
   created: "Ticket created",
-  merged: "Alarm merged",
   assigned: "Assigned",
   reassigned: "Reassigned",
   escalated: "Escalated to a supervisor",

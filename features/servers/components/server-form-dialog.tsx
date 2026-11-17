@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, PowerIcon, ServerIcon } from "lucide-react";
 import { useId, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DialogToggles } from "@/components/shared/dialog-toggles";
 import { Pick } from "@/components/shared/pick";
 import { ToggleCard } from "@/components/shared/toggle-card";
 import { Button } from "@/components/ui/button";
@@ -190,23 +191,25 @@ const Form = ({
           <DialogSection>
             {FIELDS.slice(2).map(renderField)}
             {error && <FieldError>{error}</FieldError>}
-            <Controller
-              control={control}
-              name="isActive"
-              render={({ field }) => (
-                <ToggleCard
-                  id={`${formId}-active`}
-                  icon={<PowerIcon />}
-                  label="Active"
-                  description="An inactive server is ignored and shown as offline."
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
           </DialogSection>
         </form>
       </DialogBody>
+      <DialogToggles>
+        <Controller
+          control={control}
+          name="isActive"
+          render={({ field }) => (
+            <ToggleCard
+              id={`${formId}-active`}
+              icon={<PowerIcon />}
+              label="Active"
+              description="An inactive server is ignored and shown as offline."
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+      </DialogToggles>
       <Separator />
       <DialogFooter>
         <Button type="button" variant="secondary" onClick={onClose}>

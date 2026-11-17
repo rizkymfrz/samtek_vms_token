@@ -7,23 +7,35 @@ import {
 import { fetchAllPages } from "@/lib/api/central-pages";
 import { requireAccessToken } from "@/lib/auth/session";
 import { buildUsers } from "./build-users";
-import { roleSchema, userSchema } from "../schemas/user";
+import { roleSchema, serverOptionSchema, userSchema } from "../schemas/user";
 import type { UserFailure, UsersData } from "../types";
 
 export const getUsers = async (): Promise<UsersData> => {
   if (!isLiveSource) return buildUsers();
   const client = createCentralClient(await requireAccessToken());
-  const [users, roles] = await Promise.all([
+  const settle = <T>(source: string, request: Promise<T[]>) =>
+    request.then(
+      (items) => ({ items, failure: null }),
+      (error: unknown): { items: T[]; failure: UserFailure } => {
+        console.error(`[users ${source}]`, error);
+        return {
+          items: [],
+          failure: { source, message: failureMessage(error) },
+        };
+      },
+    );
+  const [users, roles, servers] = await Promise.all([
     fetchAllPages(client, "/v1/users", userSchema),
-    fetchAllPages(client, "/v1/roles", roleSchema).catch((error: unknown) => {
-      console.error("[users roles]", error);
-      return error;
-    }),
+    settle("Roles", fetchAllPages(client, "/v1/roles", roleSchema)),
+    settle(
+      "Servers",
+      fetchAllPages(client, "/v1/edge-servers", serverOptionSchema),
+    ),
   ]);
-  const failures: UserFailure[] = Array.isArray(roles)
-    ? []
-    : [{ source: "Roles", message: failureMessage(roles) }];
-  return { users, roles: Array.isArray(roles) ? roles : [], failures };
+  const failures = [roles.failure, servers.failure].filter(
+    (failure) => failure !== null,
+  );
+  return { users, roles: roles.items, servers: servers.items, failures };
 };
 
 export const getUsersIfAllowed = () =>

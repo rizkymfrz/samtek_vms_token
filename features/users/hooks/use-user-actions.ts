@@ -11,11 +11,13 @@ import {
 } from "../lib/edit-user";
 import {
   assignPlatformRole,
+  assignServerRole,
+  createRole,
   createUser,
   deleteUser,
   updateUser,
 } from "../services/user-api";
-import type { UserRecord, UsersData } from "../types";
+import type { RoleDraft, UserRecord, UsersData } from "../types";
 
 export const useUserActions = (isLive: boolean) => {
   const queryClient = useQueryClient();
@@ -45,12 +47,12 @@ export const useUserActions = (isLive: boolean) => {
       const original = read().find((user) => user.id === id);
       if (!original) {
         const createdId = await createUser(toCreatePayload(draft));
-        if (!draft.platformRoleId) return { warning: null };
+        if (!draft.serverId || !draft.serverRoleId) return { warning: null };
         try {
-          await assignPlatformRole(createdId, draft.platformRoleId);
+          await assignServerRole(draft.serverId, createdId, draft.serverRoleId);
         } catch (error) {
           return {
-            warning: `User created, but the role was not assigned: ${messageOf(error)}`,
+            warning: `User created, but the server role was not assigned: ${messageOf(error)}`,
           };
         }
         return { warning: null };
@@ -64,6 +66,24 @@ export const useUserActions = (isLive: boolean) => {
     },
     onSettled: refresh,
   });
+  const addRole = useMutation({
+    mutationFn: async (draft: RoleDraft): Promise<string> => {
+      if (isLive) return createRole(draft);
+      const roles =
+        queryClient.getQueryData<UsersData>(USERS_QUERY_KEY)?.roles ?? [];
+      const id = String(Math.max(0, ...roles.map((r) => Number(r.id))) + 1);
+      queryClient.setQueryData<UsersData>(
+        USERS_QUERY_KEY,
+        (current) =>
+          current && {
+            ...current,
+            roles: [...current.roles, { id, name: draft.name }],
+          },
+      );
+      return id;
+    },
+    onSuccess: refresh,
+  });
   const remove = useMutation({
     mutationFn: async (id: string) => {
       if (isLive) await deleteUser(id);
@@ -73,7 +93,9 @@ export const useUserActions = (isLive: boolean) => {
   });
   return {
     save,
+    addRole,
     remove,
+    addRoleError: addRole.error ? messageOf(addRole.error) : null,
     saveError: save.error ? messageOf(save.error) : null,
     removeError: remove.error ? messageOf(remove.error) : null,
   };

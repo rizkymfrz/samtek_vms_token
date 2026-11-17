@@ -56,11 +56,7 @@ export const TicketTable = ({
               <div className="flex items-center gap-2">
                 <span className="font-medium">{ticket.title}</span>
                 <RiskBadge level={ticket.riskLevel} />
-                {ticket.alertCount > 1 && (
-                  <Badge variant="outline">{ticket.alertCount} alarms</Badge>
-                )}
               </div>
-              <span className="text-muted-foreground">#{ticket.id}</span>
             </div>
           </TableCell>
           <TableCell>

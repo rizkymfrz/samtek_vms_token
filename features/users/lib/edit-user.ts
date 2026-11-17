@@ -9,6 +9,8 @@ export type Draft = {
   password: string;
   isActive: boolean;
   platformRoleId: string | null;
+  serverId: string | null;
+  serverRoleId: string | null;
 };
 
 export const emptyDraft = (): Draft => ({
@@ -18,6 +20,8 @@ export const emptyDraft = (): Draft => ({
   password: "",
   isActive: true,
   platformRoleId: null,
+  serverId: null,
+  serverRoleId: null,
 });
 
 export const toDraft = (user: UserRecord): Draft => ({
@@ -27,6 +31,8 @@ export const toDraft = (user: UserRecord): Draft => ({
   password: "",
   isActive: user.isActive,
   platformRoleId: user.platformRoleId,
+  serverId: null,
+  serverRoleId: null,
 });
 
 const USERNAME = /^[A-Za-z0-9._-]+$/;
@@ -87,6 +93,20 @@ export const userDraftSchema = (
       ),
     isActive: z.boolean(),
     platformRoleId: z.string().nullable(),
+    serverId: z
+      .string()
+      .nullable()
+      .refine(
+        (value) => editingId !== null || value !== null,
+        "Select a server.",
+      ),
+    serverRoleId: z
+      .string()
+      .nullable()
+      .refine(
+        (value) => editingId !== null || value !== null,
+        "Select a role for this server.",
+      ),
   });
 
 const orNull = (value: string) => value.trim() || null;

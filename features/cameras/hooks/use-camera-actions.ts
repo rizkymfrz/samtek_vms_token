@@ -87,7 +87,8 @@ export const useCameraActions = (isLive: boolean) => {
     save,
     remove,
     toggle,
-    saveError: errorOf(save.error, remove.error),
+    saveError: errorOf(save.error),
+    removeError: errorOf(remove.error),
     toggleError: errorOf(toggle.error),
   };
 };

@@ -27,7 +27,6 @@ export const TicketSummary = ({
       {serverName && <Row label="Server" value={serverName} />}
       <Row label="Analytic" value={`${ticket.analyticId} / ${ticket.kind}`} />
       <Row label="Perimeter" value={ticket.perimeterName ?? "—"} />
-      <Row label="Alarms" value={String(ticket.alertCount)} />
       <Row label="First alarm" value={formatDateTime(ticket.firstAlertAt)} />
       <Row label="Last alarm" value={formatDateTime(ticket.lastAlertAt)} />
       <Row label="Assignee" value={ticket.assigneeUsername ?? "Unassigned"} />

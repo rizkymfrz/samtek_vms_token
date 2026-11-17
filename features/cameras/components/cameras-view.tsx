@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ import {
   filterCameras,
   type Filters,
 } from "../lib/filter-cameras";
-import type { CameraData } from "../types";
+import type { CameraData, CameraRecord } from "../types";
 
 export const GRID_PRESETS: [rows: number, columns: number][] = [
   [2, 2],
@@ -95,9 +96,11 @@ export const CamerasView = ({
   const [page, setPage] = useState(0);
   const router = useRouter();
   const [dialog, setDialog] = useState<DialogTarget>(null);
-  const { save, remove, toggle, saveError, toggleError } =
+  const [pendingDelete, setPendingDelete] = useState<CameraRecord | null>(null);
+  const { save, remove, toggle, saveError, removeError, toggleError } =
     useCameraActions(isLive);
   useFailureToast("Could not update the camera", [toggleError]);
+  useFailureToast("Could not delete the camera", [removeError]);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
   const matches = useMemo(
@@ -238,6 +241,7 @@ export const CamerasView = ({
               servers={servers}
               onSelect={(id) => router.push(`/cameras/${id}`)}
               onToggle={(id, patch) => toggle.mutate({ id, patch })}
+              onDelete={setPendingDelete}
             />
           </div>
         )}
@@ -248,9 +252,8 @@ export const CamerasView = ({
         onClose={() => {
           setDialog(null);
           save.reset();
-          remove.reset();
         }}
-        isPending={save.isPending || remove.isPending}
+        isPending={save.isPending}
         error={saveError}
         onSave={async (draft: Draft, id) => {
           try {
@@ -260,13 +263,16 @@ export const CamerasView = ({
             return;
           }
         }}
-        onDelete={async (id) => {
-          try {
-            await remove.mutateAsync(id);
-            setDialog(null);
-          } catch {
-            return;
-          }
+      />
+      <DeleteConfirmDialog
+        isOpen={pendingDelete !== null}
+        title={`Delete ${pendingDelete?.name}?`}
+        description="The camera is removed from every layout and stops streaming. Alerts it already raised are kept."
+        confirmLabel="Delete camera"
+        onClose={() => setPendingDelete(null)}
+        onConfirm={() => {
+          if (pendingDelete) remove.mutate(pendingDelete.id);
+          setPendingDelete(null);
         }}
       />
     </PageShell>

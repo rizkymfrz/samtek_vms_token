@@ -54,10 +54,7 @@ export const TicketsView = () => {
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs text-muted-foreground tabular-nums">
-            {total} {total === 1 ? "ticket" : "tickets"}
-          </span>
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <Button variant="secondary" onClick={() => setIsRulesOpen(true)}>
             <SlidersHorizontalIcon />
             Rules

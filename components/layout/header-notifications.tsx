@@ -1,6 +1,7 @@
 "use client";
 import { BellIcon } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ export type HeaderAlert = {
   time: string;
   severity: "critical" | "info";
   read: boolean;
+  image: ReactNode;
 };
 
 export const HeaderNotifications = ({
@@ -85,7 +87,8 @@ export const HeaderNotifications = ({
                       : "info"
                 }
               />
-              <div className="grid flex-1">
+              <div className="w-20 shrink-0">{alert.image}</div>
+              <div className="grid min-w-0 flex-1">
                 <span className={cn(!alert.read && "font-medium")}>
                   {alert.title}
                 </span>

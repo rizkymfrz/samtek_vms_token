@@ -5,6 +5,8 @@ import { EdgeOffline } from "@/components/shared/edge-offline";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
+import { TalkControl } from "@/features/talk";
+import { SpeakerToggle } from "./speaker-toggle";
 import { WebrtcPlayer } from "./webrtc-player";
 import { streamName } from "../lib/relay-url";
 
@@ -53,12 +55,16 @@ export const CameraPreview = ({
             <WebrtcPlayer
               relay={camera}
               stream={streamName(camera.id, "sub", camera.hasSubStream)}
+              audioId={camera.id}
             />
             <StreamDetections
               edgeId={camera.serverId}
               deviceId={camera.id}
               isDefaultOn
-            />
+            >
+              <SpeakerToggle audioId={camera.id} />
+              <TalkControl edgeId={camera.serverId} deviceId={camera.id} />
+            </StreamDetections>
           </>
         ) : camera.state === "disabled" ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">

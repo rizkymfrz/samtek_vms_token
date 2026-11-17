@@ -3,13 +3,16 @@ import {
   CctvIcon,
   CircleCheckIcon,
   CircleDotIcon,
+  EllipsisIcon,
   PowerIcon,
   RadioIcon,
   ScanSearchIcon,
   ServerIcon,
+  Trash2Icon,
 } from "lucide-react";
 import { Pick } from "@/components/shared/pick";
 import { StatusDot } from "@/components/shared/status-dot";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -40,10 +43,12 @@ export const CameraTable = ({
   servers,
   onSelect,
   onToggle,
+  onDelete,
 }: {
   cameras: CameraRecord[];
   servers: ServerOption[];
   onSelect: (id: string) => void;
+  onDelete: (camera: CameraRecord) => void;
   onToggle: (
     id: string,
     patch: Partial<Pick<CameraRecord, "isEnabled" | "isRecordingEnabled">>,
@@ -62,6 +67,9 @@ export const CameraTable = ({
           <TableHead icon={RadioIcon}>Streams</TableHead>
           <TableHead icon={PowerIcon}>Enabled</TableHead>
           <TableHead icon={CircleDotIcon}>Recording</TableHead>
+          <TableHead icon={EllipsisIcon} className="text-right">
+            Actions
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -130,6 +138,19 @@ export const CameraTable = ({
                     onToggle(camera.id, { isRecordingEnabled })
                   }
                 />
+              </TableCell>
+              <TableCell onClick={(event) => event.stopPropagation()}>
+                <div className="flex items-center justify-end gap-2">
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    aria-label={`Delete ${camera.name}`}
+                    title="Delete"
+                    onClick={() => onDelete(camera)}
+                  >
+                    <Trash2Icon />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           );
