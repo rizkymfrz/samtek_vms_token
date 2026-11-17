@@ -11,6 +11,8 @@ import { type AuthTokens, refresh } from "@/lib/auth/tokens";
 
 const SHARE_WINDOW_MS = 10_000;
 const PUBLIC_API_PATHS = new Set(["/api/auth/login", "/api/auth/logout"]);
+const TICKET_LINK_PAGE = "/t";
+const TICKET_LINK_API = "/api/ticket-link/";
 const inflight = new Map<string, Promise<AuthTokens | null>>();
 
 const refreshOnce = (refreshToken: string) => {
@@ -26,6 +28,9 @@ export const proxy = async (request: NextRequest) => {
   if (!isLiveSource) return NextResponse.next();
   const { pathname, search } = request.nextUrl;
   if (PUBLIC_API_PATHS.has(pathname)) return NextResponse.next();
+  if (pathname === TICKET_LINK_PAGE || pathname.startsWith(TICKET_LINK_API)) {
+    return NextResponse.next();
+  }
   if (request.cookies.has(ACCESS_TOKEN_COOKIE)) return NextResponse.next();
   const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
   const tokens = refreshToken ? await refreshOnce(refreshToken) : null;

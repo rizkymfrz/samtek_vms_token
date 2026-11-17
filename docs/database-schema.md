@@ -7,7 +7,7 @@ invent columns. When a real API replaces the dummy data, keep these names.
 |---|---|---|
 | Owner | the VMS backend | each edge (`samtek_edge_new`) |
 | Engine | MySQL, through Prisma | DuckDB (`<SAMTEK_STATS_DIR>/stats.duckdb`) |
-| Holds | users, roles, edge servers, devices (cameras), layouts, floor plans | alarms, recognitions, counting statistics |
+| Holds | users, roles, edge servers, devices (cameras), layouts, floor plans, tickets | alarms, recognitions, counting statistics |
 | Naming | Prisma camelCase fields, snake_case columns | snake_case |
 | Keys | PK/FK/UNIQUE as in the schema below | **none**: no PK, FK or UNIQUE; relations only by `event_id` |
 
@@ -49,6 +49,11 @@ model User {
   layouts       Layout[]
   activities    UserActivity[]
   refreshTokens RefreshToken[]
+  tickets       Ticket[]
+  ticketEvents  TicketEvent[]
+  ticketEvidences     TicketEvidence[]
+  ticketLinks         TicketLink[]
+  ticketLinkDeliveries TicketLinkDelivery[]
 
   @@unique([username], map: "uq_users_username")
   @@unique([email], map: "uq_users_email")
@@ -98,6 +103,9 @@ model EdgeServer {
   group           EdgeServerGroup? @relation(fields: [groupId], references: [id], onDelete: Restrict, map: "fk_edge_servers_group_id")
   userServerRoles UserServerRole[]
   devices         Device[]
+  tickets         Ticket[]
+  ticketAlerts    TicketAlert[]
+  ticketRules     TicketRule[]
 
   @@map("edge_servers")
 }
@@ -182,6 +190,7 @@ model Device {
   edgeServer    EdgeServer     @relation(fields: [edgeServerId], references: [id], onDelete: Restrict, map: "fk_devices_edge_server_id")
   layoutDevices    LayoutDevice[]
   floorplanDevices FloorplanDevice[]
+  tickets          Ticket[]
 
   @@map("devices")
 }
@@ -282,6 +291,162 @@ model RefreshToken {
   @@unique([tokenHash], map: "uq_refresh_tokens_token_hash")
   @@map("refresh_tokens")
 }
+
+model Ticket {
+  id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  edgeServerId       BigInt    @map("edge_server_id") @db.UnsignedBigInt
+  deviceRecordId     BigInt    @map("device_record_id") @db.UnsignedBigInt
+  analyticId         String    @map("analytic_id") @db.VarChar(64)
+  kind               String    @db.VarChar(64)
+  perimeterName      String?   @map("perimeter_name") @db.VarChar(100)
+  title              String    @db.VarChar(255)
+  description        String?   @db.Text
+  riskLevel          String    @map("risk_level") @db.VarChar(16)
+  status             String    @db.VarChar(24)
+  assigneeId         BigInt?   @map("assignee_id") @db.UnsignedBigInt
+  assignedAt         DateTime? @map("assigned_at") @db.Timestamp(0)
+  ackDeadlineAt      DateTime? @map("ack_deadline_at") @db.Timestamp(0)
+  acknowledgedAt     DateTime? @map("acknowledged_at") @db.Timestamp(0)
+  escalatedAt        DateTime? @map("escalated_at") @db.Timestamp(0)
+  reassignCount      Int       @default(0) @map("reassign_count") @db.UnsignedSmallInt
+  alertCount         Int       @default(1) @map("alert_count") @db.UnsignedInt
+  firstAlertAt       DateTime  @map("first_alert_at") @db.Timestamp(0)
+  lastAlertAt        DateTime  @map("last_alert_at") @db.Timestamp(0)
+  snapshotKey        String?   @map("snapshot_key") @db.VarChar(255)
+  resolutionType     String?   @map("resolution_type") @db.VarChar(16)
+  resolutionNote     String?   @map("resolution_note") @db.Text
+  resolveRequestedAt DateTime? @map("resolve_requested_at") @db.Timestamp(0)
+  closedAt           DateTime? @map("closed_at") @db.Timestamp(0)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt          DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  edgeServer EdgeServer    @relation(fields: [edgeServerId], references: [id], onDelete: Restrict, map: "fk_tickets_edge_server_id")
+  device     Device        @relation(fields: [deviceRecordId], references: [id], onDelete: Restrict, map: "fk_tickets_device_record_id")
+  assignee   User?         @relation(fields: [assigneeId], references: [id], onDelete: Restrict, map: "fk_tickets_assignee_id")
+  alerts     TicketAlert[]
+  events     TicketEvent[]
+  evidences  TicketEvidence[]
+  links      TicketLink[]
+  linkDeliveries TicketLinkDelivery[]
+
+  @@index([deviceRecordId, analyticId, kind, status], map: "idx_tickets_merge_lookup")
+  @@index([edgeServerId, status, lastAlertAt], map: "idx_tickets_edge_server_id_status")
+  @@index([assigneeId, status], map: "idx_tickets_assignee_id_status")
+  @@index([assigneeId, assignedAt], map: "idx_tickets_assignee_id_assigned_at")
+  @@index([status, ackDeadlineAt], map: "idx_tickets_status_ack_deadline_at")
+  @@map("tickets")
+}
+
+model TicketAlert {
+  id               BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  ticketId         BigInt   @map("ticket_id") @db.UnsignedBigInt
+  edgeServerId     BigInt   @map("edge_server_id") @db.UnsignedBigInt
+  eventId          String   @map("event_id") @db.Char(26)
+  occurredAt       DateTime @map("occurred_at") @db.Timestamp(3)
+  analyticId       String   @map("analytic_id") @db.VarChar(64)
+  kind             String   @db.VarChar(64)
+  title            String   @db.VarChar(255)
+  description      String?  @db.Text
+  riskLevel        String   @map("risk_level") @db.VarChar(16)
+  perimeterName    String?  @map("perimeter_name") @db.VarChar(100)
+  objectLabel      String   @map("object_label") @db.VarChar(100)
+  objectConfidence Float    @map("object_confidence")
+  detail           Json?
+  imageKey         String?  @map("image_key") @db.VarChar(255)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  ticket     Ticket     @relation(fields: [ticketId], references: [id], onDelete: Restrict, map: "fk_ticket_alerts_ticket_id")
+  edgeServer EdgeServer @relation(fields: [edgeServerId], references: [id], onDelete: Restrict, map: "fk_ticket_alerts_edge_server_id")
+
+  @@unique([edgeServerId, eventId], map: "uq_ticket_alerts_edge_server_id_event_id")
+  @@index([ticketId, occurredAt], map: "idx_ticket_alerts_ticket_id_occurred_at")
+  @@map("ticket_alerts")
+}
+
+model TicketEvent {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  ticketId    BigInt   @map("ticket_id") @db.UnsignedBigInt
+  actorUserId BigInt?  @map("actor_user_id") @db.UnsignedBigInt
+  type        String   @db.VarChar(32)
+  data        Json?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Restrict, map: "fk_ticket_events_ticket_id")
+  actor  User?  @relation(fields: [actorUserId], references: [id], onDelete: Restrict, map: "fk_ticket_events_actor_user_id")
+
+  @@index([ticketId, id], map: "idx_ticket_events_ticket_id")
+  @@map("ticket_events")
+}
+
+model TicketRule {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  edgeServerId BigInt    @map("edge_server_id") @db.UnsignedBigInt
+  analyticId   String    @map("analytic_id") @db.VarChar(64)
+  kind         String    @db.VarChar(64)
+  isEnabled    Boolean   @default(false) @map("is_enabled")
+  isReviewed   Boolean   @default(false) @map("is_reviewed")
+  firstSeenAt  DateTime  @map("first_seen_at") @db.Timestamp(0)
+  lastSeenAt   DateTime  @map("last_seen_at") @db.Timestamp(0)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  edgeServer EdgeServer @relation(fields: [edgeServerId], references: [id], onDelete: Restrict, map: "fk_ticket_rules_edge_server_id")
+
+  @@unique([edgeServerId, analyticId, kind], map: "uq_ticket_rules_edge_server_id_analytic_id_kind")
+  @@index([edgeServerId, isReviewed, lastSeenAt], map: "idx_ticket_rules_edge_server_id_is_reviewed")
+  @@map("ticket_rules")
+}
+
+model TicketEvidence {
+  id           BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  ticketId     BigInt   @map("ticket_id") @db.UnsignedBigInt
+  uploadedById BigInt   @map("uploaded_by_id") @db.UnsignedBigInt
+  imageKey     String   @map("image_key") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  ticket     Ticket @relation(fields: [ticketId], references: [id], onDelete: Restrict, map: "fk_ticket_evidences_ticket_id")
+  uploadedBy User   @relation(fields: [uploadedById], references: [id], onDelete: Restrict, map: "fk_ticket_evidences_uploaded_by_id")
+
+  @@index([ticketId, id], map: "idx_ticket_evidences_ticket_id")
+  @@map("ticket_evidences")
+}
+
+model TicketLink {
+  id        BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  ticketId  BigInt    @map("ticket_id") @db.UnsignedBigInt
+  userId    BigInt    @map("user_id") @db.UnsignedBigInt
+  tokenHash String    @map("token_hash") @db.Char(64)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamp(0)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Restrict, map: "fk_ticket_links_ticket_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict, map: "fk_ticket_links_user_id")
+
+  @@unique([tokenHash], map: "uq_ticket_links_token_hash")
+  @@index([ticketId, userId], map: "idx_ticket_links_ticket_id_user_id")
+  @@map("ticket_links")
+}
+
+model TicketLinkDelivery {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  ticketId      BigInt    @map("ticket_id") @db.UnsignedBigInt
+  userId        BigInt    @map("user_id") @db.UnsignedBigInt
+  reason        String    @db.VarChar(16)
+  status        String    @db.VarChar(16)
+  attempts      Int       @default(0) @db.UnsignedSmallInt
+  nextAttemptAt DateTime  @map("next_attempt_at") @db.Timestamp(0)
+  lastError     String?   @map("last_error") @db.VarChar(255)
+  sentAt        DateTime? @map("sent_at") @db.Timestamp(0)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Restrict, map: "fk_ticket_link_deliveries_ticket_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict, map: "fk_ticket_link_deliveries_user_id")
+
+  @@index([status, nextAttemptAt], map: "idx_ticket_link_deliveries_status_next_attempt_at")
+  @@index([ticketId, createdAt], map: "idx_ticket_link_deliveries_ticket_id_created_at")
+  @@map("ticket_link_deliveries")
+}
 ```
 
 ### Things to remember when building on it
@@ -338,6 +503,53 @@ positions are the `latitude` / `longitude` columns above. The models are in the 
 and a computed `label` (parent names joined by ` · `); size is read from the loaded image. A placement is keyed by
 `floorplanId:deviceRecordId` on the client and uses `rotation` / `fieldOfView`. A camera may be on several plans.
 The image is shown through `/api/floorplans/{id}/image`, which adds the token server-side.
+
+### Tickets
+
+An edge `event.alarm` becomes a ticket for an officer to work. The models are in the schema (`Ticket`, `TicketAlert`,
+`TicketEvent`, `TicketRule`). The edge's own `alarm_events` (section 2) is a separate store: the Alerts page reads it
+straight from the edge, tickets live in the central database.
+
+- **No create endpoint.** Tickets are created by the API from alarms; the UI only lists and works them. One ticket holds many
+  alarms (`alertCount`), each kept in `TicketAlert` and deduplicated by `(edgeServerId, eventId)`.
+- **Which events count (`TicketRule`).** One rule per `(edgeServerId, analyticId, kind)`. A kind seen for the first time is
+  registered with `isEnabled: false` and `isReviewed: false` and its alarm is skipped; someone must switch it on. Rules cannot be
+  created or deleted through the API. The UI shows undecided kinds first.
+- **Merge.** Alarms with the same device, `analyticId`, `kind` and `perimeterName` join the same unfinished ticket while the
+  last alarm is at most 5 minutes older (sliding window). `riskLevel` is the highest of its alarms.
+- **Status** (`Ticket.status`): `open` -> `acknowledged` -> `in_progress` -> `resolve_requested` -> `resolved` or `false_alarm`.
+  `reject` sends `resolve_requested` back to `in_progress`; `request-resolution` is also allowed from `acknowledged`. An action
+  from the wrong status is `409 TICKET_STATE_CONFLICT`. `resolutionType` is `resolved` | `false_alarm` and is the status the
+  ticket gets when approved; `resolutionNote` is required when requesting and rejecting. Requesting also needs at least one evidence photo (`422 EVIDENCE_REQUIRED`).
+- **Assignment.** The API picks the officer with the fewest active tickets on that server (`open`, `acknowledged`,
+  `in_progress`). An `open` ticket has `ackDeadlineAt` (5 minutes). Past it, the ticket moves to the next officer
+  (`reassignCount` +1). After every officer was tried, `escalatedAt` is set and a supervisor must step in. With no officer,
+  `assigneeId` is `null`.
+- **Permissions** (per server): `tickets.read`, `tickets.handle` (assignee only), `tickets.approve` (supervisor) and
+  `tickets.manage-rules`. `GET /v1/auth/me` does not return permissions, so the UI shows officer actions only to the assignee
+  and lets the API answer `403` for the rest.
+- **Timeline.** `TicketEvent.type`: `created`, `merged`, `assigned`, `reassigned`, `escalated`, `acknowledged`, `started`,
+  `resolution_requested`, `approved`, `rejected`. `actorUserId` null means the system acted.
+- **Evidence photos** (`TicketEvidence`). The assignee attaches 1 to 10 photos (PNG, JPEG or WebP, up to 10 MB each) while the ticket is
+  `acknowledged` or `in_progress`. They are shown through `/api/tickets/{id}/evidence/{evidenceId}`.
+- **Image.** `snapshotKey`, `TicketAlert.imageKey` and `TicketEvidence.imageKey` are internal file keys, never sent to the browser. The API sends
+  `hasImage` and serves the first alarm's JPEG at `GET /v1/tickets/{id}/image` (needs the token), shown through
+  `/api/tickets/{id}/image`.
+- **Link without login** (`TicketLink`, `TicketLinkDelivery`). When a ticket is assigned or reassigned, the API sends the officer a
+  WhatsApp link `https://<vms>/t#<token>`. The page `/t` is public: it reads the token from the URL fragment, removes it from the
+  address bar, and sends it as the `X-Ticket-Link` header through `/api/ticket-link/ticket/*`. Only the SHA-256 of the token is
+  stored. The link works while the ticket is open and the officer is still its assignee; reassigning or closing kills it. It can
+  view the ticket, add photos, acknowledge, start and request resolution; approve and reject need a login. A dead link answers
+  `401 TICKET_LINK_INVALID`, which the BFF turns into `410` so the browser does not redirect to the login page.
+  `POST /api/tickets/{id}/link-deliveries` sends a fresh link (at most once a minute per ticket).
+- **Realtime.** The API publishes `ticket.updated` to `samtek/v1/tickets/{edgeServerId}` (ids and state only). The UI refetches
+  on it; without MQTT it polls every 30 seconds.
+- **Times** are UTC in the API; the UI shows Asia/Jakarta.
+
+**UI types** are in `features/tickets/types.ts`, parsed from `features/tickets/schemas/ticket.ts`. BFF routes:
+`/api/tickets` (with `/{id}`, `/{id}/{action}`, `/{id}/image`, `/{id}/evidence`, `/{id}/link-deliveries`),
+`/api/edge-servers/{serverId}/ticket-rules` and the public `/api/ticket-link/ticket/*`. With `DATA_SOURCE=mock` they use the in-memory store in
+`features/tickets/services/build-tickets.ts`; the mock link token is `demo` (opens ticket 1).
 
 ## 2. Analytics database (DuckDB, written by the edge)
 

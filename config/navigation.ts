@@ -9,6 +9,7 @@ import {
   RadioIcon,
   ServerIcon,
   SettingsIcon,
+  TicketIcon,
   UsersIcon,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/dashboard", title: "Dashboard", icon: LayoutDashboardIcon },
       { href: "/live", title: "Live View", icon: RadioIcon },
       { href: "/alerts", title: "Alerts", icon: BellIcon },
+      { href: "/tickets", title: "Tickets", icon: TicketIcon },
     ],
   },
   {

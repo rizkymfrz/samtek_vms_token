@@ -121,12 +121,13 @@ Rules:
 - Pengecualian yang diterima: route handler di `app/api/auth/`,
   `app/api/alerts/`, `app/api/cameras/`, `app/api/edge-servers/`,
   `app/api/servers/`, `app/api/live/`, `app/api/layouts/`,
-  `app/api/users/`, `app/api/faces/`, dan `app/api/recognitions/` dipakai sebagai lapisan tipis
+  `app/api/users/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, dan `app/api/recognitions/` dipakai sebagai lapisan tipis
   (BFF) di depan API central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
   Handler hanya memvalidasi input, meneruskan permintaan, dan memetakan
   error; aturan bisnis tetap berada di API backend.
+  `app/api/ticket-link/` dan halaman `/t` sengaja publik (tanpa login): otorisasinya token link per tiket (header `X-Ticket-Link`), bukan cookie.
   `app/api/faces/` dan `app/api/recognitions/` meneruskan ke API HTTP
   Edge (`/v1/faces`, `/v1/recognitions`), yang tidak punya autentikasi dan hanya menerima `Host`/`Origin` lokal, sehingga
   browser tidak boleh memanggilnya langsung.
