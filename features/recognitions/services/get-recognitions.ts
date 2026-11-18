@@ -7,6 +7,7 @@ import { requireAccessToken } from "@/lib/auth/session";
 import { buildRecognitions } from "./build-recognitions";
 import { toRow } from "../lib/recognition-row";
 import { DEFAULT_HOURS } from "../lib/recognition-window";
+import { recognizerList } from "../lib/recognizer-list";
 import {
   edgeFaceReferencesSchema,
   edgeRecognitionsResponseSchema,
@@ -31,16 +32,31 @@ export const getRecognitions = async (
     getCentralServers(token),
   ]);
   const [{ results, failures }, { devices }, faces] = await Promise.all([
-    queryEdges(edges, (edge) =>
-      getFromEdge(edge, "/v1/recognitions", edgeRecognitionsResponseSchema, {
-        recognizer,
-        since: new Date(window.since).toISOString(),
-        limit: EDGE_LIMIT,
-        ...(window.until !== null && {
-          until: new Date(window.until).toISOString(),
-        }),
-      }),
-    ),
+    queryEdges(edges, async (edge) => {
+      const pages = await Promise.all(
+        recognizerList(recognizer).map((name) =>
+          getFromEdge(
+            edge,
+            "/v1/recognitions",
+            edgeRecognitionsResponseSchema,
+            {
+              recognizer: name,
+              since: new Date(window.since).toISOString(),
+              limit: EDGE_LIMIT,
+              ...(window.until !== null && {
+                until: new Date(window.until).toISOString(),
+              }),
+            },
+          ),
+        ),
+      );
+      return {
+        recognitions: pages.flatMap((page) => page.recognitions),
+        isTruncated: pages.some(
+          (page) => page.recognitions.length >= EDGE_LIMIT,
+        ),
+      };
+    }),
     listCentralDevices(token, servers),
     queryEdges(edges, (edge) =>
       getFromEdge(edge, "/v1/faces", edgeFaceReferencesSchema),
@@ -74,9 +90,7 @@ export const getRecognitions = async (
   return {
     now,
     rows,
-    isTruncated: results.some(
-      ({ data }) => data.recognitions.length >= EDGE_LIMIT,
-    ),
+    isTruncated: results.some(({ data }) => data.isTruncated),
     cameraNames: Object.fromEntries(cameraNames),
     references: Object.fromEntries(references),
     failures,

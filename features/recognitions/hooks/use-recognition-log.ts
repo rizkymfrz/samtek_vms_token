@@ -14,6 +14,7 @@ import {
 import { addRecognition } from "../lib/merge-recognitions";
 import { toRow } from "../lib/recognition-row";
 import { recognitionWindow, windowKey } from "../lib/recognition-window";
+import { recognizerList } from "../lib/recognizer-list";
 import { fetchRecognitions } from "../services/fetch-recognitions";
 import type { RecognitionsData } from "../types";
 
@@ -34,7 +35,7 @@ export const useRecognitionLog = (
     const stopEvents = subscribeEdgeEvents((event) => {
       if (
         event.kind !== "recognition" ||
-        event.data.recognizer !== recognizer
+        !recognizerList(recognizer).includes(event.data.recognizer)
       ) {
         return;
       }

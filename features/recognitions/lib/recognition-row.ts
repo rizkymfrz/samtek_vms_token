@@ -13,6 +13,9 @@ type RecognitionInput = {
 const text = (value: unknown, fallback: string) =>
   typeof value === "string" && value !== "" ? value : fallback;
 
+const optionalText = (value: unknown) =>
+  typeof value === "string" && value !== "" ? value : null;
+
 export const cropUrl = (edgeId: string, eventId: string) =>
   `/api/edge/${edgeId}/recognitions/${eventId}/crop`;
 
@@ -39,6 +42,9 @@ export const toRow = (
     group: text(result.person_group, "Unknown"),
     similarity:
       typeof result.similarity === "number" ? result.similarity : null,
+    plate: optionalText(result.plate_number),
+    vehicleType: optionalText(result.vehicle_type),
+    vehicleColor: optionalText(result.vehicle_color),
     confidence: recognition.object?.confidence ?? 0,
     cropUrl: hasCrop ? cropUrl(edgeId, recognition.event_id) : null,
     referenceUrl:

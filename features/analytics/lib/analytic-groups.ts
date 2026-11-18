@@ -124,6 +124,7 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
       "license_plate_recognition",
       "vehicle_license_plate_recognition",
     ],
+    recognizer: "license_plate_recognition,vehicle_license_plate_recognition",
   },
   {
     slug: "motion-detection",
@@ -152,3 +153,5 @@ export const FACE_RECOGNITION_SLUG = "face-recognition";
 
 export const findAnalyticGroup = (slug: string) =>
   ANALYTIC_GROUPS.find((group) => group.slug === slug);
+
+export const PLATE_RECOGNITION_SLUG = "license-plate-recognition";

@@ -11,6 +11,9 @@ export type RecognitionRow = {
   name: string;
   group: string;
   similarity: number | null;
+  plate: string | null;
+  vehicleType: string | null;
+  vehicleColor: string | null;
   confidence: number;
   cropUrl: string | null;
   referenceUrl: string | null;

@@ -7,10 +7,12 @@ import { getAlerts } from "@/features/alerts/services/get-alerts";
 import { AnalyticAlertHistory } from "@/features/analytics/components/analytic-alert-history";
 import { AnalyticDetailSkeleton } from "@/features/analytics/components/analytic-detail-skeleton";
 import { AnalyticDetailView } from "@/features/analytics/components/analytic-detail-view";
+import { AnalyticPlateHistory } from "@/features/analytics/components/analytic-plate-history";
 import { AnalyticRecognitionHistory } from "@/features/analytics/components/analytic-recognition-history";
 import {
   ANALYTIC_GROUPS,
   findAnalyticGroup,
+  PLATE_RECOGNITION_SLUG,
 } from "@/features/analytics/lib/analytic-groups";
 import { getLive } from "@/features/live/services/get-live";
 import { getRecognitions } from "@/features/recognitions/services/get-recognitions";
@@ -70,6 +72,12 @@ const AnalyticDetailContent = async ({
         <AnalyticAlertHistory
           analyticIds={group.analyticIds}
           initialAlerts={history.alerts}
+          isLive={isLiveSource}
+        />
+      ) : group.slug === PLATE_RECOGNITION_SLUG ? (
+        <AnalyticPlateHistory
+          recognizer={history.recognizer}
+          initialRecognitions={history.recognitions}
           isLive={isLiveSource}
         />
       ) : (

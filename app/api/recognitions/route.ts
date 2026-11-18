@@ -1,8 +1,7 @@
 import { connection } from "next/server";
+import { RECOGNIZER_LIST } from "@/features/recognitions/lib/recognizer-list";
 import { getRecognitions } from "@/features/recognitions/services/get-recognitions";
 import { UnauthorizedError } from "@/lib/auth/session";
-
-const RECOGNIZER = /^[a-z_]{1,64}$/;
 
 const parseTime = (value: string | null) => {
   if (value === null) return null;
@@ -17,7 +16,7 @@ export const GET = async (request: Request) => {
   const since = parseTime(params.get("since"));
   const until = parseTime(params.get("until"));
   if (
-    !RECOGNIZER.test(recognizer) ||
+    !RECOGNIZER_LIST.test(recognizer) ||
     since === null ||
     Number.isNaN(since) ||
     Number.isNaN(until) ||
