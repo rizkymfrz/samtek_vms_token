@@ -132,6 +132,7 @@ export const buildFloorplanSource = (
       webrtcUrl: s.webrtcUrl,
       webrtcUrlLocal: s.webrtcUrlLocal,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,
+      analyticId: d.analyticId ?? null,
       state: !d.isEnabled ? "disabled" : reachable ? "live" : "server-offline",
       alerts: alerts.get(d.name) ?? 0,
     };

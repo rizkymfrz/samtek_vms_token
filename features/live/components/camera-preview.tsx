@@ -15,6 +15,7 @@ export type PreviewCamera = {
   name: string;
   serverId: string;
   serverName: string;
+  analyticId?: string | null;
   state: "live" | "disabled" | "server-offline" | "stream-offline";
   hasSubStream: boolean;
   webrtcUrl: string | null;
@@ -60,6 +61,7 @@ export const CameraPreview = ({
             <StreamDetections
               edgeId={camera.serverId}
               deviceId={camera.id}
+              analyticId={camera.analyticId}
               isDefaultOn
             >
               <SpeakerToggle audioId={camera.id} />

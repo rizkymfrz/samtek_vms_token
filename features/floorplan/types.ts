@@ -33,6 +33,7 @@ export type PlanCamera = {
   serverName: string;
   groupId: string | null;
   analytic: string | null;
+  analyticId: string | null;
   hasSubStream: boolean;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;

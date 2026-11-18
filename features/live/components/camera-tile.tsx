@@ -56,7 +56,11 @@ export const CameraTile = ({
         <EdgeOffline />
       )}
       {isLive && (
-        <StreamDetections edgeId={tile.serverId} deviceId={tile.id}>
+        <StreamDetections
+          edgeId={tile.serverId}
+          deviceId={tile.id}
+          analyticId={tile.analyticId}
+        >
           <SpeakerToggle audioId={tile.id} />
           <TalkControl edgeId={tile.serverId} deviceId={tile.id} />
         </StreamDetections>

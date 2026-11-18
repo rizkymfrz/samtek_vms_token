@@ -77,10 +77,20 @@ export type EdgeStatusState = {
   recordingStatus: ReadonlyMap<string, ReadonlyMap<string, RecordingDevice>>;
 };
 
+export type DetectionStatus = "unknown" | "ok" | "warning" | "alert";
+
 export type DetectionObject = {
   label: string;
   confidence: number;
   trackId: number | null;
+  status: DetectionStatus | null;
+  missingItems: string[] | null;
+  isPpe: boolean;
+  score: number | null;
+  peopleCount: number | null;
+  peopleLimit: number | null;
+  staySeconds: number | null;
+  maxStaySeconds: number | null;
   x1: number;
   y1: number;
   x2: number;

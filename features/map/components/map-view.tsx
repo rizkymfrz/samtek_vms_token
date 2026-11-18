@@ -202,6 +202,7 @@ export const MapView = ({
                 ? "stream-offline"
                 : "live",
           hasSubStream: selected.hasSubStream,
+          analyticId: selected.analyticId,
           webrtcUrl: server?.webrtcUrl ?? null,
           webrtcUrlLocal: server?.webrtcUrlLocal ?? null,
         }}

@@ -4,6 +4,7 @@ import { EDGE_UP_TOPIC, mqttConfig } from "@/config/mqtt";
 import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
 import { toDescriptors } from "./analytic-catalog";
+import { statusOfPpe } from "./detection-status";
 import { ingestDetections } from "./detection-store";
 import {
   publishEdgeEvent,
@@ -359,6 +360,14 @@ const receive = (topic: string, payload: Uint8Array) => {
         label: o.label,
         confidence: o.confidence,
         trackId: o.track_id ?? null,
+        status: o.status ?? statusOfPpe(o) ?? (o.over_limit ? "alert" : null),
+        missingItems: o.ppe?.missing ?? o.missing_items ?? null,
+        isPpe: o.ppe !== undefined,
+        score: o.score ?? null,
+        peopleCount: o.people_count ?? null,
+        peopleLimit: o.people_limit ?? null,
+        staySeconds: o.stay_seconds ?? null,
+        maxStaySeconds: o.max_stay_seconds ?? null,
         ...o.bbox,
       })),
     );

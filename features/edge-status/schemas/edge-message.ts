@@ -165,6 +165,21 @@ export const detectionBboxesSchema = z.object({
         confidence: z.number().min(0).max(1),
         track_id: z.number().int().nonnegative().optional(),
         bbox: z.object({ x1: ratio, y1: ratio, x2: ratio, y2: ratio }),
+        missing_items: z.array(z.string()).optional(),
+        ppe: z
+          .object({
+            status: z.string(),
+            required: z.array(z.string()).optional(),
+            missing: z.array(z.string()).optional(),
+          })
+          .optional(),
+        status: z.enum(["unknown", "ok", "warning", "alert"]).optional(),
+        score: z.number().optional(),
+        people_count: z.number().int().nonnegative().optional(),
+        people_limit: z.number().int().nonnegative().optional(),
+        stay_seconds: z.number().nonnegative().optional(),
+        max_stay_seconds: z.number().positive().optional(),
+        over_limit: z.boolean().optional(),
       }),
     ),
   }),

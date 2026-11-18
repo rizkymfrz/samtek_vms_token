@@ -19,6 +19,7 @@ export type {
   AnalyticDescriptor,
   BodywornState,
   DetectionObject,
+  DetectionStatus,
   EdgeEntry,
   EdgeRecording,
   EdgeSample,

@@ -40,7 +40,11 @@ export const LivePanel = ({
       <div className="group/tile relative aspect-video w-full overflow-hidden border bg-sidebar">
         <StreamFrame detail={detail} state={state} quality="main" />
         {isLive && (
-          <StreamDetections edgeId={detail.edgeServerId} deviceId={detail.id}>
+          <StreamDetections
+            edgeId={detail.edgeServerId}
+            deviceId={detail.id}
+            analyticId={detail.analyticId}
+          >
             <SpeakerToggle audioId={detail.id} />
             <TalkControl edgeId={detail.edgeServerId} deviceId={detail.id} />
           </StreamDetections>

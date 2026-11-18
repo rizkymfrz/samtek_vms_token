@@ -123,6 +123,7 @@ export const getMap = async (): Promise<MapData> => {
         isEnabled: device.isEnabled,
         hasSubStream: device.sourceSub !== null,
         analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
+        analyticId: device.analyticId,
         inherited: !own,
         latitude,
         longitude,

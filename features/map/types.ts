@@ -23,6 +23,7 @@ export type MapMarker =
       isEnabled: boolean;
       hasSubStream: boolean;
       analytic: string | null;
+      analyticId?: string | null;
       inherited: boolean;
       latitude: number;
       longitude: number;

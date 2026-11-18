@@ -11,6 +11,8 @@
   --color-detect-red: rgb(255 0 0);
   --color-detect-green: rgb(0 255 0);
   --color-detect-blue: rgb(0 0 255);
+  --color-detect-label: rgb(0 0 0);
+  --color-detect-label-foreground: rgb(255 255 255);
 }
 
 @theme inline {

@@ -123,6 +123,7 @@ export const getFloorplan = async (): Promise<FloorplanData> => {
       webrtcUrl: server?.webrtcUrl ?? null,
       webrtcUrlLocal: server?.webrtcUrlLocal ?? null,
       analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
+      analyticId: device.analyticId ?? null,
       state: !device.isEnabled
         ? "disabled"
         : server && isServerOnline(server, now)
