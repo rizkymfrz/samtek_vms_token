@@ -1,3 +1,4 @@
+import { ServerIcon, UserIcon } from "lucide-react";
 import {
   PanelField,
   PanelOption,
@@ -45,6 +46,7 @@ export const TicketFilterPanel = ({
         <PanelField label="Server">
           <Pick
             label="Server"
+            icon={ServerIcon}
             items={serverItems}
             value={filters.edgeServerId ?? ALL}
             onChange={(value) =>
@@ -56,6 +58,7 @@ export const TicketFilterPanel = ({
         <PanelField label="Assignee">
           <Pick
             label="Assignee"
+            icon={UserIcon}
             items={[
               { value: ALL, label: "Everyone" },
               { value: "me", label: "Assigned to me" },

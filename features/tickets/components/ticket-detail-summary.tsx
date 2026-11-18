@@ -21,14 +21,16 @@ export const TicketDetailSummary = ({
   serverName,
 }: {
   ticket: TicketRecord;
-  serverName: string;
+  serverName?: string;
 }) => (
   <>
     <div className="flex flex-col gap-2">
       <DetailLabel>Summary</DetailLabel>
       <div className="grid grid-cols-2 gap-x-4 gap-y-4">
         <DetailField icon={CctvIcon} label="Camera" value={ticket.deviceName} />
-        <DetailField icon={ServerIcon} label="Server" value={serverName} />
+        {serverName && (
+          <DetailField icon={ServerIcon} label="Server" value={serverName} />
+        )}
         <DetailField
           icon={ScanSearchIcon}
           label="Analytic"

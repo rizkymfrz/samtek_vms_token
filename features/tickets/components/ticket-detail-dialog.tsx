@@ -27,6 +27,7 @@ import { TicketDetailSummary } from "./ticket-detail-summary";
 import { TicketEvidence } from "./ticket-evidence";
 import { type NoteAction, TicketNoteForm } from "./ticket-note-form";
 import { TicketPhoto } from "./ticket-photo";
+import { TicketResolutionNote } from "./ticket-resolution-note";
 import { TicketStatusBadge } from "./ticket-status-badge";
 import { TicketTimeline } from "./ticket-timeline";
 import { useTicketActions } from "../hooks/use-ticket-actions";
@@ -44,12 +45,10 @@ const Body = ({
   ticket,
   serverName,
   userId,
-  onClose,
 }: {
   ticket: TicketDetail;
   serverName: string;
   userId: string | null;
-  onClose: () => void;
 }) => {
   const { run, upload, link, error } = useTicketActions();
   const [noteAction, setNoteAction] = useState<NoteAction | null>(null);
@@ -101,18 +100,7 @@ const Body = ({
         <DialogDivider />
         <DialogSection>
           <TicketDetailSummary ticket={ticket} serverName={serverName} />
-          {ticket.resolutionNote && (
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">
-                {ticket.resolutionType === "false_alarm"
-                  ? "False alarm"
-                  : "Resolution"}
-              </span>
-              <p className="text-xs break-words text-muted-foreground">
-                {ticket.resolutionNote}
-              </p>
-            </div>
-          )}
+          <TicketResolutionNote ticket={ticket} />
           {noteAction && (
             <TicketNoteForm
               key={noteAction}
@@ -137,57 +125,61 @@ const Body = ({
           {error && <FieldError>{error}</FieldError>}
         </DialogSection>
       </DialogBody>
-      <Separator />
-      <DialogFooter>
-        <Button variant="secondary" onClick={onClose}>
-          Close
-        </Button>
-        {!noteAction && canSendLink && (
-          <Button
-            variant="secondary"
-            disabled={link.isPending}
-            onClick={() => link.mutate(ticket.id)}
-          >
-            <SendIcon />
-            Send link
-          </Button>
-        )}
-        {!noteAction && actions.includes("acknowledge") && (
-          <Button
-            disabled={run.isPending}
-            onClick={() => submit("acknowledge")}
-          >
-            <CheckIcon />
-            Acknowledge
-          </Button>
-        )}
-        {!noteAction && actions.includes("start") && (
-          <Button disabled={run.isPending} onClick={() => submit("start")}>
-            <PlayIcon />
-            Start
-          </Button>
-        )}
-        {!noteAction && actions.includes("request-resolution") && (
-          <Button
-            variant={actions.includes("start") ? "secondary" : "default"}
-            onClick={() => setNoteAction("request-resolution")}
-          >
-            Request resolution
-          </Button>
-        )}
-        {!noteAction && actions.includes("reject") && (
-          <Button variant="destructive" onClick={() => setNoteAction("reject")}>
-            <XIcon />
-            Reject
-          </Button>
-        )}
-        {!noteAction && actions.includes("approve") && (
-          <Button onClick={() => setNoteAction("approve")}>
-            <CheckIcon />
-            Approve
-          </Button>
-        )}
-      </DialogFooter>
+      {!noteAction && (canSendLink || actions.length > 0) && (
+        <>
+          <Separator />
+          <DialogFooter>
+            {!noteAction && canSendLink && (
+              <Button
+                variant="secondary"
+                disabled={link.isPending}
+                onClick={() => link.mutate(ticket.id)}
+              >
+                <SendIcon />
+                Send link
+              </Button>
+            )}
+            {!noteAction && actions.includes("acknowledge") && (
+              <Button
+                disabled={run.isPending}
+                onClick={() => submit("acknowledge")}
+              >
+                <CheckIcon />
+                Acknowledge
+              </Button>
+            )}
+            {!noteAction && actions.includes("start") && (
+              <Button disabled={run.isPending} onClick={() => submit("start")}>
+                <PlayIcon />
+                Start
+              </Button>
+            )}
+            {!noteAction && actions.includes("request-resolution") && (
+              <Button
+                variant={actions.includes("start") ? "secondary" : "default"}
+                onClick={() => setNoteAction("request-resolution")}
+              >
+                Request resolution
+              </Button>
+            )}
+            {!noteAction && actions.includes("reject") && (
+              <Button
+                variant="destructive"
+                onClick={() => setNoteAction("reject")}
+              >
+                <XIcon />
+                Reject
+              </Button>
+            )}
+            {!noteAction && actions.includes("approve") && (
+              <Button onClick={() => setNoteAction("approve")}>
+                <CheckIcon />
+                Approve
+              </Button>
+            )}
+          </DialogFooter>
+        </>
+      )}
     </>
   );
 };
@@ -219,7 +211,6 @@ export const TicketDetailDialog = ({
               `Server ${ticket.edgeServerId}`
             }
             userId={userId}
-            onClose={onClose}
           />
         ) : (
           <>
@@ -232,15 +223,11 @@ export const TicketDetailDialog = ({
             <Separator />
             <DialogBody>
               <DialogSection>
-                <div className="flex justify-center py-8">
-                  {error ? (
-                    <Button variant="secondary" onClick={onClose}>
-                      Close
-                    </Button>
-                  ) : (
+                {!error && (
+                  <div className="flex justify-center py-8">
                     <Spinner />
-                  )}
-                </div>
+                  </div>
+                )}
               </DialogSection>
             </DialogBody>
           </>

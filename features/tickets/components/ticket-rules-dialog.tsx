@@ -1,15 +1,13 @@
 "use client";
-import { SlidersHorizontalIcon } from "lucide-react";
+import { ServerIcon, SlidersHorizontalIcon } from "lucide-react";
 import { useState } from "react";
 import { Pick } from "@/components/shared/pick";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogBody,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogSection,
   DialogTitle,
@@ -50,6 +48,7 @@ export const TicketRulesDialog = ({
           <DialogSection>
             <Pick
               label="Server"
+              icon={ServerIcon}
               items={servers.map((server) => ({
                 value: server.id,
                 label: server.name,
@@ -107,12 +106,6 @@ export const TicketRulesDialog = ({
             {error && <FieldError>{error}</FieldError>}
           </DialogSection>
         </DialogBody>
-        <Separator />
-        <DialogFooter>
-          <Button variant="secondary" onClick={onClose}>
-            Close
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
