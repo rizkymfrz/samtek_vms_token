@@ -1,10 +1,11 @@
 "use client";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import {
   type HeaderAlert,
   HeaderNotifications,
 } from "@/components/layout/header-notifications";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
+import { AlertDetailDialog } from "./alert-detail-dialog";
 import { AlertImage } from "./alert-image";
 import { useNotifications } from "../hooks/use-notifications";
 import { notificationStore } from "../lib/notification-store";
@@ -22,6 +23,7 @@ const getSnapshot = () => Math.floor(Date.now() / TICK_MS);
 const getServerSnapshot = () => 0;
 
 export const AlertNotifications = () => {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data } = useNotifications();
   const { status, value } = usePersistedStore(notificationStore);
   const slice = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -32,6 +34,10 @@ export const AlertNotifications = () => {
     id: row.id,
     title: row.title,
     source: row.camera,
+    analytic: row.analytic,
+    object: row.object,
+    perimeter: row.perimeter === "None" ? null : row.perimeter,
+    risk: row.risk,
     time: now === null ? "" : timeAgo(row.at, now),
     severity: row.risk === "high" ? "critical" : "info",
     read: !isReady || row.at <= value.readAt,
@@ -40,13 +46,18 @@ export const AlertNotifications = () => {
   const unread = isReady
     ? rows.filter((row) => row.at > value.readAt).length
     : 0;
+  const selected = rows.find((row) => row.id === selectedId) ?? null;
   return (
-    <HeaderNotifications
-      alerts={alerts}
-      unread={unread}
-      onMarkAllRead={() =>
-        notificationStore.update(() => ({ readAt: Date.now() }))
-      }
-    />
+    <>
+      <HeaderNotifications
+        alerts={alerts}
+        unread={unread}
+        onMarkAllRead={() =>
+          notificationStore.update(() => ({ readAt: Date.now() }))
+        }
+        onSelect={setSelectedId}
+      />
+      <AlertDetailDialog alert={selected} onClose={() => setSelectedId(null)} />
+    </>
   );
 };

@@ -5,6 +5,7 @@ import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toast";
 import { isLiveSource } from "@/config/env";
+import { AlarmToaster } from "@/features/alerts/components/alarm-toaster";
 import { AlertNotifications } from "@/features/alerts/components/alert-notifications";
 import { UserMenu } from "@/features/auth/components/user-menu";
 import { DeviceStatus } from "@/features/cameras/components/device-status";
@@ -17,6 +18,7 @@ const AppLayout = ({ children }: LayoutProps<"/">) => {
     <QueryProvider>
       <EdgeStatusConnector />
       <Toaster>
+        <AlarmToaster />
         <SidebarProvider>
           <Suspense fallback={null}>
             <AppSidebar footer={<UserMenu />} isLive={isLiveSource} />
