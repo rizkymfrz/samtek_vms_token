@@ -1,4 +1,10 @@
-import { MinusIcon, PlusIcon, SearchIcon, Trash2Icon } from "lucide-react";
+import {
+  type LucideIcon,
+  MinusIcon,
+  PlusIcon,
+  SearchIcon,
+  Trash2Icon,
+} from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
@@ -320,6 +326,7 @@ export const PanelSelected = ({
 
 export const PanelPicker = ({
   title,
+  icon,
   items,
   value,
   onChange,
@@ -327,6 +334,7 @@ export const PanelPicker = ({
   children,
 }: {
   title: string;
+  icon: LucideIcon;
   items: { value: string; label: string }[];
   value: string;
   onChange: (value: string) => void;
@@ -337,6 +345,7 @@ export const PanelPicker = ({
     <PanelSection title={title}>
       <Pick
         label={title}
+        icon={icon}
         items={items}
         value={value}
         onChange={onChange}

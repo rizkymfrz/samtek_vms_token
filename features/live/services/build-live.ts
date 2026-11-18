@@ -21,6 +21,7 @@ export const buildLive = (now = Date.now()): LiveData => {
       serverName: s.name,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,
       analyticId: d.analyticId,
+      perimeters: null,
       isRecordingEnabled: d.isRecordingEnabled,
       state: !d.isEnabled
         ? "disabled"

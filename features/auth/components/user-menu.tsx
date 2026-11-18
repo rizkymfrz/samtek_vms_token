@@ -19,6 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { SETTINGS_ITEM } from "@/config/navigation";
+import { useIsClient } from "@/hooks/use-is-client";
 import { useCurrentUser } from "../hooks/use-current-user";
 import { useSignOut } from "../hooks/use-sign-out";
 import type { CurrentUser } from "../types";
@@ -54,7 +55,8 @@ const UserInfo = ({ user }: { user: CurrentUser | undefined }) => {
 
 export const UserMenu = () => {
   const { isMobile } = useSidebar();
-  const { data: user } = useCurrentUser();
+  const { data } = useCurrentUser();
+  const user = useIsClient() ? data : undefined;
   const router = useRouter();
   const signOut = useSignOut();
   const handleLogout = () =>

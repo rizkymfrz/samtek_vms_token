@@ -1,5 +1,5 @@
 "use client";
-import { ListMinusIcon, ListPlusIcon } from "lucide-react";
+import { LayoutDashboardIcon, ListMinusIcon, ListPlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
   PanelIconAction,
@@ -104,6 +104,7 @@ export const DevicePanel = ({
     <>
       <PanelPicker
         title="Layout"
+        icon={LayoutDashboardIcon}
         items={layoutItems}
         value={layout.id}
         onChange={onSelectLayout}

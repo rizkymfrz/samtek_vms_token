@@ -8,6 +8,7 @@ import {
   HandIcon,
   HardHatIcon,
   type LucideIcon,
+  PentagonIcon,
   ScanEyeIcon,
   ShieldAlertIcon,
   ShirtIcon,
@@ -16,7 +17,9 @@ import {
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { ToolbarToggle } from "@/components/shared/toolbar-toggle";
+import type { Perimeters } from "@/lib/api/perimeters";
 import { cn } from "@/lib/utils";
+import { hasPerimeters, PerimeterOverlay } from "./perimeter-overlay";
 import { useDetections } from "../hooks/use-detections";
 import {
   detailOf,
@@ -148,18 +151,24 @@ export const StreamDetections = ({
   edgeId,
   deviceId,
   analyticId,
+  perimeters,
   isDefaultOn = false,
   children,
 }: {
   edgeId: string;
   deviceId: string;
   analyticId?: string | null;
+  perimeters?: Perimeters | null;
   isDefaultOn?: boolean;
   children?: ReactNode;
 }) => {
   const [hasDetections, setHasDetections] = useState(isDefaultOn);
+  const [hasPerimeterLines, setHasPerimeterLines] = useState(false);
   return (
     <>
+      {hasPerimeterLines && perimeters && (
+        <PerimeterOverlay perimeters={perimeters} />
+      )}
       {hasDetections && (
         <DetectionOverlay
           edgeId={edgeId}
@@ -169,6 +178,15 @@ export const StreamDetections = ({
       )}
       <div className="absolute right-2 bottom-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/tile:opacity-100 focus-within:opacity-100 has-data-[talk=live]:opacity-100">
         {children}
+        {hasPerimeters(perimeters) && (
+          <ToolbarToggle
+            pressed={hasPerimeterLines}
+            onPressedChange={setHasPerimeterLines}
+            label="Perimeters"
+          >
+            <PentagonIcon />
+          </ToolbarToggle>
+        )}
         <ToolbarToggle
           pressed={hasDetections}
           onPressedChange={setHasDetections}

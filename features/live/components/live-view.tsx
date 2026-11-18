@@ -1,9 +1,11 @@
 "use client";
 import {
+  Grid3x3Icon,
   LayoutGridIcon,
   LoaderIcon,
   MaximizeIcon,
   PlusIcon,
+  SignalIcon,
 } from "lucide-react";
 import { type CSSProperties, useMemo, useRef, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
@@ -156,6 +158,7 @@ export const LiveView = ({
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Pick
             label="Grid"
+            icon={Grid3x3Icon}
             items={gridItems(layout.rows, layout.columns)}
             value={gridValue(layout.rows, layout.columns)}
             onChange={(size) => {
@@ -166,6 +169,7 @@ export const LiveView = ({
           />
           <Pick
             label="Stream"
+            icon={SignalIcon}
             items={QUALITY_ITEMS}
             value={quality}
             onChange={(next) => setQuality(next as StreamQuality)}

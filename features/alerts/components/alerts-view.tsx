@@ -3,6 +3,8 @@ import {
   BellIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  Grid3x3Icon,
+  LayoutGridIcon,
   TriangleAlertIcon,
 } from "lucide-react";
 import {
@@ -142,6 +144,7 @@ export const AlertsView = ({
           </Button>
           <Pick
             label="View"
+            icon={LayoutGridIcon}
             items={VIEW_ITEMS}
             value={view}
             onChange={(next) => {
@@ -152,6 +155,7 @@ export const AlertsView = ({
           {view === "grid" && (
             <Pick
               label="Grid"
+              icon={Grid3x3Icon}
               items={gridItems}
               value={grid}
               onChange={(next) => {

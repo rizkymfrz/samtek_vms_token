@@ -3,6 +3,8 @@ import {
   CctvIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  Grid3x3Icon,
+  LayoutGridIcon,
   PlusIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -175,6 +177,7 @@ export const CamerasView = ({
             </Button>
             <Pick
               label="View"
+              icon={LayoutGridIcon}
               items={VIEW_ITEMS}
               value={view}
               onChange={(next) => {
@@ -185,6 +188,7 @@ export const CamerasView = ({
             {view === "grid" && (
               <Pick
                 label="Grid"
+                icon={Grid3x3Icon}
                 items={gridItems}
                 value={grid}
                 onChange={(next) => {

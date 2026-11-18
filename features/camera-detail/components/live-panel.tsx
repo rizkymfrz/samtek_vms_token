@@ -44,6 +44,7 @@ export const LivePanel = ({
             edgeId={detail.edgeServerId}
             deviceId={detail.id}
             analyticId={detail.analyticId}
+            perimeters={detail.perimeters}
           >
             <SpeakerToggle audioId={detail.id} />
             <TalkControl edgeId={detail.edgeServerId} deviceId={detail.id} />

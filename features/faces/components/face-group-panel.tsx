@@ -1,4 +1,4 @@
-import { Trash2Icon } from "lucide-react";
+import { ServerIcon, Trash2Icon } from "lucide-react";
 import {
   PanelField,
   PanelOption,
@@ -43,6 +43,7 @@ export const FaceGroupPanel = ({
           <PanelField label="Edge server">
             <Pick
               label="Edge server"
+              icon={ServerIcon}
               items={edgeItems}
               value={filters.edge}
               onChange={(edge) => onChange({ edge })}

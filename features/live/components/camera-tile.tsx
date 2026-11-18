@@ -60,6 +60,7 @@ export const CameraTile = ({
           edgeId={tile.serverId}
           deviceId={tile.id}
           analyticId={tile.analyticId}
+          perimeters={tile.perimeters}
         >
           <SpeakerToggle audioId={tile.id} />
           <TalkControl edgeId={tile.serverId} deviceId={tile.id} />

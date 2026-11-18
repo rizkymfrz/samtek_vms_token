@@ -1,3 +1,4 @@
+import { CircleDotIcon, ScanSearchIcon, VideoIcon } from "lucide-react";
 import {
   PanelField,
   PanelOption,
@@ -69,6 +70,7 @@ export const CameraFilterPanel = ({
         <PanelField label="Status">
           <Pick
             label="Status"
+            icon={CircleDotIcon}
             items={STATUS_ITEMS}
             value={filters.status}
             onChange={(status) => onChange({ status })}
@@ -78,6 +80,7 @@ export const CameraFilterPanel = ({
         <PanelField label="Analytic">
           <Pick
             label="Analytic"
+            icon={ScanSearchIcon}
             items={ANALYTIC_ITEMS}
             value={filters.analytic}
             onChange={(analytic) => onChange({ analytic })}
@@ -87,6 +90,7 @@ export const CameraFilterPanel = ({
         <PanelField label="Recording">
           <Pick
             label="Recording"
+            icon={VideoIcon}
             items={RECORDING_ITEMS}
             value={filters.recording}
             onChange={(recording) => onChange({ recording })}

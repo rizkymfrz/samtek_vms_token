@@ -1,3 +1,4 @@
+import { ClockIcon, ShieldAlertIcon, TagIcon } from "lucide-react";
 import {
   PanelField,
   PanelOption,
@@ -54,6 +55,7 @@ export const FilterPanel = ({
         <PanelField label="Time range">
           <Pick
             label="Time range"
+            icon={ClockIcon}
             items={RANGES}
             value={filters.range}
             onChange={(range) => onChange({ range })}
@@ -83,6 +85,7 @@ export const FilterPanel = ({
         <PanelField label="Risk">
           <Pick
             label="Risk"
+            icon={ShieldAlertIcon}
             items={RISK_ITEMS}
             value={filters.risk}
             onChange={(risk) => onChange({ risk })}
@@ -92,6 +95,7 @@ export const FilterPanel = ({
         <PanelField label="Type">
           <Pick
             label="Type"
+            icon={TagIcon}
             items={titleItems}
             value={filters.title}
             onChange={(title) => onChange({ title })}

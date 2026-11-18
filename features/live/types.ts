@@ -1,3 +1,5 @@
+import type { Perimeters } from "@/lib/api/perimeters";
+
 export type StreamState =
   "live" | "disabled" | "server-offline" | "stream-offline";
 
@@ -8,6 +10,7 @@ export type Tile = {
   serverName: string;
   analytic: string | null;
   analyticId: string | null;
+  perimeters: Perimeters | null;
   isRecordingEnabled: boolean;
   state: StreamState;
   hasSubStream: boolean;

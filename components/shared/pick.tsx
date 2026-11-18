@@ -1,4 +1,5 @@
 "use client";
+import type { LucideIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -13,12 +14,14 @@ export type PickItem = { value: string; label: string };
 
 export const Pick = ({
   label,
+  icon,
   items,
   value,
   onChange,
   className,
 }: {
   label: string;
+  icon?: LucideIcon;
   items: PickItem[];
   value: string;
   onChange: (value: string) => void;
@@ -30,7 +33,11 @@ export const Pick = ({
       value={value}
       onValueChange={(next) => onChange(String(next))}
     >
-      <SelectTrigger className={cn("w-32", className)} aria-label={label}>
+      <SelectTrigger
+        icon={icon}
+        className={cn(icon ? "w-36" : "w-32", className)}
+        aria-label={label}
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

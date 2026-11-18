@@ -1,5 +1,5 @@
 "use client";
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import {
   Area,
   AreaChart,
@@ -47,7 +47,6 @@ export const MetricChart = ({
   const config: ChartConfig = {
     value: { label: `${title} (${unit})`, color: "var(--chart-2)" },
   };
-  const [isHovered, setIsHovered] = useState(false);
   const data = points.map((point, index) => ({
     second: index - (points.length - 1),
     value: point,
@@ -74,11 +73,7 @@ export const MetricChart = ({
             {empty}
           </p>
         ) : (
-          <div
-            className="relative min-h-40 flex-1"
-            onPointerEnter={() => setIsHovered(true)}
-            onPointerLeave={() => setIsHovered(false)}
-          >
+          <div className="relative min-h-40 flex-1">
             <ChartContainer
               config={config}
               className="absolute inset-0 aspect-auto size-full"
@@ -109,7 +104,6 @@ export const MetricChart = ({
                   className="font-mono"
                 />
                 <ChartTooltip
-                  active={isHovered ? undefined : false}
                   content={
                     <ChartTooltipContent
                       indicator="line"

@@ -121,7 +121,7 @@ Rules:
 - Pengecualian yang diterima: route handler di `app/api/auth/`,
   `app/api/alerts/`, `app/api/cameras/`, `app/api/edge-servers/`,
   `app/api/servers/`, `app/api/live/`, `app/api/layouts/`,
-  `app/api/map/`, `app/api/users/`, `app/api/roles/`, `app/api/permissions/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, dan `app/api/recognitions/` dipakai sebagai lapisan tipis
+  `app/api/map/`, `app/api/users/`, `app/api/roles/`, `app/api/permissions/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, `app/api/recognitions/`, dan `app/api/stats/` dipakai sebagai lapisan tipis
   (BFF) di depan API central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
@@ -134,6 +134,10 @@ Rules:
   `app/api/faces/` dan `app/api/recognitions/` meneruskan ke API HTTP
   Edge (`/v1/faces`, `/v1/recognitions`), yang tidak punya autentikasi dan hanya menerima `Host`/`Origin` lokal, sehingga
   browser tidak boleh memanggilnya langsung.
+  `app/api/stats/counting-dwelling/` meneruskan ke `/v1/stats/counting-dwelling`
+  pada satu Edge (`edge` dan `device` dari kamera yang dipilih) dengan alasan
+  yang sama; parameter `utcOffset` memakai zona waktu browser agar batas
+  hari, minggu, dan bulan mengikuti jam lokal.
 
 ### 3.2 `features/`
 
@@ -427,6 +431,15 @@ lucide), ditampilkan di kiri judul seperti header Setup Camera.
 label kolom. Header tabel menempel di atas (sticky) selagi isi tabel
 di-scroll, jadi pembungkus tabel harus punya tinggi terbatas dan
 `Table` sendiri yang men-scroll isinya.
+
+### 8.4 Select
+
+`SelectTrigger` dan `Pick` menerima prop `icon` (ikon lucide) yang tampil di
+kiri nilai terpilih, seperti ikon pada `Button`. Select di luar form (filter,
+pengaturan tampilan, pemilih layout atau server) wajib memakai `icon`; pilih
+ikon yang menggambarkan isi pilihannya (bukan panah atau hiasan). Select di
+dalam form (field yang dikirim ke API) tidak memakai `icon` karena labelnya
+sudah ada di `Field`.
 
 ## 9. Naming and File Organization
 

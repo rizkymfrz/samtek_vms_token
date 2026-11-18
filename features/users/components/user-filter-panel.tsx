@@ -1,3 +1,4 @@
+import { CircleDotIcon } from "lucide-react";
 import {
   PanelField,
   PanelOption,
@@ -48,6 +49,7 @@ export const UserFilterPanel = ({
         <PanelField label="Status">
           <Pick
             label="Status"
+            icon={CircleDotIcon}
             items={STATUS_ITEMS}
             value={filters.status}
             onChange={(status) => onChange({ status })}

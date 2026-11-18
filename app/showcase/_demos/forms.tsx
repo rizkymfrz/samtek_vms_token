@@ -1,5 +1,5 @@
 "use client"
-import { SearchIcon } from "lucide-react"
+import { BoxIcon, SearchIcon } from "lucide-react"
 import { Fragment, useState, useSyncExternalStore } from "react"
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -244,7 +244,7 @@ export const SelectDemo = () => {
   return (
     <Stack>
       <Select items={frameworks} defaultValue={frameworks[0].value}>
-        <SelectTrigger>
+        <SelectTrigger icon={BoxIcon}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

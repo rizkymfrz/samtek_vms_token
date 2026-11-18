@@ -9,6 +9,7 @@ import {
   useContext,
   useId,
   useMemo,
+  useState,
 } from "react";
 import type { TooltipValueType } from "recharts";
 import * as RechartsPrimitive from "recharts";
@@ -31,6 +32,7 @@ export type ChartConfig = Record<
 
 type ChartContextProps = {
   config: ChartConfig;
+  isHovered: boolean;
 };
 
 const ChartContext = createContext<ChartContextProps | null>(null);
@@ -62,8 +64,9 @@ const ChartContainer = ({
 }) => {
   const uniqueId = useId();
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`;
+  const [isHovered, setIsHovered] = useState(false);
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={{ config, isHovered }}>
       <div
         data-slot="chart"
         data-chart={chartId}
@@ -72,6 +75,14 @@ const ChartContainer = ({
           className,
         )}
         {...props}
+        onPointerEnter={(event) => {
+          setIsHovered(true);
+          props.onPointerEnter?.(event);
+        }}
+        onPointerLeave={(event) => {
+          setIsHovered(false);
+          props.onPointerLeave?.(event);
+        }}
       >
         <ChartStyle id={chartId} config={config} />
         <RechartsPrimitive.ResponsiveContainer
@@ -115,7 +126,17 @@ ${colorConfig
   );
 };
 
-const ChartTooltip = RechartsPrimitive.Tooltip;
+const ChartTooltip = (
+  props: ComponentProps<typeof RechartsPrimitive.Tooltip>,
+) => {
+  const { isHovered } = useChart();
+  return (
+    <RechartsPrimitive.Tooltip
+      {...props}
+      active={isHovered ? props.active : false}
+    />
+  );
+};
 
 const ChartTooltipContent = ({
   active,

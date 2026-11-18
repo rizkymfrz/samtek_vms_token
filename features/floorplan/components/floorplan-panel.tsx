@@ -1,4 +1,4 @@
-import { ImageUpIcon } from "lucide-react";
+import { ImageUpIcon, MapIcon, ScanEyeIcon } from "lucide-react";
 import { useRef } from "react";
 import {
   PanelDetail,
@@ -128,6 +128,7 @@ export const FloorplanPanel = ({
     <>
       <PanelPicker
         title="Floor plan"
+        icon={MapIcon}
         items={planItems}
         value={planId}
         onChange={onPlan}
@@ -201,6 +202,7 @@ export const FloorplanPanel = ({
             <span className="text-xs text-muted-foreground">Field of view</span>
             <Pick
               label="Field of view"
+              icon={ScanEyeIcon}
               items={fovItems}
               value={String(selected.fieldOfView)}
               onChange={(fov) => onFov(selected.id, Number(fov))}
