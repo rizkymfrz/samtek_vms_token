@@ -1,29 +1,23 @@
 "use client";
-import { CctvIcon, MaximizeIcon, ScanFaceIcon } from "lucide-react";
-import Link from "next/link";
 import {
-  type CSSProperties,
-  type ReactNode,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+  CctvIcon,
+  ChartColumnIcon,
+  MaximizeIcon,
+  ScanFaceIcon,
+  SignalIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { type CSSProperties, type ReactNode, useRef, useState } from "react";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
-import {
-  CameraTile,
-  type LiveData,
-  type StreamQuality,
-  type Tile,
-  useLive,
-} from "@/features/live";
-import { useFailureToast } from "@/hooks/use-failure-toast";
+import { CameraTile, type LiveData, type StreamQuality } from "@/features/live";
+import { useAnalyticTiles } from "../hooks/use-analytic-tiles";
 import { gridSize } from "../lib/analytic-grid";
 import {
   type AnalyticGroup,
+  COUNTING_STATS_SLUGS,
   FACE_RECOGNITION_SLUG,
 } from "../lib/analytic-groups";
 
@@ -43,36 +37,7 @@ export const AnalyticDetailView = ({
   isLive: boolean;
   children: ReactNode;
 }) => {
-  const { data: live } = useLive(initialLive, isLive);
-  useFailureToast(
-    "Some edge servers did not respond",
-    live.failures.map((failure) => `${failure.serverName}: ${failure.message}`),
-  );
-  const serverOnline = useServerOnline();
-  const isFaulty = useDeviceFaulty();
-  const tiles = useMemo(
-    () =>
-      live.tiles
-        .filter(
-          (tile) =>
-            tile.state !== "disabled" &&
-            tile.analyticId !== null &&
-            group.analyticIds.includes(tile.analyticId),
-        )
-        .map((tile): Tile => {
-          const server = live.servers.find((s) => s.id === tile.serverId);
-          const online = server ? serverOnline(server, server.online) : false;
-          return {
-            ...tile,
-            state: !online
-              ? "server-offline"
-              : isFaulty(tile.serverId, tile.id)
-                ? "stream-offline"
-                : "live",
-          };
-        }),
-    [live.tiles, live.servers, group.analyticIds, serverOnline, isFaulty],
-  );
+  const tiles = useAnalyticTiles(initialLive, isLive, group.analyticIds);
   const [quality, setQuality] = useState<StreamQuality>("sub");
   const stage = useRef<HTMLDivElement>(null);
   const size = gridSize(tiles.length);
@@ -94,10 +59,22 @@ export const AnalyticDetailView = ({
           </Button>
           <Pick
             label="Stream"
+            icon={SignalIcon}
             items={QUALITY_ITEMS}
             value={quality}
             onChange={(next) => setQuality(next as StreamQuality)}
           />
+          {COUNTING_STATS_SLUGS.includes(group.slug) && (
+            <Button
+              variant="secondary"
+              className="ml-auto"
+              nativeButton={false}
+              render={<Link href={`/analytics/${group.slug}/stats`} />}
+            >
+              <ChartColumnIcon />
+              Statistics
+            </Button>
+          )}
           {group.slug === FACE_RECOGNITION_SLUG && (
             <Button
               variant="secondary"

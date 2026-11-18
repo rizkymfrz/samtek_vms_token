@@ -155,3 +155,8 @@ export const findAnalyticGroup = (slug: string) =>
   ANALYTIC_GROUPS.find((group) => group.slug === slug);
 
 export const PLATE_RECOGNITION_SLUG = "license-plate-recognition";
+
+export const COUNTING_STATS_SLUGS = [
+  "people-counting-dwelling",
+  "vehicle-counting-dwelling",
+];

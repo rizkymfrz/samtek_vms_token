@@ -14,10 +14,12 @@ import { rangeFilters } from "../lib/range-filters";
 
 export const AnalyticAlertHistory = ({
   analyticIds,
+  cameraName,
   initialAlerts,
   isLive,
 }: {
   analyticIds: string[];
+  cameraName?: string;
   initialAlerts: AlertsData;
   isLive: boolean;
 }) => {
@@ -27,8 +29,13 @@ export const AnalyticAlertHistory = ({
   const { data } = useAlerts(initialAlerts, isLive, filters);
   const alerts = data ?? initialAlerts;
   const rows = useMemo(
-    () => alerts.rows.filter((row) => analyticIds.includes(row.analyticId)),
-    [alerts.rows, analyticIds],
+    () =>
+      alerts.rows.filter(
+        (row) =>
+          analyticIds.includes(row.analyticId) &&
+          (cameraName === undefined || row.camera === cameraName),
+      ),
+    [alerts.rows, analyticIds, cameraName],
   );
   const open = alerts.rows.find((row) => row.id === openId) ?? null;
   return (
@@ -37,7 +44,11 @@ export const AnalyticAlertHistory = ({
         title="Alert History"
         emptyIcon={BellIcon}
         emptyTitle="No alerts"
-        emptyDescription="No alerts from this analytic yet."
+        emptyDescription={
+          cameraName === undefined
+            ? "No alerts from this analytic yet."
+            : "No alerts from this camera yet."
+        }
         items={rows}
         range={range}
         onRangeChange={setRange}
