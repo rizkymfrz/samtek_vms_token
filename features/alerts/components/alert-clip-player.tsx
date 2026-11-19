@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { stepSpeed } from "@/features/camera-detail/lib/recording-timeline";
+import { PlaybackBoxLayer, usePlaybackBoxes } from "@/features/edge-status";
 import { WebrtcPlayer } from "@/features/live";
 import { useClipSession } from "../hooks/use-clip-session";
 import type { AlertClip } from "../types";
@@ -21,7 +22,13 @@ const formatElapsed = (ms: number) => {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 };
 
-export const AlertClipPlayer = ({ clip }: { clip: AlertClip }) => {
+export const AlertClipPlayer = ({
+  clip,
+  analyticId,
+}: {
+  clip: AlertClip;
+  analyticId?: string;
+}) => {
   const {
     session,
     error,
@@ -34,6 +41,7 @@ export const AlertClipPlayer = ({ clip }: { clip: AlertClip }) => {
     resume,
     changeSpeed,
   } = useClipSession(clip.edgeId, clip.eventId, clip.startAt);
+  const boxes = usePlaybackBoxes(session?.sessionId ?? null);
   const isPlaying = session?.state === "playing";
   const isPaused = session?.state === "paused";
   const isEnded = session?.state === "ended";
@@ -58,6 +66,13 @@ export const AlertClipPlayer = ({ clip }: { clip: AlertClip }) => {
               withAudio
               isPaused={isPaused}
               onFrame={onFrame}
+              isTimed={boxes.isTimed}
+              onFrameTime={boxes.onFrameTime}
+            />
+            <PlaybackBoxLayer
+              objects={boxes.objects}
+              reason={boxes.reason}
+              analyticId={analyticId}
             />
           </>
         ) : (

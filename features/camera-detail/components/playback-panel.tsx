@@ -12,7 +12,9 @@ import { EdgeOffline } from "@/components/shared/edge-offline";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  PlaybackBoxLayer,
   type PlaybackSession,
+  usePlaybackBoxes,
   useRecordingDevice,
 } from "@/features/edge-status";
 import { SpeakerToggle, WebrtcPlayer } from "@/features/live";
@@ -127,6 +129,7 @@ const PlaybackScreen = ({
   error: string | null;
   isOnline: boolean;
 }) => {
+  const boxes = usePlaybackBoxes(session?.sessionId ?? null);
   if (!isOnline) return <EdgeOffline />;
   if (error) {
     return (
@@ -147,6 +150,13 @@ const PlaybackScreen = ({
         isSeamless
         isPaused={isPaused}
         audioId={`${detail.id}:playback`}
+        isTimed={boxes.isTimed}
+        onFrameTime={boxes.onFrameTime}
+      />
+      <PlaybackBoxLayer
+        objects={boxes.objects}
+        reason={boxes.reason}
+        analyticId={detail.analyticId}
       />
       <div className="absolute right-2 bottom-2 flex items-center rounded border bg-background">
         <SpeakerToggle audioId={`${detail.id}:playback`} />

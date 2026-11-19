@@ -58,6 +58,7 @@ export type PlaybackSession = {
   state: "playing" | "paused" | "ended";
   position: number;
   speed: number;
+  hasBoxes: boolean;
   receivedAt: number;
 };
 

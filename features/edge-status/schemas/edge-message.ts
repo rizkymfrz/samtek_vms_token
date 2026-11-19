@@ -138,6 +138,7 @@ export const playbackResultSchema = z.object({
   state: z.enum(["playing", "paused", "ended"]),
   position: z.iso.datetime(),
   speed: z.number().positive(),
+  boxes: z.boolean().optional(),
 });
 
 const ptzPresetSchema = z.object({
@@ -154,32 +155,51 @@ export type EdgeResultData = z.infer<typeof edgeResultSchema>["data"];
 
 const ratio = z.number().min(0).max(1);
 
+const detectionObjectSchema = z.object({
+  label: z.string().min(1),
+  confidence: z.number().min(0).max(1),
+  track_id: z.number().int().nonnegative().optional(),
+  bbox: z.object({ x1: ratio, y1: ratio, x2: ratio, y2: ratio }),
+  missing_items: z.array(z.string()).optional(),
+  ppe: z
+    .object({
+      status: z.string(),
+      required: z.array(z.string()).optional(),
+      missing: z.array(z.string()).optional(),
+    })
+    .optional(),
+  status: z.enum(["unknown", "ok", "warning", "alert"]).optional(),
+  score: z.number().optional(),
+  people_count: z.number().int().nonnegative().optional(),
+  people_limit: z.number().int().nonnegative().optional(),
+  stay_seconds: z.number().nonnegative().optional(),
+  max_stay_seconds: z.number().positive().optional(),
+  over_limit: z.boolean().optional(),
+});
+
+export type DetectionObjectMessage = z.infer<typeof detectionObjectSchema>;
+
 export const detectionBboxesSchema = z.object({
   type: z.literal("detection.bboxes"),
   data: z.object({
     device_id: z.string(),
     frame_ts: z.string(),
-    objects: z.array(
+    objects: z.array(detectionObjectSchema),
+  }),
+});
+
+export const playbackBboxesSchema = z.object({
+  type: z.literal("playback.bboxes"),
+  data: z.object({
+    session_id: z.string().min(1),
+    from: z.iso.datetime(),
+    until: z.iso.datetime(),
+    reset: z.boolean().optional(),
+    status: z.string().optional(),
+    frames: z.array(
       z.object({
-        label: z.string().min(1),
-        confidence: z.number().min(0).max(1),
-        track_id: z.number().int().nonnegative().optional(),
-        bbox: z.object({ x1: ratio, y1: ratio, x2: ratio, y2: ratio }),
-        missing_items: z.array(z.string()).optional(),
-        ppe: z
-          .object({
-            status: z.string(),
-            required: z.array(z.string()).optional(),
-            missing: z.array(z.string()).optional(),
-          })
-          .optional(),
-        status: z.enum(["unknown", "ok", "warning", "alert"]).optional(),
-        score: z.number().optional(),
-        people_count: z.number().int().nonnegative().optional(),
-        people_limit: z.number().int().nonnegative().optional(),
-        stay_seconds: z.number().nonnegative().optional(),
-        max_stay_seconds: z.number().positive().optional(),
-        over_limit: z.boolean().optional(),
+        frame_ts: z.iso.datetime(),
+        objects: z.array(detectionObjectSchema),
       }),
     ),
   }),

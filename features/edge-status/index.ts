@@ -1,5 +1,13 @@
 export { EdgeStatusConnector } from "./components/edge-status-connector";
 export { StreamDetections } from "./components/stream-detections";
+export { PlaybackBoxLayer } from "./components/playback-box-layer";
+export { usePlaybackBoxes } from "./hooks/use-playback-boxes";
+
+export {
+  closePlaybackBoxes,
+  resetPlaybackFrame,
+} from "./lib/playback-box-store";
+
 export { useRecognitions } from "./hooks/use-recognitions";
 export type { RecognitionEntry } from "./lib/recognition-store";
 

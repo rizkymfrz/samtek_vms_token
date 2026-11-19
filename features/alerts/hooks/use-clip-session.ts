@@ -1,11 +1,14 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  closePlaybackBoxes,
   controlPlayback,
   type PlaybackSession,
+  resetPlaybackFrame,
   startClipPlayback,
   stopPlayback,
 } from "@/features/edge-status";
+import { isFrameTimeSupported } from "@/features/live";
 
 const STATUS_MS = 3000;
 const PUBLISH_MS = 200;
@@ -64,6 +67,7 @@ export const useClipSession = (
     ) => {
       const sessionId = sessionIdRef.current;
       if (!sessionId) return null;
+      if (action === "seek") resetPlaybackFrame(sessionId);
       setIsBusy(true);
       try {
         const next = await controlPlayback(edgeId, sessionId, action, extra);
@@ -101,6 +105,7 @@ export const useClipSession = (
     let isStale = false;
     (async () => {
       resetClock(0);
+      resetPlaybackFrame(sessionId);
       try {
         let next = await controlPlayback(edgeId, sessionId, "seek", {
           at: new Date(startedAt),
@@ -123,7 +128,7 @@ export const useClipSession = (
     sessionIdRef.current = sessionId;
     let isStopped = false;
     let poll: ReturnType<typeof setInterval> | undefined;
-    startClipPlayback(edgeId, sessionId, eventId).then(
+    startClipPlayback(edgeId, sessionId, eventId, isFrameTimeSupported()).then(
       (started) => {
         if (isStopped) return;
         setSession(started);
@@ -162,6 +167,7 @@ export const useClipSession = (
     return () => {
       isStopped = true;
       clearInterval(poll);
+      closePlaybackBoxes(sessionId);
       stopPlayback(edgeId, sessionId).catch((failure: unknown) =>
         console.warn("[clip] stop failed:", failure),
       );

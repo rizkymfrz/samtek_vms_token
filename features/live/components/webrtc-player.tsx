@@ -34,6 +34,8 @@ export const WebrtcPlayer = ({
   audioId,
   thumbnailId,
   onFrame,
+  isTimed = false,
+  onFrameTime,
 }: {
   relay: { webrtcUrl: string | null; webrtcUrlLocal: string | null };
   stream: string;
@@ -45,6 +47,8 @@ export const WebrtcPlayer = ({
   audioId?: string;
   thumbnailId?: string;
   onFrame?: (at: number) => void;
+  isTimed?: boolean;
+  onFrameTime?: (wallMs: number | null) => void;
 }) => {
   const { activeId } = useAudioFocus();
   const onAudio = useCallback(
@@ -53,7 +57,7 @@ export const WebrtcPlayer = ({
     },
     [audioId],
   );
-  const { videoRef, status } = useWebrtcStream(
+  const { videoRef, status, frameTimeOf } = useWebrtcStream(
     relay,
     stream,
     app,
@@ -61,6 +65,7 @@ export const WebrtcPlayer = ({
     isPaused,
     withAudio || audioId !== undefined,
     onAudio,
+    isTimed,
   );
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isFrozen, setIsFrozen] = useState(false);
@@ -76,6 +81,23 @@ export const WebrtcPlayer = ({
     let handle = video.requestVideoFrameCallback(onTick);
     return () => video.cancelVideoFrameCallback(handle);
   }, [onFrame, videoRef]);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !onFrameTime || !("requestVideoFrameCallback" in video))
+      return;
+    const onTick = (
+      _at: number,
+      metadata: VideoFrameCallbackMetadata & { rtpTimestamp?: number },
+    ) => {
+      const { rtpTimestamp } = metadata;
+      onFrameTime(
+        rtpTimestamp === undefined ? null : frameTimeOf(rtpTimestamp),
+      );
+      handle = video.requestVideoFrameCallback(onTick);
+    };
+    let handle = video.requestVideoFrameCallback(onTick);
+    return () => video.cancelVideoFrameCallback(handle);
+  }, [onFrameTime, frameTimeOf, videoRef]);
   useEffect(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;

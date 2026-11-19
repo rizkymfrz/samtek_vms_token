@@ -1,12 +1,18 @@
 import { edgeDownTopic } from "@/config/mqtt";
 import { sendEdgeCommand } from "./edge-status-store";
+import {
+  closePlaybackBoxes,
+  openPlaybackBoxes,
+  settlePlaybackBoxes,
+} from "./playback-box-store";
 import { playbackResultSchema } from "../schemas/edge-message";
 import type { PlaybackSession, RecordingStream } from "../types";
 
 const toSession = (result: { playback?: unknown }): PlaybackSession => {
   const parsed = playbackResultSchema.safeParse(result.playback);
   if (!parsed.success) throw new Error("The edge sent an unreadable answer");
-  const { session_id, app, stream, state, position, speed } = parsed.data;
+  const { session_id, app, stream, state, position, speed, boxes } =
+    parsed.data;
   return {
     sessionId: session_id,
     app,
@@ -14,40 +20,59 @@ const toSession = (result: { playback?: unknown }): PlaybackSession => {
     state,
     position: Date.parse(position),
     speed,
+    hasBoxes: boxes === true,
     receivedAt: Date.now(),
   };
 };
 
-export const startPlayback = async (
+const startWithBoxes = async (
+  sessionId: string,
+  wantsBoxes: boolean,
+  data: Record<string, unknown>,
+  edgeId: string,
+) => {
+  openPlaybackBoxes(sessionId);
+  try {
+    const session = toSession(
+      await sendEdgeCommand(edgeDownTopic(edgeId), "playback.start", {
+        session_id: sessionId,
+        ...data,
+        boxes: wantsBoxes,
+        speed: 1,
+      }),
+    );
+    settlePlaybackBoxes(
+      sessionId,
+      !wantsBoxes ? "unsupported" : session.hasBoxes ? "timed" : "declined",
+    );
+    return session;
+  } catch (failure) {
+    closePlaybackBoxes(sessionId);
+    throw failure;
+  }
+};
+
+export const startPlayback = (
   edgeId: string,
   sessionId: string,
   deviceId: string,
   stream: RecordingStream,
   at: Date,
-  speed: number,
+  wantsBoxes: boolean,
 ) =>
-  toSession(
-    await sendEdgeCommand(edgeDownTopic(edgeId), "playback.start", {
-      session_id: sessionId,
-      device_id: deviceId,
-      stream,
-      at: at.toISOString(),
-      speed,
-    }),
+  startWithBoxes(
+    sessionId,
+    wantsBoxes,
+    { device_id: deviceId, stream, at: at.toISOString() },
+    edgeId,
   );
 
-export const startClipPlayback = async (
+export const startClipPlayback = (
   edgeId: string,
   sessionId: string,
   eventId: string,
-) =>
-  toSession(
-    await sendEdgeCommand(edgeDownTopic(edgeId), "playback.start", {
-      session_id: sessionId,
-      event_id: eventId,
-      speed: 1,
-    }),
-  );
+  wantsBoxes: boolean,
+) => startWithBoxes(sessionId, wantsBoxes, { event_id: eventId }, edgeId);
 
 export const controlPlayback = async (
   edgeId: string,

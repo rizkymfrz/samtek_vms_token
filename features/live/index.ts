@@ -1,4 +1,5 @@
 export { WebrtcPlayer } from "./components/webrtc-player";
+export { isFrameTimeSupported } from "./hooks/use-webrtc-stream";
 export { streamName } from "./lib/relay-url";
 export { CameraPreview } from "./components/camera-preview";
 export { CameraTile } from "./components/camera-tile";

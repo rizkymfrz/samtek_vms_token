@@ -71,7 +71,12 @@ export const AlertDetailDialog = ({
                     />
                   </TabsContent>
                   <TabsContent value="clip">
-                    {alert.clip && <AlertClipPlayer clip={alert.clip} />}
+                    {alert.clip && (
+                      <AlertClipPlayer
+                        clip={alert.clip}
+                        analyticId={alert.analyticId}
+                      />
+                    )}
                   </TabsContent>
                 </Tabs>
               </DialogSection>

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { pickRelayUrl } from "../lib/relay-url";
 import { requestAnswer } from "../services/webrtc-signaling";
 
@@ -13,6 +13,10 @@ const SEAMLESS_STALL_MS = 1500;
 const RETRY_FIRST_MS = 1000;
 const RETRY_MS = 2000;
 const WATCH_MS = 500;
+const FRAME_TIME_LIMIT = 4000;
+
+export const isFrameTimeSupported = () =>
+  typeof RTCRtpScriptTransform !== "undefined";
 
 const iceComplete = (session: RTCPeerConnection) =>
   new Promise<void>((resolve) => {
@@ -31,8 +35,14 @@ export const useWebrtcStream = (
   isPaused = false,
   withAudio = false,
   onAudio?: (hasAudio: boolean) => void,
+  isTimed = false,
 ) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const frameTimes = useRef(new Map<number, number>());
+  const frameTimeOf = useCallback(
+    (rtp: number) => frameTimes.current.get(rtp) ?? null,
+    [],
+  );
   const onAudioRef = useRef(onAudio);
   useEffect(() => {
     onAudioRef.current = onAudio;
@@ -67,7 +77,11 @@ export const useWebrtcStream = (
     let isLost = false;
     let lastMove = performance.now();
     let hasFrame = false;
+    let timer: Worker | null = null;
     const close = () => {
+      timer?.terminate();
+      timer = null;
+      frameTimes.current.clear();
       clearInterval(watcher);
       session?.close();
       session = null;
@@ -125,7 +139,30 @@ export const useWebrtcStream = (
       }
       const current = new RTCPeerConnection();
       session = current;
-      current.addTransceiver("video", { direction: "recvonly" });
+      const videoTransceiver = current.addTransceiver("video", {
+        direction: "recvonly",
+      });
+      if (isTimed && isFrameTimeSupported()) {
+        const worker = new Worker(
+          new URL("../workers/frame-time-worker.ts", import.meta.url),
+          { type: "module" },
+        );
+        worker.onmessage = ({
+          data,
+        }: MessageEvent<{ rtp: number; wallMs: number }>) => {
+          const times = frameTimes.current;
+          times.set(data.rtp, data.wallMs);
+          if (times.size > FRAME_TIME_LIMIT) {
+            const oldest = times.keys().next().value;
+            if (oldest !== undefined) times.delete(oldest);
+          }
+        };
+        videoTransceiver.receiver.transform = new RTCRtpScriptTransform(
+          worker,
+          {},
+        );
+        timer = worker;
+      }
       if (withAudio) current.addTransceiver("audio", { direction: "recvonly" });
       current.ontrack = (event) => {
         if (event.track.kind === "audio") onAudioRef.current?.(true);
@@ -173,6 +210,7 @@ export const useWebrtcStream = (
     stallMs,
     retryFirstMs,
     withAudio,
+    isTimed,
   ]);
-  return { videoRef, status };
+  return { videoRef, status, frameTimeOf };
 };

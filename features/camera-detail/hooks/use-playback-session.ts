@@ -1,12 +1,15 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  closePlaybackBoxes,
   controlPlayback,
   type PlaybackSession,
   type RecordingStream,
+  resetPlaybackFrame,
   startPlayback,
   stopPlayback,
 } from "@/features/edge-status";
+import { isFrameTimeSupported } from "@/features/live";
 
 const STATUS_MS = 5000;
 const TICK_MS = 1000;
@@ -40,9 +43,19 @@ export const usePlaybackSession = (
   }, []);
   const seek = useCallback(
     async (at: Date) => {
+      resetPlaybackFrame(sessionId);
       if (!hasStarted.current) {
         hasStarted.current = true;
-        await run(startPlayback(edgeId, sessionId, deviceId, stream, at, 1));
+        await run(
+          startPlayback(
+            edgeId,
+            sessionId,
+            deviceId,
+            stream,
+            at,
+            isFrameTimeSupported(),
+          ),
+        );
         return;
       }
       const moved = await run(
@@ -68,6 +81,7 @@ export const usePlaybackSession = (
     [edgeId, sessionId, run],
   );
   const stop = useCallback(async () => {
+    closePlaybackBoxes(sessionId);
     if (!hasStarted.current) return;
     hasStarted.current = false;
     setSession(null);
@@ -95,6 +109,7 @@ export const usePlaybackSession = (
   }, [isPlaying, edgeId, sessionId]);
   useEffect(
     () => () => {
+      closePlaybackBoxes(sessionId);
       if (!hasStarted.current) return;
       stopPlayback(edgeId, sessionId).catch((failure: unknown) =>
         console.warn("[playback] stop failed:", failure),
