@@ -45,6 +45,3 @@ export const kvGet = (key: string) =>
 
 export const kvSet = (key: string, value: unknown) =>
   run("readwrite", (store) => store.put(value, key));
-
-export const kvDelete = (key: string) =>
-  run("readwrite", (store) => store.delete(key));

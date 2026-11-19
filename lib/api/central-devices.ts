@@ -27,9 +27,9 @@ export const deviceSchema = z.object({
   applyError: applyErrorSchema.nullable().catch(null),
 });
 
-export type CentralDevice = z.output<typeof deviceSchema>;
+type CentralDevice = z.output<typeof deviceSchema>;
 
-export type DeviceFailure = {
+type DeviceFailure = {
   serverId: string;
   serverName: string;
   message: string;

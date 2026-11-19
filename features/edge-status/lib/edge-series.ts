@@ -1,8 +1,8 @@
 import type { EdgeSample, EdgeSeries } from "../types";
 
-export const SERIES_SECONDS = 60;
+const SERIES_SECONDS = 60;
 
-export const memoryPercent = (sample: EdgeSample) =>
+const memoryPercent = (sample: EdgeSample) =>
   sample.memory && sample.memory.totalBytes > 0
     ? Math.round((sample.memory.usedBytes / sample.memory.totalBytes) * 1000) /
       10

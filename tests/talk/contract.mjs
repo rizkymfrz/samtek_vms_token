@@ -5,7 +5,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-export const CONTRACT_DIR =
+const CONTRACT_DIR =
   process.env.SAMTEK_CONTRACT_DIR ??
   resolve(HERE, "../../../samtek_edge_new/contract");
 

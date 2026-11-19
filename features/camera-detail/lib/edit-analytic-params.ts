@@ -35,7 +35,3 @@ export const setParam = (
   );
   return value === undefined ? rest : { ...rest, [key]: value };
 };
-
-export const isSameParams = (a: AnalyticParams, b: AnalyticParams) =>
-  JSON.stringify(Object.entries(a).sort(([x], [y]) => x.localeCompare(y))) ===
-  JSON.stringify(Object.entries(b).sort(([x], [y]) => x.localeCompare(y)));

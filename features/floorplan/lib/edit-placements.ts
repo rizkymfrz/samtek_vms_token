@@ -1,12 +1,12 @@
 import type { FloorplanDevice } from "../types";
 
-export const DEFAULT_FOV = 90;
+const DEFAULT_FOV = 90;
 export const FOV_OPTIONS = [60, 90, 120, 180];
 const MIN = 0.02;
 const MAX = 0.98;
-export const clamp = (value: number) => Math.min(MAX, Math.max(MIN, value));
+const clamp = (value: number) => Math.min(MAX, Math.max(MIN, value));
 
-export const normalizeAngle = (degrees: number) =>
+const normalizeAngle = (degrees: number) =>
   ((Math.round(degrees) % 360) + 360) % 360;
 
 const CANDIDATES: [number, number][] = [

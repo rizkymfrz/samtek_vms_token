@@ -41,7 +41,7 @@ export type BodywornState = {
   } | null;
 };
 
-export type RecordingState = "off" | "idle" | "recording" | "stalled";
+type RecordingState = "off" | "idle" | "recording" | "stalled";
 
 export type RecordingDevice = {
   isEnabled: boolean;

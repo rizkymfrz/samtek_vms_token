@@ -18,7 +18,7 @@ export const edgeFaceCreatedSchema = z.object({
 
 export const NAME_MAX = 128;
 export const GROUP_MAX = 64;
-export const PERSON_ID = /^[A-Za-z0-9._-]{1,64}$/;
+const PERSON_ID = /^[A-Za-z0-9._-]{1,64}$/;
 export const PHOTO_MAX_BYTES = 10 * 1024 * 1024;
 
 export const enrollFieldsSchema = z.object({

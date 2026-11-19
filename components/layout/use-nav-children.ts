@@ -12,7 +12,7 @@ import { fetchServers } from "@/features/servers/services/fetch-servers";
 
 const subscribe = () => () => {};
 
-export type NavChild = { id: string; title: string; href: string };
+type NavChild = { id: string; title: string; href: string };
 
 export const useNavChildren = (isLive: boolean) => {
   const hydrated = useSyncExternalStore(

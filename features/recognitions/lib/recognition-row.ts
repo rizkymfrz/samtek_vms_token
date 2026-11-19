@@ -16,7 +16,7 @@ const text = (value: unknown, fallback: string) =>
 const optionalText = (value: unknown) =>
   typeof value === "string" && value !== "" ? value : null;
 
-export const cropUrl = (edgeId: string, eventId: string) =>
+const cropUrl = (edgeId: string, eventId: string) =>
   `/api/edge/${edgeId}/recognitions/${eventId}/crop`;
 
 export const toRow = (

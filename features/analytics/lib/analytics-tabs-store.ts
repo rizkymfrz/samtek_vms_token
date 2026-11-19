@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createPersistedStore } from "@/lib/storage/create-persisted-store";
 import { findAnalyticGroup } from "./analytic-groups";
 
-export const MAX_TABS = 12;
+const MAX_TABS = 12;
 
 const tabsSchema = z.object({
   slugs: z

@@ -51,7 +51,7 @@ const always = () => true;
 const hours = (d: Dashboard) => d.timeline.map((b) => b.label);
 const SHOW_ANALYTIC_WIDGETS = false;
 
-export const GENERAL_WIDGET_IDS = new Set([
+const GENERAL_WIDGET_IDS = new Set([
   "kpi-alarms",
   "kpi-high",
   "kpi-average",

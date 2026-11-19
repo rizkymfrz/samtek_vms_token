@@ -1,4 +1,4 @@
-export type ApplyError = {
+type ApplyError = {
   code: string;
   field: string | null;
   message: string;
@@ -26,7 +26,7 @@ export type ServerOption = {
   online: boolean;
 };
 
-export type CameraFailure = {
+type CameraFailure = {
   serverId: string;
   serverName: string;
   message: string;

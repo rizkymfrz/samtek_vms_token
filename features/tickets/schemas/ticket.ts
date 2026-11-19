@@ -9,7 +9,7 @@ export const TICKET_STATUSES = [
   "false_alarm",
 ] as const;
 
-export const RISK_LEVELS = ["low", "medium", "high"] as const;
+const RISK_LEVELS = ["low", "medium", "high"] as const;
 export const RESOLUTION_TYPES = ["resolved", "false_alarm"] as const;
 
 export const TICKET_ACTIONS = [
@@ -65,7 +65,7 @@ export const ticketSchema = z.object({
   updatedAt: date.nullable(),
 });
 
-export const ticketAlertSchema = z.object({
+const ticketAlertSchema = z.object({
   eventId: z.string(),
   occurredAt: date,
   analyticId: z.string(),
@@ -79,7 +79,7 @@ export const ticketAlertSchema = z.object({
   hasImage: z.boolean(),
 });
 
-export const ticketEventSchema = z.object({
+const ticketEventSchema = z.object({
   id,
   type: z.string(),
   actorUserId: id.nullable(),
@@ -118,7 +118,7 @@ export const ticketRuleSchema = z.object({
   lastSeenAt: date,
 });
 
-export const pageMetaSchema = z.object({ total: z.number().int() });
+const pageMetaSchema = z.object({ total: z.number().int() });
 
 export const ticketListSchema = z.object({
   data: z.array(ticketSchema),

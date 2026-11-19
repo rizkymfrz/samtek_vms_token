@@ -3,7 +3,7 @@ import { mqttConfig } from "@/config/mqtt";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
 import { ticketUpdatedMessageSchema } from "../schemas/ticket";
 
-export const TICKETS_TOPIC = "samtek/v1/tickets/+";
+const TICKETS_TOPIC = "samtek/v1/tickets/+";
 
 type Listener = () => void;
 

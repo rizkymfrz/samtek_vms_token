@@ -7,12 +7,12 @@ export const MIN_POLYGON_POINTS = 3;
 export const MAX_POLYGON_POINTS = 256;
 const pointSchema = z.object({ x: unit, y: unit });
 
-export const areaSchema = z.object({
+const areaSchema = z.object({
   name: z.string().trim().min(1),
   polygon: z.array(pointSchema).min(MIN_POLYGON_POINTS).max(MAX_POLYGON_POINTS),
 });
 
-export const lineSchema = z.object({
+const lineSchema = z.object({
   name: z.string().trim().min(1),
   line: z
     .object({ x1: unit, y1: unit, x2: unit, y2: unit })

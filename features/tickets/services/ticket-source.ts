@@ -32,7 +32,7 @@ import type {
   TicketRule,
 } from "../types";
 
-export const PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
 
 export const notFound = () =>
   new CentralError("Ticket not found", 404, "NOT_FOUND");

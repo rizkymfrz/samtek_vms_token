@@ -6,7 +6,6 @@ import {
 } from "@/lib/api/central-client";
 import { errorResponse } from "@/lib/api/central-proxy";
 import {
-  MOCK_LINK_TOKEN,
   mockAddEvidence,
   mockGetTicket,
   mockLinkTicketId,
@@ -26,7 +25,7 @@ import type {
 } from "../types";
 
 export const LINK_HEADER = "X-Ticket-Link";
-export const LINK_INVALID = "TICKET_LINK_INVALID";
+const LINK_INVALID = "TICKET_LINK_INVALID";
 
 const invalid = () =>
   new CentralError(
@@ -41,7 +40,7 @@ const mockTicketId = (token: string) => {
   return id;
 };
 
-export const linkCentral = async (
+const linkCentral = async (
   token: string,
   method: "get" | "post",
   path: string,
@@ -108,8 +107,6 @@ export const addLinkEvidence = async (
     await linkCentral(token, "post", "/evidence", form),
   ).data;
 };
-
-export const isMockLinkToken = (token: string) => token === MOCK_LINK_TOKEN;
 
 export const linkErrorResponse = (error: unknown, scope: string) =>
   error instanceof CentralError && error.code === LINK_INVALID

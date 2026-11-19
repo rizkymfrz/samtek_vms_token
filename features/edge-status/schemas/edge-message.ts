@@ -140,7 +140,7 @@ export const playbackResultSchema = z.object({
   speed: z.number().positive(),
 });
 
-export const ptzPresetSchema = z.object({
+const ptzPresetSchema = z.object({
   token: z.string().min(1),
   name: z.string(),
 });

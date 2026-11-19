@@ -38,7 +38,7 @@ export type LiveLayout = LiveLayoutSummary & {
   slots: (string | null)[];
 };
 
-export type LiveFailure = { serverName: string; message: string };
+type LiveFailure = { serverName: string; message: string };
 
 export type LiveData = {
   servers: ServerNode[];

@@ -1,7 +1,7 @@
 export const SAMPLE_RATE = 16_000;
-export const CHUNK_MS = 40;
+const CHUNK_MS = 40;
 export const CHUNK_SAMPLES = (SAMPLE_RATE * CHUNK_MS) / 1000;
-export const MAX_SAMPLES = 16_000;
+const MAX_SAMPLES = 16_000;
 export const SESSION_ID = /^[A-Za-z0-9._-]{1,64}$/;
 const BASE64_CHUNK = 0x8000;
 
@@ -33,7 +33,7 @@ export const pcm16ToFloat = (input: Int16Array) => {
 
 const isLittleEndian = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
 
-export const pcmToBytes = (pcm: Int16Array) => {
+const pcmToBytes = (pcm: Int16Array) => {
   if (isLittleEndian) {
     return new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
   }
@@ -43,7 +43,7 @@ export const pcmToBytes = (pcm: Int16Array) => {
   return bytes;
 };
 
-export const bytesToPcm = (bytes: Uint8Array) => {
+const bytesToPcm = (bytes: Uint8Array) => {
   const out = new Int16Array(bytes.length >> 1);
   const view = new DataView(bytes.buffer, bytes.byteOffset, out.length * 2);
   for (let i = 0; i < out.length; i++) out[i] = view.getInt16(i * 2, true);

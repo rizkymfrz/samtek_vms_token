@@ -26,7 +26,3 @@ export const edgeFaceReferencesSchema = z.object({
     }),
   ),
 });
-
-export type EdgeRecognition = z.output<
-  typeof edgeRecognitionsResponseSchema
->["recognitions"][number];

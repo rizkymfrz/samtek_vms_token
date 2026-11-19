@@ -1,4 +1,4 @@
-export type EdgeServer = {
+type EdgeServer = {
   id: string;
   name: string;
   isActive: boolean;
@@ -21,7 +21,7 @@ export type Device = {
   applyError: { code: string; field: string | null; message: string } | null;
 };
 
-export type Layout = {
+type Layout = {
   id: string;
   userId: string;
   name: string;
@@ -31,7 +31,7 @@ export type Layout = {
   isDefault: boolean;
 };
 
-export type LayoutDevice = {
+type LayoutDevice = {
   id: string;
   layoutId: string;
   deviceRecordId: string;

@@ -33,7 +33,7 @@ import {
 } from "../lib/filter-alerts";
 import type { AlertRow, AlertsData } from "../types";
 
-export const GRID_PRESETS: [rows: number, columns: number][] = [
+const GRID_PRESETS: [rows: number, columns: number][] = [
   [2, 2],
   [2, 3],
   [3, 3],
@@ -42,7 +42,7 @@ export const GRID_PRESETS: [rows: number, columns: number][] = [
   [4, 5],
 ];
 
-export const DEFAULT_GRID = "3x4";
+const DEFAULT_GRID = "3x4";
 
 type View = "grid" | "list";
 

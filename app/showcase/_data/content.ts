@@ -341,8 +341,6 @@ export const inputGroup = {
   results: "12 results",
 }
 
-export const dateRange = { label: "Pick a date" }
-
 export const hoverCard = {
   trigger: "@nextjs",
   title: "Next.js",

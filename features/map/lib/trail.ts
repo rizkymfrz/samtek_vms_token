@@ -1,6 +1,6 @@
 import type { DevicePosition } from "../types";
 
-export const MATCH_CHUNK_SIZE = 100;
+const MATCH_CHUNK_SIZE = 100;
 const MIN_STEP_METERS = 8;
 const METERS_PER_DEGREE = 111_320;
 

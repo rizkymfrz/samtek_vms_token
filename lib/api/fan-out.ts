@@ -1,6 +1,6 @@
 import { EdgeError } from "./edge-client";
 
-export type EdgeFailure = { edgeId: string; edgeName: string; message: string };
+type EdgeFailure = { edgeId: string; edgeName: string; message: string };
 
 export const queryEdges = async <E extends { id: string; name: string }, T>(
   edges: E[],

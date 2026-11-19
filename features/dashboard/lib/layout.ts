@@ -1,4 +1,4 @@
-export const GRID_COLUMNS = 12;
+const GRID_COLUMNS = 12;
 
 type Sized = { span: number };
 
@@ -36,23 +36,4 @@ export const packRows = <T extends Sized>(
       cols[index] += 1;
     return row.map((item, index) => ({ ...item, cols: cols[index] }));
   });
-};
-
-const XL_SPAN: Record<number, string> = {
-  1: "xl:col-span-1",
-  2: "xl:col-span-2",
-  3: "xl:col-span-3",
-  4: "xl:col-span-4",
-  5: "xl:col-span-5",
-  6: "xl:col-span-6",
-  7: "xl:col-span-7",
-  8: "xl:col-span-8",
-  9: "xl:col-span-9",
-  10: "xl:col-span-10",
-  11: "xl:col-span-11",
-  12: "xl:col-span-12",
-};
-
-export const spanClass = (cols: number) => {
-  return `${cols >= 5 ? "md:col-span-2 " : ""}${XL_SPAN[cols]}`;
 };

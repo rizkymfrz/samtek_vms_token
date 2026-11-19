@@ -3,7 +3,7 @@ import { kvGet, kvSet } from "./idb-kv";
 
 const SAVE_DELAY_MS = 200;
 
-export type PersistedSnapshot<T> = {
+type PersistedSnapshot<T> = {
   status: "loading" | "ready";
   value: T;
 };

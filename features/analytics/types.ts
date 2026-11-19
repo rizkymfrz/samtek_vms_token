@@ -1,6 +1,6 @@
 export type StatsBucket = "hour" | "day" | "week" | "month";
 
-export type CountingSeries = {
+type CountingSeries = {
   perimeter: string;
   direction: string;
   label: string;
@@ -8,7 +8,7 @@ export type CountingSeries = {
   counts: number[];
 };
 
-export type DwellingSeries = {
+type DwellingSeries = {
   perimeter: string;
   label: string;
   objects: number;

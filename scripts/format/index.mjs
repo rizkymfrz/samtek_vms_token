@@ -27,7 +27,7 @@ const STAGES = [
   runPrettier,
 ];
 
-export const formatSource = async (source, file, warn = () => {}) => {
+const formatSource = async (source, file, warn = () => {}) => {
   let text = source;
   for (const stage of STAGES) text = await stage(text, file, warn);
   return text;

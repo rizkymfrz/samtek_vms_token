@@ -61,8 +61,7 @@ const patch = (next: Partial<TalkSnapshot>) => {
   emit();
 };
 
-export const peerKey = (edgeId: string, deviceId: string) =>
-  `${edgeId}:${deviceId}`;
+const peerKey = (edgeId: string, deviceId: string) => `${edgeId}:${deviceId}`;
 
 const isDuplicate = (messageId: string) => {
   if (seen.has(messageId)) return true;
@@ -300,12 +299,6 @@ export const stopTalk = async () => {
   const live = session.phase !== "ended";
   dispatch({ type: "local", reason: "stopped" });
   if (live) await sendStop(edgeId, deviceId, session.sessionId);
-};
-
-export const dismissTalk = () => {
-  if (snapshot.session.phase === "ended") {
-    patch({ session: TALK_IDLE, edgeId: null, deviceId: null, error: null });
-  }
 };
 
 export const setTalkHeld = (isHeld: boolean) => patch({ isHeld });

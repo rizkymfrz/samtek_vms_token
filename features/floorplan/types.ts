@@ -53,7 +53,7 @@ export type PlanServer = {
   online: boolean;
 };
 
-export type PlanFailure = { serverName: string; message: string };
+type PlanFailure = { serverName: string; message: string };
 
 export type FloorplanData = {
   plans: Floorplan[];

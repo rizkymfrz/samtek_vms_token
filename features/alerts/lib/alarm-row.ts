@@ -18,7 +18,7 @@ const clipDurationMs = (clip: ClipFields) => {
   return seconds && seconds > 0 ? seconds * 1000 : null;
 };
 
-export const toClip = (
+const toClip = (
   edgeId: string,
   eventId: string,
   occurredAt: number,

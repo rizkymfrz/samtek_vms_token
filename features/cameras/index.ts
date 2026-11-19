@@ -1,7 +1,6 @@
 export {
   cameraDraftSchema,
   type Draft,
-  maskSource,
   toDraft,
   toUpdatePayload,
 } from "./lib/edit-camera";

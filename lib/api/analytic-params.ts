@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const paramValueSchema = z.union([
+const paramValueSchema = z.union([
   z.boolean(),
   z.number(),
   z.string(),

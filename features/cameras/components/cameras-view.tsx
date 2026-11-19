@@ -34,7 +34,7 @@ import {
 } from "../lib/filter-cameras";
 import type { CameraData, CameraRecord } from "../types";
 
-export const GRID_PRESETS: [rows: number, columns: number][] = [
+const GRID_PRESETS: [rows: number, columns: number][] = [
   [2, 2],
   [2, 3],
   [3, 3],
@@ -43,8 +43,8 @@ export const GRID_PRESETS: [rows: number, columns: number][] = [
   [4, 5],
 ];
 
-export const DEFAULT_GRID = "4x4";
-export const LIST_PAGE_SIZE = 20;
+const DEFAULT_GRID = "4x4";
+const LIST_PAGE_SIZE = 20;
 
 type View = "grid" | "list";
 

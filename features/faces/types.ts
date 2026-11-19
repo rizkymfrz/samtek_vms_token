@@ -9,7 +9,7 @@ export type FaceRecord = {
 };
 
 export type EdgeOption = { id: string; name: string };
-export type FaceFailure = { edgeName: string; message: string };
+type FaceFailure = { edgeName: string; message: string };
 
 export type FacesData = {
   faces: FaceRecord[];

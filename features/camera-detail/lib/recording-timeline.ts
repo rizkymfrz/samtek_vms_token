@@ -2,8 +2,6 @@ import { addDays, startOfDay } from "date-fns";
 import type { RecordingRange } from "@/features/edge-status";
 
 const MS_PER_MINUTE = 60_000;
-const SECONDS_PER_HOUR = 3600;
-const SECONDS_PER_MINUTE = 60;
 
 export const dayBounds = (day: Date) => {
   const from = startOfDay(day);
@@ -26,27 +24,6 @@ export const toBars = (ranges: RecordingRange[], dayStart: number) =>
     startMinute: (range.from - dayStart) / MS_PER_MINUTE,
     endMinute: (range.to - dayStart) / MS_PER_MINUTE,
   }));
-
-export const recordedSeconds = (ranges: RecordingRange[]) =>
-  Math.round(
-    ranges.reduce((sum, range) => sum + (range.to - range.from), 0) / 1000,
-  );
-
-export const formatDuration = (seconds: number) => {
-  const hours = Math.floor(seconds / SECONDS_PER_HOUR);
-  const minutes = Math.floor((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return minutes > 0 ? `${minutes}m` : `${seconds}s`;
-};
-
-export const formatBytes = (bytes: number) => {
-  const gb = bytes / 1e9;
-  return gb >= 1000
-    ? `${(gb / 1000).toFixed(1)} TB`
-    : gb >= 1
-      ? `${gb.toFixed(1)} GB`
-      : `${Math.round(bytes / 1e6)} MB`;
-};
 
 const SPEEDS = [0.25, 0.5, 1, 2, 4, 8];
 

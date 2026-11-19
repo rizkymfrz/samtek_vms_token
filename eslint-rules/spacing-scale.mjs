@@ -6,7 +6,7 @@ const SPACING_UTILITY = new RegExp(
   "^(?:p|px|py|ps|pe|pt|pr|pb|pl|m|mx|my|ms|me|mt|mr|mb|ml|gap|gap-x|gap-y|space-x|space-y|scroll-m|scroll-p)-(.+)$",
 );
 
-export const SCALE_HINT =
+const SCALE_HINT =
   "0, 0.5, 1, 2, 4, 8, 16, 32, 64, 128… (2, 4, 8, 16, 32, 64… px)";
 
 const isOnScale = (px) => {

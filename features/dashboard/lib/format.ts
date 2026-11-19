@@ -8,13 +8,6 @@ export const clock = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
-export const clockSeconds = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-});
-
 export const titleCase = (value: string): string =>
   value.replace(/_/g, " ").replace(/^\w/, (char) => char.toUpperCase());
 

@@ -1,10 +1,7 @@
 import { createRandom } from "@/lib/random";
 import type { LogLine } from "../types";
 
-export const LOG_TEMPLATES: [
-  level: "INFO" | "WARN" | "DEBUG",
-  template: string,
-][] = [
+const LOG_TEMPLATES: [level: "INFO" | "WARN" | "DEBUG", template: string][] = [
   ["INFO", "mqtt: published edge.state (devices=%d)"],
   ["INFO", "stream: webrtc session opened device=cam-%s"],
   ["DEBUG", "analytics: pipeline tick latency=%dms"],

@@ -36,6 +36,3 @@ export const talkResultSchema = z.object({
   session_id: id,
   state: z.enum(["connecting", "active"]),
 });
-
-export type TalkStateMessage = z.output<typeof talkStateSchema>;
-export type TalkAudioMessage = z.output<typeof talkAudioSchema>;

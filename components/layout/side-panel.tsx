@@ -250,33 +250,6 @@ export const PanelIconAction = ({
   );
 };
 
-export const PanelList = ({
-  title,
-  isEmpty,
-  empty,
-  emptyIcon,
-  children,
-}: {
-  title: string;
-  isEmpty: boolean;
-  empty: string;
-  emptyIcon: ReactNode;
-  children: ReactNode;
-}) => {
-  return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between border-b py-2 text-xs">
-        <span className="font-medium">{title}</span>
-      </div>
-      {isEmpty ? (
-        <PanelEmpty icon={emptyIcon} title={empty} />
-      ) : (
-        <ul className="flex flex-col">{children}</ul>
-      )}
-    </div>
-  );
-};
-
 export const PlacementAction = ({
   isPlaced,
   addLabel,

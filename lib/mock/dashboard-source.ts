@@ -1,7 +1,7 @@
 import { ANALYTICS } from "@/config/analytics-catalog";
 import type { RiskLevel } from "@/types/risk";
 
-export type AlarmEvent = {
+type AlarmEvent = {
   event_id: string;
   device_id: string;
   analytic_id: string;
@@ -21,7 +21,7 @@ export type AlarmEvent = {
   created_at: Date;
 };
 
-export type AlarmDetail = {
+type AlarmDetail = {
   event_id: string;
   detail_key: string;
   text_value: string | null;
@@ -29,7 +29,7 @@ export type AlarmDetail = {
   item_index: number | null;
 };
 
-export type RecognitionEvent = {
+type RecognitionEvent = {
   event_id: string;
   device_id: string;
   recognizer: string;
@@ -48,7 +48,7 @@ export type RecognitionEvent = {
   created_at: Date;
 };
 
-export type FaceRecognitionResult = {
+type FaceRecognitionResult = {
   event_id: string;
   person_id: string;
   person_name: string;
@@ -56,7 +56,7 @@ export type FaceRecognitionResult = {
   similarity: number;
 };
 
-export type FaceAttributeResult = {
+type FaceAttributeResult = {
   event_id: string;
   person_gender: string;
   person_age_group: string;
@@ -65,14 +65,14 @@ export type FaceAttributeResult = {
   person_emotion: string;
 };
 
-export type LicensePlateResult = {
+type LicensePlateResult = {
   event_id: string;
   plate_number: string;
   vehicle_type: string;
   vehicle_color: string;
 };
 
-export type PersonSeenResult = {
+type PersonSeenResult = {
   event_id: string;
   person_id: string;
   similarity: number;
@@ -87,7 +87,7 @@ export type DeviceInfo = {
   analytics: string[];
 };
 
-export type ObjectCount = {
+type ObjectCount = {
   device_id: string;
   perimeter_type: "line";
   perimeter_name: string;
@@ -99,7 +99,7 @@ export type ObjectCount = {
   created_at: Date;
 };
 
-export type ObjectDwelling = {
+type ObjectDwelling = {
   device_id: string;
   perimeter_name: string;
   object_label: string;
@@ -111,7 +111,7 @@ export type ObjectDwelling = {
   created_at: Date;
 };
 
-export type PersonSighting = {
+type PersonSighting = {
   person_id: string;
   device_id: string;
   seen_at: Date;

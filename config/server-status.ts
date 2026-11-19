@@ -1,4 +1,4 @@
-export const HEARTBEAT_SECONDS = 60;
+const HEARTBEAT_SECONDS = 60;
 
 export const isServerOnline = (
   server: { isActive: boolean; lastSeenAt: number | null },

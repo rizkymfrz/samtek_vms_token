@@ -17,4 +17,4 @@ export {
 } from "./lib/alarm-row";
 
 export { edgeAlarmsResponseSchema } from "./schemas/edge-alarm";
-export type { AlertClip, AlertRow, AlertsData } from "./types";
+export type { AlertsData } from "./types";
