@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
 import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import { PtzPanel } from "@/features/ptz";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
@@ -202,6 +203,7 @@ export const LiveView = ({
                   key={tile.id}
                   tile={tile}
                   quality={quality}
+                  hasPtz
                   className="lg:aspect-auto lg:h-full lg:min-h-0"
                 />
               ) : (
@@ -221,6 +223,7 @@ export const LiveView = ({
           />
         )}
       </div>
+      <PtzPanel />
     </PageShell>
   );
 };

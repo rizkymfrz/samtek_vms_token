@@ -21,10 +21,12 @@ import { cn } from "@/lib/utils";
 export const SidePanel = ({
   side = "left",
   isFixed,
+  className,
   children,
 }: {
   side?: "left" | "right";
   isFixed?: boolean;
+  className?: string;
   children: ReactNode;
 }) => {
   return (
@@ -33,6 +35,7 @@ export const SidePanel = ({
         "w-full shrink-0 border-t bg-background max-lg:order-last lg:h-full lg:w-88 lg:border-t-0",
         isFixed ? "lg:overflow-hidden" : "lg:overflow-y-auto",
         side === "left" ? "lg:border-r" : "lg:border-l",
+        className,
       )}
     >
       <div

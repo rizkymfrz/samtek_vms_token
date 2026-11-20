@@ -60,7 +60,7 @@ export const StreamDetections = ({
           analyticId={analyticId}
         />
       )}
-      <div className="absolute right-2 bottom-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/tile:opacity-100 focus-within:opacity-100 has-data-[talk=live]:opacity-100">
+      <div className="absolute right-2 bottom-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/tile:opacity-100 has-[:focus-visible]:opacity-100 has-data-[talk=live]:opacity-100">
         {children}
         {hasPerimeters(perimeters) && (
           <ToolbarToggle

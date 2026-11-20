@@ -5,6 +5,7 @@ import { StatusDot } from "@/components/shared/status-dot";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Badge } from "@/components/ui/badge";
 import { StreamDetections } from "@/features/edge-status";
+import { PtzToggle } from "@/features/ptz";
 import { TalkControl } from "@/features/talk";
 import { cn } from "@/lib/utils";
 import { SpeakerToggle } from "./speaker-toggle";
@@ -23,10 +24,12 @@ export const CameraTile = ({
   tile,
   quality,
   className,
+  hasPtz,
 }: {
   tile: Tile;
   quality: StreamQuality;
   className?: string;
+  hasPtz?: boolean;
 }) => {
   const { label, hint } = STATE[tile.state];
   const isLive = tile.state === "live";
@@ -64,6 +67,13 @@ export const CameraTile = ({
         >
           <SpeakerToggle audioId={tile.id} />
           <TalkControl edgeId={tile.serverId} deviceId={tile.id} />
+          {hasPtz && (
+            <PtzToggle
+              edgeId={tile.serverId}
+              deviceId={tile.id}
+              name={tile.name}
+            />
+          )}
         </StreamDetections>
       )}
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">

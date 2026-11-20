@@ -2,8 +2,8 @@ import { PauseIcon, RotateCcwIcon, ScanEyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import { SpeakerToggle } from "@/features/live";
+import { PtzControls } from "@/features/ptz";
 import { TalkControl } from "@/features/talk";
-import { PtzControls } from "./ptz-controls";
 import { StreamFrame } from "./stream-frame";
 import type { CameraDetail, StreamState } from "../types";
 
