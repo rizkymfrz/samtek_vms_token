@@ -160,7 +160,6 @@ const Controls = ({ edgeId, deviceId }: PtzCamera) => {
                 {name || `Preset ${token}`}
               </span>
               <Button
-                variant="secondary"
                 size="icon-sm"
                 aria-label={`Go to ${name || token}`}
                 title="Go to preset"

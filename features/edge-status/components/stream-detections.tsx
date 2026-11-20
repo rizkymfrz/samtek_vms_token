@@ -37,6 +37,7 @@ export const StreamDetections = ({
   analyticId,
   perimeters,
   isDefaultOn = false,
+  trailing,
   children,
 }: {
   edgeId: string;
@@ -44,6 +45,7 @@ export const StreamDetections = ({
   analyticId?: string | null;
   perimeters?: Perimeters | null;
   isDefaultOn?: boolean;
+  trailing?: ReactNode;
   children?: ReactNode;
 }) => {
   const [hasDetections, setHasDetections] = useState(isDefaultOn);
@@ -78,6 +80,7 @@ export const StreamDetections = ({
         >
           <ScanEyeIcon />
         </ToolbarToggle>
+        {trailing}
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 "use client";
 import { CctvOffIcon } from "lucide-react";
+import { useRef } from "react";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { StatusDot } from "@/components/shared/status-dot";
 import { StreamOffline } from "@/components/shared/stream-offline";
@@ -8,8 +9,10 @@ import { StreamDetections } from "@/features/edge-status";
 import { PtzToggle } from "@/features/ptz";
 import { TalkControl } from "@/features/talk";
 import { cn } from "@/lib/utils";
+import { FullscreenToggle } from "./fullscreen-toggle";
 import { SpeakerToggle } from "./speaker-toggle";
 import { WebrtcPlayer } from "./webrtc-player";
+import { useFullscreen } from "../hooks/use-fullscreen";
 import { streamName } from "../lib/relay-url";
 import type { StreamQuality, StreamState, Tile } from "../types";
 
@@ -33,12 +36,22 @@ export const CameraTile = ({
 }) => {
   const { label, hint } = STATE[tile.state];
   const isLive = tile.state === "live";
+  const root = useRef<HTMLDivElement>(null);
+  const { isFullscreen, toggle } = useFullscreen(root);
   return (
     <div
+      ref={root}
       role="group"
       aria-label={`${tile.name}, ${label}`}
+      onDoubleClick={(event) => {
+        if (
+          isLive &&
+          !(event.target as Element).closest("button, [role=slider]")
+        )
+          toggle();
+      }}
       className={cn(
-        "group/tile relative aspect-video w-full overflow-hidden border-r border-b bg-sidebar text-sidebar-foreground",
+        "group/tile relative aspect-video w-full [&:fullscreen]:aspect-auto overflow-hidden border-r border-b bg-sidebar text-sidebar-foreground",
         className,
       )}
     >
@@ -64,6 +77,9 @@ export const CameraTile = ({
           deviceId={tile.id}
           analyticId={tile.analyticId}
           perimeters={tile.perimeters}
+          trailing={
+            <FullscreenToggle isFullscreen={isFullscreen} onToggle={toggle} />
+          }
         >
           <SpeakerToggle audioId={tile.id} />
           <TalkControl edgeId={tile.serverId} deviceId={tile.id} />
