@@ -3,8 +3,8 @@ import {
   BoxIcon,
   CctvIcon,
   ClockIcon,
+  DownloadIcon,
   FastForwardIcon,
-  HashIcon,
   PauseIcon,
   PlayIcon,
   RewindIcon,
@@ -12,7 +12,12 @@ import {
   SearchIcon,
 } from "lucide-react";
 import { useEffect } from "react";
-import { DetailField, DetailIdBox } from "@/components/shared/detail-fields";
+import {
+  DetailField,
+  DetailIdBox,
+  DetailLabel,
+} from "@/components/shared/detail-fields";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,11 +25,14 @@ import {
   DialogContent,
   DialogDescription,
   DialogDivider,
+  DialogFooter,
   DialogHeader,
   DialogSection,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Progress, ProgressValue } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePlaybackSession } from "@/features/camera-detail/hooks/use-playback-session";
 import { stepSpeed } from "@/features/camera-detail/lib/recording-timeline";
 import {
@@ -33,11 +41,8 @@ import {
   usePlaybackBoxes,
 } from "@/features/edge-status";
 import { WebrtcPlayer } from "@/features/live";
-import {
-  formatConfidence,
-  formatSeenAt,
-  formatSimilarity,
-} from "../lib/format-score";
+import { SearchCrop } from "./search-crop";
+import { formatSeenAt, formatSimilarity } from "../lib/format-score";
 import type { SearchData, SearchRow } from "../types";
 
 const PRE_ROLL_MS = 5000;
@@ -156,7 +161,10 @@ export const SearchDialog = ({
       {target && (
         <>
           <DialogHeader icon={SearchIcon}>
-            <DialogTitle>{target.camera}</DialogTitle>
+            <div className="flex items-center gap-2">
+              <DialogTitle>{target.camera}</DialogTitle>
+              <Badge variant="outline">{target.row.label}</Badge>
+            </div>
             <DialogDescription>
               {formatSeenAt(target.row.seenAt)}
             </DialogDescription>
@@ -164,48 +172,74 @@ export const SearchDialog = ({
           <Separator />
           <DialogBody>
             <DialogSection className="md:flex-[1.35]">
-              <SearchPlayer
-                key={target.row.id}
-                target={target}
-                relay={
-                  relays[target.row.edgeId] ?? {
-                    webrtcUrl: null,
-                    webrtcUrlLocal: null,
-                  }
-                }
-              />
+              <Tabs key={target.row.id} defaultValue="image">
+                <TabsList variant="line" size="sm">
+                  <TabsTrigger value="image">Image</TabsTrigger>
+                  <TabsTrigger value="recording">Recording</TabsTrigger>
+                </TabsList>
+                <TabsContent value="image">
+                  <SearchCrop
+                    edgeId={target.row.edgeId}
+                    resultId={target.row.resultId}
+                    hasCrop={target.row.hasCrop}
+                    className="mx-auto h-96"
+                  />
+                </TabsContent>
+                <TabsContent value="recording">
+                  <SearchPlayer
+                    target={target}
+                    relay={
+                      relays[target.row.edgeId] ?? {
+                        webrtcUrl: null,
+                        webrtcUrlLocal: null,
+                      }
+                    }
+                  />
+                </TabsContent>
+              </Tabs>
             </DialogSection>
             <DialogDivider />
             <DialogSection>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                <DetailField
-                  icon={CctvIcon}
-                  label="Camera"
-                  value={target.camera}
-                />
-                <DetailField
-                  icon={ClockIcon}
-                  label="Seen at"
-                  value={formatSeenAt(target.row.seenAt)}
-                />
-                <DetailField
-                  icon={BoxIcon}
-                  label="Label"
-                  value={target.row.label}
-                />
-                <DetailField
-                  icon={ScanSearchIcon}
-                  label="Similarity"
-                  value={formatSimilarity(target.row.similarity)}
-                />
-                {target.row.confidence !== null && (
+              <div className="flex flex-col gap-2">
+                <DetailLabel>Summary</DetailLabel>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-4">
                   <DetailField
-                    icon={HashIcon}
-                    label="Match confidence"
-                    value={formatConfidence(target.row.confidence)}
+                    icon={CctvIcon}
+                    label="Camera"
+                    value={target.camera}
                   />
-                )}
+                  <DetailField
+                    icon={ClockIcon}
+                    label="Time"
+                    value={formatSeenAt(target.row.seenAt)}
+                  />
+                  <DetailField
+                    icon={BoxIcon}
+                    label="Label"
+                    value={target.row.label}
+                  />
+                  <DetailField
+                    icon={ScanSearchIcon}
+                    label="Similarity"
+                    value={formatSimilarity(target.row.similarity)}
+                  />
+                </div>
               </div>
+              {target.row.confidence !== null && (
+                <div className="flex flex-col gap-2">
+                  <DetailLabel>Confidence</DetailLabel>
+                  <Progress
+                    value={Math.round(target.row.confidence * 100)}
+                    variant="segmented"
+                    aria-label="Match confidence"
+                    className="flex-nowrap items-center gap-4"
+                  >
+                    <ProgressValue className="ml-0 text-lg text-foreground">
+                      {(_, value) => `${value}%`}
+                    </ProgressValue>
+                  </Progress>
+                </div>
+              )}
               <DetailIdBox
                 label="Track key"
                 value={target.row.trackKey}
@@ -213,6 +247,26 @@ export const SearchDialog = ({
               />
             </DialogSection>
           </DialogBody>
+          <Separator />
+          <DialogFooter>
+            <Button
+              disabled={!target.row.hasCrop}
+              nativeButton={false}
+              render={
+                <a
+                  href={
+                    target.row.hasCrop
+                      ? `/api/edge/${target.row.edgeId}/search/${target.row.resultId}/crop`
+                      : undefined
+                  }
+                  download={`${target.row.resultId}.jpg`}
+                />
+              }
+            >
+              <DownloadIcon />
+              Download image
+            </Button>
+          </DialogFooter>
         </>
       )}
     </DialogContent>

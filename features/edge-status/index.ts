@@ -14,7 +14,6 @@ export type { RecognitionEntry } from "./lib/recognition-store";
 export {
   useAnalyticCatalog,
   useBodyworn,
-  useAllSearchIndex,
   useDeviceFaulty,
   useEdgeRecording,
   useEdgeSearchIndex,

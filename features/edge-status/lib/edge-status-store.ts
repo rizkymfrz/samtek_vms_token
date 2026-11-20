@@ -570,7 +570,5 @@ export const getEdgeSearchIndex = (edgeId: string) =>
   state.searchIndex.get(edgeId) ?? NO_SEARCH_INDEX;
 
 export const getServerEdgeSearchIndex = () => NO_SEARCH_INDEX;
-export const getAllSearchIndex = () => state.searchIndex;
-export const getServerAllSearchIndex = () => EMPTY.searchIndex;
 export const getServerOnlineEdges = () => EMPTY.online;
 export const getServerFaultyDevices = () => EMPTY.faulty;

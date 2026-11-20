@@ -111,6 +111,7 @@ export const usePlaybackSession = (
     () => () => {
       closePlaybackBoxes(sessionId);
       if (!hasStarted.current) return;
+      hasStarted.current = false;
       stopPlayback(edgeId, sessionId).catch((failure: unknown) =>
         console.warn("[playback] stop failed:", failure),
       );

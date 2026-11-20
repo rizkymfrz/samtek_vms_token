@@ -47,10 +47,10 @@ const labelOptions = (
 
 const hint = (retentionDays: number | null) => {
   const base =
-    "Index the objects this camera tracks so they can be found by text on the Object Search page. Changing this restarts inference for this camera.";
+    "Find this camera's objects by text. Changing this restarts analysis.";
   return retentionDays === null
     ? base
-    : `${base} Search covers the last ${retentionDays} days.`;
+    : `${base} Kept for ${retentionDays} days.`;
 };
 
 export const SearchIndexFields = ({
@@ -101,7 +101,7 @@ export const SearchIndexFields = ({
           />
         )}
       />
-      {status && (
+      {status && status.status !== "active" && (
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           Index status
           <Badge variant={STATUS[status.status].variant}>

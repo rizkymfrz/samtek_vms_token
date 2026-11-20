@@ -30,7 +30,7 @@ export const SearchCrop = ({
           fill
           unoptimized
           sizes="(min-width: 1024px) 16vw, 50vw"
-          className="object-cover"
+          className="object-cover object-top"
           onError={() => setHasFailed(true)}
         />
       ) : (

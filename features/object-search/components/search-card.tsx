@@ -1,4 +1,5 @@
 "use client";
+import { CctvIcon, ClockIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { SearchCrop } from "./search-crop";
 import { SearchScore } from "./search-score";
@@ -23,17 +24,19 @@ export const SearchCard = ({
       edgeId={row.edgeId}
       resultId={row.resultId}
       hasCrop={row.hasCrop}
-      className="w-full"
+      className="aspect-square w-full"
     />
     <div className="flex min-w-0 flex-col gap-1">
-      <span className="truncate text-xs font-medium">{camera}</span>
-      <span className="text-xs text-muted-foreground tabular-nums">
+      <span className="flex min-w-0 items-center gap-1 text-xs font-medium">
+        <CctvIcon className="size-3 shrink-0 text-muted-foreground" />
+        <span className="truncate">{camera}</span>
+      </span>
+      <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
+        <ClockIcon className="size-3 shrink-0" />
         {formatSeenAt(row.seenAt)}
       </span>
-      <div className="flex items-center justify-between gap-2">
-        <Badge variant="outline">{row.label}</Badge>
-        <SearchScore row={row} />
-      </div>
+      {row.label !== "person" && <Badge variant="outline">{row.label}</Badge>}
+      <SearchScore row={row} />
     </div>
   </button>
 );
