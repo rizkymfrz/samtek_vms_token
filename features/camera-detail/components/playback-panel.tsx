@@ -7,7 +7,7 @@ import {
   SkipBackIcon,
   SkipForwardIcon,
 } from "lucide-react";
-import { type MouseEvent, useState } from "react";
+import { useState } from "react";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,7 +18,7 @@ import {
   useRecordingDevice,
 } from "@/features/edge-status";
 import { SpeakerToggle, WebrtcPlayer } from "@/features/live";
-import { cn } from "@/lib/utils";
+import { PlaybackTimeline } from "./playback-timeline";
 import { usePlaybackSession } from "../hooks/use-playback-session";
 import { useRecordingRanges } from "../hooks/use-recording-ranges";
 import {
@@ -28,95 +28,8 @@ import {
   previousRangeStart,
   snapToRange,
   stepSpeed,
-  toBars,
 } from "../lib/recording-timeline";
 import type { CameraDetail } from "../types";
-
-const HOURS_PER_DAY = 24;
-const MINUTES_PER_HOUR = 60;
-const MS_PER_MINUTE = 60_000;
-const MINUTES_PER_DAY = HOURS_PER_DAY * MINUTES_PER_HOUR;
-const LABEL_STEP = 3;
-const SEGMENT_MINUTES = 15;
-const SEGMENT_COUNT = MINUTES_PER_DAY / SEGMENT_MINUTES;
-
-const LABEL_HOURS = Array.from(
-  { length: HOURS_PER_DAY / LABEL_STEP + 1 },
-  (_, index) => index * LABEL_STEP,
-);
-
-const toPercent = (minute: number) => `${(minute / MINUTES_PER_DAY) * 100}%`;
-
-const labelShift = (hour: number) =>
-  hour === 0
-    ? "translate-x-0"
-    : hour === HOURS_PER_DAY
-      ? "-translate-x-full"
-      : "-translate-x-1/2";
-
-type Bar = { startMinute: number; endMinute: number };
-
-const Timeline = ({
-  bars,
-  playheadMinute,
-  onSeek,
-}: {
-  bars: Bar[];
-  playheadMinute: number | null;
-  onSeek: (minute: number) => void;
-}) => {
-  const seekAt = (event: MouseEvent<HTMLButtonElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    onSeek(((event.clientX - rect.left) / rect.width) * MINUTES_PER_DAY);
-  };
-  return (
-    <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        aria-label="Seek recording timeline"
-        onClick={seekAt}
-        className="relative flex h-8 w-full gap-0.5"
-      >
-        {Array.from({ length: SEGMENT_COUNT }, (_, segment) => {
-          const start = segment * SEGMENT_MINUTES;
-          const end = start + SEGMENT_MINUTES;
-          const isRecorded = bars.some(
-            (bar) => bar.startMinute < end && bar.endMinute > start,
-          );
-          return (
-            <span
-              key={segment}
-              data-recorded={isRecorded ? "" : undefined}
-              className="h-full flex-1 rounded-[1px] bg-muted data-recorded:bg-chart-3"
-            />
-          );
-        })}
-        {playheadMinute !== null &&
-          playheadMinute >= 0 &&
-          playheadMinute <= MINUTES_PER_DAY && (
-            <span
-              className="absolute -inset-y-1 w-0.5 bg-foreground"
-              style={{ left: toPercent(playheadMinute) }}
-            />
-          )}
-      </button>
-      <div className="relative h-4">
-        {LABEL_HOURS.map((hour) => (
-          <span
-            key={hour}
-            className={cn(
-              "absolute top-0 text-xs text-muted-foreground tabular-nums",
-              labelShift(hour),
-            )}
-            style={{ left: toPercent(hour * MINUTES_PER_HOUR) }}
-          >
-            {String(hour).padStart(2, "0")}:00
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 const PlaybackScreen = ({
   detail,
@@ -298,18 +211,13 @@ export const PlaybackPanel = ({
           </div>
         </section>
       </div>
-      <Timeline
-        bars={toBars(ranges, from.getTime())}
-        playheadMinute={
-          position === null ? null : (position - from.getTime()) / MS_PER_MINUTE
-        }
-        onSeek={(minute) =>
-          playFrom(
-            isOnline
-              ? snapToRange(ranges, from.getTime() + minute * MS_PER_MINUTE)
-              : null,
-          )
-        }
+      <PlaybackTimeline
+        key={from.getTime()}
+        ranges={ranges}
+        dayStart={from.getTime()}
+        dayEnd={to.getTime()}
+        position={position}
+        onSeek={(time) => playFrom(isOnline ? snapToRange(ranges, time) : null)}
       />
     </div>
   );
