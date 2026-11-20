@@ -24,3 +24,6 @@ next-env.d.ts
 
 # copied from node_modules by scripts/copy-maplibre-worker.mjs
 /public/maplibre-gl-worker.mjs
+
+# pm2 logs written by ecosystem.config.js
+/logs
