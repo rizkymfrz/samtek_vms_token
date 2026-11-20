@@ -1,5 +1,6 @@
 "use client";
 import type { LucideIcon } from "lucide-react";
+import type { ComponentProps } from "react";
 import {
   Select,
   SelectContent,
@@ -19,6 +20,7 @@ export const Pick = ({
   value,
   onChange,
   className,
+  container,
 }: {
   label: string;
   icon?: LucideIcon;
@@ -26,6 +28,7 @@ export const Pick = ({
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  container?: ComponentProps<typeof SelectContent>["container"];
 }) => {
   return (
     <Select
@@ -40,7 +43,7 @@ export const Pick = ({
       >
         <SelectValue />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent container={container}>
         <SelectGroup>
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>

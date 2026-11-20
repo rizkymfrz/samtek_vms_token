@@ -4,6 +4,7 @@ import {
   LayoutGridIcon,
   LoaderIcon,
   MaximizeIcon,
+  MinimizeIcon,
   PlusIcon,
   SignalIcon,
 } from "lucide-react";
@@ -16,8 +17,10 @@ import { Button } from "@/components/ui/button";
 import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import { PtzPanel } from "@/features/ptz";
 import { useFailureToast } from "@/hooks/use-failure-toast";
+import { cn } from "@/lib/utils";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
+import { useFullscreen } from "../hooks/use-fullscreen";
 import { useLayout } from "../hooks/use-layout";
 import { useLayoutActions } from "../hooks/use-layout-actions";
 import { useLive } from "../hooks/use-live";
@@ -81,6 +84,7 @@ export const LiveView = ({
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [quality, setQuality] = useState<StreamQuality>("sub");
   const stage = useRef<HTMLDivElement>(null);
+  const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(stage);
   const summary = layouts.find((l) => l.id === pickedId) ?? layouts[0] ?? null;
   const { data: detail } = useLayout(
     summary?.id ?? null,
@@ -154,37 +158,56 @@ export const LiveView = ({
       </SidePanel>
       <div
         ref={stage}
-        className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0"
+        className={cn(
+          "relative flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0",
+          isFullscreen && "gap-0 bg-background p-0",
+        )}
       >
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <Pick
-            label="Grid"
-            icon={Grid3x3Icon}
-            items={gridItems(layout.rows, layout.columns)}
-            value={gridValue(layout.rows, layout.columns)}
-            onChange={(size) => {
-              const [rows, columns] = size.split("x").map(Number);
-              if (detail)
-                actions.resize.mutate({ layout: detail, rows, columns });
-            }}
-          />
-          <Pick
-            label="Stream"
-            icon={SignalIcon}
-            items={QUALITY_ITEMS}
-            value={quality}
-            onChange={(next) => setQuality(next as StreamQuality)}
-          />
-          <Button
-            variant="secondary"
-            size="icon"
-            className="ml-auto"
-            aria-label="Fullscreen"
-            title="Fullscreen"
-            onClick={() => stage.current?.requestFullscreen?.()}
+        <div
+          className={cn(
+            isFullscreen
+              ? "group/bar absolute inset-x-0 top-0 z-10 h-3"
+              : "contents",
+          )}
+        >
+          <div
+            className={cn(
+              "flex flex-wrap items-center justify-end gap-2",
+              isFullscreen &&
+                "-translate-y-full border-b bg-background/90 p-2 backdrop-blur-md transition-transform group-hover/bar:translate-y-0 has-[:focus-visible]:translate-y-0 has-[[aria-expanded=true]]:translate-y-0",
+            )}
           >
-            <MaximizeIcon />
-          </Button>
+            <Pick
+              label="Grid"
+              container={isFullscreen ? stage : undefined}
+              icon={Grid3x3Icon}
+              items={gridItems(layout.rows, layout.columns)}
+              value={gridValue(layout.rows, layout.columns)}
+              onChange={(size) => {
+                const [rows, columns] = size.split("x").map(Number);
+                if (detail)
+                  actions.resize.mutate({ layout: detail, rows, columns });
+              }}
+            />
+            <Pick
+              label="Stream"
+              container={isFullscreen ? stage : undefined}
+              icon={SignalIcon}
+              items={QUALITY_ITEMS}
+              value={quality}
+              onChange={(next) => setQuality(next as StreamQuality)}
+            />
+            <Button
+              variant="secondary"
+              size="icon"
+              className="ml-auto"
+              aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+              onClick={toggleFullscreen}
+            >
+              {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
+            </Button>
+          </div>
         </div>
         {detail ? (
           <div
