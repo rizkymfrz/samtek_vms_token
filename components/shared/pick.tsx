@@ -21,7 +21,6 @@ export const Pick = ({
   onChange,
   className,
   size,
-  container,
 }: {
   label: string;
   icon?: LucideIcon;
@@ -30,7 +29,6 @@ export const Pick = ({
   onChange: (value: string) => void;
   className?: string;
   size?: ComponentProps<typeof SelectTrigger>["size"];
-  container?: ComponentProps<typeof SelectContent>["container"];
 }) => {
   return (
     <Select
@@ -46,7 +44,7 @@ export const Pick = ({
       >
         <SelectValue />
       </SelectTrigger>
-      <SelectContent container={container}>
+      <SelectContent>
         <SelectGroup>
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>

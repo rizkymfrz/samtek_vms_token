@@ -7,7 +7,7 @@ import {
   Trash2Icon,
   XIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PanelSection, SidePanel } from "@/components/layout/side-panel";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -198,10 +198,9 @@ const Controls = ({ edgeId, deviceId }: PtzCamera) => {
   );
 };
 
-export const PtzPanel = () => {
+export const PtzPanel = ({ deviceId }: { deviceId?: string }) => {
   const camera = usePtzCamera();
-  useEffect(() => () => setPtzCamera(null), []);
-  if (!camera) return null;
+  if (!camera || (deviceId && camera.deviceId !== deviceId)) return null;
   return (
     <SidePanel side="right" className="lg:w-52">
       <div className="flex items-center justify-between gap-2">

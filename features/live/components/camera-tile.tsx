@@ -6,7 +6,7 @@ import { StatusDot } from "@/components/shared/status-dot";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Badge } from "@/components/ui/badge";
 import { StreamDetections } from "@/features/edge-status";
-import { PtzToggle } from "@/features/ptz";
+import { PtzPanel, PtzToggle } from "@/features/ptz";
 import { TalkControl } from "@/features/talk";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
 import { cn } from "@/lib/utils";
@@ -62,75 +62,77 @@ export const CameraTile = ({
           toggle();
       }}
       className={cn(
-        "group/tile relative aspect-video w-full [&:fullscreen]:aspect-auto overflow-hidden border-r border-b bg-sidebar text-sidebar-foreground",
+        "group/tile relative flex aspect-video w-full [&:fullscreen]:aspect-auto overflow-hidden border-r border-b bg-sidebar text-sidebar-foreground",
         className,
       )}
     >
-      {isLive ? (
-        status === "ready" && (
-          <WebrtcPlayer
-            relay={tile}
-            stream={streamName(tile.id, picked, tile.hasSubStream)}
-            audioId={tile.id}
-          />
-        )
-      ) : tile.state === "disabled" ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-          <CctvOffIcon className="size-8" />
-          <span className="text-xs">{hint}</span>
-        </div>
-      ) : tile.state === "stream-offline" ? (
-        <StreamOffline />
-      ) : (
-        <EdgeOffline />
-      )}
-      {isLive && (
-        <StreamDetections
-          edgeId={tile.serverId}
-          deviceId={tile.id}
-          analyticId={tile.analyticId}
-          perimeters={tile.perimeters}
-          trailing={
-            <FullscreenToggle isFullscreen={isFullscreen} onToggle={toggle} />
-          }
-        >
-          <SpeakerToggle audioId={tile.id} />
-          <TalkControl edgeId={tile.serverId} deviceId={tile.id} />
-          {hasPtz && (
-            <PtzToggle
-              edgeId={tile.serverId}
-              deviceId={tile.id}
-              name={tile.name}
+      <div className="relative min-w-0 flex-1">
+        {isLive ? (
+          status === "ready" && (
+            <WebrtcPlayer
+              relay={tile}
+              stream={streamName(tile.id, picked, tile.hasSubStream)}
+              audioId={tile.id}
             />
-          )}
-          <StreamQualityPick
-            streams={tile}
-            value={picked}
-            container={isFullscreen ? root : undefined}
-            onChange={(next) =>
-              streamPreferenceStore.update((state) =>
-                setStreamPreference(state, tile.id, next),
-              )
+          )
+        ) : tile.state === "disabled" ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+            <CctvOffIcon className="size-8" />
+            <span className="text-xs">{hint}</span>
+          </div>
+        ) : tile.state === "stream-offline" ? (
+          <StreamOffline />
+        ) : (
+          <EdgeOffline />
+        )}
+        {isLive && (
+          <StreamDetections
+            edgeId={tile.serverId}
+            deviceId={tile.id}
+            analyticId={tile.analyticId}
+            perimeters={tile.perimeters}
+            trailing={
+              <FullscreenToggle isFullscreen={isFullscreen} onToggle={toggle} />
             }
-          />
-        </StreamDetections>
-      )}
-      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
-        <div className="ml-auto flex items-center gap-2">
-          {tile.isRecordingEnabled && (
-            <Badge variant="overlay">
-              <StatusDot status="danger" />
-              REC
-            </Badge>
-          )}
+          >
+            <SpeakerToggle audioId={tile.id} />
+            <TalkControl edgeId={tile.serverId} deviceId={tile.id} />
+            {hasPtz && (
+              <PtzToggle
+                edgeId={tile.serverId}
+                deviceId={tile.id}
+                name={tile.name}
+              />
+            )}
+            <StreamQualityPick
+              streams={tile}
+              value={picked}
+              onChange={(next) =>
+                streamPreferenceStore.update((state) =>
+                  setStreamPreference(state, tile.id, next),
+                )
+              }
+            />
+          </StreamDetections>
+        )}
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
+          <div className="ml-auto flex items-center gap-2">
+            {tile.isRecordingEnabled && (
+              <Badge variant="overlay">
+                <StatusDot status="danger" />
+                REC
+              </Badge>
+            )}
+          </div>
         </div>
+        <Badge
+          variant="overlay"
+          className="absolute bottom-2 left-2 max-w-[calc(100%-4rem)] bg-background/70 text-sm backdrop-blur-md"
+        >
+          <span className="truncate">{tile.name}</span>
+        </Badge>
       </div>
-      <Badge
-        variant="overlay"
-        className="absolute bottom-2 left-2 max-w-[calc(100%-4rem)] bg-background/70 text-sm backdrop-blur-md"
-      >
-        <span className="truncate">{tile.name}</span>
-      </Badge>
+      {isFullscreen && hasPtz && <PtzPanel deviceId={tile.id} />}
     </div>
   );
 };

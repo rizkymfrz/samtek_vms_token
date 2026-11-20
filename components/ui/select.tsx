@@ -3,6 +3,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { cn } from "cn";
 import { ChevronDownIcon, ChevronUpIcon, type LucideIcon } from "lucide-react";
 import type { ComponentProps } from "react";
+import { useFullscreenElement } from "@/hooks/use-fullscreen-element";
 
 const Select = SelectPrimitive.Root;
 
@@ -65,16 +66,15 @@ const SelectContent = ({
   align = "center",
   alignOffset = 0,
   alignItemWithTrigger = false,
-  container,
   ...props
-}: SelectPrimitive.Popup.Props & {
-  container?: SelectPrimitive.Portal.Props["container"];
-} & Pick<
+}: SelectPrimitive.Popup.Props &
+  Pick<
     SelectPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
   >) => {
+  const fullscreenElement = useFullscreenElement();
   return (
-    <SelectPrimitive.Portal container={container}>
+    <SelectPrimitive.Portal container={fullscreenElement ?? undefined}>
       <SelectPrimitive.Positioner
         side={side}
         sideOffset={sideOffset}

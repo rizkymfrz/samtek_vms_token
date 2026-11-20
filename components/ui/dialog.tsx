@@ -5,6 +5,7 @@ import { type LucideIcon, XIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useFullscreenElement } from "@/hooks/use-fullscreen-element";
 
 const Dialog = ({ ...props }: DialogPrimitive.Root.Props) => {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -15,7 +16,14 @@ const DialogTrigger = ({ ...props }: DialogPrimitive.Trigger.Props) => {
 };
 
 const DialogPortal = ({ ...props }: DialogPrimitive.Portal.Props) => {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
+  const fullscreenElement = useFullscreenElement();
+  return (
+    <DialogPrimitive.Portal
+      data-slot="dialog-portal"
+      container={fullscreenElement ?? undefined}
+      {...props}
+    />
+  );
 };
 
 const DialogClose = ({ ...props }: DialogPrimitive.Close.Props) => {

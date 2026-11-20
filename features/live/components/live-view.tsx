@@ -8,14 +8,20 @@ import {
   PlusIcon,
   SignalIcon,
 } from "lucide-react";
-import { type CSSProperties, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
 import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
-import { PtzPanel } from "@/features/ptz";
+import { PtzPanel, setPtzCamera } from "@/features/ptz";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { cn } from "@/lib/utils";
 import { CameraTile } from "./camera-tile";
@@ -85,6 +91,7 @@ export const LiveView = ({
   const [quality, setQuality] = useState<StreamQuality>("sub");
   const stage = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(stage);
+  useEffect(() => () => setPtzCamera(null), []);
   const summary = layouts.find((l) => l.id === pickedId) ?? layouts[0] ?? null;
   const { data: detail } = useLayout(
     summary?.id ?? null,
@@ -158,95 +165,97 @@ export const LiveView = ({
       </SidePanel>
       <div
         ref={stage}
-        className={cn(
-          "relative flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0",
-          isFullscreen && "gap-0 bg-background p-0",
-        )}
+        className="relative flex min-w-0 flex-1 flex-col bg-background lg:min-h-0 lg:flex-row"
       >
         <div
           className={cn(
-            isFullscreen
-              ? "group/bar absolute inset-x-0 top-0 z-10 h-3"
-              : "contents",
+            "relative flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0",
+            isFullscreen && "gap-0 p-0",
           )}
         >
           <div
             className={cn(
-              "flex flex-wrap items-center justify-end gap-2",
-              isFullscreen &&
-                "-translate-y-full border-b bg-background/90 p-2 backdrop-blur-md transition-transform group-hover/bar:translate-y-0 has-[:focus-visible]:translate-y-0 has-[[aria-expanded=true]]:translate-y-0",
+              isFullscreen
+                ? "group/bar absolute inset-x-0 top-0 z-10 h-3"
+                : "contents",
             )}
           >
-            <Pick
-              label="Grid"
-              container={isFullscreen ? stage : undefined}
-              icon={Grid3x3Icon}
-              items={gridItems(layout.rows, layout.columns)}
-              value={gridValue(layout.rows, layout.columns)}
-              onChange={(size) => {
-                const [rows, columns] = size.split("x").map(Number);
-                if (detail)
-                  actions.resize.mutate({ layout: detail, rows, columns });
-              }}
-            />
-            <Pick
-              label="Stream"
-              container={isFullscreen ? stage : undefined}
-              icon={SignalIcon}
-              items={QUALITY_ITEMS}
-              value={quality}
-              onChange={(next) => setQuality(next as StreamQuality)}
-            />
-            <Button
-              variant="secondary"
-              size="icon"
-              className="ml-auto"
-              aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-              onClick={toggleFullscreen}
+            <div
+              className={cn(
+                "flex flex-wrap items-center justify-end gap-2",
+                isFullscreen &&
+                  "-translate-y-full border-b bg-background/90 p-2 backdrop-blur-md transition-transform group-hover/bar:translate-y-0 has-[:focus-visible]:translate-y-0 has-[[aria-expanded=true]]:translate-y-0",
+              )}
             >
-              {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
-            </Button>
+              <Pick
+                label="Grid"
+                icon={Grid3x3Icon}
+                items={gridItems(layout.rows, layout.columns)}
+                value={gridValue(layout.rows, layout.columns)}
+                onChange={(size) => {
+                  const [rows, columns] = size.split("x").map(Number);
+                  if (detail)
+                    actions.resize.mutate({ layout: detail, rows, columns });
+                }}
+              />
+              <Pick
+                label="Stream"
+                icon={SignalIcon}
+                items={QUALITY_ITEMS}
+                value={quality}
+                onChange={(next) => setQuality(next as StreamQuality)}
+              />
+              <Button
+                variant="secondary"
+                size="icon"
+                className="ml-auto"
+                aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                onClick={toggleFullscreen}
+              >
+                {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
+              </Button>
+            </div>
           </div>
+          {detail ? (
+            <div
+              className="grid grid-cols-1 gap-0 border-t border-l sm:grid-cols-2 md:grid-cols-(--columns) lg:min-h-0 lg:flex-1 lg:grid-rows-(--rows)"
+              style={
+                {
+                  "--columns": `repeat(${layout.columns}, minmax(0, 1fr))`,
+                  "--rows": `repeat(${layout.rows}, minmax(0, 1fr))`,
+                } as CSSProperties
+              }
+            >
+              {layout.slots.map((id, position) => {
+                const tile = id ? tileById.get(id) : null;
+                return tile ? (
+                  <CameraTile
+                    key={tile.id}
+                    tile={tile}
+                    quality={quality}
+                    hasPtz
+                    className="lg:aspect-auto lg:h-full lg:min-h-0"
+                  />
+                ) : (
+                  <div
+                    key={`empty-${position}`}
+                    className="flex aspect-video items-center justify-center border-r border-b text-xs text-muted-foreground lg:aspect-auto lg:h-full lg:min-h-0"
+                  >
+                    Empty slot
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <EmptyState
+              icon={<LoaderIcon className="animate-spin" />}
+              title="Loading layout…"
+            />
+          )}
         </div>
-        {detail ? (
-          <div
-            className="grid grid-cols-1 gap-0 border-t border-l sm:grid-cols-2 md:grid-cols-(--columns) lg:min-h-0 lg:flex-1 lg:grid-rows-(--rows)"
-            style={
-              {
-                "--columns": `repeat(${layout.columns}, minmax(0, 1fr))`,
-                "--rows": `repeat(${layout.rows}, minmax(0, 1fr))`,
-              } as CSSProperties
-            }
-          >
-            {layout.slots.map((id, position) => {
-              const tile = id ? tileById.get(id) : null;
-              return tile ? (
-                <CameraTile
-                  key={tile.id}
-                  tile={tile}
-                  quality={quality}
-                  hasPtz
-                  className="lg:aspect-auto lg:h-full lg:min-h-0"
-                />
-              ) : (
-                <div
-                  key={`empty-${position}`}
-                  className="flex aspect-video items-center justify-center border-r border-b text-xs text-muted-foreground lg:aspect-auto lg:h-full lg:min-h-0"
-                >
-                  Empty slot
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <EmptyState
-            icon={<LoaderIcon className="animate-spin" />}
-            title="Loading layout…"
-          />
-        )}
+        <PtzPanel />
       </div>
-      <PtzPanel />
     </PageShell>
   );
 };
