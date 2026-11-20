@@ -56,7 +56,11 @@ export const CameraDetailView = ({
   const [selection, setSelection] = useState<Selection>(null);
   const form = useForm<DetailDraft>({
     resolver: zodResolver(detailDraftSchema),
-    defaultValues: toDetailDraft(record, detail.analyticParams),
+    defaultValues: toDetailDraft(
+      record,
+      detail.analyticParams,
+      detail.searchIndex,
+    ),
   });
   const actions = useCameraActions(record, isLive);
   const analyticId = useWatch({ control: form.control, name: "analyticId" });
@@ -76,6 +80,7 @@ export const CameraDetailView = ({
   const isPerimetersChanged = !isSamePerimeters(perimeters, saved);
   const params = useWatch({ control: form.control, name: "analyticParams" });
   const isParamsChanged = Boolean(form.formState.dirtyFields.analyticParams);
+  const isSearchIndexChanged = Boolean(form.formState.dirtyFields.searchIndex);
   const canSave =
     !actions.isSaving &&
     (form.formState.isDirty || isPerimetersChanged) &&
@@ -89,6 +94,12 @@ export const CameraDetailView = ({
         analyticParams:
           draft.analyticId && isParamsChanged
             ? draft.analyticParams
+            : undefined,
+        searchIndex:
+          detail.searchIndex !== undefined && isSearchIndexChanged
+            ? draft.searchIndex.isEnabled
+              ? draft.searchIndex
+              : null
             : undefined,
       },
       {

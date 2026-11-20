@@ -26,7 +26,9 @@ import {
   type ParamSpec,
   useEdgeRecording,
 } from "@/features/edge-status";
+import { OFF_SEARCH_INDEX } from "@/lib/api/search-index";
 import { AnalyticParamFields } from "./analytic-params";
+import { SearchIndexFields } from "./search-index-fields";
 import type { DetailDraft } from "../lib/detail-draft";
 import type { CameraDetail } from "../types";
 
@@ -184,6 +186,7 @@ export const CameraForm = ({
                 />
               )}
             />
+            <SearchIndexFields detail={detail} form={form} specs={specs} />
           </div>
           <Separator orientation="vertical" className="max-lg:hidden" />
           <div className="flex min-w-0 flex-col gap-4">
@@ -204,6 +207,9 @@ export const CameraForm = ({
                         {},
                         { shouldDirty: true },
                       );
+                      form.setValue("searchIndex", OFF_SEARCH_INDEX, {
+                        shouldDirty: true,
+                      });
                     }}
                     className="w-full"
                   />

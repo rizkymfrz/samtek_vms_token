@@ -39,6 +39,7 @@ const paramSpecSchema = z.object({
 const announcedAnalyticSchema = z.object({
   id: z.string(),
   name: z.string(),
+  supports_search_index: z.boolean().optional().catch(undefined),
   params_schema: z
     .object({ properties: z.record(z.string(), paramSpecSchema).optional() })
     .optional(),
@@ -78,11 +79,25 @@ export const edgeStateSchema = z.object({
             .optional()
             .catch(undefined),
           bodyworn: bodywornSchema.optional().catch(undefined),
+          search_index: z
+            .object({
+              status: z.enum(["disabled", "starting", "active", "unavailable"]),
+              detail: z.string().optional(),
+            })
+            .optional()
+            .catch(undefined),
         }),
       )
       .optional()
       .catch(undefined),
     recording: z
+      .object({
+        available: z.boolean(),
+        retention_days: z.number().int().positive().optional(),
+      })
+      .optional()
+      .catch(undefined),
+    search_index: z
       .object({
         available: z.boolean(),
         retention_days: z.number().int().positive().optional(),

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { analyticParamsSchema } from "@/lib/api/analytic-params";
 import { deviceSchema } from "@/lib/api/central-devices";
 import { perimetersSchema } from "@/lib/api/perimeters";
+import { searchIndexSchema } from "@/lib/api/search-index";
 
 export const deviceResponseSchema = z.object({ data: deviceSchema });
 
@@ -24,5 +25,6 @@ export const updateDeviceInputSchema = z.strictObject({
   analyticId: z.string().nullable().optional(),
   analyticParams: analyticParamsSchema.optional(),
   perimeters: perimetersSchema.optional(),
+  searchIndex: searchIndexSchema.nullable().optional(),
   isRecordingEnabled: z.boolean().optional(),
 });

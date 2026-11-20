@@ -3,16 +3,20 @@ import { useCallback, useSyncExternalStore } from "react";
 import { mqttConfig } from "@/config/mqtt";
 import {
   faultKey,
+  getAllSearchIndex,
   getBodyworn,
   getEdgeCatalog,
   getEdgeRecording,
+  getEdgeSearchIndex,
   getEdgeStatus,
   getFaultyDevices,
   getOnlineEdges,
   getRecordingDevice,
+  getServerAllSearchIndex,
   getServerBodyworn,
   getServerEdgeCatalog,
   getServerEdgeRecording,
+  getServerEdgeSearchIndex,
   getServerEdgeStatus,
   getServerFaultyDevices,
   getServerOnlineEdges,
@@ -76,6 +80,20 @@ export const useEdgeRecording = (edgeId: string) =>
     subscribeEdgeStatus,
     () => getEdgeRecording(edgeId),
     getServerEdgeRecording,
+  );
+
+export const useEdgeSearchIndex = (edgeId: string) =>
+  useSyncExternalStore(
+    subscribeEdgeStatus,
+    () => getEdgeSearchIndex(edgeId),
+    getServerEdgeSearchIndex,
+  );
+
+export const useAllSearchIndex = () =>
+  useSyncExternalStore(
+    subscribeEdgeStatus,
+    getAllSearchIndex,
+    getServerAllSearchIndex,
   );
 
 export const useRecordingDevice = (edgeId: string, deviceId: string) =>

@@ -1,5 +1,6 @@
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
+import type { SearchIndexConfig } from "@/lib/api/search-index";
 import { http } from "@/lib/axios/browser-client";
 import type { CameraRecord } from "../types";
 
@@ -23,6 +24,7 @@ type UpdatePayload = {
   isRecordingEnabled?: boolean;
   analyticParams?: AnalyticParams;
   perimeters?: Perimeters;
+  searchIndex?: SearchIndexConfig | null;
 };
 
 export const createCamera = async (serverId: string, payload: CreatePayload) =>

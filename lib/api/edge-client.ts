@@ -59,15 +59,17 @@ export const getFromEdge = async <S extends z.ZodType>(
   path: string,
   schema: S,
   params?: Record<string, string | number>,
+  options: { isExposed?: boolean; timeout?: number } = {},
 ): Promise<z.output<S>> => {
   try {
     const { data } = await http.get<unknown>(path, {
       baseURL: baseUrl(edge),
       params,
+      timeout: options.timeout,
     });
     return schema.parse(data);
   } catch (error) {
-    throw toEdgeError(edge, error);
+    throw toEdgeError(edge, error, options.isExposed);
   }
 };
 

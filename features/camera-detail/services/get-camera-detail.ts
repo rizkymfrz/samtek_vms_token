@@ -21,6 +21,7 @@ type Device = {
   analyticId: string | null;
   analyticParams?: CameraDetail["analyticParams"] | null;
   perimeters?: CameraDetail["perimeters"] | null;
+  searchIndex?: CameraDetail["searchIndex"];
 };
 
 type Server = {
@@ -54,6 +55,7 @@ const toDetail = (
   webrtcUrlLocal: server.webrtcUrlLocal,
   analyticParams: device.analyticParams ?? {},
   perimeters: device.perimeters ?? emptyPerimeters(),
+  searchIndex: device.searchIndex,
 });
 
 export const getCameraDetail = async (

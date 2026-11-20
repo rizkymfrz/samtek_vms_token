@@ -10,6 +10,7 @@ import {
 } from "@/features/cameras";
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
+import type { SearchIndexConfig } from "@/lib/api/search-index";
 import { messageOf } from "@/lib/axios/browser-client";
 
 export const useCameraActions = (record: CameraRecord, isLive: boolean) => {
@@ -19,16 +20,19 @@ export const useCameraActions = (record: CameraRecord, isLive: boolean) => {
       draft,
       perimeters,
       analyticParams,
+      searchIndex,
     }: {
       draft: Draft;
       perimeters?: Perimeters;
       analyticParams?: AnalyticParams;
+      searchIndex?: SearchIndexConfig | null;
     }) => {
       if (!isLive) return;
       await updateCamera(record, {
         ...toUpdatePayload(draft, record),
         analyticParams,
         perimeters,
+        searchIndex,
       });
     },
     onSuccess: () => router.refresh(),

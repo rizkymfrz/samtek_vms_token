@@ -33,6 +33,7 @@ import type {
   EdgeEntry,
   EdgeRecording,
   EdgeSample,
+  EdgeSearchIndex,
   EdgeStatusState,
   RecordingDevice,
 } from "../types";
@@ -57,6 +58,7 @@ const EMPTY: EdgeStatusState = {
   bodyworn: new Map(),
   catalog: new Map(),
   recording: new Map(),
+  searchIndex: new Map(),
   recordingStatus: new Map(),
 };
 
@@ -163,6 +165,14 @@ const setRecording = (edgeId: string, next: EdgeRecording | null) => {
   if (next === null) recording.delete(edgeId);
   else recording.set(edgeId, next);
   setState({ recording });
+};
+
+const setSearchIndex = (edgeId: string, next: EdgeSearchIndex | null) => {
+  if (next === null && !state.searchIndex.has(edgeId)) return;
+  const searchIndex = new Map(state.searchIndex);
+  if (next === null) searchIndex.delete(edgeId);
+  else searchIndex.set(edgeId, next);
+  setState({ searchIndex });
 };
 
 export const faultKey = (edgeId: string, deviceId: string) =>
@@ -378,7 +388,8 @@ const receive = (topic: string, payload: Uint8Array) => {
   }
   const announced = edgeStateSchema.safeParse(json);
   if (announced.success) {
-    const { online, analytics, recording, devices } = announced.data.data;
+    const { online, analytics, recording, devices, search_index } =
+      announced.data.data;
     setFaulty(topicEdge, online ? (devices ?? []) : []);
     setTalk(topicEdge, online ? (devices ?? []) : null);
     setBodyworn(topicEdge, devices ?? null);
@@ -389,7 +400,34 @@ const receive = (topic: string, payload: Uint8Array) => {
         retentionDays: recording.retention_days ?? null,
       });
     }
+    if (online) {
+      setSearchIndex(
+        topicEdge,
+        search_index
+          ? {
+              isAvailable: search_index.available,
+              retentionDays: search_index.retention_days ?? null,
+              devices: new Map(
+                (devices ?? []).flatMap((device) =>
+                  device.search_index
+                    ? [
+                        [
+                          device.device_id,
+                          {
+                            status: device.search_index.status,
+                            detail: device.search_index.detail ?? null,
+                          },
+                        ] as const,
+                      ]
+                    : [],
+                ),
+              ),
+            }
+          : null,
+      );
+    }
     if (!online) {
+      setSearchIndex(topicEdge, null);
       setCatalog(topicEdge, null);
       setRecording(topicEdge, null);
       setRecordingStatus(topicEdge, null);
@@ -526,5 +564,13 @@ export const getEdgeRecording = (edgeId: string) =>
   state.recording.get(edgeId) ?? NO_RECORDING;
 
 export const getServerEdgeRecording = () => NO_RECORDING;
+const NO_SEARCH_INDEX: EdgeSearchIndex | null = null;
+
+export const getEdgeSearchIndex = (edgeId: string) =>
+  state.searchIndex.get(edgeId) ?? NO_SEARCH_INDEX;
+
+export const getServerEdgeSearchIndex = () => NO_SEARCH_INDEX;
+export const getAllSearchIndex = () => state.searchIndex;
+export const getServerAllSearchIndex = () => EMPTY.searchIndex;
 export const getServerOnlineEdges = () => EMPTY.online;
 export const getServerFaultyDevices = () => EMPTY.faulty;

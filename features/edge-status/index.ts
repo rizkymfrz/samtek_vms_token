@@ -14,8 +14,10 @@ export type { RecognitionEntry } from "./lib/recognition-store";
 export {
   useAnalyticCatalog,
   useBodyworn,
+  useAllSearchIndex,
   useDeviceFaulty,
   useEdgeRecording,
+  useEdgeSearchIndex,
   useEdgeStatus,
   useRecordingDevice,
   useServerOnline,
@@ -31,6 +33,7 @@ export type {
   PtzPreset,
   RecordingRange,
   RecordingStream,
+  SearchIndexStatus,
 } from "./types";
 
 export {

@@ -53,6 +53,7 @@ export const toDescriptors = (
   analytics.map((analytic) => ({
     id: analytic.id,
     name: analytic.name,
+    supportsSearchIndex: analytic.supports_search_index === true,
     params: Object.entries(analytic.params_schema?.properties ?? {}).map(
       ([key, spec]) => toSpec(key, spec),
     ),

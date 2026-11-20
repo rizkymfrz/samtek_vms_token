@@ -28,6 +28,17 @@ export type EdgeRecording = {
   retentionDays: number | null;
 };
 
+export type SearchIndexStatus = {
+  status: "disabled" | "starting" | "active" | "unavailable";
+  detail: string | null;
+};
+
+export type EdgeSearchIndex = {
+  isAvailable: boolean;
+  retentionDays: number | null;
+  devices: ReadonlyMap<string, SearchIndexStatus>;
+};
+
 export type BodywornState = {
   isOnline: boolean | null;
   network: string | null;
@@ -75,6 +86,7 @@ export type EdgeStatusState = {
   bodyworn: ReadonlyMap<string, BodywornState>;
   catalog: ReadonlyMap<string, AnalyticDescriptor[]>;
   recording: ReadonlyMap<string, EdgeRecording>;
+  searchIndex: ReadonlyMap<string, EdgeSearchIndex>;
   recordingStatus: ReadonlyMap<string, ReadonlyMap<string, RecordingDevice>>;
 };
 
@@ -122,6 +134,7 @@ export type ParamSpec = {
 export type AnalyticDescriptor = {
   id: string;
   name: string;
+  supportsSearchIndex: boolean;
   params: ParamSpec[];
 };
 

@@ -1,6 +1,7 @@
 import type { CameraRecord } from "@/features/cameras";
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
+import type { SearchIndexConfig } from "@/lib/api/search-index";
 
 export type StreamState =
   "live" | "disabled" | "server-offline" | "stream-offline";
@@ -25,6 +26,7 @@ export type CameraDetail = {
   webrtcUrlLocal: string | null;
   analyticParams: AnalyticParams;
   perimeters: Perimeters;
+  searchIndex: SearchIndexConfig | null | undefined;
 };
 
 export type Tool = "line" | "polygon" | null;
