@@ -52,6 +52,7 @@ export const getLive = async (): Promise<LiveData> => {
         ? "live"
         : "server-offline",
     hasSubStream: device.sourceSub !== null,
+    hasThirdStream: device.sourceThird !== null,
     webrtcUrl: serverById.get(device.edgeServerId)?.webrtcUrl ?? null,
     webrtcUrlLocal: serverById.get(device.edgeServerId)?.webrtcUrlLocal ?? null,
   }));

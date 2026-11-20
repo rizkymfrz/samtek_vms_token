@@ -1,3 +1,5 @@
+import type { StreamQuality } from "../types";
+
 const PRIVATE_HOST =
   /^(localhost|\[::1\]|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)$/;
 
@@ -5,9 +7,10 @@ const isPrivateHost = (hostname: string) => PRIVATE_HOST.test(hostname);
 
 export const streamName = (
   deviceId: string,
-  quality: "sub" | "main",
+  quality: StreamQuality,
   hasSubStream: boolean,
-) => `dev${deviceId}_${quality === "sub" && hasSubStream ? "sub" : "main"}`;
+) =>
+  `dev${deviceId}_${quality === "third" || (quality === "sub" && hasSubStream) ? quality : "main"}`;
 
 export const pickRelayUrl = (
   relay: { webrtcUrl: string | null; webrtcUrlLocal: string | null },

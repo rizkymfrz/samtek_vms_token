@@ -29,6 +29,7 @@ export const buildLive = (now = Date.now()): LiveData => {
           ? "live"
           : "server-offline",
       hasSubStream: d.sourceSub !== null,
+      hasThirdStream: d.sourceThird !== null,
       webrtcUrl: s.webrtcUrl,
       webrtcUrlLocal: s.webrtcUrlLocal,
     };

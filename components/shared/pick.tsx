@@ -20,6 +20,7 @@ export const Pick = ({
   value,
   onChange,
   className,
+  size,
   container,
 }: {
   label: string;
@@ -28,6 +29,7 @@ export const Pick = ({
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  size?: ComponentProps<typeof SelectTrigger>["size"];
   container?: ComponentProps<typeof SelectContent>["container"];
 }) => {
   return (
@@ -38,6 +40,7 @@ export const Pick = ({
     >
       <SelectTrigger
         icon={icon}
+        size={size}
         className={cn(icon ? "w-36" : "w-32", className)}
         aria-label={label}
       >

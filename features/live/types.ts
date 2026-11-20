@@ -14,6 +14,7 @@ export type Tile = {
   isRecordingEnabled: boolean;
   state: StreamState;
   hasSubStream: boolean;
+  hasThirdStream: boolean;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
 };
@@ -48,4 +49,4 @@ export type LiveData = {
   failures: LiveFailure[];
 };
 
-export type StreamQuality = "sub" | "main";
+export type StreamQuality = "sub" | "main" | "third";
