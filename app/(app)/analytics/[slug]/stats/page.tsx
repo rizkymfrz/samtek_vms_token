@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -14,6 +15,14 @@ import { redirectIfUnauthorized } from "@/lib/auth/guard";
 
 export const generateStaticParams = () =>
   COUNTING_STATS_SLUGS.map((slug) => ({ slug }));
+
+export const generateMetadata = async ({
+  params,
+}: PageProps<"/analytics/[slug]/stats">): Promise<Metadata> => {
+  const { slug } = await params;
+  const group = findAnalyticGroup(slug);
+  return { title: group ? `Statistics · ${group.title}` : "Statistics" };
+};
 
 const StatsContent = async ({
   params,

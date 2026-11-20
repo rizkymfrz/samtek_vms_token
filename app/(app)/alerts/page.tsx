@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { isLiveSource } from "@/config/env";
@@ -11,6 +12,8 @@ const AlertsContent = async () => {
   const data = await redirectIfUnauthorized(getAlerts());
   return <AlertsLive initialData={data} isPolling={isLiveSource} />;
 };
+
+export const metadata: Metadata = { title: "Alerts" };
 
 const Page = () => {
   return (

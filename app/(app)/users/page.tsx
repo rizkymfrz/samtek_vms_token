@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { isLiveSource } from "@/config/env";
@@ -18,6 +19,8 @@ const UsersContent = async () => {
   }
   return <UsersView data={data} isLive={isLiveSource} />;
 };
+
+export const metadata: Metadata = { title: "Users" };
 
 const Page = () => {
   return (

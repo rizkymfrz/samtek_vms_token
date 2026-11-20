@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { getAlerts } from "@/features/alerts/services/get-alerts";
@@ -31,6 +32,8 @@ const AnalyticsContent = async () => {
   const overview = await getOverview();
   return <AnalyticsView key={overview.snapshotAt} initial={overview} />;
 };
+
+export const metadata: Metadata = { title: "Analytics" };
 
 const Page = () => {
   return (

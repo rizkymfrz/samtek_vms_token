@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -20,6 +21,13 @@ import { redirectIfUnauthorized } from "@/lib/auth/guard";
 
 export const generateStaticParams = () =>
   ANALYTIC_GROUPS.map(({ slug }) => ({ slug }));
+
+export const generateMetadata = async ({
+  params,
+}: PageProps<"/analytics/[slug]">): Promise<Metadata> => {
+  const { slug } = await params;
+  return { title: findAnalyticGroup(slug)?.title ?? "Analytics" };
+};
 
 const AnalyticBreadcrumb = async ({
   params,

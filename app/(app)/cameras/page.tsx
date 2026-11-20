@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { isLiveSource } from "@/config/env";
@@ -11,6 +12,8 @@ const CamerasContent = async () => {
   const data = await redirectIfUnauthorized(getCameras());
   return <CamerasView data={data} isLive={isLiveSource} />;
 };
+
+export const metadata: Metadata = { title: "Cameras" };
 
 const Page = () => {
   return (

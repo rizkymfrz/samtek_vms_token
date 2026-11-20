@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { isLiveSource } from "@/config/env";
@@ -11,6 +12,8 @@ const ServersContent = async () => {
   const data = await redirectIfUnauthorized(getServers());
   return <ServersView data={data} isLive={isLiveSource} />;
 };
+
+export const metadata: Metadata = { title: "Servers" };
 
 const Page = () => {
   return (

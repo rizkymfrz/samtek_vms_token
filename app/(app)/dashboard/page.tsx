@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { parseSelection } from "@/config/analytics-catalog";
@@ -19,6 +20,8 @@ const DashboardContent = async ({
     />
   );
 };
+
+export const metadata: Metadata = { title: "Dashboard" };
 
 const Page = ({ searchParams }: PageProps<"/dashboard">) => {
   return (

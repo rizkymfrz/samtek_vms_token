@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { AuthHeader } from "@/components/layout/auth-header";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { PageBackdrop } from "@/components/layout/page-backdrop";
@@ -13,6 +14,8 @@ const STAR_MASK = [
   "radial-gradient(ellipse 22% 22% at 28% 88%, black, transparent)",
   "radial-gradient(ellipse 18% 12% at 22% 6%, black, transparent)",
 ].join(", ");
+
+export const metadata: Metadata = { title: "Sign in" };
 
 const Page = () => {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { isLiveSource } from "@/config/env";
@@ -11,6 +12,8 @@ const FloorplanContent = async () => {
   const data = await redirectIfUnauthorized(getFloorplan());
   return <FloorplanView data={data} isLive={isLiveSource} />;
 };
+
+export const metadata: Metadata = { title: "Floorplan" };
 
 const Page = () => {
   return (
