@@ -56,9 +56,11 @@ const AnalyticDetailContent = async ({
     Promise.all([
       getLive(),
       recognizer
-        ? Promise.all([getRecognitions(recognizer), getAlerts()]).then(
-            ([recognitions, alerts]) => ({ recognizer, recognitions, alerts }),
-          )
+        ? getRecognitions(recognizer).then((recognitions) => ({
+            recognizer,
+            recognitions,
+            alerts: null,
+          }))
         : getAlerts().then((alerts) => ({
             recognizer: null,
             recognitions: null,
@@ -92,7 +94,6 @@ const AnalyticDetailContent = async ({
         <AnalyticRecognitionHistory
           recognizer={history.recognizer}
           initialRecognitions={history.recognitions}
-          initialAlerts={history.alerts}
           isLive={isLiveSource}
         />
       )}

@@ -1,14 +1,10 @@
 "use client";
 import { ScanFaceIcon, UserIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Thumbnail } from "@/components/shared/thumbnail";
 import { Badge } from "@/components/ui/badge";
-import {
-  AlertDetailDialog,
-  type AlertsData,
-  useAlerts,
-} from "@/features/alerts";
+import { CaptureFaceDialog, type FaceCapture } from "@/features/faces";
 import {
   formatDateTime,
   matchPercent,
@@ -17,82 +13,29 @@ import {
   useRecognitionLog,
 } from "@/features/recognitions";
 import { HistoryPanel } from "./analytic-history-panel";
-import { rangeFilters } from "../lib/range-filters";
 
 const UNKNOWN = "Unknown";
-const UNKNOWN_KIND = "face_stranger";
-
-type Entry = {
-  id: string;
-  at: number;
-  name: string;
-  group: string;
-  similarity: number | null;
-  camera: string;
-  imageUrl: string | null;
-  referenceUrl: string | null;
-  isAlert: boolean;
-};
 
 export const AnalyticRecognitionHistory = ({
   recognizer,
   initialRecognitions,
-  initialAlerts,
   isLive,
 }: {
   recognizer: string;
   initialRecognitions: RecognitionsData;
-  initialAlerts: AlertsData;
   isLive: boolean;
 }) => {
   const [range, setRange] = useState<DateRange>();
   const [openId, setOpenId] = useState<string | null>(null);
-  const filters = useMemo(() => rangeFilters(range), [range]);
+  const [capture, setCapture] = useState<FaceCapture | null>(null);
   const { data: recognitions } = useRecognitionLog(
     recognizer,
     initialRecognitions,
     isLive,
     range,
   );
-  const { data: alertsData } = useAlerts(initialAlerts, isLive, filters);
-  const alerts = alertsData ?? initialAlerts;
-  const entries = useMemo(
-    (): Entry[] =>
-      [
-        ...(recognitions ?? initialRecognitions).rows.map((row): Entry => ({
-          id: row.id,
-          at: row.at,
-          name: row.name,
-          group: row.group,
-          similarity: row.similarity,
-          camera: row.camera,
-          imageUrl: row.cropUrl,
-          referenceUrl: row.referenceUrl,
-          isAlert: false,
-        })),
-        ...alerts.rows
-          .filter(
-            (row) => row.analyticId === recognizer && row.kind === UNKNOWN_KIND,
-          )
-          .map((row): Entry => ({
-            id: row.id,
-            at: row.at,
-            name: UNKNOWN,
-            group: UNKNOWN,
-            similarity: null,
-            camera: row.camera,
-            imageUrl: row.imageUrl,
-            referenceUrl: null,
-            isAlert: true,
-          })),
-      ].sort((a, b) => b.at - a.at || b.id.localeCompare(a.id)),
-    [recognitions, initialRecognitions, alerts.rows, recognizer],
-  );
-  const openAlert = alerts.rows.find((row) => row.id === openId) ?? null;
-  const openRecognition =
-    (recognitions ?? initialRecognitions).rows.find(
-      (row) => row.id === openId,
-    ) ?? null;
+  const entries = (recognitions ?? initialRecognitions).rows;
+  const openRecognition = entries.find((row) => row.id === openId) ?? null;
   return (
     <>
       <HistoryPanel
@@ -107,7 +50,7 @@ export const AnalyticRecognitionHistory = ({
         renderItem={(entry) => (
           <div className="flex items-center gap-2">
             <Thumbnail
-              src={entry.imageUrl}
+              src={entry.cropUrl}
               label={`Detected face of ${entry.name}`}
               icon={ScanFaceIcon}
               className="h-20 w-16"
@@ -137,22 +80,29 @@ export const AnalyticRecognitionHistory = ({
                 {formatDateTime(new Date(entry.at))}
               </span>
             </div>
-            {!entry.isAlert && (
-              <Thumbnail
-                src={entry.referenceUrl}
-                label={`Registered photo of ${entry.name}`}
-                icon={UserIcon}
-                className="h-20 w-16"
-                imageClassName="object-top"
-              />
-            )}
+            <Thumbnail
+              src={entry.referenceUrl}
+              label={`Registered photo of ${entry.name}`}
+              icon={UserIcon}
+              className="h-20 w-16"
+              imageClassName="object-top"
+            />
           </div>
         )}
       />
-      <AlertDetailDialog alert={openAlert} onClose={() => setOpenId(null)} />
       <RecognitionDialog
         recognition={openRecognition}
         onClose={() => setOpenId(null)}
+        onAddFace={(row) => {
+          if (!row.cropUrl) return;
+          setOpenId(null);
+          setCapture({ edgeId: row.edgeId, url: row.cropUrl });
+        }}
+      />
+      <CaptureFaceDialog
+        capture={capture}
+        isLive={isLive}
+        onClose={() => setCapture(null)}
       />
     </>
   );

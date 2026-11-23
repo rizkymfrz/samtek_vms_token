@@ -10,6 +10,7 @@ import {
   ScanSearchIcon,
   TagIcon,
   UserIcon,
+  UserPlusIcon,
 } from "lucide-react";
 import { CopyButton } from "@/components/shared/copy-button";
 import { Thumbnail } from "@/components/shared/thumbnail";
@@ -60,10 +61,14 @@ const Label = ({ children }: { children: string }) => {
 export const RecognitionDialog = ({
   recognition,
   onClose,
+  onAddFace,
 }: {
   recognition: RecognitionRow | null;
   onClose: () => void;
+  onAddFace?: (recognition: RecognitionRow) => void;
 }) => {
+  const canAddFace =
+    !!onAddFace && recognition?.personId === null && !!recognition.cropUrl;
   return (
     <Dialog
       open={recognition !== null}
@@ -187,7 +192,14 @@ export const RecognitionDialog = ({
             </DialogBody>
             <Separator />
             <DialogFooter>
+              {canAddFace && (
+                <Button onClick={() => onAddFace(recognition)}>
+                  <UserPlusIcon />
+                  Add face
+                </Button>
+              )}
               <Button
+                variant={canAddFace ? "secondary" : "default"}
                 disabled={!recognition.cropUrl}
                 nativeButton={false}
                 render={

@@ -1,0 +1,63 @@
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { useFailureToast } from "@/hooks/use-failure-toast";
+import { messageOf } from "@/lib/axios/browser-client";
+import { FaceDialog } from "./face-dialog";
+import { useFaceActions } from "../hooks/use-face-actions";
+import { FACES_QUERY_KEY } from "../hooks/use-faces";
+import { fetchCapture, fetchFaces } from "../services/face-api";
+
+export type FaceCapture = { edgeId: string; url: string };
+
+export const CaptureFaceDialog = ({
+  capture,
+  isLive,
+  onClose,
+}: {
+  capture: FaceCapture | null;
+  isLive: boolean;
+  onClose: () => void;
+}) => {
+  const { data: faces } = useQuery({
+    queryKey: FACES_QUERY_KEY,
+    queryFn: fetchFaces,
+    enabled: capture !== null,
+  });
+  const { data: photo, error } = useQuery({
+    queryKey: ["face-capture", capture?.url],
+    queryFn: () => fetchCapture(capture?.url ?? ""),
+    enabled: capture !== null,
+    staleTime: Infinity,
+  });
+  useFailureToast("Could not load the capture", [
+    error ? messageOf(error, "The captured face is unavailable.") : null,
+  ]);
+  const { save, saveError } = useFaceActions(isLive);
+  const edges = (faces?.edges ?? []).filter(
+    (edge) => edge.id === capture?.edgeId,
+  );
+  const groups = [...new Set((faces?.faces ?? []).map((face) => face.group))];
+  const close = () => {
+    save.reset();
+    onClose();
+  };
+  return (
+    <FaceDialog
+      target={capture && photo && edges.length > 0 ? "new" : null}
+      edges={edges}
+      groups={groups}
+      photo={photo ?? null}
+      isPending={save.isPending}
+      error={saveError}
+      onClose={close}
+      onSave={async (draft) => {
+        try {
+          await save.mutateAsync(draft);
+          close();
+        } catch {
+          return;
+        }
+      }}
+    />
+  );
+};

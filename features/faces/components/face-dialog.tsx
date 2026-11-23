@@ -34,6 +34,7 @@ export type DialogTarget = "new" | null;
 const Form = ({
   edges,
   groups,
+  photo,
   isPending,
   error,
   onSave,
@@ -41,13 +42,14 @@ const Form = ({
 }: {
   edges: EdgeOption[];
   groups: string[];
+  photo: File | null;
   isPending: boolean;
   error: string | null;
   onSave: (draft: Draft) => void | Promise<void>;
   onClose: () => void;
 }) => {
   const formId = useId();
-  const [source, setSource] = useState<File | null>(null);
+  const [source, setSource] = useState<File | null>(photo);
   const {
     register,
     control,
@@ -55,7 +57,7 @@ const Form = ({
     formState: { errors },
   } = useForm<Draft>({
     resolver: zodResolver(faceDraftSchema),
-    defaultValues: emptyDraft(edges[0]?.id ?? ""),
+    defaultValues: { ...emptyDraft(edges[0]?.id ?? ""), photo },
   });
   const edgeItems = edges.map((edge) => ({ value: edge.id, label: edge.name }));
   return (
@@ -185,6 +187,7 @@ export const FaceDialog = ({
   target,
   edges,
   groups,
+  photo = null,
   isPending,
   error,
   onSave,
@@ -193,6 +196,7 @@ export const FaceDialog = ({
   target: DialogTarget;
   edges: EdgeOption[];
   groups: string[];
+  photo?: File | null;
   isPending: boolean;
   error: string | null;
   onSave: (draft: Draft) => void | Promise<void>;
@@ -205,6 +209,7 @@ export const FaceDialog = ({
           <Form
             edges={edges}
             groups={groups}
+            photo={photo}
             isPending={isPending}
             error={error}
             onSave={onSave}

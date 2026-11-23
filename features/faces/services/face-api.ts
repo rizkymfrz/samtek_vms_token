@@ -11,3 +11,8 @@ export const enrollFace = async (form: FormData) => {
 export const deleteFace = async (edgeId: string, faceId: string) => {
   await http.delete(`/api/faces/${edgeId}/${faceId}`);
 };
+
+export const fetchCapture = async (url: string) => {
+  const { data } = await http.get<Blob>(url, { responseType: "blob" });
+  return new File([data], "capture.jpg", { type: "image/jpeg" });
+};
