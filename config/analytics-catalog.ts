@@ -107,6 +107,12 @@ export const ANALYTICS = [
     camera: "Main Lobby",
     edge: "Main Building",
   },
+  {
+    id: "people_pose",
+    label: "People Pose",
+    camera: "Main Hallway",
+    edge: "Main Building",
+  },
 ] as const;
 
 export const ANALYTIC_IDS: string[] = ANALYTICS.map((a) => a.id);

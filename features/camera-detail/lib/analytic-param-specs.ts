@@ -90,6 +90,7 @@ export const ANALYTIC_PARAM_SPECS: Record<string, ParamSpec[]> = {
   license_plate_recognition: [],
   vehicle_license_plate_recognition: [],
   people_reidentification: [sensitivity(0)],
+  people_pose: [sensitivity(50)],
   motion: [
     sensitivity(50),
     time("motion_start", "00:00:00"),

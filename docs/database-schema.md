@@ -645,13 +645,13 @@ Defined in `duckdb_database.cpp:78-92`. They are plain indexes, not constraints.
 
 ## 3. Analytics the edge can run
 
-18 analytic ids; the list with labels is `config/analytics-catalog.ts`. Each camera runs exactly one
+19 analytic ids; the list with labels is `config/analytics-catalog.ts`. Each camera runs exactly one
 (`devices.json` -> `analytic.id`, mirrored in `Device.analyticId`).
 
 `people_counting_dwelling`, `vehicle_counting_dwelling`, `ppe_violation`, `ppe_violation_advance`, `fire_smoke`,
 `people_crowd_monitoring`, `people_worker_dwelling`, `cat_detection`, `phone_calling`, `people_sleep_on_duty`, `motion`,
 `dust_spreading`, `face_recognition`, `face_visitor_attendance`, `face_attribute`, `license_plate_recognition`,
-`vehicle_license_plate_recognition`, `people_reidentification`.
+`vehicle_license_plate_recognition`, `people_reidentification`, `people_pose` (bbox only: no alarm, no recognition event).
 
 - `analyticParams` (JSON): flat object of bool, number, string or list of strings. Unknown keys are rejected by the edge.
   Every parameter has a default, so none is required. `max_stay_seconds` (integer 0..1000000000, default 0 = off) is one stay
