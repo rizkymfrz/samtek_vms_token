@@ -16,5 +16,6 @@ export const toDetectionObject = (
   peopleLimit: o.people_limit ?? null,
   staySeconds: o.stay_seconds ?? null,
   maxStaySeconds: o.max_stay_seconds ?? null,
+  keypoints: o.keypoints ?? null,
   ...o.bbox,
 });

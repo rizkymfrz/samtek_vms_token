@@ -5,6 +5,7 @@ import { ToolbarToggle } from "@/components/shared/toolbar-toggle";
 import type { Perimeters } from "@/lib/api/perimeters";
 import { DetectionBox } from "./detection-box";
 import { hasPerimeters, PerimeterOverlay } from "./perimeter-overlay";
+import { PoseSkeleton } from "./pose-skeleton";
 import { useDetections } from "../hooks/use-detections";
 import { visibleObjects } from "../lib/detection-status";
 
@@ -22,7 +23,14 @@ const DetectionOverlay = ({
     <div className="pointer-events-none absolute inset-0">
       {visibleObjects(objects, analyticId).map((object, index) => (
         <DetectionBox
-          key={object.trackId ?? `i${index}`}
+          key={object.trackId || `i${index}`}
+          object={object}
+          analyticId={analyticId}
+        />
+      ))}
+      {visibleObjects(objects, analyticId).map((object, index) => (
+        <PoseSkeleton
+          key={object.trackId || `i${index}`}
           object={object}
           analyticId={analyticId}
         />

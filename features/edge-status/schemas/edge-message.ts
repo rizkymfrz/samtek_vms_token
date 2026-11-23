@@ -190,6 +190,7 @@ const detectionObjectSchema = z.object({
   stay_seconds: z.number().nonnegative().optional(),
   max_stay_seconds: z.number().positive().optional(),
   over_limit: z.boolean().optional(),
+  keypoints: z.array(z.tuple([z.number(), z.number(), z.number()])).optional(),
 });
 
 export type DetectionObjectMessage = z.infer<typeof detectionObjectSchema>;

@@ -104,6 +104,7 @@ export type DetectionObject = {
   peopleLimit: number | null;
   staySeconds: number | null;
   maxStaySeconds: number | null;
+  keypoints: [number, number, number][] | null;
   x1: number;
   y1: number;
   x2: number;
