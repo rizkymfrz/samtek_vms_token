@@ -3,10 +3,16 @@ import { HandIcon, MicIcon, PhoneOffIcon } from "lucide-react";
 import { useEffect } from "react";
 import { ToolbarToggle } from "@/components/shared/toolbar-toggle";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useTalkSupported } from "@/features/edge-status";
 import { useTalk } from "../hooks/use-talk";
-import { isLive, TALK_IDLE, type TalkSession } from "../lib/talk-session";
+import {
+  endText,
+  isLive,
+  TALK_IDLE,
+  type TalkSession,
+} from "../lib/talk-session";
 import { getTalk, setTalkHeld, startTalk, stopTalk } from "../lib/talk-store";
 
 export const TalkControl = ({
@@ -23,6 +29,21 @@ export const TalkControl = ({
   const session: TalkSession = isMine ? talk.session : TALK_IDLE;
   const isBusyElsewhere = isLive(talk.session) && !isMine;
   const isActive = session.phase === "active";
+  const failure =
+    isMine && session.phase === "ended" && session.reason !== "stopped"
+      ? endText(session.reason, session.detail)
+      : isMine
+        ? talk.error
+        : null;
+  useEffect(() => {
+    if (!failure) return;
+    toast.add({
+      title: "Talk",
+      description: failure,
+      type: "error",
+      timeout: 8000,
+    });
+  }, [failure]);
   useEffect(
     () => () => {
       const current = getTalk();
@@ -63,7 +84,13 @@ export const TalkControl = ({
           variant="secondary"
           size="icon-sm"
           aria-label="Talk"
-          title="Talk"
+          title={
+            !user
+              ? "Talk needs a signed-in user"
+              : isBusyElsewhere
+                ? "Talk is in use on another camera"
+                : "Talk"
+          }
           disabled={!isSupported || !user || isBusyElsewhere}
           onClick={() => {
             if (user) void startTalk(edgeId, deviceId, user.id);
