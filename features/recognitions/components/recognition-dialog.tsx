@@ -212,20 +212,22 @@ export const RecognitionDialog = ({
                 <DownloadIcon />
                 Download capture
               </Button>
-              <Button
-                variant="secondary"
-                disabled={!recognition.referenceUrl}
-                nativeButton={false}
-                render={
-                  <a
-                    href={recognition.referenceUrl ?? undefined}
-                    download={`${recognition.personId ?? "reference"}.jpg`}
-                  />
-                }
-              >
-                <DownloadIcon />
-                Download reference
-              </Button>
+              {recognition.personId !== null && (
+                <Button
+                  variant="secondary"
+                  disabled={!recognition.referenceUrl}
+                  nativeButton={false}
+                  render={
+                    <a
+                      href={recognition.referenceUrl ?? undefined}
+                      download={`${recognition.personId}.jpg`}
+                    />
+                  }
+                >
+                  <DownloadIcon />
+                  Download reference
+                </Button>
+              )}
             </DialogFooter>
           </>
         )}

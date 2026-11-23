@@ -4,7 +4,7 @@ import { messageOf } from "@/lib/axios/browser-client";
 import { FACES_QUERY_KEY } from "./use-faces";
 import { type Draft, enrollLocally, toFormData } from "../lib/edit-face";
 import { deleteFace, enrollFace } from "../services/face-api";
-import type { FaceRecord, FacesData, Person } from "../types";
+import type { EnrolledFace, FaceRecord, FacesData, Person } from "../types";
 
 export const useFaceActions = (isLive: boolean) => {
   const queryClient = useQueryClient();
@@ -18,11 +18,8 @@ export const useFaceActions = (isLive: boolean) => {
       ? queryClient.invalidateQueries({ queryKey: FACES_QUERY_KEY })
       : undefined;
   const save = useMutation({
-    mutationFn: async (draft: Draft) => {
-      if (isLive) {
-        await enrollFace(toFormData(draft));
-        return;
-      }
+    mutationFn: async (draft: Draft): Promise<EnrolledFace | null> => {
+      if (isLive) return enrollFace(toFormData(draft));
       edit((data) => ({
         ...data,
         faces: enrollLocally(
@@ -31,6 +28,7 @@ export const useFaceActions = (isLive: boolean) => {
           data.edges.find((edge) => edge.id === draft.edgeId)?.name ?? "",
         ),
       }));
+      return null;
     },
     onSuccess: refresh,
   });

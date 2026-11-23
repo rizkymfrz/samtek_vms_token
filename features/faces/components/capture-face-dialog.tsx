@@ -5,17 +5,22 @@ import { messageOf } from "@/lib/axios/browser-client";
 import { FaceDialog } from "./face-dialog";
 import { useFaceActions } from "../hooks/use-face-actions";
 import { FACES_QUERY_KEY } from "../hooks/use-faces";
+import { DEFAULT_GROUP } from "../lib/edit-face";
 import { fetchCapture, fetchFaces } from "../services/face-api";
+import type { EnrolledFace } from "../types";
 
 export type FaceCapture = { edgeId: string; url: string };
+export type EnrolledPerson = EnrolledFace & { name: string; group: string };
 
 export const CaptureFaceDialog = ({
   capture,
   isLive,
+  onSaved,
   onClose,
 }: {
   capture: FaceCapture | null;
   isLive: boolean;
+  onSaved: (person: EnrolledPerson) => void;
   onClose: () => void;
 }) => {
   const { data: faces } = useQuery({
@@ -52,7 +57,14 @@ export const CaptureFaceDialog = ({
       onClose={close}
       onSave={async (draft) => {
         try {
-          await save.mutateAsync(draft);
+          const created = await save.mutateAsync(draft);
+          if (created) {
+            onSaved({
+              ...created,
+              name: draft.name.trim(),
+              group: draft.group.trim() || DEFAULT_GROUP,
+            });
+          }
           close();
         } catch {
           return;

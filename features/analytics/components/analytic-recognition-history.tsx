@@ -4,7 +4,11 @@ import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Thumbnail } from "@/components/shared/thumbnail";
 import { Badge } from "@/components/ui/badge";
-import { CaptureFaceDialog, type FaceCapture } from "@/features/faces";
+import {
+  CaptureFaceDialog,
+  type EnrolledPerson,
+  type FaceCapture,
+} from "@/features/faces";
 import {
   formatDateTime,
   matchPercent,
@@ -27,14 +31,30 @@ export const AnalyticRecognitionHistory = ({
 }) => {
   const [range, setRange] = useState<DateRange>();
   const [openId, setOpenId] = useState<string | null>(null);
-  const [capture, setCapture] = useState<FaceCapture | null>(null);
+  const [capture, setCapture] = useState<
+    (FaceCapture & { rowId: string }) | null
+  >(null);
+  const [linked, setLinked] = useState<
+    Record<string, EnrolledPerson & { edgeId: string }>
+  >({});
   const { data: recognitions } = useRecognitionLog(
     recognizer,
     initialRecognitions,
     isLive,
     range,
   );
-  const entries = (recognitions ?? initialRecognitions).rows;
+  const entries = (recognitions ?? initialRecognitions).rows.map((row) => {
+    const person = linked[row.id];
+    return person
+      ? {
+          ...row,
+          personId: person.personId,
+          name: person.name,
+          group: person.group,
+          referenceUrl: `/api/edge/${person.edgeId}/faces/${person.faceId}/photo`,
+        }
+      : row;
+  });
   const openRecognition = entries.find((row) => row.id === openId) ?? null;
   return (
     <>
@@ -96,12 +116,19 @@ export const AnalyticRecognitionHistory = ({
         onAddFace={(row) => {
           if (!row.cropUrl) return;
           setOpenId(null);
-          setCapture({ edgeId: row.edgeId, url: row.cropUrl });
+          setCapture({ rowId: row.id, edgeId: row.edgeId, url: row.cropUrl });
         }}
       />
       <CaptureFaceDialog
         capture={capture}
         isLive={isLive}
+        onSaved={(person) => {
+          if (!capture) return;
+          setLinked((previous) => ({
+            ...previous,
+            [capture.rowId]: { ...person, edgeId: capture.edgeId },
+          }));
+        }}
         onClose={() => setCapture(null)}
       />
     </>

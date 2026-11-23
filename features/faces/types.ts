@@ -8,6 +8,7 @@ export type FaceRecord = {
   edgeName: string;
 };
 
+export type EnrolledFace = { faceId: string; personId: string };
 export type EdgeOption = { id: string; name: string };
 type FaceFailure = { edgeName: string; message: string };
 

@@ -1,11 +1,14 @@
 import { http } from "@/lib/axios/browser-client";
-import type { FacesData } from "../types";
+import type { EnrolledFace, FacesData } from "../types";
 
 export const fetchFaces = async () =>
   (await http.get<FacesData>("/api/faces")).data;
 
-export const enrollFace = async (form: FormData) => {
-  await http.post("/api/faces", form);
+export const enrollFace = async (form: FormData): Promise<EnrolledFace> => {
+  const { data } = await http.post<{
+    face: { face_id: string; person_id: string };
+  }>("/api/faces", form);
+  return { faceId: data.face.face_id, personId: data.face.person_id };
 };
 
 export const deleteFace = async (edgeId: string, faceId: string) => {
