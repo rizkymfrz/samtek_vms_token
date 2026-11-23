@@ -134,6 +134,19 @@ Rules:
   `app/api/faces/` dan `app/api/recognitions/` meneruskan ke API HTTP
   Edge (`/v1/faces`, `/v1/recognitions`), yang tidak punya autentikasi dan hanya menerima `Host`/`Origin` lokal, sehingga
   browser tidak boleh memanggilnya langsung.
+  `app/api/cameras/[id]/web/` adalah reverse proxy ke halaman web kamera
+  (`http://<host RTSP>`); logic-nya berada di `features/camera-web/`, handler hanya
+  mendelegasikan. Alamat dan kredensial diambil dari `Device.sourceMain` di server; header `Authorization`
+  dari browser diteruskan apa adanya karena web kamera melakukan handshake Digest sendiri.
+  Pengecualian yang disengaja: pada halaman yang punya field password, proxy
+  menyuntikkan skrip yang mengisi dan mengirim form login kamera, sehingga user dan password
+  kamera ikut ke browser pada halaman itu saja (maksimal satu percobaan per 30 detik). Cookie VMS
+  tidak diteruskan ke kamera, dan `top` di skrip kamera diarahkan ke frame root kamera agar
+  tidak menavigasi halaman VMS. `proxy.ts` mengarahkan request liar dari halaman proxy
+  (berdasarkan Referer) kembali ke proxy lewat redirect 307. HTML dan JS kamera ditulis ulang
+  (`top`, `location.host/port`, path absolut) dan dikirim `no-store` karena kamera men-cache file
+  statisnya 10 tahun. Skrip `webPlugin` diperlakukan khusus: `window.top` dibiarkan agar plugin
+  video lokal menemukan jendela browser, dan posisi jendelanya dihitung dari jendela VMS.
   `app/api/stats/counting-dwelling/` meneruskan ke `/v1/stats/counting-dwelling`
   pada satu Edge (`edge` dan `device` dari kamera yang dipilih) dengan alasan
   yang sama; parameter `utcOffset` memakai zona waktu browser agar batas

@@ -10,6 +10,7 @@ import { PtzPanel, PtzToggle } from "@/features/ptz";
 import { TalkControl } from "@/features/talk";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
 import { cn } from "@/lib/utils";
+import { CameraWebToggle } from "./camera-web-toggle";
 import { FullscreenToggle } from "./fullscreen-toggle";
 import { SpeakerToggle } from "./speaker-toggle";
 import { StreamQualityPick } from "./stream-quality-pick";
@@ -104,6 +105,7 @@ export const CameraTile = ({
                 name={tile.name}
               />
             )}
+            <CameraWebToggle id={tile.id} />
             <StreamQualityPick
               streams={tile}
               value={picked}

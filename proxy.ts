@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { isLiveSource } from "@/config/env";
+import { webFallbackPath } from "@/features/camera-web/lib/web-fallback";
 import {
   ACCESS_TOKEN_COOKIE,
   clearAuthCookies,
@@ -28,6 +29,12 @@ export const proxy = async (request: NextRequest) => {
   if (!isLiveSource) return NextResponse.next();
   const { pathname, search } = request.nextUrl;
   if (PUBLIC_API_PATHS.has(pathname)) return NextResponse.next();
+  const camera = request.cookies.has(ACCESS_TOKEN_COOKIE)
+    ? webFallbackPath(pathname, request.headers.get("referer"))
+    : null;
+  if (camera) {
+    return NextResponse.redirect(new URL(camera + search, request.url), 307);
+  }
   if (pathname === TICKET_LINK_PAGE || pathname.startsWith(TICKET_LINK_API)) {
     return NextResponse.next();
   }
