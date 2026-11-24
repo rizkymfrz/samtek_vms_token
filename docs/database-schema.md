@@ -465,8 +465,9 @@ model TicketLinkDelivery {
 - **Online state:** `EdgeServer.isActive` is the switch, `EdgeServer.lastSeenAt` is the heartbeat. A camera is only
   watchable when `Device.isEnabled`, its server `isActive`, and `lastSeenAt` is recent.
 - **Soft delete:** most tables have `deletedAt`. Hide rows where it is not null.
-- **Layouts are per user.** `Layout.rows × Layout.columns` is the grid; `LayoutDevice.position` is the slot (unique per layout,
-  and a camera can appear once per layout). `isDefault` marks the layout opened first.
+- **Layouts are per user.** `Layout.rows × Layout.columns` is only the storage capacity; `LayoutDevice.position` is the slot (unique per layout,
+  and a camera can appear once per layout). The frontend keeps cameras compacted in order and grows `rows` at a fixed 6 columns.
+  The grid the user watches (1×1, 2×2 or 3×3) and the page split are local preferences in IndexedDB (`live:grid`), not in the API. `isDefault` marks the layout opened first.
   **Unconfirmed:** whether `position` starts at 0 or 1 is not in the schema. The UI assumes 0-based, row by row
   (`app/(app)/live/_data/types.ts`); confirm with the backend before wiring real data.
 - **Geographic position** is stored directly on `EdgeServerGroup`, `EdgeServer` and `Device` as `latitude` / `longitude`

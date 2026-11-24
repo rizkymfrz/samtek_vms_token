@@ -1,5 +1,7 @@
 "use client";
 import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
   Grid3x3Icon,
   LayoutGridIcon,
   LoaderIcon,
@@ -23,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import { PtzPanel, setPtzCamera } from "@/features/ptz";
 import { useFailureToast } from "@/hooks/use-failure-toast";
+import { usePersistedStore } from "@/hooks/use-persisted-store";
 import { cn } from "@/lib/utils";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
@@ -30,7 +33,15 @@ import { useFullscreen } from "../hooks/use-fullscreen";
 import { useLayout } from "../hooks/use-layout";
 import { useLayoutActions } from "../hooks/use-layout-actions";
 import { useLive } from "../hooks/use-live";
-import { addCameras, GRID_PRESETS, removeCameras } from "../lib/edit-layout";
+import {
+  addCameras,
+  cameraIdsOf,
+  GRID_PRESETS,
+  pageCount,
+  pageOf,
+  removeCameras,
+} from "../lib/edit-layout";
+import { gridPreferenceStore } from "../lib/grid-preference-store";
 import type { LiveData, LiveLayout, StreamQuality, Tile } from "../types";
 
 const QUALITY_ITEMS = [
@@ -88,6 +99,8 @@ export const LiveView = ({
   const actions = useLayoutActions(isLive);
   useFailureToast("Could not update the layout", [actions.error]);
   const [pickedId, setPickedId] = useState<string | null>(null);
+  const [pageState, setPageState] = useState({ layoutId: "", index: 0 });
+  const { value: grid } = usePersistedStore(gridPreferenceStore);
   const [quality, setQuality] = useState<StreamQuality>("sub");
   const stage = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(stage);
@@ -128,6 +141,19 @@ export const LiveView = ({
     ...summary,
     slots: Array.from({ length: summary.rows * summary.columns }, () => null),
   };
+  const pageSize = grid.rows * grid.columns;
+  const cameraIds = cameraIdsOf(layout);
+  const pages = pageCount(cameraIds.length, pageSize);
+  const page = Math.min(
+    pageState.layoutId === layout.id ? pageState.index : 0,
+    pages - 1,
+  );
+  const goToPage = (index: number) =>
+    setPageState({ layoutId: layout.id, index });
+  const visible: (string | null)[] = Array.from(
+    { length: pageSize },
+    (_, position) => pageOf(cameraIds, page, pageSize)[position] ?? null,
+  );
   return (
     <PageShell>
       <SidePanel>
@@ -190,14 +216,38 @@ export const LiveView = ({
               <Pick
                 label="Grid"
                 icon={Grid3x3Icon}
-                items={gridItems(layout.rows, layout.columns)}
-                value={gridValue(layout.rows, layout.columns)}
+                items={gridItems(grid.rows, grid.columns)}
+                value={gridValue(grid.rows, grid.columns)}
                 onChange={(size) => {
                   const [rows, columns] = size.split("x").map(Number);
-                  if (detail)
-                    actions.resize.mutate({ layout: detail, rows, columns });
+                  gridPreferenceStore.update(() => ({ rows, columns }));
                 }}
               />
+              {pages > 1 && (
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    aria-label="Previous page"
+                    disabled={page === 0}
+                    onClick={() => goToPage(page - 1)}
+                  >
+                    <ChevronLeftIcon />
+                  </Button>
+                  <span className="min-w-16 text-center text-xs text-muted-foreground tabular-nums">
+                    Page {page + 1} / {pages}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    aria-label="Next page"
+                    disabled={page === pages - 1}
+                    onClick={() => goToPage(page + 1)}
+                  >
+                    <ChevronRightIcon />
+                  </Button>
+                </div>
+              )}
               <Pick
                 label="Stream"
                 icon={SignalIcon}
@@ -222,12 +272,12 @@ export const LiveView = ({
               className="grid grid-cols-1 gap-0 border-t border-l sm:grid-cols-2 md:grid-cols-(--columns) lg:min-h-0 lg:flex-1 lg:grid-rows-(--rows)"
               style={
                 {
-                  "--columns": `repeat(${layout.columns}, minmax(0, 1fr))`,
-                  "--rows": `repeat(${layout.rows}, minmax(0, 1fr))`,
+                  "--columns": `repeat(${grid.columns}, minmax(0, 1fr))`,
+                  "--rows": `repeat(${grid.rows}, minmax(0, 1fr))`,
                 } as CSSProperties
               }
             >
-              {layout.slots.map((id, position) => {
+              {visible.map((id, position) => {
                 const tile = id ? tileById.get(id) : null;
                 return tile ? (
                   <CameraTile

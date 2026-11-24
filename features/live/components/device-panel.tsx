@@ -12,7 +12,6 @@ import {
   type DeviceTreeNode,
   matchesQuery,
 } from "@/components/shared/device-tree";
-import { freeSlots } from "../lib/edit-layout";
 import type { LiveLayout, LiveLayoutSummary, ServerNode, Tile } from "../types";
 
 export const DevicePanel = ({
@@ -40,10 +39,9 @@ export const DevicePanel = ({
 }) => {
   const [query, setQuery] = useState("");
   const inLayout = new Set(layout.slots);
-  const full = freeSlots(layout) === 0;
   const layoutItems = layouts.map((l) => ({
     value: l.id,
-    label: `${l.name} · ${l.rows}×${l.columns}`,
+    label: l.name,
   }));
   const tree: DeviceTreeNode[] = servers.flatMap((server) => {
     const cameras = tiles.filter(
@@ -64,7 +62,7 @@ export const DevicePanel = ({
         <>
           <PanelIconAction
             label={`Add all ${server.name} cameras`}
-            isDisabled={readOnly || full || placed === cameras.length}
+            isDisabled={readOnly || placed === cameras.length}
             onClick={() => onAdd(ids)}
           >
             <ListPlusIcon />
@@ -92,7 +90,7 @@ export const DevicePanel = ({
               isPlaced={added}
               addLabel={`Add ${tile.name} to layout`}
               removeLabel={`Remove ${tile.name} from layout`}
-              isDisabled={readOnly || (!added && full)}
+              isDisabled={readOnly}
               onClick={() => (added ? onRemove([tile.id]) : onAdd([tile.id]))}
             />
           ),
@@ -123,11 +121,6 @@ export const DevicePanel = ({
           onQuery={setQuery}
           noun="cameras"
         />
-        {full && (
-          <p className="text-xs text-muted-foreground">
-            The layout is full. Remove a camera or pick a bigger grid.
-          </p>
-        )}
       </PanelSection>
     </>
   );

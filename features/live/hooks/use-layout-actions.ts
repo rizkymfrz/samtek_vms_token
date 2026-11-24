@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { messageOf } from "@/lib/axios/browser-client";
 import { layoutQueryKey } from "./use-layout";
 import { LIVE_QUERY_KEY } from "./use-live";
-import { createLayout, resizeLayout, summaryOf } from "../lib/edit-layout";
+import { createLayout, summaryOf } from "../lib/edit-layout";
 import {
   createLayoutRequest,
   deleteLayoutRequest,
@@ -61,39 +61,22 @@ export const useLayoutActions = (isLive: boolean) => {
     },
   });
   const changeSlots = useMutation({
-    mutationFn: async ({ next }: { layout: LiveLayout; next: LiveLayout }) => {
-      if (isLive) await replaceSlotsRequest(next.id, next.slots);
+    mutationFn: async ({
+      layout,
+      next,
+    }: {
+      layout: LiveLayout;
+      next: LiveLayout;
+    }) => {
+      if (!isLive) return;
+      const size = { rows: next.rows, columns: next.columns };
+      const grows = next.slots.length >= layout.slots.length;
+      if (grows) await resizeLayoutRequest(next.id, size);
+      await replaceSlotsRequest(next.id, next.slots);
+      if (!grows) await resizeLayoutRequest(next.id, size);
     },
     onMutate: async ({ layout, next }) => {
       await queryClient.cancelQueries({ queryKey: layoutQueryKey(layout.id) });
-      writeDetail(next);
-      return { previous: layout };
-    },
-    onError: (_error, _variables, context) => {
-      if (context) writeDetail(context.previous);
-    },
-    onSettled: (_result, _error, { layout }) => refreshDetail(layout.id),
-  });
-  const resize = useMutation({
-    mutationFn: async ({
-      layout,
-      rows,
-      columns,
-    }: {
-      layout: LiveLayout;
-      rows: number;
-      columns: number;
-    }) => {
-      if (!isLive) return;
-      const next = resizeLayout(layout, rows, columns);
-      const grows = rows * columns >= layout.rows * layout.columns;
-      if (grows) await resizeLayoutRequest(layout.id, { rows, columns });
-      await replaceSlotsRequest(layout.id, next.slots);
-      if (!grows) await resizeLayoutRequest(layout.id, { rows, columns });
-    },
-    onMutate: async ({ layout, rows, columns }) => {
-      await queryClient.cancelQueries({ queryKey: layoutQueryKey(layout.id) });
-      const next = resizeLayout(layout, rows, columns);
       writeDetail(next);
       writeSummary(next);
       return { previous: layout };
@@ -105,19 +88,16 @@ export const useLayoutActions = (isLive: boolean) => {
     },
     onSettled: (_result, _error, { layout }) => refreshDetail(layout.id),
   });
-  const failure =
-    create.error ?? remove.error ?? changeSlots.error ?? resize.error;
+  const failure = create.error ?? remove.error ?? changeSlots.error;
   return {
     create,
     remove,
     changeSlots,
-    resize,
     error: failure ? messageOf(failure) : null,
     clearError: () => {
       create.reset();
       remove.reset();
       changeSlots.reset();
-      resize.reset();
     },
   };
 };
