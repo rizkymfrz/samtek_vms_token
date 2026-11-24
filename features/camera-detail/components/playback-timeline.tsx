@@ -35,8 +35,16 @@ const labelShift = (fraction: number) =>
       ? "-translate-x-full"
       : "-translate-x-1/2";
 
+export type TimelineMarker = {
+  id: string;
+  at: number;
+  label: string;
+  className: string;
+};
+
 export const PlaybackTimeline = ({
   ranges,
+  markers = [],
   dayStart,
   dayEnd,
   position,
@@ -46,6 +54,7 @@ export const PlaybackTimeline = ({
   dayStart: number;
   dayEnd: number;
   position: number | null;
+  markers?: TimelineMarker[];
   onSeek: (time: number) => void;
 }) => {
   const day: TimeWindow = { start: dayStart, end: dayEnd };
@@ -136,6 +145,22 @@ export const PlaybackTimeline = ({
                 key={range.from}
                 className="absolute inset-y-0 min-w-px bg-chart-3"
                 style={{ left: `${clip.left}%`, width: `${clip.width}%` }}
+              />
+            )
+          );
+        })}
+        {markers.map((marker) => {
+          const fraction = (marker.at - window.start) / length;
+          return (
+            fraction >= 0 &&
+            fraction <= 1 && (
+              <span
+                key={marker.id}
+                className={cn(
+                  "pointer-events-none absolute inset-y-0 w-px",
+                  marker.className,
+                )}
+                style={{ left: `${fraction * 100}%` }}
               />
             )
           );

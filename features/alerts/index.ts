@@ -2,6 +2,7 @@ export { AlertImage } from "./components/alert-image";
 export { AlertsTable } from "./components/alerts-table";
 export { AlertDetailDialog } from "./components/alert-detail-dialog";
 export { useAlerts } from "./hooks/use-alerts";
+export { useAlertMarkers } from "./hooks/use-alert-markers";
 
 export {
   CUSTOM_RANGE,
@@ -17,4 +18,4 @@ export {
 } from "./lib/alarm-row";
 
 export { edgeAlarmsResponseSchema } from "./schemas/edge-alarm";
-export type { AlertsData } from "./types";
+export type { AlertRow, AlertsData } from "./types";

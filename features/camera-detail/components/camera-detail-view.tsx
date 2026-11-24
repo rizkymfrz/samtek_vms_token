@@ -191,6 +191,7 @@ export const CameraDetailView = ({
           <PlaybackPanel
             detail={detail}
             isOnline={state !== "server-offline"}
+            isLive={isLive}
           />
         </TabsContent>
       </Tabs>

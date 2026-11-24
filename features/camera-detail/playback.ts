@@ -1,4 +1,8 @@
-export { PlaybackTimeline } from "./components/playback-timeline";
+export {
+  PlaybackTimeline,
+  type TimelineMarker,
+} from "./components/playback-timeline";
+
 export { usePlaybackSession } from "./hooks/use-playback-session";
 
 export {

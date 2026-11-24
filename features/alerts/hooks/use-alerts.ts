@@ -57,7 +57,7 @@ const applyEvent = (previous: AlertsData, event: EdgeEvent, since: number) => {
 };
 
 export const useAlerts = (
-  initialData: AlertsData,
+  initialData: AlertsData | undefined,
   isPolling: boolean,
   filters: Filters,
 ) => {

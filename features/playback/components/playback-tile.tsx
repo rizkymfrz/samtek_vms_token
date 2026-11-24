@@ -15,7 +15,6 @@ import {
   usePlaybackBoxes,
 } from "@/features/edge-status";
 import {
-  FullscreenToggle,
   SpeakerToggle,
   type Tile,
   useFullscreen,
@@ -182,7 +181,6 @@ export const PlaybackTile = ({
         </Badge>
         <div className="absolute top-2 right-2 flex items-center gap-1">
           <SpeakerToggle audioId={`${tile.id}:playback`} />
-          <FullscreenToggle isFullscreen={isFullscreen} onToggle={toggle} />
         </div>
         {isFullscreen && (
           <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 border-t bg-background/90 p-2 backdrop-blur-md">

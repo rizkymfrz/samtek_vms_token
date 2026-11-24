@@ -13,6 +13,15 @@
   --color-detect-blue: rgb(0 0 255);
   --color-detect-label: rgb(0 0 0);
   --color-detect-label-foreground: rgb(255 255 255);
+  /* One hue per alert type on the playback timeline; the chart ramps are a single hue, so they cannot tell types apart. */
+  --color-alert-1: oklch(0.65 0.2 27);
+  --color-alert-2: oklch(0.72 0.17 60);
+  --color-alert-3: oklch(0.82 0.16 95);
+  --color-alert-4: oklch(0.7 0.17 145);
+  --color-alert-5: oklch(0.72 0.12 195);
+  --color-alert-6: oklch(0.62 0.19 258);
+  --color-alert-7: oklch(0.6 0.2 305);
+  --color-alert-8: oklch(0.68 0.2 350);
 }
 
 @theme inline {

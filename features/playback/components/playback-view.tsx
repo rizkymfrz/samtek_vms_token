@@ -1,5 +1,6 @@
 "use client";
 import {
+  BellIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   Grid3x3Icon,
@@ -15,6 +16,7 @@ import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
+import { useAlertMarkers } from "@/features/alerts";
 import {
   dayBounds,
   PlaybackTimeline,
@@ -93,6 +95,11 @@ export const PlaybackView = ({
   const rangesById = useCameraRanges(visible, streamFor, day);
   const ranges = mergeRanges([...rangesById.values()]);
   const { from, to } = dayBounds(day);
+  const alertMarkers = useAlertMarkers(
+    day,
+    visible.map((tile) => tile.name),
+    isLive,
+  );
   const hasOnline = visible.some((tile) => tile.state !== "server-offline");
   return (
     <PageShell>
@@ -235,10 +242,19 @@ export const PlaybackView = ({
                 ranges={ranges}
                 isDisabled={!hasOnline}
               />
+              <Pick
+                label="Alert type"
+                icon={BellIcon}
+                className="ml-auto"
+                items={alertMarkers.items}
+                value={alertMarkers.value}
+                onChange={alertMarkers.onChange}
+              />
             </div>
             <PlaybackTimeline
               key={from.getTime()}
               ranges={ranges}
+              markers={alertMarkers.markers}
               dayStart={from.getTime()}
               dayEnd={to.getTime()}
               position={clock.position}

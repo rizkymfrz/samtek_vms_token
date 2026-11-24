@@ -1,16 +1,20 @@
 import { isSameDay } from "date-fns";
 import {
+  BellIcon,
   FastForwardIcon,
   PauseIcon,
   PlayIcon,
   RewindIcon,
+  SignalIcon,
   SkipBackIcon,
   SkipForwardIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { EdgeOffline } from "@/components/shared/edge-offline";
+import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { useAlertMarkers } from "@/features/alerts";
 import {
   PlaybackBoxLayer,
   type PlaybackSession,
@@ -78,18 +82,26 @@ const PlaybackScreen = ({
   );
 };
 
+const STREAM_ITEMS = [
+  { value: "sub", label: "Sub stream" },
+  { value: "main", label: "Main stream" },
+];
+
 export const PlaybackPanel = ({
   detail,
   isOnline,
+  isLive,
 }: {
   detail: CameraDetail;
   isOnline: boolean;
+  isLive: boolean;
 }) => {
   const [applied, setApplied] = useState(() => new Date());
   const [selected, setSelected] = useState<Date | undefined>(applied);
   const canApply = selected !== undefined && !isSameDay(selected, applied);
   const device = useRecordingDevice(detail.edgeServerId, detail.id);
-  const stream = detail.hasSubStream ? "sub" : "main";
+  const [preferred, setPreferred] = useState<"sub" | "main">("sub");
+  const stream = detail.hasSubStream ? preferred : "main";
   const query = useRecordingRanges(
     detail.edgeServerId,
     detail.id,
@@ -98,6 +110,7 @@ export const PlaybackPanel = ({
     isOnline,
   );
   const playback = usePlaybackSession(detail.edgeServerId, detail.id, stream);
+  const alertMarkers = useAlertMarkers(applied, [detail.name], isLive);
   const { from, to } = dayBounds(applied);
   const ranges = extendToNewest(
     query.data?.ranges ?? [],
@@ -129,61 +142,6 @@ export const PlaybackPanel = ({
               isOnline={isOnline}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label="Previous clip"
-              disabled={!canControl || position === null}
-              onClick={() =>
-                playFrom(previousRangeStart(ranges, position ?? 0))
-              }
-            >
-              <SkipBackIcon />
-            </Button>
-            <Button
-              size="icon"
-              aria-label={isPlaying ? "Pause" : "Play"}
-              disabled={!canControl || (!isPlaying && ranges.length === 0)}
-              onClick={() => void (isPlaying ? playback.pause() : onPlay())}
-            >
-              {isPlaying ? <PauseIcon /> : <PlayIcon />}
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label="Rewind"
-              disabled={!canControl || !session}
-              onClick={() =>
-                void playback.changeSpeed(stepSpeed(session?.speed ?? 1, -1))
-              }
-            >
-              <RewindIcon />
-            </Button>
-            <span className="flex size-10 items-center justify-center rounded border bg-card text-xs tabular-nums">
-              {session?.speed ?? 1}
-            </span>
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label="Fast forward"
-              disabled={!canControl || !session}
-              onClick={() =>
-                void playback.changeSpeed(stepSpeed(session?.speed ?? 1, 1))
-              }
-            >
-              <FastForwardIcon />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label="Next clip"
-              disabled={!canControl || position === null}
-              onClick={() => playFrom(nextRangeStart(ranges, position ?? 0))}
-            >
-              <SkipForwardIcon />
-            </Button>
-          </div>
         </section>
         <section className="flex min-w-0 flex-col gap-4">
           <div className="flex flex-col gap-2 rounded border bg-card p-2">
@@ -211,9 +169,86 @@ export const PlaybackPanel = ({
           </div>
         </section>
       </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="Previous clip"
+            disabled={!canControl || position === null}
+            onClick={() => playFrom(previousRangeStart(ranges, position ?? 0))}
+          >
+            <SkipBackIcon />
+          </Button>
+          <Button
+            size="icon"
+            aria-label={isPlaying ? "Pause" : "Play"}
+            disabled={!canControl || (!isPlaying && ranges.length === 0)}
+            onClick={() => void (isPlaying ? playback.pause() : onPlay())}
+          >
+            {isPlaying ? <PauseIcon /> : <PlayIcon />}
+          </Button>
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="Rewind"
+            disabled={!canControl || !session}
+            onClick={() =>
+              void playback.changeSpeed(stepSpeed(session?.speed ?? 1, -1))
+            }
+          >
+            <RewindIcon />
+          </Button>
+          <span className="flex size-10 items-center justify-center rounded border bg-card text-xs tabular-nums">
+            {session?.speed ?? 1}
+          </span>
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="Fast forward"
+            disabled={!canControl || !session}
+            onClick={() =>
+              void playback.changeSpeed(stepSpeed(session?.speed ?? 1, 1))
+            }
+          >
+            <FastForwardIcon />
+          </Button>
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label="Next clip"
+            disabled={!canControl || position === null}
+            onClick={() => playFrom(nextRangeStart(ranges, position ?? 0))}
+          >
+            <SkipForwardIcon />
+          </Button>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          {detail.hasSubStream && (
+            <Pick
+              label="Stream"
+              icon={SignalIcon}
+              items={STREAM_ITEMS}
+              value={stream}
+              onChange={(next) => {
+                void playback.stop();
+                setPreferred(next as "sub" | "main");
+              }}
+            />
+          )}
+          <Pick
+            label="Alert type"
+            icon={BellIcon}
+            items={alertMarkers.items}
+            value={alertMarkers.value}
+            onChange={alertMarkers.onChange}
+          />
+        </div>
+      </div>
       <PlaybackTimeline
         key={from.getTime()}
         ranges={ranges}
+        markers={alertMarkers.markers}
         dayStart={from.getTime()}
         dayEnd={to.getTime()}
         position={position}
