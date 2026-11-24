@@ -7,6 +7,7 @@ export const CameraWebToggle = ({ id }: { id: string }) => {
     <ToolbarToggle
       pressed={false}
       label="Open camera web page"
+      nativeButton={false}
       render={<Link href={`/cameras/${id}/web`} />}
     >
       <GlobeIcon />
