@@ -75,16 +75,36 @@ test("a refusal ends a starting scan", () => {
   assert.equal(session.error, "unavailable");
 });
 
-test("draftFromResult puts the matched login into the stream address", () => {
+test("draftFromResult uses the camera's own stream address with the matched login", () => {
+  const servers = [{ id: "e1", name: "E", isActive: true, online: true }];
+  const logins = [{ credentialId: "c1", username: "admin", password: "p@ss" }];
   const draft = draftFromResult(
-    result({ credential_id: "c1", model: "IPC322" }),
-    [{ credentialId: "c1", username: "admin", password: "p@ss" }],
-    [{ id: "e1", name: "E", isActive: true, online: true }],
+    result({
+      credential_id: "c1",
+      model: "IPC322",
+      profiles: [
+        {
+          token: "a",
+          name: "A",
+          stream_uri: "rtsp://192.168.1.9:554/media/video1",
+        },
+      ],
+    }),
+    logins,
+    servers,
     "e1",
   );
   assert.equal(draft.name, "IPC322");
-  assert.equal(draft.sourceMain, "rtsp://admin:p%40ss@192.168.1.9:554/");
+  assert.equal(
+    draft.sourceMain,
+    "rtsp://admin:p%40ss@192.168.1.9:554/media/video1",
+  );
   assert.equal(draft.edgeServerId, "e1");
+});
+
+test("draftFromResult falls back to the bare host without a stream address", () => {
+  const draft = draftFromResult(result(), [], [], "e1");
+  assert.equal(draft.sourceMain, "rtsp://192.168.1.9:554/");
 });
 
 test("defaultRange turns the edge address into its /24", () => {

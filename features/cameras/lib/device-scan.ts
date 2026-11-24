@@ -171,6 +171,18 @@ export const resultTitle = (result: EdgeScanResult) =>
   [result.manufacturer, result.model].filter(Boolean).join(" ") ||
   "Unknown ONVIF device";
 
+const withLogin = (uri: string, login: ScanCredential | undefined) => {
+  if (!login) return uri;
+  try {
+    const url = new URL(uri);
+    url.username = login.username;
+    url.password = login.password;
+    return url.toString();
+  } catch {
+    return uri;
+  }
+};
+
 export const draftFromResult = (
   result: EdgeScanResult,
   credentials: ScanCredential[],
@@ -180,15 +192,11 @@ export const draftFromResult = (
   const login = credentials.find(
     (c) => c.credentialId === result.credential_id,
   );
-  const auth = login
-    ? `${encodeURIComponent(login.username)}${
-        login.password ? `:${encodeURIComponent(login.password)}` : ""
-      }@`
-    : "";
+  const streamUri = result.profiles?.find((p) => p.stream_uri)?.stream_uri;
   return {
     ...emptyDraft(servers),
     name: result.model ?? `${result.host}`,
     edgeServerId,
-    sourceMain: `rtsp://${auth}${result.host}:554/`,
+    sourceMain: withLogin(streamUri ?? `rtsp://${result.host}:554/`, login),
   };
 };

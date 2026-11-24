@@ -183,7 +183,13 @@ export const scanResultSchema = z.object({
     serial: z.string().optional(),
     credential_id: z.string().optional(),
     profiles: z
-      .array(z.object({ token: z.string(), name: z.string() }))
+      .array(
+        z.object({
+          token: z.string(),
+          name: z.string(),
+          stream_uri: z.string().min(1).optional(),
+        }),
+      )
       .optional(),
   }),
 });
