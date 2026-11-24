@@ -35,7 +35,6 @@ import { useLayoutActions } from "../hooks/use-layout-actions";
 import { useLive } from "../hooks/use-live";
 import {
   addCameras,
-  cameraIdsOf,
   GRID_PRESETS,
   pageCount,
   pageOf,
@@ -139,10 +138,10 @@ export const LiveView = ({
   }
   const layout: LiveLayout = detail ?? {
     ...summary,
-    slots: Array.from({ length: summary.rows * summary.columns }, () => null),
+    cameras: [],
   };
   const pageSize = grid.rows * grid.columns;
-  const cameraIds = cameraIdsOf(layout);
+  const cameraIds = layout.cameras;
   const pages = pageCount(cameraIds.length, pageSize);
   const page = Math.min(
     pageState.layoutId === layout.id ? pageState.index : 0,

@@ -36,18 +36,12 @@ export const buildLive = (now = Date.now()): LiveData => {
   });
   const detailed = layouts
     .map((layout) => {
-      const slots: (string | null)[] = Array.from(
-        { length: layout.rows * layout.columns },
-        () => null,
-      );
-      for (const link of layoutDevices.filter(
-        (l) => l.layoutId === layout.id,
-      )) {
-        if (link.position < slots.length)
-          slots[link.position] = link.deviceRecordId;
-      }
-      const { id, name, description, rows, columns, isDefault } = layout;
-      return { id, name, description, rows, columns, isDefault, slots };
+      const cameras = layoutDevices
+        .filter((link) => link.layoutId === layout.id)
+        .toSorted((a, b) => a.position - b.position)
+        .map((link) => link.deviceRecordId);
+      const { id, name, description, isDefault } = layout;
+      return { id, name, description, isDefault, cameras };
     })
     .sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
   return {

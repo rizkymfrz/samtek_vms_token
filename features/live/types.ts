@@ -30,13 +30,11 @@ export type LiveLayoutSummary = {
   id: string;
   name: string;
   description: string | null;
-  rows: number;
-  columns: number;
   isDefault: boolean;
 };
 
 export type LiveLayout = LiveLayoutSummary & {
-  slots: (string | null)[];
+  cameras: string[];
 };
 
 type LiveFailure = { serverName: string; message: string };

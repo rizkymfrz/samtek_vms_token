@@ -26,8 +26,6 @@ type Layout = {
   userId: string;
   name: string;
   description: string | null;
-  rows: number;
-  columns: number;
   isDefault: boolean;
 };
 
@@ -108,8 +106,6 @@ export const buildLiveSource = (now: number) => {
       userId: "1",
       name: "Lobby",
       description: "Entrance and reception",
-      rows: 2,
-      columns: 2,
       isDefault: true,
     },
     {
@@ -117,8 +113,6 @@ export const buildLiveSource = (now: number) => {
       userId: "1",
       name: "Parking & gate",
       description: null,
-      rows: 2,
-      columns: 3,
       isDefault: false,
     },
     {
@@ -126,8 +120,6 @@ export const buildLiveSource = (now: number) => {
       userId: "1",
       name: "Warehouse",
       description: "Server may be offline",
-      rows: 2,
-      columns: 2,
       isDefault: false,
     },
     {
@@ -135,8 +127,6 @@ export const buildLiveSource = (now: number) => {
       userId: "1",
       name: "All cameras",
       description: null,
-      rows: 4,
-      columns: 4,
       isDefault: false,
     },
   ];

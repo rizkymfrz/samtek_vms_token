@@ -4,8 +4,6 @@ export const layoutSchema = z.object({
   id: z.coerce.string(),
   name: z.string(),
   description: z.string().nullable(),
-  rows: z.number().int(),
-  columns: z.number().int(),
   isDefault: z.boolean(),
 });
 
@@ -26,15 +24,11 @@ export const layoutDetailResponseSchema = z.object({
 
 export const createLayoutInputSchema = z.object({
   name: z.string(),
-  rows: z.number().int(),
-  columns: z.number().int(),
   isDefault: z.boolean().optional(),
 });
 
 export const updateLayoutInputSchema = z.strictObject({
   name: z.string().optional(),
-  rows: z.number().int().optional(),
-  columns: z.number().int().optional(),
 });
 
 export const replaceSlotsInputSchema = z.strictObject({

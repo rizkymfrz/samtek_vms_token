@@ -12,26 +12,19 @@ const empty = {
   name: "L",
   description: null,
   isDefault: false,
-  rows: 1,
-  columns: 6,
-  slots: Array(6).fill(null),
+  cameras: [],
 };
 
-test("adding past the stored grid grows it instead of refusing", () => {
-  const ids = Array.from({ length: 8 }, (_, i) => `c${i}`);
-  const next = addCameras(empty, ids);
-  assert.equal(next.rows, 2);
-  assert.equal(next.slots.length, 12);
-  assert.deepEqual(next.slots.slice(0, 8), ids);
-  assert.equal(next.slots[8], null);
+test("adding keeps order and ignores duplicates, with no size limit", () => {
+  const ids = Array.from({ length: 50 }, (_, i) => `c${i}`);
+  const next = addCameras(addCameras(empty, ["a", "b", "a"]), [...ids, "b"]);
+  assert.deepEqual(next.cameras.slice(0, 3), ["a", "b", "c0"]);
+  assert.equal(next.cameras.length, 52);
 });
 
-test("duplicates are ignored and removal compacts the order", () => {
-  const added = addCameras(empty, ["a", "b", "a", "c"]);
-  assert.deepEqual(added.slots.slice(0, 3), ["a", "b", "c"]);
-  const removed = removeCameras(added, ["b"]);
-  assert.deepEqual(removed.slots.slice(0, 3), ["a", "c", null]);
-  assert.equal(removed.rows, 1);
+test("removal keeps the order of the rest", () => {
+  const added = addCameras(empty, ["a", "b", "c"]);
+  assert.deepEqual(removeCameras(added, ["b"]).cameras, ["a", "c"]);
 });
 
 test("pages split cameras by the local grid size", () => {

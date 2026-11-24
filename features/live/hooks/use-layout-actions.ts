@@ -7,13 +7,9 @@ import { createLayout, summaryOf } from "../lib/edit-layout";
 import {
   createLayoutRequest,
   deleteLayoutRequest,
-  replaceSlotsRequest,
-  resizeLayoutRequest,
+  replaceCamerasRequest,
 } from "../services/live-api";
 import type { LiveData, LiveLayout, LiveLayoutSummary } from "../types";
-
-const emptySlots = (layout: LiveLayoutSummary) =>
-  Array.from({ length: layout.rows * layout.columns }, () => null);
 
 export const useLayoutActions = (isLive: boolean) => {
   const queryClient = useQueryClient();
@@ -26,10 +22,6 @@ export const useLayoutActions = (isLive: boolean) => {
     );
   const writeDetail = (layout: LiveLayout) =>
     queryClient.setQueryData(layoutQueryKey(layout.id), layout);
-  const writeSummary = (layout: LiveLayoutSummary) =>
-    writeLayouts((all) =>
-      all.map((item) => (item.id === layout.id ? layout : item)),
-    );
   const refreshDetail = (id: string) =>
     isLive
       ? queryClient.invalidateQueries({ queryKey: layoutQueryKey(id) })
@@ -40,11 +32,9 @@ export const useLayoutActions = (isLive: boolean) => {
       if (!isLive) return draft;
       const created = await createLayoutRequest({
         name: draft.name,
-        rows: draft.rows,
-        columns: draft.columns,
         isDefault: existing.length === 0,
       });
-      return { ...created, slots: emptySlots(created) };
+      return { ...created, cameras: [] };
     },
     onSuccess: (layout) => {
       writeLayouts((all) => [...all, summaryOf(layout)]);
@@ -61,30 +51,16 @@ export const useLayoutActions = (isLive: boolean) => {
     },
   });
   const changeSlots = useMutation({
-    mutationFn: async ({
-      layout,
-      next,
-    }: {
-      layout: LiveLayout;
-      next: LiveLayout;
-    }) => {
-      if (!isLive) return;
-      const size = { rows: next.rows, columns: next.columns };
-      const grows = next.slots.length >= layout.slots.length;
-      if (grows) await resizeLayoutRequest(next.id, size);
-      await replaceSlotsRequest(next.id, next.slots);
-      if (!grows) await resizeLayoutRequest(next.id, size);
+    mutationFn: async ({ next }: { layout: LiveLayout; next: LiveLayout }) => {
+      if (isLive) await replaceCamerasRequest(next.id, next.cameras);
     },
     onMutate: async ({ layout, next }) => {
       await queryClient.cancelQueries({ queryKey: layoutQueryKey(layout.id) });
       writeDetail(next);
-      writeSummary(next);
       return { previous: layout };
     },
     onError: (_error, _variables, context) => {
-      if (!context) return;
-      writeDetail(context.previous);
-      writeSummary(context.previous);
+      if (context) writeDetail(context.previous);
     },
     onSettled: (_result, _error, { layout }) => refreshDetail(layout.id),
   });

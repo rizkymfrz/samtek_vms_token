@@ -38,7 +38,7 @@ export const DevicePanel = ({
   onRemove: (ids: string[]) => void;
 }) => {
   const [query, setQuery] = useState("");
-  const inLayout = new Set(layout.slots);
+  const inLayout = new Set(layout.cameras);
   const layoutItems = layouts.map((l) => ({
     value: l.id,
     label: l.name,

@@ -200,8 +200,6 @@ model Layout {
   userId      BigInt    @map("user_id") @db.UnsignedBigInt
   name        String    @db.VarChar(100)
   description String?   @db.Text
-  rows        Int       @db.UnsignedSmallInt
-  columns     Int       @db.UnsignedSmallInt
   isDefault   Boolean   @default(false) @map("is_default")
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
@@ -465,11 +463,10 @@ model TicketLinkDelivery {
 - **Online state:** `EdgeServer.isActive` is the switch, `EdgeServer.lastSeenAt` is the heartbeat. A camera is only
   watchable when `Device.isEnabled`, its server `isActive`, and `lastSeenAt` is recent.
 - **Soft delete:** most tables have `deletedAt`. Hide rows where it is not null.
-- **Layouts are per user.** `Layout.rows × Layout.columns` is only the storage capacity; `LayoutDevice.position` is the slot (unique per layout,
-  and a camera can appear once per layout). The frontend keeps cameras compacted in order and grows `rows` at a fixed 6 columns.
-  The grid the user watches (1×1, 2×2 or 3×3) and the page split are local preferences in IndexedDB (`live:grid`), not in the API. `isDefault` marks the layout opened first.
-  **Unconfirmed:** whether `position` starts at 0 or 1 is not in the schema. The UI assumes 0-based, row by row
-  (`app/(app)/live/_data/types.ts`); confirm with the backend before wiring real data.
+- **Layouts are per user.** A layout is an ordered list of cameras: `LayoutDevice.position` (from 1, unique per layout, at most
+  100) is the order, and a camera can appear once per layout. The API has no `rows`/`columns`. `isDefault` marks the layout
+  opened first. The grid the user watches (1×1, 2×2 or 3×3) and the page split are local preferences in IndexedDB
+  (`live:grid`), not in the API.
 - **Geographic position** is stored directly on `EdgeServerGroup`, `EdgeServer` and `Device` as `latitude` / `longitude`
   (nullable, one current position, no history). Either both are set or both are `null` (a database CHECK enforces it);
   latitude is -90..90, longitude -180..180, at most 7 decimals. Prisma returns them as `Decimal`; the API sends plain numbers.
