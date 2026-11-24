@@ -34,7 +34,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { SCAN_LOGINS } from "@/config/scan";
 import { useDeviceScan } from "../hooks/use-device-scan";
 import {
@@ -77,7 +76,6 @@ export const ScanDialog = ({
   );
   const [editedRange, setEditedRange] = useState<string | null>(null);
   const [ports, setPorts] = useState(DEFAULT_PORTS);
-  const [logins, setLogins] = useState(SCAN_LOGINS);
   const [formError, setFormError] = useState<string | null>(null);
   const [used, setUsed] = useState<{
     serverId: string;
@@ -93,7 +91,7 @@ export const ScanDialog = ({
   const results = sortResults(session.results);
   const { scanned, total_hosts: total, found } = session.progress;
   const submit = () => {
-    const form = parseScanForm(ipRange, ports, logins);
+    const form = parseScanForm(ipRange, ports, SCAN_LOGINS);
     if (!serverId) {
       setFormError("Choose an edge server.");
       return;
@@ -155,19 +153,6 @@ export const ScanDialog = ({
                   value={ports}
                   onChange={(event) => setPorts(event.target.value)}
                   disabled={isScanning}
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor={`${formId}-logins`}>
-                  Logins to try (username:password, one per line)
-                </FieldLabel>
-                <Textarea
-                  id={`${formId}-logins`}
-                  value={logins}
-                  onChange={(event) => setLogins(event.target.value)}
-                  disabled={isScanning}
-                  autoComplete="off"
-                  spellCheck={false}
                 />
               </Field>
               {(formError || session.error) && (
