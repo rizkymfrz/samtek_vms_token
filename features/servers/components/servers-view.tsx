@@ -1,6 +1,6 @@
 "use client";
 import { ServerIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
@@ -79,7 +79,14 @@ export const ServersView = ({
       ),
     [servers, now, serverOnline],
   );
-  const selected = servers.find((s) => s.id === selectedId) ?? null;
+  const selected =
+    servers.find((s) => s.id === selectedId) ?? servers[0] ?? null;
+  const router = useRouter();
+  const selectedKey = selected?.id ?? null;
+  useEffect(() => {
+    if (selectedKey && selectedKey !== linkedId)
+      router.replace(`/servers?id=${selectedKey}`, { scroll: false });
+  }, [selectedKey, linkedId, router]);
   const entry = selected ? entries.get(selected.id) : undefined;
   const selectedMetrics = entry
     ? toMetrics(entry, recording.get(selected?.id ?? "")?.retentionDays ?? null)
@@ -132,7 +139,7 @@ export const ServersView = ({
         <ServerListPanel
           servers={servers}
           online={online}
-          selectedId={selectedId}
+          selectedId={selected?.id ?? null}
           discovered={discovered}
           tab={tab}
           scanning={scanning}

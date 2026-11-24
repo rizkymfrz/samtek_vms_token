@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FolderIcon, LayersIcon, PlusIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import {
@@ -79,6 +79,12 @@ export const FloorplanView = ({
     data.failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
   const plan = data.plans.find((p) => p.id === planId) ?? data.plans[0];
+  const router = useRouter();
+  const planKey = plan?.id ?? null;
+  useEffect(() => {
+    if (planKey && planKey !== linkedId)
+      router.replace(`/floorplan?id=${planKey}`, { scroll: false });
+  }, [planKey, linkedId, router]);
   const serverOnline = useServerOnline();
   const isFaulty = useDeviceFaulty();
   const cameras = useMemo(() => {

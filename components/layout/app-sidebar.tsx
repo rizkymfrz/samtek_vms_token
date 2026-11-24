@@ -84,7 +84,7 @@ export const AppSidebar = ({
                     return (
                       <Collapsible
                         key={href}
-                        open={expanded[href] ?? isActive}
+                        open={expanded[href] ?? true}
                         onOpenChange={(open) =>
                           setExpanded((current) => ({
                             ...current,
@@ -110,22 +110,28 @@ export const AppSidebar = ({
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                           <SidebarMenuSub className="max-h-64 overflow-y-auto">
-                            {subs.map((sub) => (
-                              <SidebarMenuSubItem key={sub.id}>
-                                <SidebarMenuSubButton
-                                  className="[&>svg]:size-4"
-                                  isActive={
-                                    key === "cameras"
-                                      ? pathname === sub.href
-                                      : isActive && selectedId === sub.id
-                                  }
-                                  render={<Link href={sub.href} />}
-                                >
-                                  <Icon />
-                                  <span>{sub.title}</span>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
+                            {subs.map((sub) => {
+                              const isSubActive =
+                                key === "cameras"
+                                  ? pathname === sub.href ||
+                                    pathname.startsWith(`${sub.href}/`)
+                                  : isActive && selectedId === sub.id;
+                              return (
+                                <SidebarMenuSubItem key={sub.id}>
+                                  <SidebarMenuSubButton
+                                    className="data-active:font-medium [&>svg]:size-4 data-active:[&>svg]:text-sidebar-primary"
+                                    isActive={isSubActive}
+                                    aria-current={
+                                      isSubActive ? "page" : undefined
+                                    }
+                                    render={<Link href={sub.href} />}
+                                  >
+                                    <Icon />
+                                    <span>{sub.title}</span>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              );
+                            })}
                           </SidebarMenuSub>
                         </CollapsibleContent>
                       </Collapsible>
