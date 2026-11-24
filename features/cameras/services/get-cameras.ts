@@ -18,6 +18,7 @@ export const getCameras = async (): Promise<CameraData> => {
       name: server.name,
       isActive: server.isActive,
       online: isServerOnline(server, now),
+      hostAddress: server.localHostAddress || server.hostAddress,
     })),
     cameras: devices,
     failures,

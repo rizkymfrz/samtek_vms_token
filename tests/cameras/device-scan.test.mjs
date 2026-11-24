@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  defaultRange,
   draftFromResult,
   parseScanForm,
   reduceScan,
@@ -84,4 +85,12 @@ test("draftFromResult puts the matched login into the stream address", () => {
   assert.equal(draft.name, "IPC322");
   assert.equal(draft.sourceMain, "rtsp://admin:p%40ss@192.168.1.9:554/");
   assert.equal(draft.edgeServerId, "e1");
+});
+
+test("defaultRange turns the edge address into its /24", () => {
+  assert.equal(defaultRange("192.168.1.80:8090"), "192.168.1.0/24");
+  assert.equal(defaultRange("http://10.0.5.7:8090/x"), "10.0.5.0/24");
+  assert.equal(defaultRange("edge.example.com:8090"), "");
+  assert.equal(defaultRange("999.1.1.1"), "");
+  assert.equal(defaultRange(null), "");
 });

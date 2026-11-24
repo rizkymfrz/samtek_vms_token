@@ -4,7 +4,18 @@ import type { ServerOption } from "../types";
 
 export const DEFAULT_PORTS = "80, 8080, 2020, 8899, 8000";
 export const MAX_CREDENTIALS = 8;
+
+const IPV4_HOST =
+  /^(?:https?:\/\/)?(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.\d{1,3}(?::\d+)?(?:\/|$)/;
+
 const CIDR = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\/(\d{1,2})$/;
+
+export const defaultRange = (address: string | null) => {
+  const match = address ? IPV4_HOST.exec(address) : null;
+  return match && match.slice(1, 4).every((octet) => Number(octet) <= 255)
+    ? `${match[1]}.${match[2]}.${match[3]}.0/24`
+    : "";
+};
 
 export type ScanCredential = {
   credentialId: string;

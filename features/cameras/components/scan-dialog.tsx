@@ -35,11 +35,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { SCAN_LOGINS } from "@/config/scan";
 import { useDeviceScan } from "../hooks/use-device-scan";
 import {
   DEFAULT_PORTS,
+  defaultRange,
   draftFromResult,
-  MAX_CREDENTIALS,
   parseScanForm,
   resultKey,
   resultTitle,
@@ -74,14 +75,17 @@ export const ScanDialog = ({
   const [serverId, setServerId] = useState(
     () => (servers.find((s) => s.online) ?? servers[0])?.id ?? "",
   );
-  const [ipRange, setIpRange] = useState("");
+  const [editedRange, setEditedRange] = useState<string | null>(null);
   const [ports, setPorts] = useState(DEFAULT_PORTS);
-  const [logins, setLogins] = useState("");
+  const [logins, setLogins] = useState(SCAN_LOGINS);
   const [formError, setFormError] = useState<string | null>(null);
   const [used, setUsed] = useState<{
     serverId: string;
     credentials: ScanCredential[];
   }>({ serverId: "", credentials: [] });
+  const ipRange =
+    editedRange ??
+    defaultRange(servers.find((s) => s.id === serverId)?.hostAddress ?? null);
   const serverItems = servers.map((s) => ({
     value: s.id,
     label: s.online ? s.name : `${s.name} (offline)`,
@@ -139,7 +143,7 @@ export const ScanDialog = ({
                 <Input
                   id={`${formId}-range`}
                   value={ipRange}
-                  onChange={(event) => setIpRange(event.target.value)}
+                  onChange={(event) => setEditedRange(event.target.value)}
                   placeholder="192.168.1.0/24"
                   disabled={isScanning}
                 />
@@ -155,22 +159,16 @@ export const ScanDialog = ({
               </Field>
               <Field>
                 <FieldLabel htmlFor={`${formId}-logins`}>
-                  Logins to try (optional)
+                  Logins to try (username:password, one per line)
                 </FieldLabel>
                 <Textarea
                   id={`${formId}-logins`}
                   value={logins}
                   onChange={(event) => setLogins(event.target.value)}
-                  placeholder={"admin:123456\nadmin:password"}
                   disabled={isScanning}
                   autoComplete="off"
                   spellCheck={false}
                 />
-                <p className="text-xs text-muted-foreground">
-                  One username:password per line, up to {MAX_CREDENTIALS}. Each
-                  is tried on every camera found, to read its model and
-                  profiles. Nothing is stored.
-                </p>
               </Field>
               {(formError || session.error) && (
                 <FieldError>{formError ?? session.error}</FieldError>

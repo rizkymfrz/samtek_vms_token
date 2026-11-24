@@ -14,6 +14,7 @@ export const buildCameras = (now = Date.now()): CameraData => {
         { isActive: s.isActive, lastSeenAt: s.lastSeenAt?.getTime() ?? null },
         now,
       ),
+      hostAddress: s.webrtcUrlLocal ? new URL(s.webrtcUrlLocal).host : null,
     })),
     cameras: devices.map((d) => ({
       id: d.id,

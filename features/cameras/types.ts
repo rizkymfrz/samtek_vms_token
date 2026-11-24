@@ -24,6 +24,7 @@ export type ServerOption = {
   name: string;
   isActive: boolean;
   online: boolean;
+  hostAddress: string | null;
 };
 
 type CameraFailure = {
