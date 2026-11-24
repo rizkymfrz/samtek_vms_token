@@ -14,35 +14,25 @@ import {
 } from "@/components/shared/device-tree";
 import type { LiveLayout, LiveLayoutSummary, ServerNode, Tile } from "../types";
 
-export const DevicePanel = ({
-  layouts,
-  layout,
+export const CameraTreePanel = ({
   servers,
   tiles,
+  selected,
+  placedLabel,
   readOnly,
-  onSelectLayout,
-  onNewLayout,
-  onDeleteLayout,
   onAdd,
   onRemove,
 }: {
-  layouts: LiveLayoutSummary[];
-  layout: LiveLayout;
   servers: ServerNode[];
   tiles: Tile[];
+  selected: string[];
+  placedLabel: string;
   readOnly: boolean;
-  onSelectLayout: (id: string) => void;
-  onNewLayout: () => void;
-  onDeleteLayout: () => void;
   onAdd: (ids: string[]) => void;
   onRemove: (ids: string[]) => void;
 }) => {
   const [query, setQuery] = useState("");
-  const inLayout = new Set(layout.cameras);
-  const layoutItems = layouts.map((l) => ({
-    value: l.id,
-    label: l.name,
-  }));
+  const inLayout = new Set(selected);
   const tree: DeviceTreeNode[] = servers.flatMap((server) => {
     const cameras = tiles.filter(
       (tile) =>
@@ -56,7 +46,7 @@ export const DevicePanel = ({
       id: server.id,
       kind: "server",
       title: server.name,
-      subtitle: `${placed}/${cameras.length} in layout`,
+      subtitle: `${placed}/${cameras.length} ${placedLabel}`,
       state: server.online ? "live" : "server-offline",
       actions: (
         <>
@@ -99,6 +89,45 @@ export const DevicePanel = ({
     };
   });
   return (
+    <PanelSection title="Cameras">
+      <DeviceTree
+        nodes={tree}
+        query={query}
+        onQuery={setQuery}
+        noun="cameras"
+      />
+    </PanelSection>
+  );
+};
+
+export const DevicePanel = ({
+  layouts,
+  layout,
+  servers,
+  tiles,
+  readOnly,
+  onSelectLayout,
+  onNewLayout,
+  onDeleteLayout,
+  onAdd,
+  onRemove,
+}: {
+  layouts: LiveLayoutSummary[];
+  layout: LiveLayout;
+  servers: ServerNode[];
+  tiles: Tile[];
+  readOnly: boolean;
+  onSelectLayout: (id: string) => void;
+  onNewLayout: () => void;
+  onDeleteLayout: () => void;
+  onAdd: (ids: string[]) => void;
+  onRemove: (ids: string[]) => void;
+}) => {
+  const layoutItems = layouts.map((l) => ({
+    value: l.id,
+    label: l.name,
+  }));
+  return (
     <>
       <PanelPicker
         title="Layout"
@@ -114,14 +143,15 @@ export const DevicePanel = ({
           onDelete: onDeleteLayout,
         }}
       />
-      <PanelSection title="Cameras">
-        <DeviceTree
-          nodes={tree}
-          query={query}
-          onQuery={setQuery}
-          noun="cameras"
-        />
-      </PanelSection>
+      <CameraTreePanel
+        servers={servers}
+        tiles={tiles}
+        selected={layout.cameras}
+        placedLabel="in layout"
+        readOnly={readOnly}
+        onAdd={onAdd}
+        onRemove={onRemove}
+      />
     </>
   );
 };

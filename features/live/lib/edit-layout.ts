@@ -6,15 +6,18 @@ export const GRID_PRESETS: [rows: number, columns: number][] = [
   [3, 3],
 ];
 
-export const addCameras = (layout: LiveLayout, ids: string[]): LiveLayout => ({
+export const addCameras = <T extends { cameras: string[] }>(
+  layout: T,
+  ids: string[],
+): T => ({
   ...layout,
   cameras: [...new Set([...layout.cameras, ...ids])],
 });
 
-export const removeCameras = (
-  layout: LiveLayout,
+export const removeCameras = <T extends { cameras: string[] }>(
+  layout: T,
   ids: string[],
-): LiveLayout => ({
+): T => ({
   ...layout,
   cameras: layout.cameras.filter((id) => !ids.includes(id)),
 });

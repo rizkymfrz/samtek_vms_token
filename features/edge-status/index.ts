@@ -82,3 +82,5 @@ export {
   setPtzPreset,
   stopPtz,
 } from "./lib/ptz-commands";
+
+export { getRecordingDevice } from "./lib/edge-status-store";

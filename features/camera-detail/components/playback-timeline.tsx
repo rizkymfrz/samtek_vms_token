@@ -1,6 +1,5 @@
 "use client";
 import { format } from "date-fns";
-import { ArrowLeftRightIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import {
   type MouseEvent,
   type PointerEvent,
@@ -8,13 +7,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { Button } from "@/components/ui/button";
 import type { RecordingRange } from "@/features/edge-status";
 import { cn } from "@/lib/utils";
 import {
   clipRange,
   followWindow,
-  MIN_WINDOW_MS,
   panWindow,
   ticksIn,
   tickStep,
@@ -22,7 +19,6 @@ import {
   zoomWindow,
 } from "../lib/recording-timeline";
 
-const ZOOM_STEP = 2;
 const WHEEL_SENSITIVITY = 0.002;
 const DRAG_THRESHOLD_PX = 3;
 const EDGE_FRACTION = 0.03;
@@ -61,8 +57,6 @@ export const PlaybackTimeline = ({
   const latest = useRef(window);
   const previous = useRef<number | null>(null);
   const length = window.end - window.start;
-  const isFull = length >= dayEnd - dayStart;
-  const isMin = length <= MIN_WINDOW_MS;
   const step = tickStep(length);
   const timeAt = (clientX: number) => {
     const rect = track.current?.getBoundingClientRect();
@@ -70,8 +64,6 @@ export const PlaybackTimeline = ({
       ? window.start + ((clientX - rect.left) / rect.width) * length
       : window.start;
   };
-  const zoomBy = (factor: number, anchor = 0.5) =>
-    setWindow((current) => zoomWindow(current, day, factor, anchor));
   useEffect(() => {
     const element = track.current;
     if (!element) return;
@@ -127,38 +119,6 @@ export const PlaybackTimeline = ({
   };
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          variant="secondary"
-          size="icon-sm"
-          aria-label="Zoom out"
-          title="Zoom out"
-          disabled={isFull}
-          onClick={() => zoomBy(ZOOM_STEP)}
-        >
-          <ZoomOutIcon />
-        </Button>
-        <Button
-          variant="secondary"
-          size="icon-sm"
-          aria-label="Zoom in"
-          title="Zoom in"
-          disabled={isMin}
-          onClick={() => zoomBy(1 / ZOOM_STEP)}
-        >
-          <ZoomInIcon />
-        </Button>
-        <Button
-          variant="secondary"
-          size="icon-sm"
-          aria-label="Show the whole day"
-          title="Show the whole day"
-          disabled={isFull}
-          onClick={() => setWindow(day)}
-        >
-          <ArrowLeftRightIcon />
-        </Button>
-      </div>
       <button
         ref={track}
         type="button"

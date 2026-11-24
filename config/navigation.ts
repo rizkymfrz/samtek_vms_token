@@ -7,6 +7,7 @@ import {
   type LucideIcon,
   MapIcon,
   RadioIcon,
+  RewindIcon,
   ScanSearchIcon,
   ServerIcon,
   SettingsIcon,
@@ -31,6 +32,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/dashboard", title: "Dashboard", icon: LayoutDashboardIcon },
       { href: "/live", title: "Live View", icon: RadioIcon },
+      { href: "/playback", title: "Playback", icon: RewindIcon },
       { href: "/alerts", title: "Alerts", icon: BellIcon },
       { href: "/search", title: "Object Search", icon: ScanSearchIcon },
       { href: "/tickets", title: "Tickets", icon: TicketIcon },

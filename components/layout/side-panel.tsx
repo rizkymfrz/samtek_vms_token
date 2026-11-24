@@ -62,13 +62,15 @@ export const PanelSection = ({
   children: ReactNode;
 }) => {
   return (
-    <section className={cn("flex flex-col gap-4", shouldGrow && "flex-1")}>
-      <div className="flex min-h-6 items-center justify-between gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          {title}
-        </span>
-        {action}
-      </div>
+    <section
+      aria-label={title}
+      className={cn("flex flex-col gap-4", shouldGrow && "flex-1")}
+    >
+      {action && (
+        <div className="flex min-h-6 items-center justify-end gap-2">
+          {action}
+        </div>
+      )}
       {children}
     </section>
   );
