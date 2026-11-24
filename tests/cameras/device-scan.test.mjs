@@ -6,6 +6,7 @@ import {
   parseScanForm,
   reduceScan,
   SCAN_IDLE,
+  streamSets,
 } from "../../features/cameras/lib/device-scan.ts";
 
 const result = (extra = {}) => ({
@@ -75,36 +76,59 @@ test("a refusal ends a starting scan", () => {
   assert.equal(session.error, "unavailable");
 });
 
-test("draftFromResult uses the camera's own stream address with the matched login", () => {
-  const servers = [{ id: "e1", name: "E", isActive: true, online: true }];
-  const logins = [{ credentialId: "c1", username: "admin", password: "p@ss" }];
-  const draft = draftFromResult(
-    result({
-      credential_id: "c1",
-      model: "IPC322",
-      profiles: [
-        {
-          token: "a",
-          name: "A",
-          stream_uri: "rtsp://192.168.1.9:554/media/video1",
-        },
-      ],
-    }),
-    logins,
-    servers,
-    "e1",
-  );
+const profile = (token, uri) => ({ token, name: token, stream_uri: uri });
+const servers = [{ id: "e1", name: "E", isActive: true, online: true }];
+const logins = [{ credentialId: "c1", username: "admin", password: "p@ss" }];
+
+test("a camera's first three profiles become main, sub and third", () => {
+  const found = result({
+    credential_id: "c1",
+    model: "IPC322",
+    profiles: [
+      profile("a", "rtsp://192.168.1.9/media/video1"),
+      profile("b", "rtsp://192.168.1.9/media/video2"),
+      profile("c", "rtsp://192.168.1.9/media/video3"),
+    ],
+  });
+  const sets = streamSets(found);
+  assert.equal(sets.length, 1);
+  const draft = draftFromResult(found, sets[0], logins, servers, "e1");
   assert.equal(draft.name, "IPC322");
   assert.equal(
     draft.sourceMain,
-    "rtsp://admin:p%40ss@192.168.1.9:554/media/video1",
+    "rtsp://admin:p%40ss@192.168.1.9/media/video1",
   );
-  assert.equal(draft.edgeServerId, "e1");
+  assert.equal(draft.sourceSub, "rtsp://admin:p%40ss@192.168.1.9/media/video2");
+  assert.equal(
+    draft.sourceThird,
+    "rtsp://admin:p%40ss@192.168.1.9/media/video3",
+  );
 });
 
-test("draftFromResult falls back to the bare host without a stream address", () => {
-  const draft = draftFromResult(result(), [], [], "e1");
+test("an NVR gives one set per channel from its s0, s1 and s2 profiles", () => {
+  const found = result({
+    model: "NVR",
+    profiles: [
+      profile("17/0/4/1/4/s0", "rtsp://h/c4/s0/live"),
+      profile("17/0/4/1/4/s1", "rtsp://h/c4/s1/live"),
+      profile("17/0/4/1/5/s0", "rtsp://h/c5/s0/live"),
+    ],
+  });
+  const sets = streamSets(found);
+  assert.equal(sets.length, 2);
+  assert.equal(sets[0].sub, "rtsp://h/c4/s1/live");
+  assert.equal(sets[1].sub, null);
+  const draft = draftFromResult(found, sets[1], [], servers, "e1");
+  assert.equal(draft.name, "NVR Channel 2");
+  assert.equal(draft.sourceMain, "rtsp://h/c5/s0/live");
+  assert.equal(draft.sourceSub, "");
+});
+
+test("without a stream address the main stream falls back to the bare host", () => {
+  const found = result();
+  const draft = draftFromResult(found, streamSets(found)[0], [], [], "e1");
   assert.equal(draft.sourceMain, "rtsp://192.168.1.9:554/");
+  assert.equal(draft.sourceSub, "");
 });
 
 test("defaultRange turns the edge address into its /24", () => {

@@ -45,6 +45,8 @@ import {
   resultTitle,
   type ScanCredential,
   sortResults,
+  streamCount,
+  streamSets,
 } from "../lib/device-scan";
 import type { Draft } from "../lib/edit-camera";
 import type { ServerOption } from "../types";
@@ -189,53 +191,57 @@ export const ScanDialog = ({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {results.map((result) => (
-                      <TableRow key={resultKey(result)}>
-                        <TableCell className="tabular-nums">
-                          {result.host}:{result.port}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span>{resultTitle(result)}</span>
-                            {result.profiles && (
+                    {results.flatMap((result) =>
+                      streamSets(result).map((set) => (
+                        <TableRow key={`${resultKey(result)}/${set.key}`}>
+                          <TableCell className="tabular-nums">
+                            {result.host}:{result.port}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span>
+                                {resultTitle(result)}
+                                {set.label && ` · ${set.label}`}
+                              </span>
                               <span className="text-xs text-muted-foreground">
-                                {result.profiles.length} profiles
+                                {streamCount(set)} streams
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {result.credential_id ? (
+                              <span className="inline-flex items-center gap-1 text-xs">
+                                <CheckCircle2Icon className="size-3" />
+                                Matched
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                None
                               </span>
                             )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {result.credential_id ? (
-                            <span className="inline-flex items-center gap-1 text-xs">
-                              <CheckCircle2Icon className="size-3" />
-                              Matched
-                            </span>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              None
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            type="button"
-                            onClick={() =>
-                              onAdd(
-                                draftFromResult(
-                                  result,
-                                  used.credentials,
-                                  servers,
-                                  used.serverId,
-                                ),
-                              )
-                            }
-                          >
-                            <PlusIcon />
-                            Add
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              type="button"
+                              onClick={() =>
+                                onAdd(
+                                  draftFromResult(
+                                    result,
+                                    set,
+                                    used.credentials,
+                                    servers,
+                                    used.serverId,
+                                  ),
+                                )
+                              }
+                            >
+                              <PlusIcon />
+                              Add
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      )),
+                    )}
                   </TableBody>
                 </Table>
               </div>

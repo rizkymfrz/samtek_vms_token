@@ -171,8 +171,52 @@ export const resultTitle = (result: EdgeScanResult) =>
   [result.manufacturer, result.model].filter(Boolean).join(" ") ||
   "Unknown ONVIF device";
 
-const withLogin = (uri: string, login: ScanCredential | undefined) => {
-  if (!login) return uri;
+export const streamCount = (set: StreamSet) =>
+  [set.main, set.sub, set.third].filter(Boolean).length;
+
+export type StreamSet = {
+  key: string;
+  label: string | null;
+  main: string | null;
+  sub: string | null;
+  third: string | null;
+};
+
+const CHANNEL_STREAM = /^(.*)\/s(\d+)$/;
+
+export const streamSets = (result: EdgeScanResult): StreamSet[] => {
+  const profiles = (result.profiles ?? []).filter((p) => p.stream_uri);
+  const channels = new Map<string, (string | null)[]>();
+  for (const { token, stream_uri } of profiles) {
+    const match = CHANNEL_STREAM.exec(token);
+    if (!match || Number(match[2]) > 2) continue;
+    const streams = channels.get(match[1]) ?? [null, null, null];
+    streams[Number(match[2])] = stream_uri ?? null;
+    channels.set(match[1], streams);
+  }
+  if (channels.size > 0) {
+    return [...channels].map(([prefix, [main, sub, third]], index) => ({
+      key: prefix,
+      label: `Channel ${index + 1}`,
+      main,
+      sub,
+      third,
+    }));
+  }
+  const [main, sub, third] = profiles.map((p) => p.stream_uri ?? null);
+  return [
+    {
+      key: "",
+      label: null,
+      main: main ?? null,
+      sub: sub ?? null,
+      third: third ?? null,
+    },
+  ];
+};
+
+const withLogin = (uri: string | null, login: ScanCredential | undefined) => {
+  if (!uri || !login) return uri ?? "";
   try {
     const url = new URL(uri);
     url.username = login.username;
@@ -185,6 +229,7 @@ const withLogin = (uri: string, login: ScanCredential | undefined) => {
 
 export const draftFromResult = (
   result: EdgeScanResult,
+  set: StreamSet,
   credentials: ScanCredential[],
   servers: ServerOption[],
   edgeServerId: string,
@@ -192,11 +237,13 @@ export const draftFromResult = (
   const login = credentials.find(
     (c) => c.credentialId === result.credential_id,
   );
-  const streamUri = result.profiles?.find((p) => p.stream_uri)?.stream_uri;
+  const name = result.model ?? result.host;
   return {
     ...emptyDraft(servers),
-    name: result.model ?? `${result.host}`,
+    name: set.label ? `${name} ${set.label}` : name,
     edgeServerId,
-    sourceMain: withLogin(streamUri ?? `rtsp://${result.host}:554/`, login),
+    sourceMain: withLogin(set.main ?? `rtsp://${result.host}:554/`, login),
+    sourceSub: withLogin(set.sub, login),
+    sourceThird: withLogin(set.third, login),
   };
 };
