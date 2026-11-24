@@ -39,6 +39,7 @@ export {
   type EdgeEvent,
   subscribeEdgeEvents,
   subscribeEdgeReconnect,
+  subscribeEdgeScan,
   subscribeEdgeTalk,
 } from "./lib/edge-event-bus";
 
@@ -58,6 +59,16 @@ export {
   startPlayback,
   stopPlayback,
 } from "./lib/playback-commands";
+
+export { startDeviceScan, stopDeviceScan } from "./lib/scan-commands";
+export type { ScanRequest } from "./lib/scan-commands";
+
+export {
+  type EdgeScanResult,
+  type EdgeScanState,
+  scanResultSchema,
+  scanStateSchema,
+} from "./schemas/edge-message";
 
 export { queryRecording } from "./lib/recording-query";
 

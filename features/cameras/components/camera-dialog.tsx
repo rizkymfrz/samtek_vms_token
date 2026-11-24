@@ -40,6 +40,7 @@ export type DialogTarget = "new" | CameraRecord | null;
 
 const Form = ({
   target,
+  initial,
   servers,
   isPending,
   error,
@@ -47,6 +48,7 @@ const Form = ({
   onClose,
 }: {
   target: "new" | CameraRecord;
+  initial: Draft | null;
   isPending: boolean;
   error: string | null;
   servers: ServerOption[];
@@ -62,7 +64,9 @@ const Form = ({
     formState: { errors },
   } = useForm<Draft>({
     resolver: zodResolver(cameraDraftSchema),
-    defaultValues: editing ? toDraft(editing) : emptyDraft(servers),
+    defaultValues: editing
+      ? toDraft(editing)
+      : (initial ?? emptyDraft(servers)),
   });
   const serverItems = servers.map((s) => ({ value: s.id, label: s.name }));
   return (
@@ -237,6 +241,7 @@ const Form = ({
 
 export const CameraDialog = ({
   target,
+  initial = null,
   servers,
   isPending,
   error,
@@ -244,6 +249,7 @@ export const CameraDialog = ({
   onClose,
 }: {
   target: DialogTarget;
+  initial?: Draft | null;
   isPending: boolean;
   error: string | null;
   servers: ServerOption[];
@@ -257,6 +263,7 @@ export const CameraDialog = ({
           <Form
             key={target === "new" ? "new" : target.id}
             target={target}
+            initial={initial}
             servers={servers}
             isPending={isPending}
             error={error}

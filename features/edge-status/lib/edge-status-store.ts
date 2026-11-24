@@ -9,6 +9,7 @@ import { ingestDetections } from "./detection-store";
 import {
   publishEdgeEvent,
   publishEdgeReconnect,
+  publishEdgeScan,
   publishEdgeTalk,
 } from "./edge-event-bus";
 import { appendSample, toSeries } from "./edge-series";
@@ -311,6 +312,16 @@ const receive = (topic: string, payload: Uint8Array) => {
     json.type.startsWith("talk.")
   ) {
     publishEdgeTalk(topicEdge, json);
+    return;
+  }
+  if (
+    typeof json === "object" &&
+    json !== null &&
+    "type" in json &&
+    typeof json.type === "string" &&
+    json.type.startsWith("device.scan_")
+  ) {
+    publishEdgeScan(topicEdge, json);
     return;
   }
   const result = edgeResultSchema.safeParse(json);

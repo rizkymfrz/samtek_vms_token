@@ -6,6 +6,7 @@ import {
   Grid3x3Icon,
   LayoutGridIcon,
   PlusIcon,
+  ScanSearchIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type CSSProperties, useMemo, useState } from "react";
@@ -22,6 +23,7 @@ import { CameraCard } from "./camera-card";
 import { CameraDialog, type DialogTarget } from "./camera-dialog";
 import { CameraFilterPanel } from "./camera-filter-panel";
 import { CameraTable } from "./camera-table";
+import { ScanDialog } from "./scan-dialog";
 import { useCameraActions } from "../hooks/use-camera-actions";
 import { useCameras } from "../hooks/use-cameras";
 import { cameraState } from "../lib/camera-state";
@@ -98,6 +100,8 @@ export const CamerasView = ({
   const [page, setPage] = useState(0);
   const router = useRouter();
   const [dialog, setDialog] = useState<DialogTarget>(null);
+  const [initial, setInitial] = useState<Draft | null>(null);
+  const [isScanOpen, setIsScanOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<CameraRecord | null>(null);
   const { save, remove, toggle, saveError, removeError, toggleError } =
     useCameraActions(isLive);
@@ -147,10 +151,21 @@ export const CamerasView = ({
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <Button onClick={() => setDialog("new")}>
-            <PlusIcon />
-            Add camera
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => {
+                setInitial(null);
+                setDialog("new");
+              }}
+            >
+              <PlusIcon />
+              Add camera
+            </Button>
+            <Button variant="secondary" onClick={() => setIsScanOpen(true)}>
+              <ScanSearchIcon />
+              Scan
+            </Button>
+          </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <span className="mr-2 text-xs text-muted-foreground tabular-nums">
               {matches.length === 0
@@ -252,9 +267,11 @@ export const CamerasView = ({
       </div>
       <CameraDialog
         target={dialog}
+        initial={initial}
         servers={servers}
         onClose={() => {
           setDialog(null);
+          setInitial(null);
           save.reset();
         }}
         isPending={save.isPending}
@@ -263,9 +280,20 @@ export const CamerasView = ({
           try {
             await save.mutateAsync({ draft, id });
             setDialog(null);
+            setInitial(null);
           } catch {
             return;
           }
+        }}
+      />
+      <ScanDialog
+        isOpen={isScanOpen}
+        servers={servers}
+        onClose={() => setIsScanOpen(false)}
+        onAdd={(draft) => {
+          setIsScanOpen(false);
+          setInitial(draft);
+          setDialog("new");
         }}
       />
       <DeleteConfirmDialog

@@ -44,6 +44,21 @@ export const subscribeEdgeTalk = (listener: TalkListener) => {
   };
 };
 
+type ScanListener = (edgeId: string, message: unknown) => void;
+
+const scanListeners = new Set<ScanListener>();
+
+export const publishEdgeScan = (edgeId: string, message: unknown) => {
+  for (const listener of scanListeners) listener(edgeId, message);
+};
+
+export const subscribeEdgeScan = (listener: ScanListener) => {
+  scanListeners.add(listener);
+  return () => {
+    scanListeners.delete(listener);
+  };
+};
+
 export const publishEdgeReconnect = () => {
   for (const listener of reconnectListeners) listener();
 };

@@ -166,6 +166,42 @@ export const ptzResultSchema = z.object({
   preset: ptzPresetSchema.optional(),
 });
 
+export const scanResultSchema = z.object({
+  type: z.literal("device.scan_result"),
+  data: z.object({
+    scan_id: z.string().min(1),
+    host: z.string().min(1),
+    port: z.number().int().min(1).max(65535),
+    discovered_via: z.enum([
+      "ws_discovery",
+      "tcp_scan",
+      "ws_discovery+tcp_scan",
+    ]),
+    onvif: z.boolean(),
+    manufacturer: z.string().optional(),
+    model: z.string().optional(),
+    serial: z.string().optional(),
+    credential_id: z.string().optional(),
+    profiles: z
+      .array(z.object({ token: z.string(), name: z.string() }))
+      .optional(),
+  }),
+});
+
+export const scanStateSchema = z.object({
+  type: z.literal("device.scan_state"),
+  data: z.object({
+    scan_id: z.string().min(1),
+    state: z.enum(["running", "completed", "cancelled", "failed"]),
+    scanned: z.number().int().nonnegative(),
+    total_hosts: z.number().int().nonnegative(),
+    found: z.number().int().nonnegative(),
+    duration_ms: z.number().int().nonnegative().optional(),
+  }),
+});
+
+export type EdgeScanResult = z.infer<typeof scanResultSchema>["data"];
+export type EdgeScanState = z.infer<typeof scanStateSchema>["data"];
 export type EdgeResultData = z.infer<typeof edgeResultSchema>["data"];
 
 const ratio = z.number().min(0).max(1);
