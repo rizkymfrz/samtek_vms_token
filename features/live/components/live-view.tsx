@@ -222,6 +222,13 @@ export const LiveView = ({
                   gridPreferenceStore.update(() => ({ rows, columns }));
                 }}
               />
+              <Pick
+                label="Stream"
+                icon={SignalIcon}
+                items={QUALITY_ITEMS}
+                value={quality}
+                onChange={(next) => setQuality(next as StreamQuality)}
+              />
               {pages > 1 && (
                 <div className="flex items-center gap-1">
                   <Button
@@ -233,9 +240,6 @@ export const LiveView = ({
                   >
                     <ChevronLeftIcon />
                   </Button>
-                  <span className="min-w-16 text-center text-xs text-muted-foreground tabular-nums">
-                    Page {page + 1} / {pages}
-                  </span>
                   <Button
                     variant="secondary"
                     size="icon"
@@ -247,13 +251,6 @@ export const LiveView = ({
                   </Button>
                 </div>
               )}
-              <Pick
-                label="Stream"
-                icon={SignalIcon}
-                items={QUALITY_ITEMS}
-                value={quality}
-                onChange={(next) => setQuality(next as StreamQuality)}
-              />
               <Button
                 variant="secondary"
                 size="icon"
