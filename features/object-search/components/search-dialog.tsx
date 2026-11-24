@@ -95,7 +95,6 @@ const SearchPlayer = ({
             />
             <PlaybackBoxLayer
               objects={boxes.objects}
-              reason={boxes.reason}
               analyticId={target.analyticId ?? undefined}
             />
           </>

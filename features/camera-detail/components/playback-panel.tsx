@@ -72,7 +72,6 @@ const PlaybackScreen = ({
       />
       <PlaybackBoxLayer
         objects={boxes.objects}
-        reason={boxes.reason}
         analyticId={detail.analyticId}
       />
       <div className="absolute right-2 bottom-2 flex items-center rounded border bg-background">

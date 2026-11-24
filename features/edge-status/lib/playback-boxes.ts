@@ -66,19 +66,3 @@ export const trimBoxes = (
     ? state
     : { ...state, frames: state.frames.slice(keepFrom) };
 };
-
-const REASON_LABEL: Record<string, string> = {
-  unreadable: "the recording could not be read",
-  no_match: "the recording does not match the analytics data",
-  too_few_keyframes: "the recording has too few keyframes",
-  ambiguous: "the frame timing is ambiguous",
-  inconsistent: "the frame timing is inconsistent",
-  out_of_window: "this time is outside the analysed window",
-  not_analysed: "this stream is not analysed",
-  declined: "the edge cannot send them",
-  unsupported: "this browser cannot read frame times",
-  no_time: "the video carries no frame time",
-};
-
-export const reasonLabel = (reason: string) =>
-  REASON_LABEL[reason] ?? "not available for this video";

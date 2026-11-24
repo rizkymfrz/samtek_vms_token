@@ -71,7 +71,6 @@ export const AlertClipPlayer = ({
             />
             <PlaybackBoxLayer
               objects={boxes.objects}
-              reason={boxes.reason}
               analyticId={analyticId}
             />
           </>

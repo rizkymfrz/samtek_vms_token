@@ -74,7 +74,6 @@ const PlaybackScreen = ({
       />
       <PlaybackBoxLayer
         objects={boxes.objects}
-        reason={boxes.reason}
         analyticId={tile.analyticId}
       />
     </>
