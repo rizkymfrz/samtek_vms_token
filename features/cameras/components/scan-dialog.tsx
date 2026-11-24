@@ -169,13 +169,12 @@ export const ScanDialog = ({
                 ` ${scanned}/${total} hosts · ${found} found`}
             </p>
             {results.length === 0 ? (
-              <p className="text-xs text-muted-foreground">
-                {session.phase === "idle"
-                  ? "Cameras found will be listed here."
-                  : isScanning
-                    ? "Nothing found yet."
-                    : "No ONVIF cameras were found."}
-              </p>
+              session.phase !== "idle" &&
+              !isScanning && (
+                <p className="text-xs text-muted-foreground">
+                  No ONVIF cameras were found.
+                </p>
+              )
             ) : (
               <div className="flex max-h-80 flex-col overflow-hidden rounded border">
                 <Table>
@@ -220,7 +219,6 @@ export const ScanDialog = ({
                         <TableCell className="text-right">
                           <Button
                             type="button"
-                            variant="secondary"
                             onClick={() =>
                               onAdd(
                                 draftFromResult(
