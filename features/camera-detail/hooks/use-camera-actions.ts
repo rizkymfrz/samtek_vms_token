@@ -1,5 +1,5 @@
 "use client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   type CameraRecord,
@@ -12,9 +12,11 @@ import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
 import type { SearchIndexConfig } from "@/lib/api/search-index";
 import { messageOf } from "@/lib/axios/browser-client";
+import { invalidateDeviceData } from "@/lib/query/invalidate";
 
 export const useCameraActions = (record: CameraRecord, isLive: boolean) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const save = useMutation({
     mutationFn: async ({
       draft,
@@ -35,13 +37,19 @@ export const useCameraActions = (record: CameraRecord, isLive: boolean) => {
         searchIndex,
       });
     },
-    onSuccess: () => router.refresh(),
+    onSuccess: () => {
+      if (isLive) void invalidateDeviceData(queryClient);
+      router.refresh();
+    },
   });
   const remove = useMutation({
     mutationFn: async () => {
       if (isLive) await deleteCamera(record);
     },
-    onSuccess: () => router.push("/cameras"),
+    onSuccess: () => {
+      if (isLive) void invalidateDeviceData(queryClient);
+      router.push("/cameras");
+    },
   });
   return {
     save: save.mutate,

@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { LIVE_STALE_TIME_MS } from "@/config/query";
+import { LIVE_STALE_TIME_MS, QUERY_KEYS } from "@/config/query";
 import {
   hasTicketUpdates,
   subscribeTicketUpdates,
@@ -38,7 +38,7 @@ export const useTicketDetail = (id: string | null) =>
 
 export const useServerNames = () =>
   useQuery({
-    queryKey: ["ticket-servers"],
+    queryKey: QUERY_KEYS.ticketServers,
     queryFn: fetchServerNames,
     staleTime: LIVE_STALE_TIME_MS,
   });

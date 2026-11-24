@@ -1,10 +1,10 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { LIVE_STALE_TIME_MS } from "@/config/query";
+import { LIVE_STALE_TIME_MS, QUERY_KEYS } from "@/config/query";
 import { fetchFaces } from "../services/face-api";
 import type { FacesData } from "../types";
 
-export const FACES_QUERY_KEY = ["faces"] as const;
+export const FACES_QUERY_KEY = QUERY_KEYS.faces;
 
 export const useFaces = (initialData: FacesData, isLive: boolean) =>
   useQuery({

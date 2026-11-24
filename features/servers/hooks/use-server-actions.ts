@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { edgeDownTopic } from "@/config/mqtt";
 import { sendEdgeCommand } from "@/features/edge-status";
 import { messageOf } from "@/lib/axios/browser-client";
+import { invalidateServerData } from "@/lib/query/invalidate";
 import { SERVERS_QUERY_KEY } from "./use-servers";
 import {
   type Draft,
@@ -29,9 +30,7 @@ export const useServerActions = (isLive: boolean) => {
       (current) => current && { ...current, servers: change(current.servers) },
     );
   const refresh = () =>
-    isLive
-      ? queryClient.invalidateQueries({ queryKey: SERVERS_QUERY_KEY })
-      : undefined;
+    isLive ? invalidateServerData(queryClient) : undefined;
   const save = useMutation({
     mutationFn: async ({
       draft,

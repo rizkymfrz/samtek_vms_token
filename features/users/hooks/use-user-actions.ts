@@ -1,6 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { messageOf } from "@/lib/axios/browser-client";
+import { invalidateUserData } from "@/lib/query/invalidate";
 import { USERS_QUERY_KEY } from "./use-users";
 import {
   type Draft,
@@ -28,10 +29,7 @@ export const useUserActions = (isLive: boolean) => {
       USERS_QUERY_KEY,
       (current) => current && { ...current, users: change(current.users) },
     );
-  const refresh = () =>
-    isLive
-      ? queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY })
-      : undefined;
+  const refresh = () => (isLive ? invalidateUserData(queryClient) : undefined);
   const save = useMutation({
     mutationFn: async ({
       draft,

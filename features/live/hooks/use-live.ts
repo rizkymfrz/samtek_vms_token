@@ -1,10 +1,10 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { LIVE_STALE_TIME_MS } from "@/config/query";
+import { LIVE_STALE_TIME_MS, QUERY_KEYS } from "@/config/query";
 import { fetchLive } from "../services/live-api";
 import type { LiveData } from "../types";
 
-export const LIVE_QUERY_KEY = ["live"] as const;
+export const LIVE_QUERY_KEY = QUERY_KEYS.live;
 
 export const useLive = (initialData: LiveData, isLive: boolean) =>
   useQuery({

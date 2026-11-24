@@ -1,6 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { messageOf } from "@/lib/axios/browser-client";
+import { invalidateDeviceData } from "@/lib/query/invalidate";
 import { CAMERAS_QUERY_KEY } from "./use-cameras";
 import {
   type Draft,
@@ -28,9 +29,7 @@ export const useCameraActions = (isLive: boolean) => {
       (current) => current && { ...current, cameras: change(current.cameras) },
     );
   const refresh = () =>
-    isLive
-      ? queryClient.invalidateQueries({ queryKey: CAMERAS_QUERY_KEY })
-      : undefined;
+    isLive ? invalidateDeviceData(queryClient) : undefined;
   const save = useMutation({
     mutationFn: async ({ draft, id }: { draft: Draft; id: string | null }) => {
       if (!isLive) {
