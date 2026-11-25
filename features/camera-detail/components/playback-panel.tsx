@@ -56,7 +56,7 @@ const PlaybackScreen = ({
     );
   }
   if (!session) return <span>Select a time on the timeline to play.</span>;
-  if (session.state === "ended") return <span>End of recording</span>;
+  if (session.state === "ended") return <span>End of recording.</span>;
   const isPaused = session.state === "paused";
   return (
     <>
@@ -190,7 +190,7 @@ export const PlaybackPanel = ({
           <Button
             variant="secondary"
             size="icon"
-            aria-label="Rewind"
+            aria-label="Slower"
             disabled={!canControl || !session}
             onClick={() =>
               void playback.changeSpeed(stepSpeed(session?.speed ?? 1, -1))
@@ -199,12 +199,12 @@ export const PlaybackPanel = ({
             <RewindIcon />
           </Button>
           <span className="flex size-10 items-center justify-center rounded border bg-card text-xs tabular-nums">
-            {session?.speed ?? 1}
+            {session?.speed ?? 1}x
           </span>
           <Button
             variant="secondary"
             size="icon"
-            aria-label="Fast forward"
+            aria-label="Faster"
             disabled={!canControl || !session}
             onClick={() =>
               void playback.changeSpeed(stepSpeed(session?.speed ?? 1, 1))
@@ -225,7 +225,7 @@ export const PlaybackPanel = ({
         <div className="ml-auto flex items-center gap-2">
           {detail.hasSubStream && (
             <Pick
-              label="Stream"
+              label="Stream quality"
               icon={SignalIcon}
               items={STREAM_ITEMS}
               value={stream}

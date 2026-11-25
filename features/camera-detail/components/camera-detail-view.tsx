@@ -112,7 +112,7 @@ export const CameraDetailView = ({
   );
   const isConfiguration = tab === "configuration";
   const error = actions.saveError ?? actions.removeError;
-  useFailureToast("Could not save the changes", [error]);
+  useFailureToast("Failed to save the changes", [error]);
   return (
     <div className="flex min-h-full flex-col gap-4 bg-background p-4 lg:h-[calc(100svh-var(--header-height))] lg:min-h-0">
       <BreadcrumbTitle href={`/cameras/${detail.id}`} label={detail.name} />

@@ -129,7 +129,7 @@ export const SearchIndexFields = ({
                   options={labelOptions(specs, params)}
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Add label..."
+                  placeholder="Add label…"
                 />
               )}
             />
@@ -137,7 +137,7 @@ export const SearchIndexFields = ({
           </Field>
           <Field data-invalid={!!intervalError}>
             <FieldLabel htmlFor={`${formId}-interval`}>
-              Seconds between embeddings
+              Seconds between indexing
             </FieldLabel>
             <Controller
               control={control}

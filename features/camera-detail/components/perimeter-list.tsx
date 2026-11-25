@@ -46,7 +46,7 @@ export const PerimeterList = ({
       {rows.length === 0 ? (
         <EmptyState
           icon={<PentagonIcon />}
-          title="No perimeters yet"
+          title="No perimeters"
           description="Pick Line or Polygon, then draw on the frame."
           className="border-0 p-4 max-lg:py-4"
         />
@@ -80,7 +80,7 @@ export const PerimeterList = ({
                   variant="destructive"
                   size="icon-sm"
                   aria-label={`Delete ${name}`}
-                  title="Delete"
+                  title={`Delete ${name}`}
                   onClick={() => onRemove({ kind, index })}
                   className="mr-1 opacity-0 group-hover/row:opacity-100 group-data-[selected=true]/row:opacity-100 focus-visible:opacity-100"
                 >
