@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Floor plans** (`/floorplan`, `features/floorplan`): diaudit
+    teksnya (§3.15).
   - **Tickets** (`/tickets`, halaman publik `/t`, `features/tickets`):
     diaudit teksnya (§3.14).
   - **Object search** (`/search`, `features/object-search`): diaudit
@@ -594,6 +596,34 @@ Catatan:
 - Teks pada ticket rule (`rule.kind`, `rule.analyticId`) menunggu
   canonical label mapping.
 
+### 3.15 Floor plans
+
+Menu dan page title: `Floor plans` (jamak, dua kata). Rute tetap
+`/floorplan`. Nama teknis `Floorplan` (kode, tabel, izin) tidak
+berubah.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Floor plan | Gambar denah gedung atau lantai milik satu edge server group. Bersarang sampai 10 tingkat (misalnya `Main Building` berisi `Floor 1` dan `Floor 2`). | Semua teks UI. Selalu dua kata. | Floorplan, map (Map adalah halaman lain) | `Add floor plan` |
+| Parent plan | Floor plan induk dalam grup yang sama. Boleh kosong (`No parent (top level)`). | Field form. | Parent floor | `Parent plan` |
+| Edge server group | Pengelompokan edge server secara hierarkis (induk dan anak, dengan posisi geografis). Pemilik floor plan, tidak dapat diubah setelah dibuat. | Konteks floor plan dan pengaturan server. Di dialog boleh disingkat `Group` bila konteks jelas. | Folder, site | `Create an edge server group first.` |
+| Placement | Penempatan satu kamera pada floor plan: posisi (x, y), arah, dan sudut pandang. | Daftar kamera pada plan, aria. | Pin, marker (marker adalah tampilannya) | `{n}/{total} on this plan` |
+| Direction | Arah hadap kamera pada plan, dalam derajat (`rotation_degrees`). | Kontrol pada kamera terpilih. | Rotation, angle | `Direction` |
+| Field of view | Sudut pandang kamera pada plan, dalam derajat (`field_of_view_degrees`, bawaan 90). | Kontrol pada kamera terpilih. | FOV, view angle | `Field of view`, `90°` |
+
+Catatan:
+- Kamera pada plan harus berada di edge server milik grup plan atau
+  subgrupnya.
+- Aksi buat memakai `Add floor plan` di semua tempat (toolbar, panel,
+  empty state, dialog).
+- Jumlah alarm pada marker memakai singular dan plural yang benar:
+  `1 alarm`, `3 alarms`.
+- Placeholder nama memakai `e.g.` (`e.g. Floor 1`).
+- Tombol `Add floor plan` dinonaktifkan bila belum ada edge server
+  group, dengan penjelasan di empty state.
+- Teks ruangan dan nama plan pada data contoh (`Lobby`, `Reception`)
+  adalah data, bukan teks UI.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -778,7 +808,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, dan `Object search` diterapkan. `Tickets` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -964,6 +994,19 @@ Tidak berubah: judul popover `Alerts`, `No alerts.`, `Mark all as read`,
 
 Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 `Acknowledge`, `Start`, `{n}×`.
+
+### Floor plans (§3.15, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `config/navigation.ts`, `app/(app)/floorplan/page.tsx` | `Floorplan` | `Floor plans` |
+| `components/layout/header-search.tsx` | grup pencarian `Floorplans` | `Floor plans` |
+| `floorplan-panel.tsx` | `New floor plan` | `Add floor plan` |
+| `camera-marker.tsx` | aria `{n} alerts` | `{n} alarm` / `{n} alarms` |
+| `floorplan-view.tsx` | `Could not save the placements`, `Could not delete the floor plan`, `Could not upload the image` | `Failed to save the placements`, `Failed to delete the floor plan`, `Failed to upload the image` |
+| `floorplan-view.tsx` | `No groups yet`, `No floor plans yet` | `No groups`, `No floor plans` |
+| `floorplan-view.tsx` | `Create an edge server group first, a floor plan belongs to one.` | `Create an edge server group first. A floor plan belongs to one.` |
+| `floorplan-form-dialog.tsx` | placeholder `Floor 1` | `e.g. Floor 1` |
 
 ### Label analytic (sentence case, §6.1)
 
