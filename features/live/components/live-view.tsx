@@ -297,7 +297,7 @@ export const LiveView = ({
           variant="destructive"
           isOpen={isDeleting}
           title="Delete this layout?"
-          description="The layout is removed. The cameras in it are not deleted."
+          description="The layout is removed, but its cameras are kept."
           confirmLabel="Delete layout"
           onConfirm={() => {
             setIsDeleting(false);

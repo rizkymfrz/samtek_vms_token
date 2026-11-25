@@ -94,7 +94,7 @@ const Form = ({
                 </FieldError>
               ) : (
                 <FieldDescription>
-                  Unique, and cannot be changed later.
+                  Must be unique and cannot be changed later.
                 </FieldDescription>
               )}
             </Field>

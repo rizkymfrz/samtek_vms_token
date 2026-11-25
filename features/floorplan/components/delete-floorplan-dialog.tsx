@@ -23,8 +23,8 @@ export const DeleteFloorplanDialog = ({
       title="Delete this floor plan?"
       description={
         hasChildren
-          ? "The floor plan, the plans nested under it and their camera placements are removed. This cannot be undone."
-          : "The floor plan and its camera placements are removed. This cannot be undone."
+          ? "The floor plan, its nested plans and their camera placements are removed."
+          : "The floor plan and its camera placements are removed."
       }
       confirmLabel="Delete floor plan"
       onClose={() => onOpenChange(false)}

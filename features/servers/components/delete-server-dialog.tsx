@@ -23,8 +23,8 @@ export const DeleteServerDialog = ({
       title="Delete this edge server?"
       description={
         isDeletable || server === null
-          ? "The edge server is removed from the system. This cannot be undone."
-          : "It still has cameras. Move or delete them first; an edge server with cameras cannot be deleted."
+          ? "The edge server is removed from the system."
+          : "Move or delete its cameras first."
       }
       confirmLabel="Delete edge server"
       isConfirmDisabled={!isDeletable}

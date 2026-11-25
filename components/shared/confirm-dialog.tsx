@@ -1,20 +1,19 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 export const ConfirmDialog = ({
   isOpen,
-  icon: Icon,
+  icon,
   variant = "default",
   title,
   description,
@@ -34,32 +33,31 @@ export const ConfirmDialog = ({
   onClose: () => void;
 }) => {
   return (
-    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogMedia
-            className={
-              variant === "destructive"
-                ? "bg-destructive text-destructive-foreground"
-                : "bg-primary text-primary-foreground"
-            }
-          >
-            <Icon />
-          </AlertDialogMedia>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+    <Dialog
+      open={isOpen}
+      disablePointerDismissal
+      onOpenChange={(open) => !open && onClose()}
+    >
+      <DialogContent>
+        <DialogHeader icon={icon} variant={variant}>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <Separator />
+        <DialogFooter>
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
             variant={variant}
             disabled={isConfirmDisabled}
             onClick={onConfirm}
           >
             {confirmLabel}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

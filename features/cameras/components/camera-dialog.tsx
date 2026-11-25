@@ -205,7 +205,7 @@ const Form = ({
               id={`${formId}-enabled`}
               icon={<PowerIcon />}
               label="Enabled"
-              description="Turn the camera on or off. A disabled camera stops streaming and analyzing."
+              description="A disabled camera stops streaming and analyzing."
               checked={field.value}
               onCheckedChange={field.onChange}
             />

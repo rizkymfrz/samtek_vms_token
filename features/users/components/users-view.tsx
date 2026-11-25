@@ -170,7 +170,7 @@ export const UsersView = ({
           variant="destructive"
           isOpen={pendingDelete !== null}
           title="Delete this user?"
-          description="The account can no longer sign in. Its username and email stay reserved."
+          description="The user can no longer sign in, and the username stays reserved."
           confirmLabel="Delete user"
           onClose={() => setPendingDelete(null)}
           onConfirm={() => {

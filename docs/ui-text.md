@@ -894,10 +894,11 @@ detail`, sentence case seperti `Open camera web page`. Tile Live view
   Configuration tidak memuat tombol ini karena sudah di halamannya.
 - Panel Live pada tab Configuration memakai sentence case: `Live
 view`, `Pause live view`, `Restart camera`, `Pause analytics`.
-- Tiga tombol yang dulu ada di panel itu (`Pause live view`, `Restart
-camera`, `Pause analytics`) tidak punya handler sama sekali, jadi
-  dihapus. Bila fungsinya dibuat nanti, tambahkan lagi dengan teks
-  sentence case.
+- Tiga tombol (`Pause live view`, `Restart camera`, `Pause analytics`)
+  ditambahkan kembali di panel Live pada tab Configuration dengan teks
+  sentence case. Tombol belum punya handler, jadi belum menjalankan
+  apa pun. Dokumen ini hanya mengatur teksnya. Sambungkan handler atau
+  hapus lagi sebelum dirilis.
 - Kontrol pemutar pada tab Playback sama dengan halaman Playback
   (§3.11): `Slower`, `Faster`, `Stream quality`, `End of recording.`,
   kecepatan `1x`.
@@ -1215,6 +1216,28 @@ Catatan:
     Dialog detail: judul `{Object} details`, deskripsi `Details of this
 {object}.` Pengecualian yang disetujui: dialog detail Alarms dan
     Tickets, yang judul dan deskripsinya berasal dari alarm atau tiket.
+31. Deskripsi dialog konfirmasi: satu kalimat bertitik yang hanya
+    menyebut akibat bagi pengguna. Tanpa `This cannot be undone.`
+    (tombol merah sudah menandai aksi permanen), tanpa penjelasan cara
+    kerja sistem (service manager, proses), dan tanpa hitungan atau nama
+    dari data. Pengecualian bersyarat dibolehkan bila akibatnya
+    berbeda menurut state (contoh: edge server yang masih punya kamera,
+    `Move or delete its cameras first.`). Judul `{Verb} this
+    {object}?`, tombol `{Verb} {object}` dengan kata kerja yang sama
+    (`Reboot this edge server?` / `Reboot edge server`). Dua dialog
+    untuk objek yang sama memakai teks yang sama (hapus kamera di tabel
+    dan di detail).
+32. Deskripsi field dan toggle di dialog atau form: satu kalimat
+    bertitik, tidak mengulang label (`Turn the camera on or off.`
+    diganti akibatnya saja). Toggle menjelaskan akibat saat dimatikan
+    (`A disabled camera stops streaming and analyzing.`) atau fungsi
+    saat dinyalakan (`Record this camera on the edge server.`).
+    Tambahan bersyarat ditulis sebagai kalimat sendiri, dengan satuan
+    singular dan plural benar (`Kept for 1 day.`, `Kept for 7 days.`).
+    Jangan memakai `footage` dan `edge` saja (§3.8). Satu objek, satu
+    teks: toggle `Enabled` dan `Recording` kamera sama di dialog dan di
+    detail. Placeholder contoh diawali `e.g.` (aturan 20), termasuk
+    alamat jaringan (`e.g. 192.168.1.0/24`).
 
 ## 5. Copy patterns
 
@@ -1611,7 +1634,9 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `camera-dialog.tsx`, `server-form-dialog.tsx`, `user-dialog.tsx`                                                                                      | deskripsi ubah `Camera ID {id}`, `Edge server ID {id}`, `{username}`             | `Change the details of this {camera, edge server, user account}.`                                           |
 | `log-dialog.tsx`                                                                                                                                      | `{name}. Sample lines only, until the edge exposes...`                           | `Sample lines only, until Edge exposes its real log.`                                                       |
 | `search-dialog.tsx`, `plate-dialog.tsx`, `recognition-dialog.tsx`                                                                                     | judul dan deskripsi dari data (kamera, plat, nama, waktu)                        | `Search result`, `Plate details`, `Recognition details` dan deskripsi generic                               |
-| `delete-confirm-dialog.tsx` dan `AlertDialog` manual di `camera-form.tsx`, `faces-view.tsx`, `delete-floorplan-dialog.tsx`, `delete-server-dialog.tsx`, `server-detail.tsx` | Tanpa ikon. Enam dialog menyalin struktur yang sama | `ConfirmDialog` (`confirm-dialog.tsx`): `icon` wajib, `variant` `default` atau `destructive`. Reboot dan restart memakai `PowerIcon`, hapus memakai `Trash2Icon` |
+| `delete-confirm-dialog.tsx` dan `AlertDialog` manual di `camera-form.tsx`, `faces-view.tsx`, `delete-floorplan-dialog.tsx`, `delete-server-dialog.tsx`, `server-detail.tsx` | Tanpa ikon. Enam dialog menyalin struktur yang sama | `ConfirmDialog` (`confirm-dialog.tsx`) di atas `Dialog` dengan layout dan ukuran sama seperti dialog form: `icon` wajib, `variant` `default` atau `destructive` (ikon merah). `components/ui/alert-dialog.tsx` dihapus. Reboot dan restart memakai `PowerIcon`, hapus memakai `Trash2Icon` |
+| `ConfirmDialog` pemakai (9 dialog) | Deskripsi dua kalimat dengan `This cannot be undone.`, penjelasan service manager, dua teks berbeda untuk hapus kamera, tombol `Reboot` | Satu kalimat berisi akibat saja (aturan 31), satu teks hapus kamera, tombol `Reboot edge server` |
+| `camera-form.tsx`, `camera-dialog.tsx`, `group-form-dialog.tsx`, `scan-dialog.tsx`, `search-index-fields.tsx` | `Turn the camera on or off. A disabled camera...`, `Record this camera's footage...` / `Record this camera on...`, `this edge`, `Kept for 1 days`, `Unique, and cannot be changed later.`, placeholder `192.168.1.0/24` | Aturan 32: `A disabled camera stops streaming and analyzing.`, satu teks `Record this camera on the edge server.`, `this edge server`, `Kept for 1 day.`, `Must be unique and cannot be changed later.`, `e.g. 192.168.1.0/24` |
 
 ### Analytics (§3.19, diterapkan)
 

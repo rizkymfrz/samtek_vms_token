@@ -174,8 +174,8 @@ export const ServerDetail = ({
         isOpen={confirm === "restart"}
         icon={PowerIcon}
         title="Reboot this edge server?"
-        description="Its cameras stop streaming and analyzing until the edge server is back, which takes about a minute."
-        confirmLabel="Reboot"
+        description="Cameras stop streaming and analyzing for about a minute."
+        confirmLabel="Reboot edge server"
         onClose={() => setConfirm(null)}
         onConfirm={() => {
           setConfirm(null);
@@ -186,7 +186,7 @@ export const ServerDetail = ({
         isOpen={confirm === "edge"}
         icon={PowerIcon}
         title="Restart this edge server?"
-        description="The Edge process stops and is started again by its service manager. Cameras stop streaming and analyzing until it is back."
+        description="Cameras stop streaming and analyzing until Edge is back."
         confirmLabel="Restart edge server"
         onClose={() => setConfirm(null)}
         onConfirm={() => {

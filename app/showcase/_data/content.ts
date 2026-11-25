@@ -385,13 +385,6 @@ export const dialog = {
     "Make changes to your profile here. Click save when you are done.",
 }
 
-export const alertDialog = {
-  trigger: "Delete account",
-  title: "Are you absolutely sure?",
-  description:
-    "This action cannot be undone. This permanently deletes your account.",
-}
-
 export const sheet = {
   trigger: "Open sheet",
   side: ["top", "right", "bottom", "left"] as const,

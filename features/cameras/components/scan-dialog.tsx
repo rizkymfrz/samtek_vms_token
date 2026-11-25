@@ -144,7 +144,7 @@ export const ScanDialog = ({
                   id={`${formId}-range`}
                   value={ipRange}
                   onChange={(event) => setEditedRange(event.target.value)}
-                  placeholder="192.168.1.0/24"
+                  placeholder="e.g. 192.168.1.0/24"
                   disabled={isScanning}
                 />
               </Field>

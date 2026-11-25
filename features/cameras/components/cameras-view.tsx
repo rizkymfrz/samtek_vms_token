@@ -302,7 +302,7 @@ export const CamerasView = ({
         variant="destructive"
         isOpen={pendingDelete !== null}
         title="Delete this camera?"
-        description="The camera is removed from every layout and stops streaming. Alarms it already raised are kept."
+        description="The camera is removed from every layout, but its alarms are kept."
         confirmLabel="Delete camera"
         onClose={() => setPendingDelete(null)}
         onConfirm={() => {

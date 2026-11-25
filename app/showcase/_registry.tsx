@@ -64,7 +64,6 @@ import {
   TabsDemo,
 } from "./_demos/navigation"
 import {
-  AlertDialogDemo,
   CommandDemo,
   ContextMenuDemo,
   DialogDemo,
@@ -85,7 +84,6 @@ export type ShowcaseEntry = {
 export const registry: readonly ShowcaseEntry[] = [
   { id: "accordion", group: "navigation", Demo: AccordionDemo },
   { id: "alert", group: "feedback", Demo: AlertDemo },
-  { id: "alert-dialog", group: "overlays", Demo: AlertDialogDemo },
   { id: "aspect-ratio", group: "layout", Demo: AspectRatioDemo },
   { id: "attachment", group: "chat", Demo: AttachmentDemo },
   { id: "avatar", group: "display", Demo: AvatarDemo },

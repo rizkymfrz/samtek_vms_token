@@ -99,16 +99,27 @@ const DialogContent = ({
 const DialogHeader = ({
   className,
   icon: Icon,
+  variant = "default",
   children,
   ...props
-}: ComponentProps<"div"> & { icon: LucideIcon }) => {
+}: ComponentProps<"div"> & {
+  icon: LucideIcon;
+  variant?: "default" | "destructive";
+}) => {
   return (
     <div
       data-slot="dialog-header"
       className={cn("flex items-center gap-4 p-4 pr-16 text-left", className)}
       {...props}
     >
-      <span className="flex size-10 shrink-0 items-center justify-center rounded bg-primary text-primary-foreground">
+      <span
+        className={cn(
+          "flex size-10 shrink-0 items-center justify-center rounded",
+          variant === "destructive"
+            ? "bg-destructive text-destructive-foreground"
+            : "bg-primary text-primary-foreground",
+        )}
+      >
         <Icon className="size-4" />
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">{children}</div>

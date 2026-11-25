@@ -50,7 +50,7 @@ const hint = (retentionDays: number | null) => {
     "Find this camera's objects by text. Changing this restarts analysis.";
   return retentionDays === null
     ? base
-    : `${base} Kept for ${retentionDays} days.`;
+    : `${base} Kept for ${retentionDays} ${retentionDays === 1 ? "day" : "days"}.`;
 };
 
 export const SearchIndexFields = ({

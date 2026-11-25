@@ -170,10 +170,8 @@ export const FacesView = ({
         variant="destructive"
         title={`Delete this ${pending?.kind === "group" ? "person group" : "person"}?`}
         description={`${
-          pending?.kind === "group"
-            ? "The people in this group and all their photos are"
-            : "This person and all their photos are"
-        } removed from the face gallery. They will no longer be recognized.`}
+          pending?.kind === "group" ? "The people in this group" : "This person"
+        } and their photos are removed from the face gallery.`}
         confirmLabel={
           pending?.kind === "group" ? "Delete person group" : "Delete person"
         }

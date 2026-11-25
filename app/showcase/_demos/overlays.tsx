@@ -1,16 +1,5 @@
 "use client"
 import { InfoIcon } from "lucide-react"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -96,7 +85,6 @@ import {
 } from "@/components/ui/tooltip"
 import { Row } from "../_components/layout"
 import {
-  alertDialog,
   commandGroups,
   common,
   dialog,
@@ -128,28 +116,6 @@ export const DialogDemo = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
-
-export const AlertDialogDemo = () => {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger render={<Button variant="destructive" />}>
-        {alertDialog.trigger}
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {alertDialog.description}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{common.cancel}</AlertDialogCancel>
-          <AlertDialogAction>{common.continue}</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
   )
 }
 

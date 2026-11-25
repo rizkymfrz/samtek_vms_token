@@ -32,13 +32,13 @@ const ANALYTIC_ITEMS = [
 ];
 
 const recordingHint = (recording: EdgeRecording, isLive: boolean) => {
-  const base = "Record this camera's footage on the edge server.";
+  const base = "Record this camera on the edge server.";
   if (!isLive) return base;
   if (!recording.isAvailable)
-    return `${base} Recording is not available on this edge.`;
+    return `${base} Recording is not available on this edge server.`;
   return recording.retentionDays === null
     ? base
-    : `${base} Kept for ${recording.retentionDays} days.`;
+    : `${base} Kept for ${recording.retentionDays} ${recording.retentionDays === 1 ? "day" : "days"}.`;
 };
 
 export const CameraForm = ({
@@ -157,7 +157,7 @@ export const CameraForm = ({
                   id={`${formId}-enabled`}
                   icon={<PowerIcon />}
                   label="Enabled"
-                  description="Turn the camera on or off. A disabled camera stops streaming and analyzing."
+                  description="A disabled camera stops streaming and analyzing."
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
@@ -239,7 +239,7 @@ export const CameraForm = ({
         icon={Trash2Icon}
         variant="destructive"
         title="Delete this camera?"
-        description="The camera is removed from the system and from every layout. This cannot be undone."
+        description="The camera is removed from every layout, but its alarms are kept."
         confirmLabel="Delete camera"
         isConfirmDisabled={isRemoving}
         onClose={() => setIsConfirming(false)}
