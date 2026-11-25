@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Analytics** (`/analytics`, `features/analytics`): diaudit
+    teksnya (§3.19). Halaman kelola wajah (`faces`) belum diaudit.
   - **Edge servers** (`/servers`, `features/servers`): diaudit
     teksnya (§3.18).
   - **Cameras** (`/cameras`, `features/cameras`): diaudit teksnya
@@ -723,6 +725,42 @@ Catatan:
 - Tombol scan: `Scan network` / `Scanning…`.
 - Hapus edge server dicegah bila masih memiliki kamera.
 
+### 3.19 Analytics
+
+Menu dan page title: `Analytics`. Judul halaman detail mengikuti judul
+analytic.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Analytic | Jenis analisis video yang dijalankan Edge pada kamera (`analytic_id`). Satu kamera memakai satu analytic. | Teks UI untuk jenis analisis. `Analytics` adalah nama halaman. | Module, plugin | `No analytic` |
+| Analytic group | Pengelompokan satu atau beberapa analytic pada satu halaman (slug). Judulnya diturunkan dari label analytic bila hanya berisi satu analytic. | Kartu dan halaman detail. | Category | `People counting and dwelling` |
+| Dwelling | Lama objek berada di area (stay time). | Nama analytic dan statistik. | Loitering (itu istilah alarm lain) | `Stay time` |
+| Line count | Jumlah objek yang melintasi garis hitung. | Statistik. | Crossing count | `Line count` |
+| Objects in area | Jumlah objek yang berada di area pada satu waktu. | Pilihan metric. | Occupancy | `Objects in area` |
+| Interval | Pengelompokan waktu statistik: `Hourly`, `Daily`, `Weekly`, `Monthly`. | Pilihan interval. | Period, granularity | `Interval` |
+| Metric | Besaran yang digambar: `Line count`, `Objects in area`, `Stay time (min)`. | Pilihan metric. | Measure | `Metric` |
+
+Aturan:
+- Label dan judul analytic memakai sentence case; akronim baku tetap
+  kapital (PPE). Ejaan baku: `Personal protective equipment (PPE)`.
+- Label analytic hanya punya satu sumber: `config/analytics-catalog.ts`.
+  Judul grup analytic diturunkan dari katalog bila grupnya berisi satu
+  analytic. Grup berisi lebih dari satu analytic (PPE, License plate
+  recognition) menuliskan judulnya sendiri.
+- Deskripsi analytic: satu kalimat bertitik, tanpa `footage`
+  (`from camera video`).
+- Deskripsi `Phone calling` mengikuti definisi Edge (§3.6): `Detects
+  people on a phone call, with a hand held near the head.` Batasan
+  (garuk kepala dapat memicu alarm, ponsel jauh dari kepala tidak
+  terdeteksi, belum diuji dengan orang menelepon sungguhan) dicatat di
+  docs dan tidak dimasukkan ke UI.
+- Judul riwayat: `Alarm history`, `Plate history`, `Recognition
+  history`.
+- Tombol kembali pada statistik: `Back to {judul analytic}`.
+- Label pilihan `Stay time (min)` memakai `min` karena label pilihan
+  singkat. Pengecualian yang disetujui dari pola unit (§2).
+- Deskripsi empty state boleh memakai `yet`, judulnya tidak.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -846,7 +884,7 @@ Label analytic lain di kedua berkas itu masih Title Case.
 | Sumber | Kondisi | Catatan |
 |---|---|---|
 | Id analytic (`people_counting_dwelling`, `phone_calling`, ...) | Peta label sudah ada di `config/analytics-catalog.ts` (18 entri). | Label Title Case. Harus menjadi sentence case. |
-| Judul grup analytic | `features/analytics/lib/analytic-groups.ts` punya judul sendiri (`Fire & Smoke Detection`, `Personnel Protective Equipment (PPE)`, `Cat Detection Alert`). | Judul ini berbeda dari catalog untuk analytic yang sama (`Fire and Smoke Detection`, `PPE Violation`). Ini duplikasi label yang sudah ada. |
+| Judul grup analytic | `features/analytics/lib/analytic-groups.ts`. Dulu menulis judul sendiri, berbeda dari katalog. | Sekarang diturunkan dari katalog untuk grup satu analytic (§3.19). |
 | Judul alarm (`alarm.title`) | Dashboard menampilkan string Edge apa adanya pada `Alarms by type`. Contoh: `Dwelling Alarm`, `Fire Smoke Alarm`, `Sleep Alarm`, `PPE Violation`. | Title Case dan akhiran `Alarm` tidak konsisten. Tidak ada peta label. |
 | Kind alarm (`ppe_missing`, `phone_call`, ...) | Enum stabil, terdokumentasi di `docs/database-schema.md`. | Namespace berbeda dari id analytic. |
 | Recognizer (`face_recognition`, ...) | Dashboard memakai `titleCase()` pada id. | `titleCase()` hanya menaikkan huruf pertama dan mengganti `_` dengan spasi. Namanya menyesatkan. |
@@ -907,12 +945,12 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, dan `Edge servers` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, dan `Analytics` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
 | Playback | Diterapkan, termasuk `Slower` / `Faster`. |
-| Label analytic Title Case | Hanya `Cat detection alarm` yang diterapkan. |
+| Label analytic Title Case | Diterapkan: seluruh label katalog dan judul grup (sentence case, judul grup diturunkan dari katalog). |
 
 Catatan: baris yang memuat `No ... yet` atau titik pada judul
 `EmptyState` di tabel lama mengikuti aturan terbaru (§2): judul tanpa
@@ -1149,6 +1187,19 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `server-list-panel.tsx` | `Nothing registered yet`, `Scan`, `Scanning` | `No registered devices`, `Scan network`, `Scanning…` |
 | `server-form-dialog.tsx` | `Edge ID {id}` | `Edge server ID {id}` |
 | `server-form-dialog.tsx`, `group-form-dialog.tsx` | placeholder tanpa `e.g.` (`Main building`, `Cabang Jakarta`, dan seterusnya) | diawali `e.g.` |
+
+### Analytics (§3.19, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `config/analytics-catalog.ts` | 18 label Title Case | Sentence case (`People counting and dwelling`, `PPE violation`, `Fire and smoke detection`, `Phone calling`, `People re-identification`, dan seterusnya) |
+| `analytic-groups.ts` | judul grup ditulis ulang (`Fire & Smoke Detection`, `Personnel Protective Equipment (PPE)`) | diturunkan dari katalog; PPE dan License plate recognition menulis judul sendiri (`Personal protective equipment (PPE)`, `License plate recognition`) |
+| `analytic-groups.ts` | `...from camera footage.` | `...from camera video.` |
+| `analytic-groups.ts` | `Detects people using a phone in restricted areas.` | `Detects people on a phone call, with a hand held near the head.` |
+| `analytic-plate-history.tsx`, `analytic-recognition-history.tsx` | `Plate History`, `Recognition History` | `Plate history`, `Recognition history` |
+| `counting-stats-view.tsx` | `Could not load statistics` (toast dan pesan) | `Failed to load statistics` / `Failed to load statistics.` |
+| `counting-stats-view.tsx` | tombol `Back` | `Back to {judul analytic}` |
+| `app/(app)/analytics/[slug]/faces/page.tsx` | `Manage Faces · {judul}` | `Manage faces · {judul}` |
 
 ### Label analytic (sentence case, §6.1)
 
