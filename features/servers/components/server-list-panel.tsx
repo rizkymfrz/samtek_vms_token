@@ -46,11 +46,11 @@ export const ServerListPanel = ({
   const shown = tab === "registered" ? registered : pending;
   return (
     <>
-      <PanelSection title="Servers">
+      <PanelSection title="Edge servers">
         {servers.length === 0 && (
           <PanelEmpty
             icon={<ServerIcon />}
-            title="No servers yet"
+            title="No edge servers"
             description="Add one to get started."
           />
         )}
@@ -91,8 +91,8 @@ export const ServerListPanel = ({
           ))}
         </ul>
         <PanelActions
-          createLabel="Add server"
-          deleteLabel="Delete server"
+          createLabel="Add edge server"
+          deleteLabel="Delete edge server"
           isDeleteDisabled={selectedId === null}
           onCreate={onAdd}
           onDelete={onDelete}

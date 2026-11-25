@@ -28,6 +28,11 @@ export const TalkControl = ({
   const isMine = talk.edgeId === edgeId && talk.deviceId === deviceId;
   const session: TalkSession = isMine ? talk.session : TALK_IDLE;
   const isBusyElsewhere = isLive(talk.session) && !isMine;
+  const reason = !user
+    ? "Talk needs a signed-in user"
+    : isBusyElsewhere
+      ? "Talk is in use on another camera"
+      : undefined;
   const isActive = session.phase === "active";
   const failure =
     isMine && session.phase === "ended" && session.reason !== "stopped"
@@ -83,14 +88,9 @@ export const TalkControl = ({
         <Button
           variant="secondary"
           size="icon-sm"
-          aria-label="Talk"
-          title={
-            !user
-              ? "Talk needs a signed-in user"
-              : isBusyElsewhere
-                ? "Talk is in use on another camera"
-                : "Talk"
-          }
+          aria-label="Start talk"
+          aria-description={reason}
+          title={reason ?? "Start talk"}
           disabled={!isSupported || !user || isBusyElsewhere}
           onClick={() => {
             if (user) void startTalk(edgeId, deviceId, user.id);

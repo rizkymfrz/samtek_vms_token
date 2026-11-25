@@ -13,7 +13,7 @@ export const PtzToggle = (camera: PtzCamera) => {
     <ToolbarToggle
       pressed={isOn}
       onPressedChange={(pressed) => setPtzCamera(pressed ? camera : null)}
-      label={isOn ? "Hide PTZ controls" : "Show PTZ controls"}
+      label="PTZ controls"
     >
       <MoveIcon />
     </ToolbarToggle>

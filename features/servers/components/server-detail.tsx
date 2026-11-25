@@ -56,7 +56,7 @@ export const ServerDetail = ({
 }) => {
   const [confirm, setConfirm] = useState<"restart" | "edge" | null>(null);
   const empty = !online
-    ? "No data. The server is offline."
+    ? "No data. The edge server is offline."
     : !metrics
       ? isLive && !mqttConfig
         ? "Metrics are not available from the API yet."

@@ -12,7 +12,7 @@ export const SpeakerToggle = ({ audioId }: { audioId: string }) => {
     <ToolbarToggle
       pressed={isOn}
       onPressedChange={(pressed) => setAudioActive(audioId, pressed)}
-      label={isOn ? "Mute speaker" : "Unmute speaker"}
+      label="Audio"
     >
       {isOn ? <Volume2Icon /> : <VolumeXIcon />}
     </ToolbarToggle>

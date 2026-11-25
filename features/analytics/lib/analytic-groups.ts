@@ -142,7 +142,7 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "cat-detection",
-    title: "Cat Detection Alert",
+    title: "Cat detection alarm",
     description: "Detects cats in the monitored area.",
     icon: CatIcon,
     analyticIds: ["cat_detection"],

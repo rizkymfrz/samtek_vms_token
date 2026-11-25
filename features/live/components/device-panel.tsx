@@ -136,7 +136,7 @@ export const DevicePanel = ({
         value={layout.id}
         onChange={onSelectLayout}
         actions={{
-          createLabel: "New layout",
+          createLabel: "Create layout",
           deleteLabel: "Delete layout",
           isDeleteDisabled: layouts.length === 1,
           onCreate: onNewLayout,

@@ -13,7 +13,7 @@ const ServersContent = async () => {
   return <ServersView data={data} isLive={isLiveSource} />;
 };
 
-export const metadata: Metadata = { title: "Servers" };
+export const metadata: Metadata = { title: "Edge servers" };
 
 const Page = () => {
   return (

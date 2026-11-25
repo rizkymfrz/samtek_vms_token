@@ -236,7 +236,7 @@ export const PlaybackPanel = ({
             />
           )}
           <Pick
-            label="Alert type"
+            label="Alarm type"
             icon={BellIcon}
             items={alertMarkers.items}
             value={alertMarkers.value}

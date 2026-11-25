@@ -138,7 +138,9 @@ const Form = ({
   return (
     <>
       <DialogHeader icon={ServerIcon}>
-        <DialogTitle>{editing ? "Edit server" : "Add server"}</DialogTitle>
+        <DialogTitle>
+          {editing ? "Edit edge server" : "Add edge server"}
+        </DialogTitle>
         <DialogDescription>
           {editing
             ? `Edge ID ${editing.id}`
@@ -203,7 +205,7 @@ const Form = ({
               id={`${formId}-active`}
               icon={<PowerIcon />}
               label="Active"
-              description="An inactive server is ignored and shown as offline."
+              description="An inactive edge server is ignored and shown as offline."
               checked={field.value}
               onCheckedChange={field.onChange}
             />
@@ -216,7 +218,7 @@ const Form = ({
           Cancel
         </Button>
         <Button type="submit" form={formId} disabled={isPending}>
-          {editing ? "Save" : "Add server"}
+          {editing ? "Save" : "Add edge server"}
         </Button>
       </DialogFooter>
       {groupAction && (

@@ -563,7 +563,7 @@ export const WIDGETS: Widget[] = [
         <div className="flex flex-col gap-4">
           <Stats
             items={[
-              [d.behavior.phone, "Phone use"],
+              [d.behavior.phone, "Phone calling"],
               [d.behavior.sleep, "Asleep on duty"],
             ]}
           />

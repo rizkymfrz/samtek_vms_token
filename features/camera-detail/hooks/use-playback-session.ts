@@ -35,7 +35,11 @@ export const usePlaybackSession = (
       setSession(next);
       return next;
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Playback failed");
+      setError(
+        failure instanceof Error
+          ? failure.message
+          : "Failed to play the recording.",
+      );
       return null;
     } finally {
       setIsBusy(false);
@@ -99,7 +103,7 @@ export const usePlaybackSession = (
       controlPlayback(edgeId, sessionId, "status").then(setSession, () => {
         hasStarted.current = false;
         setSession(null);
-        setError("The playback session ended");
+        setError("The playback session ended.");
       });
     }, STATUS_MS);
     return () => {

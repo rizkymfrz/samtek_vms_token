@@ -160,7 +160,7 @@ export const PlaybackView = ({
                 }}
               />
               <Pick
-                label="Stream"
+                label="Stream quality"
                 icon={SignalIcon}
                 items={QUALITY_ITEMS}
                 value={quality}
@@ -243,7 +243,7 @@ export const PlaybackView = ({
                 isDisabled={!hasOnline}
               />
               <Pick
-                label="Alert type"
+                label="Alarm type"
                 icon={BellIcon}
                 className="ml-auto"
                 items={alertMarkers.items}

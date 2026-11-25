@@ -31,7 +31,7 @@ export const DeleteServerDialog = ({
               <AlertDialogTitle>Delete {server.name}?</AlertDialogTitle>
               <AlertDialogDescription>
                 {canDelete(server)
-                  ? "The server is removed from the system. This cannot be undone."
+                  ? "The edge server is removed from the system. This cannot be undone."
                   : `It still has ${server.cameraCount} cameras. Move or delete them first; a server with cameras cannot be deleted.`}
               </AlertDialogDescription>
             </AlertDialogHeader>

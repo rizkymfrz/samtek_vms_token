@@ -172,7 +172,7 @@ export const WebrtcPlayer = ({
         <Button
           variant="secondary"
           size="icon-sm"
-          aria-label={isMuted ? "Unmute" : "Mute"}
+          aria-label={isMuted ? "Unmute audio" : "Mute audio"}
           className="absolute right-2 bottom-2"
           onClick={() => setIsMuted((muted) => !muted)}
         >

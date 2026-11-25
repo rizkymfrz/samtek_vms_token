@@ -67,8 +67,10 @@ export const ServersView = ({
       ? [`Server status and metrics are unavailable. ${brokerError}`]
       : [],
   );
-  useFailureToast("Could not restart the edge", [actions.restartEdgeError]);
-  useFailureToast("Could not delete the server", [actions.removeError]);
+  useFailureToast("Failed to restart the edge server", [
+    actions.restartEdgeError,
+  ]);
+  useFailureToast("Failed to delete the edge server", [actions.removeError]);
   const serverOnline = useServerOnline();
   const online = useMemo(
     () =>
@@ -184,12 +186,14 @@ export const ServersView = ({
           <EmptyState
             icon={<ServerIcon />}
             title={
-              servers.length === 0 ? "No servers yet" : "No server selected"
+              servers.length === 0
+                ? "No edge servers"
+                : "No edge server selected"
             }
             description={
               servers.length === 0
                 ? "Add one, or register a discovered device."
-                : "Choose a server from the list."
+                : "Choose an edge server from the list."
             }
           />
         )}

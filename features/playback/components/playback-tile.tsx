@@ -54,12 +54,12 @@ const PlaybackScreen = ({
     return (
       <span>
         {hasPosition
-          ? "No recording at this time"
+          ? "No recording at this time."
           : "Select a time on the timeline to play."}
       </span>
     );
   }
-  if (session.state === "ended") return <span>End of recording</span>;
+  if (session.state === "ended") return <span>End of recording.</span>;
   return (
     <>
       <WebrtcPlayer
@@ -72,10 +72,7 @@ const PlaybackScreen = ({
         isTimed={boxes.isTimed}
         onFrameTime={boxes.onFrameTime}
       />
-      <PlaybackBoxLayer
-        objects={boxes.objects}
-        analyticId={tile.analyticId}
-      />
+      <PlaybackBoxLayer objects={boxes.objects} analyticId={tile.analyticId} />
     </>
   );
 };

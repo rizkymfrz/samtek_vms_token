@@ -13,7 +13,7 @@ export const FullscreenToggle = ({
     <ToolbarToggle
       pressed={isFullscreen}
       onPressedChange={onToggle}
-      label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+      label="Fullscreen"
     >
       {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
     </ToolbarToggle>

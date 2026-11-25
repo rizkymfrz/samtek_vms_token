@@ -163,7 +163,7 @@ export const DeviceTree = ({
         {nodes.length === 0 && (
           <PanelEmpty
             icon={isSearching ? <SearchXIcon /> : emptyIcon}
-            title={isSearching ? `No ${noun} found.` : `No ${noun}.`}
+            title={isSearching ? `No ${noun} found` : `No ${noun}`}
             description={isSearching ? "Try a different search." : undefined}
           />
         )}

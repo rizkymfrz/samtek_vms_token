@@ -58,19 +58,19 @@ export const PlaybackControls = ({
       <Button
         variant="secondary"
         size="icon"
-        aria-label="Rewind"
+        aria-label="Slower"
         disabled={isDisabled || !hasPosition}
         onClick={() => clock.setSpeed(stepSpeed(speed, -1))}
       >
         <RewindIcon />
       </Button>
       <span className="flex size-10 items-center justify-center rounded border bg-card text-xs tabular-nums">
-        {speed}
+        {speed}x
       </span>
       <Button
         variant="secondary"
         size="icon"
-        aria-label="Fast forward"
+        aria-label="Faster"
         disabled={isDisabled || !hasPosition}
         onClick={() => clock.setSpeed(stepSpeed(speed, 1))}
       >

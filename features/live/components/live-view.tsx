@@ -19,6 +19,7 @@ import {
 } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
@@ -98,6 +99,7 @@ export const LiveView = ({
   const actions = useLayoutActions(isLive);
   useFailureToast("Failed to update the layout", [actions.error]);
   const [pickedId, setPickedId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [pageState, setPageState] = useState({ layoutId: "", index: 0 });
   const { value: grid } = usePersistedStore(gridPreferenceStore);
   const [quality, setQuality] = useState<StreamQuality>("sub");
@@ -121,7 +123,7 @@ export const LiveView = ({
         <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
           <EmptyState
             icon={<LayoutGridIcon />}
-            title="No layouts."
+            title="No layouts"
             description="Create a layout to start watching cameras."
           >
             {actions.error && (
@@ -164,14 +166,7 @@ export const LiveView = ({
           readOnly={!detail}
           onSelectLayout={setPickedId}
           onNewLayout={createLayout}
-          onDeleteLayout={() =>
-            actions.remove.mutate(summary.id, {
-              onSuccess: () =>
-                setPickedId(
-                  layouts.find((l) => l.id !== summary.id)?.id ?? null,
-                ),
-            })
-          }
+          onDeleteLayout={() => setIsDeleting(true)}
           onAdd={(ids) =>
             detail &&
             actions.changeSlots.mutate({
@@ -223,7 +218,7 @@ export const LiveView = ({
                 }}
               />
               <Pick
-                label="Stream"
+                label="Stream quality"
                 icon={SignalIcon}
                 items={QUALITY_ITEMS}
                 value={quality}
@@ -301,6 +296,22 @@ export const LiveView = ({
           )}
         </div>
         <PtzPanel />
+        <DeleteConfirmDialog
+          isOpen={isDeleting}
+          title={`Delete ${summary.name}?`}
+          description="The layout is removed. The cameras in it are not deleted."
+          confirmLabel="Delete layout"
+          onConfirm={() => {
+            setIsDeleting(false);
+            actions.remove.mutate(summary.id, {
+              onSuccess: () =>
+                setPickedId(
+                  layouts.find((l) => l.id !== summary.id)?.id ?? null,
+                ),
+            });
+          }}
+          onClose={() => setIsDeleting(false)}
+        />
       </div>
     </PageShell>
   );

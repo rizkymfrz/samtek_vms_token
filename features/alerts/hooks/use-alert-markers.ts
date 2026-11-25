@@ -27,7 +27,7 @@ export const useAlertMarkers = (
     value,
     onChange: setSelected,
     items: [
-      { value: ALL_ALERTS, label: "All alerts" },
+      { value: ALL_ALERTS, label: "All alarms" },
       ...[...tones.keys()].map((title) => ({ value: title, label: title })),
     ],
     markers: alerts.flatMap((alert) => {

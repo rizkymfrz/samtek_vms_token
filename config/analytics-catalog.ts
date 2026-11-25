@@ -43,7 +43,7 @@ export const ANALYTICS = [
   },
   {
     id: "cat_detection",
-    label: "Cat Detection Alert",
+    label: "Cat detection alarm",
     camera: "Garden",
     edge: "Main Building",
   },

@@ -61,7 +61,7 @@ export const NAV_GROUPS: NavGroup[] = [
       },
       {
         href: "/servers",
-        title: "Servers",
+        title: "Edge servers",
         icon: ServerIcon,
         children: "servers",
       },
