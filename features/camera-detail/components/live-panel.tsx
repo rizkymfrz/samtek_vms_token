@@ -1,5 +1,7 @@
 "use client";
+import { PauseIcon, RotateCcwIcon, ScanEyeIcon } from "lucide-react";
 import { useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import {
   CameraWebToggle,
@@ -36,6 +38,20 @@ export const LivePanel = ({
         <p className="text-xs text-muted-foreground">
           The main stream of this camera, as the edge server relays it.
         </p>
+      </div>
+      <div className="flex gap-2">
+        <Button className="flex-1">
+          <PauseIcon />
+          Pause live view
+        </Button>
+        <Button variant="secondary" className="flex-1">
+          <RotateCcwIcon />
+          Restart camera
+        </Button>
+        <Button variant="destructive" className="flex-1">
+          <ScanEyeIcon />
+          Pause analytics
+        </Button>
       </div>
       <div
         ref={root}
