@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Cameras** (`/cameras`, `features/cameras`): diaudit teksnya
+    (§3.17).
   - **Map** (`/map`, `features/map`): diaudit teksnya (§3.16).
   - **Floor plans** (`/floorplan`, `features/floorplan`): diaudit
     teksnya (§3.15).
@@ -654,6 +656,38 @@ Catatan:
   (`DEVICE_STATE_LABEL`), tetapi belum membedakan `Edge server
   disabled` dan `Camera error` (§3.10).
 
+### 3.17 Cameras
+
+Menu dan page title: `Cameras`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Camera | Catatan kamera di Central: nama, edge server, satu analytic, sumber stream, enabled, dan recording. | Seluruh halaman Cameras. | Device (di teks UI, §3.2) | `Add camera` |
+| Stream source | Alamat sumber video: `rtsp://host/path` atau `bodyworn://<device>?channel=<0-63>&stream=main\|sub&plate=<plate>`. | Field `Main stream`, `Sub stream`, `Third stream`. | URL | `Main stream` |
+| Enabled | Kamera dinyalakan. Bila mati, stream dan analytic berhenti. | Kolom dan toggle. Lawannya status `Disabled`. | Active | `Enabled` |
+| Recording | Edge server merekam kamera ini. | Kolom, filter, toggle. | Footage, archive | `Recording on` |
+| Configuration | Hasil pengiriman konfigurasi kamera ke Edge: `Applied`, `Rejected` (dengan pesan Edge), `Pending`. | Kolom tabel. | Config, apply status | `Configuration` |
+| Scan | Pencarian kamera ONVIF oleh Edge server pada jaringannya sendiri berdasarkan IP range dan port. | Dialog scan. | Discover | `Scan cameras` |
+| IP range | Rentang alamat dalam bentuk CIDR (`192.168.1.0/24`). | Field scan. | Subnet | `IP range` |
+| Login | Pasangan username dan password yang dicoba pada kamera hasil scan (maksimal 8). Hasil scan menunjukkan login yang cocok. | Kolom hasil dan pesan validasi. | Credential (di teks UI) | `Login` |
+| Channel | Kanal kamera ONVIF hasil scan. | Daftar hasil. | Stream | `Channel 1` |
+
+Catatan:
+- Kolom `Streams` menampilkan semua sumber yang diisi, dipisah
+  `+`: `Main`, `Main + Sub`, `Main + Sub + Third`.
+- Validasi form memakai `{Field} is required.`: `Name is required.`,
+  `Edge server is required.`, `Main stream is required.`
+- Pesan scan yang gagal memakai `Failed to {verb} the scan.`
+- Tombol toolbar `Scan cameras`. Judul dialog tetap `Scan for
+  cameras`.
+- Judul `EmptyState`: `No cameras` (data kosong) dan `No cameras
+  found` (filter) (aturan 21).
+- Deskripsi toggle Recording: `Record this camera on the edge
+  server.`
+- Penghapusan memakai dialog konfirmasi yang menyebut dampak: kamera
+  keluar dari semua layout dan berhenti streaming, sedangkan alarm
+  lama tetap tersimpan.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -838,7 +872,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets` dan `Map` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, dan `Cameras` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1048,6 +1082,21 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `map-panel.tsx` | badge `From server` | `From edge server` |
 | `map-panel.tsx` | koordinat 5 desimal | 6 desimal |
 | `schemas/map.ts` | `Latitude and longitude go together`, `A device needs its edge server` | `Latitude and longitude must be set together.`, `Edge server is required for a device.` |
+
+### Cameras (§3.17, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `cameras-view.tsx` | `Could not update the camera`, `Could not delete the camera` | `Failed to update the camera`, `Failed to delete the camera` |
+| `cameras-view.tsx` | `No cameras yet` | `No cameras` |
+| `cameras-view.tsx` | tombol `Scan` | `Scan cameras` |
+| `camera-filter-panel.tsx` | `Search cameras...`, `All servers` | `Search cameras…`, `All edge servers` |
+| `camera-table.tsx` | kolom `Config` | `Configuration` |
+| `camera-table.tsx` | `Main + Sub` / `Main` | semua sumber yang terisi (`Main + Sub + Third`) |
+| `camera-table.tsx` | tooltip `Delete` | `Delete {name}` |
+| `camera-dialog.tsx` | `Record this camera's footage on the edge server.` | `Record this camera on the edge server.` |
+| `edit-camera.ts`, `scan-dialog.tsx` | `Choose an edge server.`, `The main stream is required.` | `Edge server is required.`, `Main stream is required.` |
+| `use-device-scan.ts` | `The scan did not start.`, `Could not stop the scan.` | `Failed to start the scan.`, `Failed to stop the scan.` |
 
 ### Label analytic (sentence case, §6.1)
 
