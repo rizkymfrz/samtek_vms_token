@@ -756,10 +756,10 @@ Menu dan page title: `Edge servers`.
 
 | Canonical | Definition | Context & preferred wording | Avoid | Example |
 |---|---|---|---|---|
-| Edge | Perangkat lunak SAMTEK Edge (nama produk, selalu kapital E). | Aksi dan pesan tentang prosesnya. | edge (kata benda huruf kecil) | `Restart Edge` |
+| Edge | Perangkat lunak SAMTEK Edge (nama produk, selalu kapital E). | Aksi dan pesan tentang prosesnya. | edge (kata benda huruf kecil) | `The Edge process stops` |
 | Edge server | Server yang menjalankan SAMTEK Edge (§3.8). | Semua teks tentang mesinnya. | Server saja | `Edit edge server` |
-| Restart Edge | Menghentikan proses Edge lalu dijalankan lagi oleh service manager. Kamera berhenti streaming dan analyzing sampai Edge kembali. Lewat MQTT (`edge.restart`). | Tombol dan dialog. Tidak mematikan mesinnya. | Restart server | `Restart Edge` |
-| Reboot edge server | Menghidupkan ulang mesin. Kamera berhenti sekitar satu menit. Hanya tersedia pada mode contoh (`!isLive`). | Tombol dan dialog. | Restart server | `Reboot edge server` |
+| Restart edge server | Menghentikan proses Edge lalu dijalankan lagi oleh service manager. Kamera berhenti streaming dan analyzing sampai Edge kembali. Lewat MQTT (`edge.restart`). | Tombol dan dialog. Tidak mematikan mesinnya. | Restart server, Restart Edge (tombol) | `Restart edge server` |
+| Reboot edge server | Menghidupkan ulang mesin. Kamera berhenti sekitar satu menit. Hanya tersedia pada mode contoh (`!isLive`). | Tombol dan dialog. | Reboot (mesin) | `Reboot edge server` |
 | Active | Edge server aktif di sistem. Server tidak aktif diabaikan dan tampil sebagai `Edge server disabled` (§3.10). | Toggle form edge server. | Enabled (istilah kamera) | `Active` |
 | Edge server ID | Id edge server. | Deskripsi dialog ubah. | Edge ID | `Edge server ID {id}` |
 | Group | Edge server group (§3.15). `Code` adalah kode unik grup. | Dialog edge server dan grup. | | `Add group` |
@@ -772,7 +772,7 @@ Menu dan page title: `Edge servers`.
 
 Catatan:
 - Pada mode live, tombol yang tampil: `Edit edge server`,
-  `Restart Edge` (bila MQTT dikonfigurasi), dan `Delete edge server`.
+  `Restart edge server` (bila MQTT dikonfigurasi), dan `Delete edge server`.
   Scan, Log stream, dan Reboot hanya pada mode contoh.
 - Judul kartu metrik memakai sentence case: `CPU temperature`,
   `Memory usage`, `CPU usage`, `Storage usage`. `CPU`, `GB`, `MQTT`,
@@ -1474,6 +1474,7 @@ Tidak berubah: judul popover `Alerts`, `No alerts.`, `Mark all as read`,
 | `config/navigation.ts`, `app/(app)/search/page.tsx` | `Object Search` | `Object search` |
 | `object-search-view.tsx` | `Search failed` / `The search request failed. Try again.` | `Failed to search objects` / `The search could not be completed. Try again.` |
 | `object-search-view.tsx` | `Search is not available on this edge` / `...or the edge does not run on Linux.` | `...on this edge server` / `...or the edge server does not run on Linux.` |
+| `object-search-view.tsx` | `The first search after the edge starts...` | `The first search after Edge starts...` |
 | `validate-search.ts` | `Invalid time`, `Enter a search text`, `Search text has control characters`, `Start must be before end` | `Time is invalid.`, `Search text is required.`, `Search text contains control characters.`, `Start time must be before end time.` |
 | `validate-search.ts` | `Search text is at most N characters`, `Label is at most N characters`, `Limit must be 1 to 1000` | Kalimat bertitik: `Search text must be at most N characters.` dan sejenisnya |
 | `fetch-search.ts` | `Invalid search` (fallback pesan) | `The search is invalid.` |
@@ -1544,11 +1545,15 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `server-detail.tsx` | tombol `Log Stream`, `Edit Server`, `Restart Server`, `Delete Server` | `Log stream`, `Edit edge server`, `Reboot edge server`, `Delete edge server` |
 | `server-detail.tsx` | `CPU Temperature`, `Memory Usage`, `CPU Usage` | `CPU temperature`, `Memory usage`, `CPU usage` |
 | `storage-card.tsx` | `Storage Usage` | `Storage usage` |
-| `server-detail.tsx` | `Restart the edge of {name}?` / `The edge process stops...` | `Restart Edge on {name}?` / `The Edge process stops...` |
+| `server-detail.tsx` | `Restart the edge of {name}?` / `The edge process stops...` | `Restart {name}?` / `The Edge process stops...`, tombol `Restart edge server` |
 | `server-detail.tsx` | `Restart {name}?` / `Restart` | `Reboot {name}?` / `Reboot`, deskripsi memakai `edge server` |
 | `servers-view.tsx` | `Could not reach the MQTT broker` / `Server status and metrics are unavailable.` | `Failed to reach the MQTT broker` / `Edge server status and metrics are unavailable.` |
-| `servers-view.tsx` | `Failed to restart the edge server` | `Failed to restart Edge` |
+| `servers-view.tsx` | `Failed to restart Edge` | `Failed to restart the edge server` |
 | `servers-view.tsx` | `Some data could not be loaded` | `Some data did not load` |
+| `server-detail.tsx` | tombol `Restart Edge` | `Restart edge server` |
+| `delete-server-dialog.tsx` | `Delete server`, `a server with cameras cannot be deleted` | `Delete edge server`, `an edge server with cameras cannot be deleted` |
+| `group-form-dialog.tsx` | `Servers and floor plans are organized by group.` | `Edge servers and floor plans are organized by group.` |
+| `metric-chart.tsx` | `Last 60 sec` | `Last 60 seconds` |
 | `get-servers.ts` | `Could not be loaded` | `Failed to load` |
 | `server-list-panel.tsx` | `Nothing registered yet`, `Scan`, `Scanning` | `No registered devices`, `Scan network`, `Scanning…` |
 | `server-form-dialog.tsx` | `Edge ID {id}` | `Edge server ID {id}` |
@@ -1589,6 +1594,8 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `perimeter-list.tsx` | `No perimeters yet`, tooltip `Delete` | `No perimeters`, `Delete {name}` |
 | `playback-panel.tsx` | `End of recording`, `Rewind`, `Fast forward`, `Stream`, kecepatan `1` | `End of recording.`, `Slower`, `Faster`, `Stream quality`, `1x` |
 | `search-index-fields.tsx` | `Add label...`, `Seconds between embeddings` | `Add label…`, `Seconds between indexing` |
+| `camera-form.tsx` | `Setup Camera` | `Camera setup` |
+| `perimeter-panel.tsx` | `Perimeter Setting` | `Perimeter settings` |
 
 ### Manage faces (§3.23, diterapkan)
 
@@ -1619,6 +1626,7 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 |---|---|---|
 | `header-status.tsx` | `Servers` | `Edge servers` |
 | `header-search.tsx` | grup `Servers`, `...or server.`, placeholder `...servers...` | `Edge servers`, `...or edge server.`, `...edge servers…` |
+| `header-search.tsx`, `multi-select.tsx` | `Search...`, placeholder `Add...` | `Search…`, `Add…` |
 | `header-notifications.tsx` | `View all alerts` | `View all alarms` |
 | `components/ui/sidebar.tsx` | `Toggle Sidebar` | `Toggle sidebar` |
 

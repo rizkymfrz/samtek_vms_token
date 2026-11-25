@@ -51,7 +51,7 @@ export const HeaderSearch = ({
         aria-label="Search"
       >
         <SearchIcon />
-        <span className="hidden lg:inline">Search...</span>
+        <span className="hidden lg:inline">Search…</span>
         <Kbd className="ml-auto hidden lg:inline-flex">Ctrl K</Kbd>
       </Button>
       <CommandDialog

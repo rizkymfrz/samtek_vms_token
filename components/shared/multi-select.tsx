@@ -17,7 +17,7 @@ export const MultiSelect = ({
   options,
   value,
   onChange,
-  placeholder = "Add...",
+  placeholder = "Add…",
   className,
 }: {
   options: string[];

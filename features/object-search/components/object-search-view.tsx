@@ -21,8 +21,8 @@ const SearchSkeleton = () => (
   <div className="flex flex-col gap-4">
     <p className="flex items-center gap-2 text-xs text-muted-foreground">
       <Spinner />
-      Searching. The first search after the edge starts can take a minute while
-      the text model loads.
+      Searching. The first search after Edge starts can take a minute while the
+      text model loads.
     </p>
     <div className={GRID}>
       {Array.from({ length: 12 }, (_, index) => (

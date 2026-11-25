@@ -82,7 +82,7 @@ export const CameraForm = ({
             <CctvIcon className="size-4" />
           </span>
           <div className="flex min-w-0 flex-1 flex-col">
-            <h2 className="text-sm font-medium">Setup Camera</h2>
+            <h2 className="text-sm font-medium">Camera setup</h2>
             <p className="text-xs text-muted-foreground">
               Edit the camera details, then save them.
             </p>

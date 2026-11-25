@@ -100,7 +100,7 @@ export const ServerDetail = ({
               onClick={() => setConfirm("edge")}
             >
               <PowerIcon />
-              Restart Edge
+              Restart edge server
             </Button>
           )}
           {!isLive && (
@@ -210,7 +210,7 @@ export const ServerDetail = ({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Restart Edge on {server.name}?</AlertDialogTitle>
+            <AlertDialogTitle>Restart {server.name}?</AlertDialogTitle>
             <AlertDialogDescription>
               The Edge process stops and is started again by its service
               manager. Cameras stop streaming and analyzing until it is back.
@@ -224,7 +224,7 @@ export const ServerDetail = ({
                 onRestartEdge();
               }}
             >
-              Restart Edge
+              Restart edge server
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

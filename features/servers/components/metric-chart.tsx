@@ -57,7 +57,9 @@ export const MetricChart = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">
             <span className="text-sm font-medium">{title}</span>
-            <span className="text-xs text-muted-foreground">Last 60 sec</span>
+            <span className="text-xs text-muted-foreground">
+              Last 60 seconds
+            </span>
           </div>
           {!empty && (
             <div className="flex flex-col items-end gap-2">

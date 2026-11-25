@@ -52,7 +52,7 @@ const Form = ({
       <DialogHeader icon={FolderPlusIcon}>
         <DialogTitle>Add group</DialogTitle>
         <DialogDescription>
-          Servers and floor plans are organized by group.
+          Edge servers and floor plans are organized by group.
         </DialogDescription>
       </DialogHeader>
       <Separator />

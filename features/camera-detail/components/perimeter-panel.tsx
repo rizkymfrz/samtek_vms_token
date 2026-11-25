@@ -79,7 +79,7 @@ export const PerimeterPanel = ({
   return (
     <section className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <h2 className="text-sm font-medium">Perimeter Setting</h2>
+        <h2 className="text-sm font-medium">Perimeter settings</h2>
         <p className="text-xs text-muted-foreground">
           Draw the detection zones on the frame, then save your changes.
         </p>

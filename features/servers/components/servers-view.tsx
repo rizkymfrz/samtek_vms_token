@@ -67,7 +67,9 @@ export const ServersView = ({
       ? [`Edge server status and metrics are unavailable. ${brokerError}`]
       : [],
   );
-  useFailureToast("Failed to restart Edge", [actions.restartEdgeError]);
+  useFailureToast("Failed to restart the edge server", [
+    actions.restartEdgeError,
+  ]);
   useFailureToast("Failed to delete the edge server", [actions.removeError]);
   const serverOnline = useServerOnline();
   const online = useMemo(
