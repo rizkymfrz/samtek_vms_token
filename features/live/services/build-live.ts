@@ -2,7 +2,7 @@ import { analyticLabel } from "@/config/analytics-catalog";
 import { isServerOnline } from "@/config/server-status";
 import { deviceStateOf } from "@/lib/device-state";
 import { buildLiveSource } from "@/lib/mock/live-source";
-import { summaryOf } from "../lib/edit-layout";
+import { slotsOf, summaryOf } from "../lib/edit-layout";
 import type { LiveData, Tile } from "../types";
 
 export const buildLive = (now = Date.now()): LiveData => {
@@ -37,10 +37,14 @@ export const buildLive = (now = Date.now()): LiveData => {
   });
   const detailed = layouts
     .map((layout) => {
-      const cameras = layoutDevices
-        .filter((link) => link.layoutId === layout.id)
-        .toSorted((a, b) => a.position - b.position)
-        .map((link) => link.deviceRecordId);
+      const cameras = slotsOf(
+        layoutDevices
+          .filter((link) => link.layoutId === layout.id)
+          .map((link) => ({
+            position: link.position,
+            id: link.deviceRecordId,
+          })),
+      );
       const { id, name, description, isDefault } = layout;
       return { id, name, description, isDefault, cameras };
     })

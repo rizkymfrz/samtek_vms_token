@@ -1,3 +1,5 @@
+import type { Perimeters } from "@/lib/api/perimeters";
+
 export type MapMarker =
   | {
       type: "group";
@@ -22,6 +24,8 @@ export type MapMarker =
       edgeServerId: string;
       isEnabled: boolean;
       hasSubStream: boolean;
+      hasThirdStream: boolean;
+      perimeters: Perimeters | null;
       analytic: string | null;
       analyticId?: string | null;
       inherited: boolean;

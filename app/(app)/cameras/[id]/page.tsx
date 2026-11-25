@@ -27,21 +27,30 @@ const Connection = async () => {
 
 const CameraDetailContent = async ({
   params,
+  searchParams,
 }: {
   params: PageProps<"/cameras/[id]">["params"];
+  searchParams: PageProps<"/cameras/[id]">["searchParams"];
 }) => {
   await connection();
   const { id } = await params;
+  const { tab } = await searchParams;
   const detail = await redirectIfUnauthorized(loadDetail(id));
   if (!detail) notFound();
-  return <CameraDetailView detail={detail} isLive={isLiveSource} />;
+  return (
+    <CameraDetailView
+      detail={detail}
+      isLive={isLiveSource}
+      initialTab={tab === "playback" ? "playback" : "configuration"}
+    />
+  );
 };
 
-const Page = ({ params }: PageProps<"/cameras/[id]">) => {
+const Page = ({ params, searchParams }: PageProps<"/cameras/[id]">) => {
   return (
     <>
       <Suspense fallback={<CameraDetailSkeleton />}>
-        <CameraDetailContent params={params} />
+        <CameraDetailContent params={params} searchParams={searchParams} />
       </Suspense>
       <Suspense>
         <Connection />

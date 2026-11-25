@@ -1,15 +1,22 @@
 "use client";
 import { CctvOffIcon, XIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import { DeviceError } from "@/components/shared/device-error";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import { TalkControl } from "@/features/talk";
+import type { Perimeters } from "@/lib/api/perimeters";
 import type { DeviceState } from "@/lib/device-state";
+import { CameraDetailToggle } from "./camera-detail-toggle";
+import { CameraWebToggle } from "./camera-web-toggle";
+import { FullscreenToggle } from "./fullscreen-toggle";
 import { SpeakerToggle } from "./speaker-toggle";
+import { StreamQualityPick } from "./stream-quality-pick";
 import { WebrtcPlayer } from "./webrtc-player";
+import { useFullscreen } from "../hooks/use-fullscreen";
+import { useStreamQuality } from "../hooks/use-stream-quality";
 import { streamName } from "../lib/relay-url";
 
 export type PreviewCamera = {
@@ -20,6 +27,8 @@ export type PreviewCamera = {
   analyticId?: string | null;
   state: DeviceState;
   hasSubStream: boolean;
+  hasThirdStream: boolean;
+  perimeters: Perimeters | null;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
 };
@@ -33,6 +42,9 @@ export const CameraPreview = ({
   onClose: () => void;
   details?: ReactNode;
 }) => {
+  const root = useRef<HTMLDivElement>(null);
+  const { isFullscreen, toggle } = useFullscreen(root);
+  const { picked, pick } = useStreamQuality(camera.id, camera, "sub");
   return (
     <>
       <div className="flex items-center justify-between gap-2 border-b p-2">
@@ -52,22 +64,39 @@ export const CameraPreview = ({
           <XIcon />
         </Button>
       </div>
-      <div className="group/tile relative aspect-video overflow-hidden bg-sidebar">
+      <div
+        ref={root}
+        className="group/tile relative aspect-video overflow-hidden bg-sidebar [&:fullscreen]:aspect-auto"
+      >
         {camera.state === "live" ? (
           <>
             <WebrtcPlayer
               relay={camera}
-              stream={streamName(camera.id, "sub", camera.hasSubStream)}
+              stream={streamName(camera.id, picked, camera.hasSubStream)}
               audioId={camera.id}
             />
             <StreamDetections
               edgeId={camera.serverId}
               deviceId={camera.id}
               analyticId={camera.analyticId}
+              perimeters={camera.perimeters}
               isDefaultOn
+              trailing={
+                <FullscreenToggle
+                  isFullscreen={isFullscreen}
+                  onToggle={toggle}
+                />
+              }
             >
               <SpeakerToggle audioId={camera.id} />
               <TalkControl edgeId={camera.serverId} deviceId={camera.id} />
+              <CameraDetailToggle id={camera.id} tab="configuration" />
+              <CameraWebToggle id={camera.id} />
+              <StreamQualityPick
+                streams={camera}
+                value={picked}
+                onChange={pick}
+              />
             </StreamDetections>
           </>
         ) : camera.state === "disabled" ? (

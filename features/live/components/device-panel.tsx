@@ -13,6 +13,7 @@ import {
   matchesQuery,
 } from "@/components/shared/device-tree";
 import { deviceStateOf } from "@/lib/device-state";
+import { DragPreview } from "./drag-preview";
 import type { LiveLayout, LiveLayoutSummary, ServerNode, Tile } from "../types";
 
 export const CameraTreePanel = ({
@@ -26,7 +27,7 @@ export const CameraTreePanel = ({
 }: {
   servers: ServerNode[];
   tiles: Tile[];
-  selected: string[];
+  selected: (string | null)[];
   placedLabel: string;
   readOnly: boolean;
   onAdd: (ids: string[]) => void;
@@ -80,6 +81,7 @@ export const CameraTreePanel = ({
           state: tile.state,
           isMuted: !added,
           isDraggable: !readOnly,
+          dragPreview: <DragPreview id={tile.id} name={tile.name} />,
           actions: (
             <PlacementAction
               isPlaced={added}

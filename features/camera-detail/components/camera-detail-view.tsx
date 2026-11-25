@@ -44,14 +44,16 @@ const toRecord = (detail: CameraDetail) => ({
 export const CameraDetailView = ({
   detail,
   isLive,
+  initialTab = "configuration",
 }: {
   detail: CameraDetail;
   isLive: boolean;
+  initialTab?: "configuration" | "playback";
 }) => {
   const record = toRecord(detail);
   const [saved, setSaved] = useState(detail.perimeters);
   const [perimeters, setPerimeters] = useState(detail.perimeters);
-  const [tab, setTab] = useState<string | number | null>("configuration");
+  const [tab, setTab] = useState<string | number | null>(initialTab);
   useEffect(() => () => setTab("configuration"), []);
   const [tool, setTool] = useState<Tool>(null);
   const [selection, setSelection] = useState<Selection>(null);

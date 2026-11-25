@@ -15,6 +15,7 @@ import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
+import { TileSlot } from "@/components/shared/tile-slot";
 import { Button } from "@/components/ui/button";
 import { useAlertMarkers } from "@/features/alerts";
 import {
@@ -25,11 +26,13 @@ import {
 import {
   addCameras,
   CameraTreePanel,
+  DragPreview,
   gridItems,
   gridValue,
   type LiveData,
   pageCount,
   pageOf,
+  placeCamera,
   removeCameras,
   resolveQuality,
   type StreamQuality,
@@ -38,6 +41,7 @@ import {
   useLive,
   useLiveTiles,
 } from "@/features/live";
+import { useDeviceDrag } from "@/hooks/use-device-drag";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
 import { isServerDown } from "@/lib/device-state";
@@ -85,13 +89,18 @@ export const PlaybackView = ({
   const stage = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(stage);
   const tileById = new Map(tiles.map((tile) => [tile.id, tile]));
-  const cameraIds = selection.cameras.filter((id) => tileById.has(id));
+  const isDragging = useDeviceDrag();
+  const cameraIds = selection.cameras.map((id) =>
+    id && tileById.has(id) ? id : null,
+  );
   const pageSize = grid.rows * grid.columns;
   const pages = pageCount(cameraIds.length, pageSize);
   const page = Math.min(pageIndex, pages - 1);
-  const visible = pageOf(cameraIds, page, pageSize).flatMap(
-    (id) => tileById.get(id) ?? [],
+  const slots = Array.from(
+    { length: pageSize },
+    (_, position) => pageOf(cameraIds, page, pageSize)[position] ?? null,
   );
+  const visible = slots.flatMap((id) => (id && tileById.get(id)) || []);
   const streamFor = streamOf(quality);
   const rangesById = useCameraRanges(visible, streamFor, day);
   const ranges = mergeRanges([...rangesById.values()]);
@@ -206,7 +215,7 @@ export const PlaybackView = ({
               icon={<LoaderIcon className="animate-spin" />}
               title="Loading playback…"
             />
-          ) : visible.length === 0 ? (
+          ) : visible.length === 0 && !isDragging ? (
             <EmptyState
               icon={<VideoIcon />}
               title="No cameras in playback"
@@ -222,18 +231,48 @@ export const PlaybackView = ({
                 } as CSSProperties
               }
             >
-              {visible.map((tile) => (
-                <PlaybackTile
-                  key={`${tile.id}:${streamFor(tile)}`}
-                  tile={tile}
-                  stream={streamFor(tile)}
-                  ranges={rangesById.get(tile.id) ?? []}
-                  clock={clock}
-                  dayStart={from.getTime()}
-                  dayEnd={to.getTime()}
-                  className="lg:aspect-auto lg:h-full lg:min-h-0"
-                />
-              ))}
+              {slots.map((id, position) => {
+                const tile = id ? tileById.get(id) : null;
+                return (
+                  <TileSlot
+                    key={
+                      tile
+                        ? `${tile.id}:${streamFor(tile)}`
+                        : `empty-${position}`
+                    }
+                    cameraId={tile?.id ?? null}
+                    isDragging={isDragging}
+                    dragPreview={
+                      tile && <DragPreview id={tile.id} name={tile.name} />
+                    }
+                    onPlace={(cameraId) =>
+                      playbackSelectionStore.update(() =>
+                        placeCamera(
+                          { cameras: cameraIds },
+                          cameraId,
+                          page * pageSize + position,
+                        ),
+                      )
+                    }
+                  >
+                    {tile ? (
+                      <PlaybackTile
+                        tile={tile}
+                        stream={streamFor(tile)}
+                        ranges={rangesById.get(tile.id) ?? []}
+                        clock={clock}
+                        dayStart={from.getTime()}
+                        dayEnd={to.getTime()}
+                        className="lg:aspect-auto lg:h-full lg:min-h-0"
+                      />
+                    ) : (
+                      <div className="flex aspect-video items-center justify-center border-r border-b text-xs text-muted-foreground lg:aspect-auto lg:h-full lg:min-h-0">
+                        Empty slot
+                      </div>
+                    )}
+                  </TileSlot>
+                );
+              })}
             </div>
           )}
           <div className={cn("flex flex-col gap-2", isFullscreen && "p-4")}>

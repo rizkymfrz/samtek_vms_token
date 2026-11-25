@@ -130,6 +130,8 @@ export const buildFloorplanSource = (
       serverName: s.name,
       groupId: "1",
       hasSubStream: d.sourceSub !== null,
+      hasThirdStream: d.sourceThird !== null,
+      perimeters: null,
       webrtcUrl: s.webrtcUrl,
       webrtcUrlLocal: s.webrtcUrlLocal,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,

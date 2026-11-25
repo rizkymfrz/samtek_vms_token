@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { perimetersSchema } from "@/lib/api/perimeters";
 
 const coordinates = {
   latitude: z.number().min(-90).max(90).nullable().default(null),
@@ -28,6 +29,8 @@ export const mapDeviceSchema = z.object({
   edgeServerId: z.coerce.string(),
   isEnabled: z.boolean(),
   sourceSub: z.string().nullable().default(null),
+  sourceThird: z.string().nullable().default(null),
+  perimeters: perimetersSchema.nullable().default(null),
   analyticId: z.string().nullable().default(null),
   ...coordinates,
 });

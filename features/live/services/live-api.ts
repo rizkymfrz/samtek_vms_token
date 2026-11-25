@@ -16,12 +16,14 @@ export const deleteLayoutRequest = async (id: string) => {
   await http.delete(`/api/layouts/${id}`);
 };
 
-export const replaceCamerasRequest = async (id: string, cameras: string[]) =>
+export const replaceCamerasRequest = async (
+  id: string,
+  cameras: (string | null)[],
+) =>
   (
     await http.put<LiveLayout>(`/api/layouts/${id}/devices`, {
-      devices: cameras.map((deviceRecordId, index) => ({
-        position: index + 1,
-        deviceRecordId,
-      })),
+      devices: cameras.flatMap((deviceRecordId, index) =>
+        deviceRecordId ? [{ position: index + 1, deviceRecordId }] : [],
+      ),
     })
   ).data;

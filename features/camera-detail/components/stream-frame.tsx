@@ -2,7 +2,7 @@ import { CctvOffIcon } from "lucide-react";
 import { DeviceError } from "@/components/shared/device-error";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { StreamOffline } from "@/components/shared/stream-offline";
-import { streamName, WebrtcPlayer } from "@/features/live";
+import { streamName, type StreamQuality, WebrtcPlayer } from "@/features/live";
 import type { CameraDetail, StreamState } from "../types";
 
 export const StreamFrame = ({
@@ -10,11 +10,13 @@ export const StreamFrame = ({
   state,
   quality,
   isCapturing = false,
+  hasAudio = quality === "main" && !isCapturing,
 }: {
   detail: CameraDetail;
   state: StreamState;
-  quality: "main" | "sub";
+  quality: StreamQuality;
   isCapturing?: boolean;
+  hasAudio?: boolean;
 }) => {
   if (state === "server-offline" || state === "server-disabled") {
     return <EdgeOffline isDisabled={state === "server-disabled"} />;
@@ -33,7 +35,7 @@ export const StreamFrame = ({
     <WebrtcPlayer
       relay={detail}
       stream={streamName(detail.id, quality, detail.hasSubStream)}
-      audioId={quality === "main" && !isCapturing ? detail.id : undefined}
+      audioId={hasAudio ? detail.id : undefined}
       thumbnailId={detail.id}
     />
   );

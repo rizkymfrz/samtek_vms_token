@@ -5,7 +5,7 @@ import {
   SearchXIcon,
   ServerIcon,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import { PanelEmpty, PanelSearch } from "@/components/layout/side-panel";
 import { StatusDot } from "@/components/shared/status-dot";
 import {
@@ -28,6 +28,7 @@ export type DeviceTreeNode = {
   isSelected?: boolean;
   isMuted?: boolean;
   isDraggable?: boolean;
+  dragPreview?: ReactNode;
   onSelect?: () => void;
   actions?: ReactNode;
   badge?: ReactNode;
@@ -47,7 +48,10 @@ const NodeButton = ({
       disabled={!node.onSelect}
       aria-pressed={node.isSelected ?? false}
       onClick={node.onSelect}
-      className="flex min-w-0 flex-1 flex-col text-left outline-none enabled:hover:underline focus-visible:underline"
+      className={cn(
+        "flex min-w-0 flex-1 flex-col text-left outline-none enabled:hover:underline focus-visible:underline",
+        node.isDraggable && "cursor-grab active:cursor-grabbing",
+      )}
     >
       <span
         className={cn(
@@ -70,12 +74,17 @@ const NodeButton = ({
 
 const Leaf = ({ node }: { node: DeviceTreeNode }) => {
   const Icon = ICON[node.kind];
+  const preview = useRef<HTMLDivElement>(null);
+  const [isArmed, setIsArmed] = useState(false);
   return (
     <li
       draggable={node.isDraggable}
+      onPointerEnter={() => node.dragPreview && setIsArmed(true)}
       onDragStart={(event) => {
         event.dataTransfer.setData(DEVICE_DRAG_TYPE, node.id);
         event.dataTransfer.effectAllowed = "copyMove";
+        if (preview.current)
+          event.dataTransfer.setDragImage(preview.current, 96, 54);
       }}
       className={cn(
         "flex items-center gap-2 py-1 pl-8",
@@ -87,6 +96,15 @@ const Leaf = ({ node }: { node: DeviceTreeNode }) => {
       {node.actions}
       {node.badge}
       {node.state && <StatusDot status={deviceDot(node.state)} />}
+      {isArmed && (
+        <div
+          ref={preview}
+          aria-hidden
+          className="pointer-events-none fixed top-0 -left-[9999px] w-48"
+        >
+          {node.dragPreview}
+        </div>
+      )}
     </li>
   );
 };

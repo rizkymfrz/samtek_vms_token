@@ -1,3 +1,4 @@
+import type { Perimeters } from "@/lib/api/perimeters";
 import type { DeviceState } from "@/lib/device-state";
 
 export type Floorplan = {
@@ -37,6 +38,8 @@ export type PlanCamera = {
   analytic: string | null;
   analyticId: string | null;
   hasSubStream: boolean;
+  hasThirdStream: boolean;
+  perimeters: Perimeters | null;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
   state: DeviceState;

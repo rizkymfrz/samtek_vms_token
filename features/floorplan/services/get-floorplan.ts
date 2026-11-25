@@ -121,6 +121,8 @@ export const getFloorplan = async (): Promise<FloorplanData> => {
       serverName: server?.name ?? "Unknown",
       groupId: server?.groupId ?? null,
       hasSubStream: device.sourceSub !== null,
+      hasThirdStream: device.sourceThird !== null,
+      perimeters: device.perimeters,
       webrtcUrl: server?.webrtcUrl ?? null,
       webrtcUrlLocal: server?.webrtcUrlLocal ?? null,
       analytic: device.analyticId ? analyticLabel(device.analyticId) : null,

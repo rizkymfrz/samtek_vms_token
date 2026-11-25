@@ -855,6 +855,11 @@ Page title: nama kamera (fallback `Camera`). Tab: `Configuration`,
 | Indexing | Proses membuat embedding teks-gambar untuk objek. Interval dalam detik. | Teks UI. Istilah teknis `embedding` tidak ditampilkan. | Embedding | `Seconds between indexing` |
 
 Catatan:
+- Tombol ke halaman ini dari tile (`CameraDetailToggle`): `Open camera
+  detail`, sentence case seperti `Open camera web page`. Tile Live view
+  membuka tab `Configuration`, tile Playback membuka tab `Playback`
+  (`/cameras/[id]?tab=playback`). Toolbar panel Live pada tab
+  Configuration tidak memuat tombol ini karena sudah di halamannya.
 - Panel Live pada tab Configuration memakai sentence case: `Live
   view`, `Pause live view`, `Restart camera`, `Pause analytics`.
 - Tiga tombol yang dulu ada di panel itu (`Pause live view`, `Restart

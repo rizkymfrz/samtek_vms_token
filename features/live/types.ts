@@ -35,7 +35,7 @@ export type LiveLayoutSummary = {
 };
 
 export type LiveLayout = LiveLayoutSummary & {
-  cameras: string[];
+  cameras: (string | null)[];
 };
 
 type LiveFailure = { serverName: string; message: string };

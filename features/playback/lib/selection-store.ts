@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createGridPreferenceStore } from "@/features/live";
 import { createPersistedStore } from "@/lib/storage/create-persisted-store";
 
-const selectionSchema = z.object({ cameras: z.array(z.string()) });
+const selectionSchema = z.object({ cameras: z.array(z.string().nullable()) });
 
 export const playbackSelectionStore = createPersistedStore({
   key: "playback:layout",

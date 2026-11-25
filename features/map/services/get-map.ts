@@ -122,6 +122,8 @@ export const getMap = async (): Promise<MapData> => {
         edgeServerId: device.edgeServerId,
         isEnabled: device.isEnabled,
         hasSubStream: device.sourceSub !== null,
+        hasThirdStream: device.sourceThird !== null,
+        perimeters: device.perimeters,
         analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
         analyticId: device.analyticId,
         inherited: !own,

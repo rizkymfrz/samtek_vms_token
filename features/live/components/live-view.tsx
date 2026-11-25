@@ -16,14 +16,16 @@ import { SidePanel } from "@/components/layout/side-panel";
 import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
+import { TileSlot } from "@/components/shared/tile-slot";
 import { Button } from "@/components/ui/button";
 import { PtzPanel, setPtzCamera } from "@/features/ptz";
+import { useDeviceDrag } from "@/hooks/use-device-drag";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
 import { cn } from "@/lib/utils";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
-import { TileSlot } from "./tile-slot";
+import { DragPreview } from "./drag-preview";
 import { useFullscreen } from "../hooks/use-fullscreen";
 import { useLayout } from "../hooks/use-layout";
 import { useLayoutActions } from "../hooks/use-layout-actions";
@@ -72,6 +74,7 @@ export const LiveView = ({
   );
   const { servers, tiles } = useLiveTiles(live);
   const actions = useLayoutActions(isLive);
+  const isDragging = useDeviceDrag();
   useFailureToast("Failed to update the layout", [actions.error]);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -249,6 +252,10 @@ export const LiveView = ({
                   <TileSlot
                     key={tile ? tile.id : `empty-${position}`}
                     cameraId={tile?.id ?? null}
+                    dragPreview={
+                      tile && <DragPreview id={tile.id} name={tile.name} />
+                    }
+                    isDragging={isDragging}
                     onPlace={(cameraId) =>
                       actions.changeSlots.mutate({
                         layout: detail,

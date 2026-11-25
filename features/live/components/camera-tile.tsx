@@ -9,21 +9,17 @@ import { Badge } from "@/components/ui/badge";
 import { StreamDetections } from "@/features/edge-status";
 import { PtzPanel, PtzToggle } from "@/features/ptz";
 import { TalkControl } from "@/features/talk";
-import { usePersistedStore } from "@/hooks/use-persisted-store";
 import { DEVICE_STATE_LABEL } from "@/lib/device-state";
 import { cn } from "@/lib/utils";
+import { CameraDetailToggle } from "./camera-detail-toggle";
 import { CameraWebToggle } from "./camera-web-toggle";
 import { FullscreenToggle } from "./fullscreen-toggle";
 import { SpeakerToggle } from "./speaker-toggle";
 import { StreamQualityPick } from "./stream-quality-pick";
 import { WebrtcPlayer } from "./webrtc-player";
 import { useFullscreen } from "../hooks/use-fullscreen";
+import { useStreamQuality } from "../hooks/use-stream-quality";
 import { streamName } from "../lib/relay-url";
-import {
-  setStreamPreference,
-  streamPreferenceStore,
-} from "../lib/stream-preference-store";
-import { resolveQuality } from "../lib/stream-quality";
 import type { StreamQuality, StreamState, Tile } from "../types";
 
 const HINT: Record<StreamState, string | null> = {
@@ -51,10 +47,7 @@ export const CameraTile = ({
   const isLive = tile.state === "live";
   const root = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggle } = useFullscreen(root);
-  const { status, value: preferences } = usePersistedStore(
-    streamPreferenceStore,
-  );
-  const picked = resolveQuality(preferences.byDevice[tile.id], quality, tile);
+  const { status, picked, pick } = useStreamQuality(tile.id, tile, quality);
   return (
     <div
       ref={root}
@@ -112,16 +105,9 @@ export const CameraTile = ({
                 name={tile.name}
               />
             )}
+            <CameraDetailToggle id={tile.id} tab="configuration" />
             <CameraWebToggle id={tile.id} />
-            <StreamQualityPick
-              streams={tile}
-              value={picked}
-              onChange={(next) =>
-                streamPreferenceStore.update((state) =>
-                  setStreamPreference(state, tile.id, next),
-                )
-              }
-            />
+            <StreamQualityPick streams={tile} value={picked} onChange={pick} />
           </StreamDetections>
         )}
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
