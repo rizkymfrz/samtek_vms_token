@@ -18,7 +18,9 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
   - **Edge status** (`features/edge-status`): diaudit teksnya
-    (§3.28). `recognitions` belum diaudit.
+    (§3.28).
+  - **Recognitions** (`features/recognitions`): diaudit teksnya
+    (§3.29).
   - **Talk** (`features/talk`): diaudit teksnya (§3.27).
   - **Header dan sidebar** (`components/layout`, `components/ui/sidebar.tsx`):
     diaudit teksnya (§3.26).
@@ -1038,6 +1040,30 @@ Catatan:
   aksi. Pesan kegagalan terhubung di halaman Edge servers memakai
   `Failed to reach the MQTT broker`.
 
+### 3.29 Recognitions
+
+Dialog detail hasil pengenalan wajah dan plat. Dipakai oleh riwayat
+pengenalan dan riwayat plat pada halaman detail Analytics (§3.19) dan
+oleh `/api/recognitions`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Live capture | Foto wajah yang tertangkap kamera saat dikenali. | Tab dialog. | Live Capture | `Live capture` |
+| Reference image | Foto orang terdaftar di face gallery (§3.23) yang dicocokkan. Nonaktif bila tidak ada. | Tab dialog. | Reference Image | `Reference image` |
+| Confidence | Keyakinan detektor bahwa kotak itu wajah atau plat. Sama artinya dengan `Confidence` pada Alarms (§3.12). | Field dialog. | Detection (sebagai nama skor) | `Confidence` |
+| Match | Kecocokan wajah terhadap foto referensi, dihitung dari kemiripan (0 pada ambang 0.35, 100% pada 0.7). | Progress pada dialog wajah. | Similarity (angka mentah) | `Match` |
+| Person group | Grup orang pada face gallery (§3.23). | Field dialog wajah. | Group (tanpa konteks) | `Person group` |
+| Unreadable plate | Plat yang tidak terbaca. Judul dialog memakai `Unreadable plate`; daftar plat memakai `Unreadable`. | Judul dialog dan daftar. | | `Unreadable plate` |
+
+Catatan:
+- Skor detektor memakai satu nama di seluruh aplikasi: `Confidence`.
+  `Match` selalu kecocokan (wajah atau teks), bukan skor detektor.
+- Nilai kosong ditulis `—`. Nama atau grup yang kosong ditulis
+  `Unknown`.
+- Alt gambar: `Detected face of {name}`, `Registered photo of {name}`,
+  `Detected vehicle {plate}`.
+- Deskripsi dialog: `Recognized by {camera}.`, `Read by {camera}.`
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1222,7 +1248,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, `Header dan sidebar`, `Talk`, dan `Edge status` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, `Header dan sidebar`, `Talk`, `Edge status`, dan `Recognitions` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1552,6 +1578,14 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `edge-status-store.ts` | `The edge refused`, `The edge did not answer` | `The edge server refused the request.`, `The edge server did not answer.` |
 | `edge-status-store.ts` | `Not connected to the MQTT broker` | `Not connected to the MQTT broker.` |
 | `tests/edge-status/playback-boxes.test.mjs` | mengimpor `reasonLabel` yang sudah dihapus (`bd31cd5`) | impor dan asersi dihapus |
+
+### Recognitions (§3.29, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `recognition-dialog.tsx` | tab `Live Capture`, `Reference Image` | `Live capture`, `Reference image` |
+| `recognition-dialog.tsx`, `plate-dialog.tsx` | field `Detection` | `Confidence` |
+| `recognition-dialog.tsx` | field `Group` | `Person group` |
 
 ### Label analytic (sentence case, §6.1)
 
