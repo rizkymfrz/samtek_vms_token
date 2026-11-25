@@ -56,7 +56,6 @@ export type AlertsQuery = { since: number; until: number | null };
 export type AlertsData = {
   now: number;
   rows: AlertRow[];
-  isTruncated: boolean;
   titles: string[];
   cameras: string[];
   cameraNames: Record<string, string>;
@@ -127,7 +126,6 @@ export const buildAlerts = (
     rows,
     titles: [...new Set(rows.map((r) => r.title))].sort(),
     cameras: [...new Set(rows.map((r) => r.camera))].sort(),
-    isTruncated: false,
     cameraNames: {},
     relays: {},
     failures: [],

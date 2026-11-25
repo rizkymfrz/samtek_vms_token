@@ -5,7 +5,6 @@ import {
   ChevronRightIcon,
   Grid3x3Icon,
   LayoutGridIcon,
-  TriangleAlertIcon,
 } from "lucide-react";
 import {
   type CSSProperties,
@@ -18,7 +17,6 @@ import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { AlertDetailDialog } from "./alert-detail-dialog";
@@ -111,12 +109,6 @@ export const AlertsView = ({
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
         <div className="flex flex-wrap items-center justify-end gap-2">
-          {data.isTruncated && (
-            <Badge variant="secondary" className="mr-auto">
-              <TriangleAlertIcon />
-              Results limited. Narrow the time range to see older alerts.
-            </Badge>
-          )}
           <span className="mr-2 text-xs text-muted-foreground tabular-nums">
             {isLoading
               ? "Loading..."

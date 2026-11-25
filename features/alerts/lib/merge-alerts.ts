@@ -15,7 +15,6 @@ export const mergeAlerts = (
   return {
     now: incoming.now,
     rows,
-    isTruncated: previous.isTruncated || incoming.isTruncated,
     titles: [...new Set(rows.map((row) => row.title))].sort(),
     cameras: [...new Set(rows.map((row) => row.camera))].sort(),
     cameraNames: { ...previous.cameraNames, ...incoming.cameraNames },
