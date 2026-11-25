@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Login** (`/login`, `features/auth`, menu pengguna): diaudit
+    teksnya (§3.24).
   - **Manage faces** (`/analytics/[slug]/faces`, `features/faces`):
     diaudit teksnya (§3.23).
   - **Camera web page** (`/cameras/[id]/web`, `features/camera-web`):
@@ -877,6 +879,37 @@ Catatan:
 - Pesan gagal: `Failed to delete the people`, `Failed to delete some
   photos.`, `Failed to load the capture`.
 
+### 3.24 Login dan sesi
+
+Page title: `Sign in`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Sign in | Masuk ke SAMTEK dengan username atau email dan password. | Tombol, judul halaman, pesan. | Login (kata kerja), Log in | `Sign in` |
+| Sign out | Keluar dan mengakhiri sesi (`/api/auth/logout`). | Item menu pengguna. | Logout, Log out | `Sign out` |
+| Username or email | Pengenal akun. Satu field menerima keduanya. | Label field dan validasi. | Identifier | `Username or email` |
+| Remember me | Menyimpan sesi lebih lama (`remember`). | Checkbox. | Stay signed in | `Remember me` |
+
+Catatan:
+- Satu istilah untuk masuk dan keluar: `Sign in` dan `Sign out`.
+  Jangan memakai `Login` / `Logout` sebagai kata kerja.
+- Deskripsi halaman: `Sign in to monitor cameras, alarms and edge
+  servers across your sites.`
+- Pesan validasi: `Username or email is required.`, `Password is
+  required.`, `Username or email must be at most 255 characters.`,
+  `Password must be at most 1024 characters.`
+- Pesan gagal masuk: fallback `Failed to sign in`. Bila Central
+  merespons dengan status di bawah 500, pesan Central ditampilkan apa
+  adanya (teks dan bahasanya di luar kendali frontend). Bila Central
+  gagal (500 ke atas), API membalas `Sign-in is unavailable`.
+- Respons API lain (`Enter your username and password` 400, `Failed
+  to load user` 502) bukan teks UI langsung.
+- Dialog lupa password: judul `Forgot your password?`, tautan
+  `Forgot password?`, isi `Passwords are managed by your
+  administrator. Contact them to have your password reset.`
+- Pada mode contoh (`!isLiveSource`), login selalu berhasil tanpa
+  memeriksa kredensial.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1061,7 +1094,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, dan `Manage faces` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, dan `Login` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1352,6 +1385,16 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `face-group-panel.tsx` | `Search people...`, `Groups`, `All groups`, `Delete group`, nilai `nogroup` | `Search people…`, `Person groups`, `All person groups`, `Delete person group`, `No group` |
 | `person-table.tsx` | kolom `Group`, nilai `nogroup`, tooltip `Delete` | `Person group`, `No group`, `Delete {name}` |
 | `edit-face.ts` | `Choose an edge server.`, `Choose a JPEG photo.` | `Edge server is required.`, `Photo is required.` |
+
+### Login (§3.24, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `app/login/page.tsx` | `...monitor cameras, alerts and devices across your sites.` | `...monitor cameras, alarms and edge servers across your sites.` |
+| `schemas/login.ts` | `Enter your username or email.`, `Enter your password.` | `Username or email is required.`, `Password is required.` |
+| `schemas/login.ts` | `Use at most 255 characters.`, `Use at most 1024 characters.` | `Username or email must be at most 255 characters.`, `Password must be at most 1024 characters.` |
+| `use-sign-in.ts` | `Sign-in failed` | `Failed to sign in` |
+| `user-menu.tsx` | `Logout` | `Sign out` |
 
 ### Label analytic (sentence case, §6.1)
 
