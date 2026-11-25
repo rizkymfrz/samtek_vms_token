@@ -4,6 +4,7 @@ import {
   addCameras,
   pageCount,
   pageOf,
+  placeCamera,
   removeCameras,
 } from "../../features/live/lib/edit-layout.ts";
 
@@ -32,4 +33,16 @@ test("pages split cameras by the local grid size", () => {
   assert.equal(pageCount(5, 4), 2);
   assert.equal(pageCount(0, 4), 1);
   assert.deepEqual(pageOf(ids, 1, 4), ["e"]);
+});
+
+test("placing a new camera inserts it at the slot", () => {
+  const base = addCameras(empty, ["a", "b", "c"]);
+  assert.deepEqual(placeCamera(base, "x", 1).cameras, ["a", "x", "b", "c"]);
+  assert.deepEqual(placeCamera(base, "x", 9).cameras, ["a", "b", "c", "x"]);
+});
+
+test("placing a camera already in the layout swaps or moves to the end", () => {
+  const base = addCameras(empty, ["a", "b", "c"]);
+  assert.deepEqual(placeCamera(base, "a", 2).cameras, ["c", "b", "a"]);
+  assert.deepEqual(placeCamera(base, "a", 5).cameras, ["b", "c", "a"]);
 });

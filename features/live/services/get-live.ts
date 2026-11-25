@@ -1,4 +1,3 @@
-import { deviceStateOf } from "@/lib/device-state";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
@@ -7,6 +6,7 @@ import { listCentralDevices } from "@/lib/api/central-devices";
 import { fetchAllPages } from "@/lib/api/central-pages";
 import { getCentralServers } from "@/lib/api/edge-registry";
 import { requireAccessToken } from "@/lib/auth/session";
+import { deviceStateOf } from "@/lib/device-state";
 import { buildLive } from "./build-live";
 import { toLayout } from "./layout-mapper";
 import { summaryOf } from "../lib/edit-layout";

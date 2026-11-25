@@ -22,6 +22,24 @@ export const removeCameras = <T extends { cameras: string[] }>(
   cameras: layout.cameras.filter((id) => !ids.includes(id)),
 });
 
+export const placeCamera = <T extends { cameras: string[] }>(
+  layout: T,
+  id: string,
+  at: number,
+): T => {
+  const cameras = [...layout.cameras];
+  const from = cameras.indexOf(id);
+  if (from === -1) {
+    cameras.splice(Math.min(at, cameras.length), 0, id);
+  } else if (at >= cameras.length) {
+    cameras.splice(from, 1);
+    cameras.push(id);
+  } else {
+    [cameras[from], cameras[at]] = [cameras[at], cameras[from]];
+  }
+  return { ...layout, cameras };
+};
+
 export const pageCount = (cameras: number, pageSize: number) =>
   Math.max(1, Math.ceil(cameras / pageSize));
 

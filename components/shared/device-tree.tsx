@@ -16,6 +16,7 @@ import {
 import { deviceDot, type DeviceState } from "@/lib/device-state";
 import { cn } from "@/lib/utils";
 
+export const DEVICE_DRAG_TYPE = "application/x-vms-device";
 const ICON = { group: MapPinIcon, server: ServerIcon, device: CctvIcon };
 
 export type DeviceTreeNode = {
@@ -26,6 +27,7 @@ export type DeviceTreeNode = {
   state?: DeviceState;
   isSelected?: boolean;
   isMuted?: boolean;
+  isDraggable?: boolean;
   onSelect?: () => void;
   actions?: ReactNode;
   badge?: ReactNode;
@@ -69,7 +71,17 @@ const NodeButton = ({
 const Leaf = ({ node }: { node: DeviceTreeNode }) => {
   const Icon = ICON[node.kind];
   return (
-    <li className="flex items-center gap-2 py-1 pl-8">
+    <li
+      draggable={node.isDraggable}
+      onDragStart={(event) => {
+        event.dataTransfer.setData(DEVICE_DRAG_TYPE, node.id);
+        event.dataTransfer.effectAllowed = "copyMove";
+      }}
+      className={cn(
+        "flex items-center gap-2 py-1 pl-8",
+        node.isDraggable && "cursor-grab active:cursor-grabbing",
+      )}
+    >
       <Icon className="size-4 shrink-0 text-muted-foreground" />
       <NodeButton node={node} />
       {node.actions}

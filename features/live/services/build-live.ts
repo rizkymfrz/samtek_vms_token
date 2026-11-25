@@ -1,6 +1,6 @@
-import { deviceStateOf } from "@/lib/device-state";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isServerOnline } from "@/config/server-status";
+import { deviceStateOf } from "@/lib/device-state";
 import { buildLiveSource } from "@/lib/mock/live-source";
 import { summaryOf } from "../lib/edit-layout";
 import type { LiveData, Tile } from "../types";

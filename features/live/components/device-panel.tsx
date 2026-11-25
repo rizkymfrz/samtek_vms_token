@@ -79,6 +79,7 @@ export const CameraTreePanel = ({
           subtitle: tile.analytic ?? "No analytic",
           state: tile.state,
           isMuted: !added,
+          isDraggable: !readOnly,
           actions: (
             <PlacementAction
               isPlaced={added}

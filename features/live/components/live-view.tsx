@@ -23,6 +23,7 @@ import { usePersistedStore } from "@/hooks/use-persisted-store";
 import { cn } from "@/lib/utils";
 import { CameraTile } from "./camera-tile";
 import { DevicePanel } from "./device-panel";
+import { TileSlot } from "./tile-slot";
 import { useFullscreen } from "../hooks/use-fullscreen";
 import { useLayout } from "../hooks/use-layout";
 import { useLayoutActions } from "../hooks/use-layout-actions";
@@ -33,6 +34,7 @@ import {
   GRID_PRESETS,
   pageCount,
   pageOf,
+  placeCamera,
   removeCameras,
 } from "../lib/edit-layout";
 import { gridPreferenceStore } from "../lib/grid-preference-store";
@@ -243,21 +245,34 @@ export const LiveView = ({
             >
               {visible.map((id, position) => {
                 const tile = id ? tileById.get(id) : null;
-                return tile ? (
-                  <CameraTile
-                    key={tile.id}
-                    tile={tile}
-                    quality={quality}
-                    hasPtz
-                    className="lg:aspect-auto lg:h-full lg:min-h-0"
-                  />
-                ) : (
-                  <div
-                    key={`empty-${position}`}
-                    className="flex aspect-video items-center justify-center border-r border-b text-xs text-muted-foreground lg:aspect-auto lg:h-full lg:min-h-0"
+                return (
+                  <TileSlot
+                    key={tile ? tile.id : `empty-${position}`}
+                    cameraId={tile?.id ?? null}
+                    onPlace={(cameraId) =>
+                      actions.changeSlots.mutate({
+                        layout: detail,
+                        next: placeCamera(
+                          detail,
+                          cameraId,
+                          page * pageSize + position,
+                        ),
+                      })
+                    }
                   >
-                    Empty slot
-                  </div>
+                    {tile ? (
+                      <CameraTile
+                        tile={tile}
+                        quality={quality}
+                        hasPtz
+                        className="lg:aspect-auto lg:h-full lg:min-h-0"
+                      />
+                    ) : (
+                      <div className="flex aspect-video items-center justify-center border-r border-b text-xs text-muted-foreground lg:aspect-auto lg:h-full lg:min-h-0">
+                        Empty slot
+                      </div>
+                    )}
+                  </TileSlot>
                 );
               })}
             </div>
