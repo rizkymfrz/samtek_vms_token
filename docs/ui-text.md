@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Manage faces** (`/analytics/[slug]/faces`, `features/faces`):
+    diaudit teksnya (§3.23).
   - **Camera web page** (`/cameras/[id]/web`, `features/camera-web`):
     diaudit (§3.22). Hampir tanpa teks UI.
   - **Camera detail** (`/cameras/[id]`, `features/camera-detail`):
@@ -849,6 +851,32 @@ Catatan:
 - Teks pada halaman web milik kamera (merek, firmware) adalah isi
   pihak ketiga dan di luar aturan ini.
 
+### 3.23 Manage faces
+
+Page title: `Manage faces · {judul analytic}`. Halaman hanya ada untuk
+analytic `face-recognition`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Face gallery | Kumpulan orang terdaftar beserta foto wajahnya di Edge server, dipakai pengenalan wajah. | Dialog hapus dan deskripsi. | Database | `removed from the face gallery` |
+| Person | Satu orang di galeri, dengan nama, grup, dan satu atau beberapa foto wajah (`person_id`). | Kolom, hitungan, tombol tambah. | Face, record | `Add person`, `0 people` |
+| Person group | Pengelompokan orang di galeri (`person_group`: teks bebas, misalnya `staff`, `vip`, `visitor`). Berbeda dari edge server group (§3.15). | Judul section, kolom, tombol hapus. Di field form cukup `Group`. | Group (tanpa konteks) | `Person groups` |
+| No group | Orang tanpa grup (`nogroup`). Nilai teknisnya tetap `nogroup`, yang ditampilkan `No group`. | Tampilan nilai grup. | nogroup mentah | `No group` |
+| Register | Mendaftarkan orang dari satu foto yang berisi tepat satu wajah. | Deskripsi dialog. | Enroll | `Register the first person.` |
+
+Catatan:
+- `Group` pada halaman Edge servers dan Floor plans adalah edge
+  server group. Pada halaman ini `Group` adalah person group. Judul
+  section, kolom, dan tombol hapus memakai `Person group`.
+- Pesan validasi: `Edge server is required.`, `Photo is required.`,
+  `The photo must be a JPEG.`, `The photo must be 10 MB or smaller.`
+- Judul `EmptyState`: `No people` (data kosong) dan `No people found`
+  (filter).
+- Opsi grup pada form (`CreatableCombobox`) masih menampilkan nilai
+  teknis `nogroup` apa adanya. Belum ada label untuk opsi.
+- Pesan gagal: `Failed to delete the people`, `Failed to delete some
+  photos.`, `Failed to load the capture`.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1033,7 +1061,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, dan `Camera web page` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, dan `Manage faces` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1311,6 +1339,19 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `perimeter-list.tsx` | `No perimeters yet`, tooltip `Delete` | `No perimeters`, `Delete {name}` |
 | `playback-panel.tsx` | `End of recording`, `Rewind`, `Fast forward`, `Stream`, kecepatan `1` | `End of recording.`, `Slower`, `Faster`, `Stream quality`, `1x` |
 | `search-index-fields.tsx` | `Add label...`, `Seconds between embeddings` | `Add label…`, `Seconds between indexing` |
+
+### Manage faces (§3.23, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `faces-view.tsx` | `Add face`, `No faces yet`, `Register the first face.` | `Add person`, `No people`, `Register the first person.` |
+| `faces-view.tsx` | `Could not delete`, `Delete group "{x}"` | `Failed to delete the people`, `Delete person group "{x}"` |
+| `use-face-actions.ts` | `Some photos could not be deleted.` | `Failed to delete some photos.` |
+| `capture-face-dialog.tsx` | `Could not load the capture` | `Failed to load the capture` |
+| `face-dialog.tsx` | `Add face` (judul dan tombol), `No groups yet.`, placeholder `nogroup` | `Add person`, `No person groups.`, `No group` |
+| `face-group-panel.tsx` | `Search people...`, `Groups`, `All groups`, `Delete group`, nilai `nogroup` | `Search people…`, `Person groups`, `All person groups`, `Delete person group`, `No group` |
+| `person-table.tsx` | kolom `Group`, nilai `nogroup`, tooltip `Delete` | `Person group`, `No group`, `Delete {name}` |
+| `edit-face.ts` | `Choose an edge server.`, `Choose a JPEG photo.` | `Edge server is required.`, `Photo is required.` |
 
 ### Label analytic (sentence case, §6.1)
 
