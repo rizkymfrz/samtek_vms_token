@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Alarms** (halaman `/alerts`, `features/alerts`, plus popover
+    notifikasi di header): diaudit teksnya (§3.12).
   - **Playback** (`features/playback`, plus `PlaybackTimeline` dan
     `use-playback-session` dari `features/camera-detail`): diaudit
     teksnya (§3.11). Halaman camera-detail yang memakai komponen yang
@@ -144,6 +146,12 @@ diputuskan produk. **Avoid** = alternatif yang tidak dipakai.
 | Alert (status) | Nilai status teknis deteksi (`alert` pada `DetectionStatus`). | Hanya sebagai label status. Maknanya berbeda dari dua istilah di atas. | Mengubah nama nilai status | `Alert` |
 | Risk level | Tingkat risiko alarm: `Medium` atau `High`. | Legend dan judul. | Severity, priority | `Risk levels` |
 | High risk | Alarm dengan risk level `High`. | Label KPI. | Severe, critical | `High risk` |
+
+Pembagian pemakaian (final):
+- **Alarm**: halaman daftar (`/alerts`), kolom, filter, hitungan, empty
+  state, dialog detail, riwayat, dan statistik.
+- **Alert**: popover notifikasi di header (bell), toast alarm baru, dan
+  `Mark all as read`. Satu alarm memicu satu alert.
 
 Catatan kode:
 - Halaman `/alerts` mengambil data dari `/v1/alarms`. Isinya daftar
@@ -466,6 +474,38 @@ Catatan kode:
   (`The playback session ended`, fallback `Failed to play the
   recording.`) dan pesan Edge yang diteruskan apa adanya.
 
+### 3.12 Halaman Alarms dan notifikasi
+
+Menu dan page title: `Alarms` (rute tetap `/alerts`).
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Alarm | Satu baris event dari `/v1/alarms`. | Daftar, kolom, filter, hitungan. | Alert di halaman daftar | `Alarms`, `0 alarms`, `No alarms found` |
+| Alert (notifikasi) | Popover bell dan toast yang memberi tahu alarm baru. | Hanya di notifikasi. | Alarm untuk popover | `Alerts` (judul popover), `No alerts.` |
+| Snapshot | Gambar tangkapan saat alarm (`imageUrl`). | Kolom tabel dan tab gambar. | Screenshot, photo | `Snapshot` |
+| Alarm clip | Klip video pendek di sekitar alarm, diputar dari sesi klip (`event_id`). Bukan rekaman berkelanjutan. | Tab dan pemutar pada dialog detail. | `Clip` saja (tertukar dengan clip di Playback) | `Alarm clip` |
+| Confidence | Skor keyakinan deteksi (`score`), tampil sebagai persen. | Section dialog detail. | Score, accuracy | `Confidence` |
+| Track ID | Id pelacakan objek. `0` berarti tidak ada. | Field dialog detail. | Tracker, Object ID | `Track ID`, `None` |
+| Perimeter | Area atau garis yang dilanggar (`name (shape)`). `None` bila tidak ada. | Field dialog detail. | Zone | `Perimeter` |
+| Object | Jenis objek yang terdeteksi. | Kolom dan field. | Class, label | `Object` |
+| Event ID | Id event dari Edge (`edgeId:event_id`). | Field dengan tombol salin. | Alarm ID | `Event ID`, `Copy event ID` |
+
+Catatan:
+- Pemutar alarm clip memakai tombol kecepatan yang sama dengan
+  Playback (`stepSpeed`), jadi tombolnya `Slower` / `Faster` dan
+  kecepatan ditulis `1x` (§3.11).
+- `Back 10 seconds` dan `Forward 10 seconds` melompat waktu dan
+  tidak diubah.
+- Pesan error pemutar klip: `Failed to control the alarm clip.`,
+  `Failed to play the alarm clip.`, `The alarm clip session ended.`
+- Rincian tambahan pada dialog (`Details`) diberi label dari kunci
+  Edge lewat `titleCase()`. Kapitalisasinya tidak terkontrol
+  frontend. Menunggu canonical label mapping (§6.3).
+- Judul alarm di filter `Type`, kolom, dan dialog berasal dari Edge
+  (§6.2).
+- Waktu relatif (notifikasi): `now`, `{n}m ago`, `{n}h ago`,
+  `{n}d ago`.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -520,7 +560,12 @@ Catatan kode:
     kalimat bertitik: `No recording at this time.`, `End of recording.`.
     Label state pendek (`Live`, `Disabled`) tidak bertitik.
 26. Kecepatan putar memakai pengali dengan `x` (`1x`), bukan angka
-    telanjang.
+    telanjang. Berlaku juga pada pemutar alarm clip.
+27. Waktu relatif ditulis `now`, `{n}m ago`, `{n}h ago`, `{n}d ago`.
+    Satuan `m`, `h`, `d` diperbolehkan di sini dan tidak melanggar
+    larangan singkatan (§1).
+28. Pesan error pemutar klip mengikuti pola `Failed to {verb} {object}.`
+    (inline, bertitik).
 
 ## 5. Copy patterns
 
@@ -644,7 +689,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
 | Menu dan page title | `Live view` dan `Edge servers` diterapkan. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
-| Alert menjadi alarm | Diterapkan hanya pada Playback (`Alarm type`, `All alarms`). Sisanya belum. |
+| Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
 | Playback | Diterapkan, termasuk `Slower` / `Faster`. |
@@ -684,7 +729,7 @@ Hanya untuk referensi saat penerapan. Teks di kode belum diubah.
 | `features/camera-detail/components/live-panel.tsx:21,29` | `Live View`, `Pause Live View` | `Live view`, `Pause live view` |
 | `features/ptz/components/ptz-panel.tsx:132` | `Speed Scale` | `Speed scale` (juga di §7 Live view dan PTZ) |
 
-### Alert menjadi alarm (keputusan final, §3.1)
+### Alert menjadi alarm (keputusan final, §3.1, diterapkan)
 
 | Lokasi | Teks saat ini | Teks sesuai definisi |
 |---|---|---|
@@ -782,6 +827,22 @@ Hasil audit aksesibilitas:
 | `features/playback/components/playback-controls.tsx:68` | `{speed}` | `{speed}x` |
 | `features/playback/components/playback-view.tsx:153,163` | `Grid`, `Stream` (accessible name) | `Stream quality` (final, diterapkan) |
 | `features/playback/components/playback-controls.tsx` | `Rewind`, `Fast forward` | `Slower`, `Faster` (final, diterapkan) |
+
+### Halaman Alarms (§3.12, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `features/alerts/components/alerts-view.tsx` | `Loading...`, `0 alerts` | `Loading…`, `0 alarms` |
+| `features/alerts/components/alerts-view.tsx` | `No alerts found` / `No alerts match the filters.` | `No alarms found` / `No alarms match the filters.` |
+| `features/alerts/components/filter-panel.tsx` | `Search alerts...` | `Search alarms…` |
+| `features/alerts/components/alerts-table.tsx` | kolom `Alert` | `Alarm` |
+| `features/alerts/components/alert-detail-dialog.tsx` | tab `Clip` | `Alarm clip` |
+| `features/alerts/components/alert-clip-player.tsx` | `Seek clip`, `Loading clip…`, `Rewind`, `Fast forward`, kecepatan `1` | `Seek alarm clip`, `Loading alarm clip…`, `Slower`, `Faster`, `1x` |
+| `features/alerts/hooks/use-clip-session.ts` | `Control failed`, `Clip failed`, `The clip session ended` | `Failed to control the alarm clip.`, `Failed to play the alarm clip.`, `The alarm clip session ended.` |
+| `config/navigation.ts`, `app/(app)/alerts/page.tsx` | `Alerts` | `Alarms` |
+
+Tidak berubah: judul popover `Alerts`, `No alerts.`, `Mark all as read`,
+`Notifications`.
 
 ### Label analytic (sentence case, §6.1)
 
