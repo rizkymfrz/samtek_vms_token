@@ -407,7 +407,7 @@ dikonfirmasi tim Edge) dan field `reason` (hanya muncul bersama
 | `running` | Berjalan normal. | tidak ada | `live` |
 | `starting` | Menyambung stream atau memuat model (sementara). | tidak ada | `live`. Jangan tampil sebagai kegagalan. |
 | `stopped` | `enabled: false` atau dihentikan. | tidak ada | `live`. Status `disabled` berasal dari data kamera. |
-| `degraded` | Sebagian stream (main atau sub) putus. | `stream_degraded` | `live`. Belum ditampilkan. |
+| `degraded` | Sebagian stream (main atau sub) putus. | `stream_degraded` | Tetap `live` (video diputar). Tile Live menampilkan badge `Stream unavailable`. |
 | `error` | Semua stream putus lebih dari 1 detik. | `stream_offline` | `stream-offline` |
 | `error` | Analytic atau parameter ditolak. | `analytic_invalid` | `device-error` |
 | `error` | Sumber `bodyworn://` tanpa `SAMTEK_BODYWORN_SERVER_URL`. | `bodyworn_unconfigured` | `device-error` |
@@ -426,9 +426,9 @@ Aturan:
 - `Live` adalah label state, bukan perintah.
 
 Belum diterapkan:
-- `degraded` (`stream_degraded`) belum punya tampilan. Video tetap
-  diputar. Kandidat: `Partial stream unavailable`, **[Pending]**
-  (butuh state atau badge baru).
+- `degraded` (`stream_degraded`) hanya tampil sebagai badge pada tile
+  Live (label `Stream unavailable`, final). Halaman lain (Playback,
+  Cameras, Floorplan, Map, Camera detail) belum menampilkannya.
 - Pohon perangkat pada peta (`map-panel.tsx`) belum membedakan
   `server-disabled` dan `device-error`. State di sana masih dihitung
   dari daftar server online dan boolean gangguan.
