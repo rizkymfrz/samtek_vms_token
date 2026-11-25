@@ -66,5 +66,4 @@ export const availableActions = (
 };
 
 export const formatDateTime = (iso: string) => formatFull(iso);
-
 export const formatShortDateTime = (iso: string) => formatShort(iso);

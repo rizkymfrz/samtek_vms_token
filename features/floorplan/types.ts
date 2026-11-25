@@ -1,4 +1,5 @@
 import type { DeviceState } from "@/lib/device-state";
+
 export type Floorplan = {
   id: string;
   groupId: string;

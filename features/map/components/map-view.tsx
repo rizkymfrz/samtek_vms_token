@@ -1,5 +1,4 @@
 "use client";
-import { deviceStateOf } from "@/lib/device-state";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
@@ -14,6 +13,7 @@ import {
 import { CameraPreview } from "@/features/live";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { messageOf } from "@/lib/axios/browser-client";
+import { deviceStateOf } from "@/lib/device-state";
 import { BodywornDetails } from "./bodyworn-details";
 import { MapCanvas, markerKey } from "./map-canvas";
 import { MapPanel } from "./map-panel";

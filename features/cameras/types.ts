@@ -1,4 +1,5 @@
 import type { DeviceFault, DeviceState } from "@/lib/device-state";
+
 type ApplyError = {
   code: string;
   field: string | null;
@@ -41,5 +42,4 @@ export type CameraData = {
 };
 
 export type StreamState = DeviceState;
-
 export type ApplyState = "applied" | "rejected" | "pending";

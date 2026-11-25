@@ -16,7 +16,6 @@ import {
   UsersRoundIcon,
   WindIcon,
 } from "lucide-react";
-
 import { analyticLabel } from "@/config/analytics-catalog";
 
 export type AnalyticGroup = {

@@ -1,5 +1,4 @@
 "use client";
-import { isServerDown } from "@/lib/device-state";
 import {
   BellIcon,
   ChevronLeftIcon,
@@ -41,6 +40,7 @@ import {
 } from "@/features/live";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
+import { isServerDown } from "@/lib/device-state";
 import { cn } from "@/lib/utils";
 import { PlaybackCalendar } from "./playback-calendar";
 import { PlaybackControls } from "./playback-controls";

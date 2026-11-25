@@ -1,4 +1,3 @@
-import { isServerDown } from "@/lib/device-state";
 import { ImageUpIcon, MapIcon, ScanEyeIcon } from "lucide-react";
 import { useRef } from "react";
 import {
@@ -17,6 +16,7 @@ import { Pick } from "@/components/shared/pick";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { isServerDown } from "@/lib/device-state";
 import { FOV_OPTIONS } from "../lib/edit-placements";
 import type { Floorplan, FloorplanDevice, PlanCamera } from "../types";
 

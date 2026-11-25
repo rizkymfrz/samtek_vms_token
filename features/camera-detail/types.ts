@@ -1,8 +1,8 @@
-import type { DeviceState } from "@/lib/device-state";
 import type { CameraRecord } from "@/features/cameras";
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
 import type { SearchIndexConfig } from "@/lib/api/search-index";
+import type { DeviceState } from "@/lib/device-state";
 
 export type StreamState = DeviceState;
 

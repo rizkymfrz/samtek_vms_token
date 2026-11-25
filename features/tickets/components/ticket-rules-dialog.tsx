@@ -2,7 +2,6 @@
 import { ServerIcon, SlidersHorizontalIcon } from "lucide-react";
 import { useState } from "react";
 import { Pick } from "@/components/shared/pick";
-import { alarmKindLabel } from "@/config/display-labels";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -17,6 +16,7 @@ import { FieldError } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
+import { alarmKindLabel } from "@/config/display-labels";
 import { useRuleToggle, useTicketRules } from "../hooks/use-ticket-rules";
 
 export const TicketRulesDialog = ({

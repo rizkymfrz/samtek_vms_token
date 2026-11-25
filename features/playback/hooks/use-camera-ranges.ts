@@ -1,5 +1,4 @@
 "use client";
-import { isServerDown } from "@/lib/device-state";
 import { useQueries } from "@tanstack/react-query";
 import { mqttConfig } from "@/config/mqtt";
 import { dayBounds, extendToNewest } from "@/features/camera-detail/playback";
@@ -10,6 +9,7 @@ import {
   type RecordingStream,
 } from "@/features/edge-status";
 import type { Tile } from "@/features/live";
+import { isServerDown } from "@/lib/device-state";
 
 const REFRESH_MS = 60_000;
 

@@ -1,5 +1,5 @@
-import type { EdgeAlarmMessage, EdgeClipMessage } from "@/features/edge-status";
 import { alarmKindLabel } from "@/config/display-labels";
+import type { EdgeAlarmMessage, EdgeClipMessage } from "@/features/edge-status";
 import { formatDate, formatTime, titleCase } from "./format-alert";
 import type { EdgeAlarm } from "../schemas/edge-alarm";
 import type { AlertClip, AlertRow } from "../types";

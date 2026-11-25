@@ -1,9 +1,9 @@
 "use client";
-import { deviceStateOf } from "@/lib/device-state";
 import { useMemo } from "react";
 import { useDeviceFault, useServerOnline } from "@/features/edge-status";
 import { type LiveData, type Tile, useLive } from "@/features/live";
 import { useFailureToast } from "@/hooks/use-failure-toast";
+import { deviceStateOf } from "@/lib/device-state";
 
 export const useAnalyticTiles = (
   initialLive: LiveData,

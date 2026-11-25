@@ -1,5 +1,4 @@
 "use client";
-import { deviceStateOf, isServerDown } from "@/lib/device-state";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { useDeviceFault, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
+import { deviceStateOf, isServerDown } from "@/lib/device-state";
 import { CameraForm } from "./camera-form";
 import { LivePanel } from "./live-panel";
 import { PerimeterPanel } from "./perimeter-panel";

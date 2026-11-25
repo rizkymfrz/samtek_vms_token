@@ -22,10 +22,10 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   DEFAULT_GROUP,
-  groupLabel,
   type Draft,
   emptyDraft,
   faceDraftSchema,
+  groupLabel,
 } from "../lib/edit-face";
 import { GROUP_MAX } from "../schemas/face";
 import type { EdgeOption } from "../types";

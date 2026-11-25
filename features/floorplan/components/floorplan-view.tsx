@@ -1,5 +1,4 @@
 "use client";
-import { deviceStateOf } from "@/lib/device-state";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FolderIcon, LayersIcon, PlusIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,6 +15,7 @@ import { toast } from "@/components/ui/toast";
 import { useDeviceFault, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { messageOf } from "@/lib/axios/browser-client";
+import { deviceStateOf } from "@/lib/device-state";
 import { DeleteFloorplanDialog } from "./delete-floorplan-dialog";
 import {
   type FloorplanDraft,

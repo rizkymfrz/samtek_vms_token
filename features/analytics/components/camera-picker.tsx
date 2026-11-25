@@ -1,5 +1,4 @@
 "use client";
-import { isServerDown } from "@/lib/device-state";
 import { useState } from "react";
 import { PanelSection } from "@/components/layout/side-panel";
 import {
@@ -10,7 +9,7 @@ import {
 import { StatusDot } from "@/components/shared/status-dot";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { Tile } from "@/features/live";
-import { deviceDot } from "@/lib/device-state";
+import { deviceDot, isServerDown } from "@/lib/device-state";
 
 export const CameraPicker = ({
   tiles,

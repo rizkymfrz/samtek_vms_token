@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useSyncExternalStore } from "react";
-import type { DeviceFault } from "@/lib/device-state";
 import { mqttConfig } from "@/config/mqtt";
+import type { DeviceFault } from "@/lib/device-state";
 import {
   faultKey,
   getBodyworn,

@@ -1,8 +1,8 @@
+import { CctvOffIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { CctvOffIcon } from "lucide-react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { getCameraDetail } from "@/features/camera-detail";
 import { CameraWebFrame, getWebTarget } from "@/features/camera-web";

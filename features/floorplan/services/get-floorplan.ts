@@ -1,4 +1,3 @@
-import { deviceStateOf } from "@/lib/device-state";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
@@ -13,6 +12,7 @@ import { fetchAllPages } from "@/lib/api/central-pages";
 import { getCentralServers, getEdgeServers } from "@/lib/api/edge-registry";
 import { queryEdges } from "@/lib/api/fan-out";
 import { requireAccessToken } from "@/lib/auth/session";
+import { deviceStateOf } from "@/lib/device-state";
 import { buildFloorplan } from "./build-floorplan";
 import { placementId } from "../lib/edit-placements";
 import {

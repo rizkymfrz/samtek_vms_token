@@ -1,5 +1,4 @@
 "use client";
-import { isServerDown } from "@/lib/device-state";
 import { useCallback, useEffect, useRef } from "react";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +20,7 @@ import {
   useFullscreen,
   WebrtcPlayer,
 } from "@/features/live";
+import { isServerDown } from "@/lib/device-state";
 import { cn } from "@/lib/utils";
 import { PlaybackControls } from "./playback-controls";
 import {
