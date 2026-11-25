@@ -365,107 +365,74 @@ Catatan kode:
 
 Ada dua lapis status yang berbeda dan tidak boleh dicampur.
 
-**Lapis 1: state tile** (`StreamState` di `features/live/types.ts`):
+**Lapis 1: state kamera** (`DeviceState` di `lib/device-state.ts`, satu
+sumber untuk Live, Playback, Cameras, Floorplan, Map, Analytics, dan
+Camera detail):
 
-| State | Cara penentuan di kode | Definisi | Overlay saat ini | Label di `aria-label` saat ini |
-|---|---|---|---|---|
-| `live` | Kamera aktif, server online, device tidak error. | Stream sedang dipantau. | Video | `Live` |
-| `disabled` | Server: `!device.isEnabled` (`get-live.ts`). | Kamera dinonaktifkan. | `Camera is disabled` | `Disabled` |
-| `server-offline` | Server: `isServerOnline` gagal. Client: `server.isActive && edge ada di daftar MQTT online`; tanpa MQTT, memakai nilai server. | Edge server tidak dapat dihubungi. | `Edge server is offline` | `Offline` |
-| `stream-offline` | Client: device ada di daftar *faulty*, yaitu device dengan `status === "error"` pada pesan status Edge. | Stream kamera tidak tersedia. | `Camera stream is offline` | `Offline` |
+| State | Cara penentuan (`deviceStateOf`, urutan prioritas) | Label | Overlay |
+|---|---|---|---|
+| `disabled` | Kamera dinonaktifkan (`isEnabled` false). | `Disabled` | `Camera is disabled` |
+| `server-disabled` | Edge server tidak aktif (`isActive` false). | `Edge server disabled` | `Edge server is disabled` |
+| `server-offline` | Edge server aktif tetapi tidak terjangkau (heartbeat server, atau daftar MQTT online di client). | `Server offline` | `Edge server is offline` |
+| `stream-offline` | Edge melaporkan `status: error` dengan `reason` `stream_offline`, atau `error` tanpa `reason` (Edge lama). | `Stream unavailable` | `Stream unavailable` |
+| `device-error` | Edge melaporkan `status: error` dengan `reason` selain stream. | `Camera error` | `Camera error` |
+| `live` | Selain di atas. | `Live` | Video |
 
-Temuan: dua state berbeda memakai label yang sama, `Offline`, pada
-`aria-label` tile (`${tile.name}, ${label}`). Overlay visual sudah
-berbeda, tetapi pengguna pembaca layar tidak bisa membedakannya.
+Label berasal dari satu tempat: `DEVICE_STATE_LABEL`. Daftar state di
+`cameras/lib/camera-state.ts`, `camera-marker`, dan filter status
+kamera memakainya. Union state dideklarasikan sekali
+(`DeviceState`); `StreamState` pada live, cameras, dan camera-detail
+adalah alias.
 
-**Lapis 2: status player WebRTC** (`PlayerStatus`, hanya saat tile
+**Lapis 2: status player WebRTC** (`PlayerStatus`, hanya saat kamera
 `live`):
 
-| Status | Cara penentuan | Definisi | Teks saat ini |
+| Status | Cara penentuan | Definisi | Teks |
 |---|---|---|---|
 | `connecting` | Awal sesi atau URL berubah. | Stream sedang menghubungkan. | `Connecting…` |
 | `reconnecting` | Koneksi terputus atau perlu dicoba ulang. | Stream mencoba terhubung kembali. | `Reconnecting…` |
-| `unavailable` | Relay tidak punya alamat WebRTC (`webrtcUrl` dan `webrtcUrlLocal` kosong) atau elemen video belum ada. | Alamat stream belum tersedia. Bukan berarti kamera mati. | `Stream address is not available` |
+| `unavailable` | Relay tidak punya alamat WebRTC (`webrtcUrl` dan `webrtcUrlLocal` kosong) atau elemen video belum ada. | Alamat stream belum tersedia. Bukan berarti kamera mati. | `Stream unavailable` |
 | `playing` | Frame pertama diterima. | Berjalan normal. | Tanpa teks |
 
-Pemetaan istilah yang diputuskan produk:
-
-| Kondisi | Istilah | Status verifikasi |
-|---|---|---|
-| Edge server tidak dapat dihubungi | `Server offline` | Sesuai dengan `server-offline` bila server aktif tetapi tidak terjangkau. |
-| Edge server dinonaktifkan (`server.isActive` false) | `Edge server disabled` (final: label tersendiri, seperti kamera memiliki `Disabled`) | **Belum diterapkan.** Saat ini kondisi ini jatuh ke `server-offline`, dan teks form edge server menyatakan `An inactive edge server is ignored and shown as offline.` Dampak penerapan ada di bawah. |
-| Stream kamera tidak tersedia | `Stream unavailable` | Tepat hanya untuk `status === "error"` dengan `detail === "stream offline"`. Lihat tabel status device di bawah. |
-| Kamera dinonaktifkan | `Disabled` | Sesuai dengan `disabled`. |
-| Stream sedang menghubungkan | `Connecting` | Sesuai dengan status player `connecting`. |
-| Stream mencoba terhubung kembali | `Reconnecting` | Sesuai dengan status player `reconnecting`. |
-| Player `unavailable` (alamat relay kosong) | `Stream unavailable` | Diputuskan produk untuk konteks stream. Catatan: label ini sekarang mencakup dua penyebab berbeda (device `error` dan alamat relay kosong). Teks penjelas saat ini `Stream address is not available` dapat dipertahankan sebagai deskripsi. |
-
-Sumber label yang sudah ada:
-- `lib/device-state.ts` memuat `DEVICE_STATE_LABEL`:
-  `Live`, `Disabled`, `Server offline`, `Stream offline`. Dipakai
-  `PanelSelected` pada map dan floorplan.
-- `features/live/components/camera-tile.tsx` punya peta sendiri
-  (`Offline` untuk dua state) yang tidak memakai `DEVICE_STATE_LABEL`.
-- Union empat state yang sama dideklarasikan tiga kali:
-  `StreamState` (`features/live/types.ts`), `DeviceState`
-  (`lib/device-state.ts`), dan `floorplan/types.ts`.
-- Rekomendasi: label state hanya berasal dari `DEVICE_STATE_LABEL`,
-  dengan `Stream offline` diganti `Stream unavailable` sesuai keputusan.
-  Ini bagian dari canonical label mapping (§6.3). Belum diimplementasikan.
+`Stream unavailable` kini mencakup dua penyebab berbeda (device
+`error` dengan alasan stream, dan alamat relay kosong). Keduanya
+diputuskan memakai label yang sama dalam konteks stream.
 
 Status device dari Edge (`devices[].status` pada `edge.state`,
-dikonfirmasi tim Edge):
+dikonfirmasi tim Edge) dan field `reason` (hanya muncul bersama
+`degraded` atau `error`, himpunan tertutup):
 
-| Status | Arti | `Stream unavailable`? | Penanganan di kode saat ini |
+| Status | Arti | `reason` | Penanganan di frontend |
 |---|---|---|---|
-| `running` | Berjalan normal. | Tidak | `live` |
-| `starting` | Menyambung stream atau memuat model (sementara). | Tidak. Jangan tampil sebagai kegagalan. | `live` |
-| `stopped` | `enabled: false` atau dihentikan. Dimatikan, bukan rusak. | Tidak | `live`. Status `disabled` berasal dari data device, bukan dari status ini. |
-| `degraded` | Sebagian stream (main atau sub) putus, yang lain hidup. `detail`: `a stream is offline`. | Sebagian | `live` (tidak dibedakan) |
-| `error` | Gagal. `detail` menjelaskan penyebab. | Hanya jika `detail` = `stream offline` | `stream-offline` untuk **semua** `error` |
-
-Isi `detail` pada `error`: `stream offline` (semua stream putus lebih
-dari 1 detik, ini `Stream unavailable` yang sebenarnya), pesan
-konfigurasi atau model dari Edge (bukan masalah stream), dan pesan
-worker kamera yang gagal, macet, atau hang (dapat terkait stream atau
-pipeline). `detail` berupa teks bebas, bukan kode enum.
-
-Akibatnya, `stream-offline` pada tile saat ini terlalu luas: error
-konfigurasi atau model ikut tampil sebagai `Stream unavailable`.
-Aturan sementara:
-- `Stream unavailable` tetap dipakai untuk `error` sampai keputusan di
-  bawah diambil. Jangan mencocokkan teks `detail` di frontend karena
-  teks bebas tidak stabil.
-- `detail` dari Edge tampil apa adanya sebagai deskripsi bila
-  ditampilkan.
-- `degraded` dapat ditampilkan sebagai `Partial stream unavailable`.
-  Belum ada state untuk itu di union (`StreamState`).
-
-**[Keputusan produk]** Apakah Edge diminta menambah field kode pada
-status device (contoh `reason: "stream_offline"`)? Ini perubahan
-kontrak. Dengan field itu, `stream_offline` menjadi `Stream
-unavailable`, error lain menjadi label umum (misalnya `Camera error`
-dengan `detail`), dan `degraded` menjadi `Partial stream unavailable`.
-
-Dampak penerapan `Edge server disabled`: state `server-offline` dipakai
-di 15+ berkas (live, playback, cameras, floorplan, map, analytics,
-camera-detail) dan sering dipakai sebagai gerbang `state !==
-"server-offline"` (contoh: `playback-tile`, `use-camera-ranges`,
-`stream-frame`, `camera-card`). State baru (kandidat `server-disabled`)
-harus ikut diperlakukan sebagai tidak online pada semua gerbang itu.
-Tipe `StreamState`, `DeviceState`, `floorplan/types.ts`, dan
-`cameras/types.ts` harus diubah bersama (lihat duplikasi di atas),
-dan teks form edge server harus diubah.
+| `running` | Berjalan normal. | tidak ada | `live` |
+| `starting` | Menyambung stream atau memuat model (sementara). | tidak ada | `live`. Jangan tampil sebagai kegagalan. |
+| `stopped` | `enabled: false` atau dihentikan. | tidak ada | `live`. Status `disabled` berasal dari data kamera. |
+| `degraded` | Sebagian stream (main atau sub) putus. | `stream_degraded` | `live`. Belum ditampilkan. |
+| `error` | Semua stream putus lebih dari 1 detik. | `stream_offline` | `stream-offline` |
+| `error` | Analytic atau parameter ditolak. | `analytic_invalid` | `device-error` |
+| `error` | Sumber `bodyworn://` tanpa `SAMTEK_BODYWORN_SERVER_URL`. | `bodyworn_unconfigured` | `device-error` |
+| `error` | Grup inference tidak bisa dibuat (model hilang, perangkat gagal). | `inference_unavailable` | `device-error` |
+| `error` | Worker kamera gagal, macet, atau tidak menjawab. | `worker_failed`, `worker_stalled`, `worker_hung` | `device-error` |
 
 Aturan:
-- Jangan memakai satu label `Offline` untuk `server-offline` dan
-  `stream-offline`.
-- Label `aria-label` tile memakai istilah dari tabel di atas.
-- `Live` adalah label state, bukan perintah. Tidak diubah.
-- Satu istilah dipakai di seluruh halaman yang memakai state ini.
-  Peta dan floorplan memakai union state yang sama
-  (`floorplan/types.ts`, `map-panel.tsx`) dan belum diaudit. Jangan
-  menyatakan keduanya sudah sesuai.
+- Frontend mencocokkan `reason` (himpunan tertutup), tidak pernah teks
+  `detail` yang bebas.
+- `error` tanpa `reason` (Edge versi lama) tetap `stream-offline`, sama
+  seperti perilaku sebelum `reason` ada.
+- `reason` yang tidak dikenal pada `error` diperlakukan sebagai
+  `device-error`.
+- Jangan memakai satu label `Offline` untuk dua kondisi berbeda.
+- Label `aria-label` kartu dan tile memakai label dari tabel di atas.
+- `Live` adalah label state, bukan perintah.
+
+Belum diterapkan:
+- `degraded` (`stream_degraded`) belum punya tampilan. Video tetap
+  diputar. Kandidat: `Partial stream unavailable`, **[Pending]**
+  (butuh state atau badge baru).
+- Pohon perangkat pada peta (`map-panel.tsx`) belum membedakan
+  `server-disabled` dan `device-error`. State di sana masih dihitung
+  dari daftar server online dan boolean gangguan.
+- `device-error` belum menampilkan `detail` dari Edge.
 
 ### 3.11 Playback dan recording
 
@@ -675,6 +642,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 | Kelompok | Status |
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
+| Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
 | Menu dan page title | `Live view` dan `Edge servers` diterapkan. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan hanya pada Playback (`Alarm type`, `All alarms`). Sisanya belum. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
@@ -753,7 +721,7 @@ nama fitur dan komponen, enum, dan nilai status `alert` di
 | `features/ptz/components/ptz-panel.tsx:214-215` | `aria-label` `Close PTZ controls`, tooltip `Close` | Tooltip `Close PTZ controls` |
 | `features/live/components/camera-preview.tsx:46-47` | `aria-label` `Close {camera}`, tooltip `Close` | Tooltip `Close {camera}` |
 | `features/ptz/components/ptz-preset-dialog.tsx:57` | placeholder `Gate` | `e.g. Gate` |
-| `features/live/components/camera-tile.tsx:28-31` | label `Offline` untuk `server-offline` dan `stream-offline` | `Server offline` dan `Stream unavailable` (setelah validasi §3.10) |
+| `features/live/components/camera-tile.tsx:28-31` | label `Offline` untuk `server-offline` dan `stream-offline` | `Server offline` dan `Stream unavailable` (diterapkan, §3.10) |
 | `components/shared/edge-offline.tsx` | `Edge server is offline` | Sudah sesuai (§3.8) |
 | `components/shared/stream-offline.tsx`, `webrtc-player.tsx:22` | `Camera stream is offline`, `Stream address is not available` | `Stream unavailable` sebagai judul, teks lama sebagai deskripsi (§3.10) |
 | `features/live/components/webrtc-player.tsx:175` | `Mute` / `Unmute` | `Mute audio` / `Unmute audio` (final, diterapkan) |
@@ -838,7 +806,7 @@ Hasil pemeriksaan keputusan produk terhadap kode:
 | People, Visitors, Recognized people | Sesuai untuk definisi. Teks di kode masih memakai `persons` dan `faces`. |
 | Unique people | Sesuai untuk panel re-identification (dedup `person_id`). Tidak untuk `people seen`. Lihat §3.3. |
 | Phone calling | Dikonfirmasi tim Edge: mendeteksi orang menelepon (pose + tangan dekat kepala). Belum diuji dengan orang sungguhan. Lihat §3.6. |
-| Status kamera dan stream (§3.10) | Perbedaan semantik terbukti: `server-offline` dan `stream-offline` berbeda sumber (heartbeat server vs status device `error`), tetapi berbagi label `Offline`. Pemetaan final **[Pending validation]** untuk server `isActive` false dan nilai status device selain `error`. |
+| Status kamera dan stream (§3.10) | Server nonaktif dibedakan dari server tidak terjangkau (`server-disabled`). Status `error` dibedakan lewat `reason` dari Edge (`stream-offline` vs `device-error`). Pengujian: `deviceStateOf` dan `isServerDown` punya unit test. Pemetaan `reason` ke state belum diuji terhadap pesan Edge sungguhan, dan skema `reason` di Edge belum divalidasi (kabar dari tim Edge: `validate_contract.py` belum dijalankan). |
 | Pesan error Live view dan PTZ | Konteks diverifikasi: `Could not update the layout` dipakai untuk create, delete, dan ubah slot. Pesan PTZ berasal dari `act()` dan `hold()`. |
 | Istilah PTZ, stream, preset | Definisi ditelusuri ke kode (`sourceMain/Sub/Third`, `axes`, `PtzPreset`). Istilah audio, diagonal, `REC`, dan `Edge server` sudah final. |
 | Komponen shared (§2.2) | Penggunaan dihitung dari pencarian impor di `app`, `features`, `components`, `lib`, `hooks`. Teks tiap komponen ditelusuri. Primitif `components/ui/*` tidak diaudit baris per baris. |
