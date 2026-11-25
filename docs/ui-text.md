@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Edge servers** (`/servers`, `features/servers`): diaudit
+    teksnya (§3.18).
   - **Cameras** (`/cameras`, `features/cameras`): diaudit teksnya
     (§3.17).
   - **Map** (`/map`, `features/map`): diaudit teksnya (§3.16).
@@ -688,6 +690,39 @@ Catatan:
   keluar dari semua layout dan berhenti streaming, sedangkan alarm
   lama tetap tersimpan.
 
+### 3.18 Edge servers
+
+Menu dan page title: `Edge servers`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Edge | Perangkat lunak SAMTEK Edge (nama produk, selalu kapital E). | Aksi dan pesan tentang prosesnya. | edge (kata benda huruf kecil) | `Restart Edge` |
+| Edge server | Server yang menjalankan SAMTEK Edge (§3.8). | Semua teks tentang mesinnya. | Server saja | `Edit edge server` |
+| Restart Edge | Menghentikan proses Edge lalu dijalankan lagi oleh service manager. Kamera berhenti streaming dan analyzing sampai Edge kembali. Lewat MQTT (`edge.restart`). | Tombol dan dialog. Tidak mematikan mesinnya. | Restart server | `Restart Edge` |
+| Reboot edge server | Menghidupkan ulang mesin. Kamera berhenti sekitar satu menit. Hanya tersedia pada mode contoh (`!isLive`). | Tombol dan dialog. | Restart server | `Reboot edge server` |
+| Active | Edge server aktif di sistem. Server tidak aktif diabaikan dan tampil sebagai `Edge server disabled` (§3.10). | Toggle form edge server. | Enabled (istilah kamera) | `Active` |
+| Edge server ID | Id edge server. | Deskripsi dialog ubah. | Edge ID | `Edge server ID {id}` |
+| Group | Edge server group (§3.15). `Code` adalah kode unik grup. | Dialog edge server dan grup. | | `Add group` |
+| Host address, Local host address | Alamat Central ke Edge server, dan alamat di jaringan lokal. | Field form. | IP | `Host address` |
+| WebRTC URL | Alamat relay WebRTC (publik atau jaringan lokal) untuk stream kamera. | Field form. | Stream URL | `WebRTC URL (local network)` |
+| Registered / Discovered | Edge server yang sudah terdaftar dan perangkat hasil pencarian jaringan. Hanya pada mode contoh. | Tab dan judul section. | | `Registered 3` |
+| Log stream | Aliran log Edge server secara langsung. Hanya pada mode contoh. | Dialog log. | | `Log stream` |
+| Retention | Lama data disimpan (hari). | Kartu storage. | Expiry | `Retention` |
+| Metric level | Level metrik: `Normal`, `Warning`, `Critical`. | Badge metrik. Bukan risk level alarm (`Medium`/`High`). | | `Critical` |
+
+Catatan:
+- Pada mode live, tombol yang tampil: `Edit edge server`,
+  `Restart Edge` (bila MQTT dikonfigurasi), dan `Delete edge server`.
+  Scan, Log stream, dan Reboot hanya pada mode contoh.
+- Judul kartu metrik memakai sentence case: `CPU temperature`,
+  `Memory usage`, `CPU usage`, `Storage usage`. `CPU`, `GB`, `MQTT`,
+  `MAC`, dan `WebRTC` adalah akronim baku.
+- Pesan gagal terhubung ke broker memakai pola `Failed to reach the
+  MQTT broker`. Peringatan sebagian memakai `Some data did not load`.
+- Placeholder memakai `e.g.`: `e.g. Jakarta branch`.
+- Tombol scan: `Scan network` / `Scanning…`.
+- Hapus edge server dicegah bila masih memiliki kamera.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -872,7 +907,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, dan `Cameras` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, dan `Edge servers` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1097,6 +1132,23 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `camera-dialog.tsx` | `Record this camera's footage on the edge server.` | `Record this camera on the edge server.` |
 | `edit-camera.ts`, `scan-dialog.tsx` | `Choose an edge server.`, `The main stream is required.` | `Edge server is required.`, `Main stream is required.` |
 | `use-device-scan.ts` | `The scan did not start.`, `Could not stop the scan.` | `Failed to start the scan.`, `Failed to stop the scan.` |
+
+### Edge servers (§3.18, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `server-detail.tsx` | tombol `Log Stream`, `Edit Server`, `Restart Server`, `Delete Server` | `Log stream`, `Edit edge server`, `Reboot edge server`, `Delete edge server` |
+| `server-detail.tsx` | `CPU Temperature`, `Memory Usage`, `CPU Usage` | `CPU temperature`, `Memory usage`, `CPU usage` |
+| `storage-card.tsx` | `Storage Usage` | `Storage usage` |
+| `server-detail.tsx` | `Restart the edge of {name}?` / `The edge process stops...` | `Restart Edge on {name}?` / `The Edge process stops...` |
+| `server-detail.tsx` | `Restart {name}?` / `Restart` | `Reboot {name}?` / `Reboot`, deskripsi memakai `edge server` |
+| `servers-view.tsx` | `Could not reach the MQTT broker` / `Server status and metrics are unavailable.` | `Failed to reach the MQTT broker` / `Edge server status and metrics are unavailable.` |
+| `servers-view.tsx` | `Failed to restart the edge server` | `Failed to restart Edge` |
+| `servers-view.tsx` | `Some data could not be loaded` | `Some data did not load` |
+| `get-servers.ts` | `Could not be loaded` | `Failed to load` |
+| `server-list-panel.tsx` | `Nothing registered yet`, `Scan`, `Scanning` | `No registered devices`, `Scan network`, `Scanning…` |
+| `server-form-dialog.tsx` | `Edge ID {id}` | `Edge server ID {id}` |
+| `server-form-dialog.tsx`, `group-form-dialog.tsx` | placeholder tanpa `e.g.` (`Main building`, `Cabang Jakarta`, dan seterusnya) | diawali `e.g.` |
 
 ### Label analytic (sentence case, §6.1)
 
