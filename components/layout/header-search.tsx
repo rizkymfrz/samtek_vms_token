@@ -58,10 +58,10 @@ export const HeaderSearch = ({
         open={open}
         onOpenChange={setOpen}
         title="Search"
-        description="Jump to a page, camera, floor plan or server."
+        description="Jump to a page, camera, floor plan or edge server."
       >
         <Command>
-          <CommandInput placeholder="Search pages, cameras, floor plans, servers..." />
+          <CommandInput placeholder="Search pages, cameras, floor plans, edge servers…" />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Pages">
@@ -102,7 +102,7 @@ export const HeaderSearch = ({
                 </CommandItem>
               ))}
             </CommandGroup>
-            <CommandGroup heading="Servers">
+            <CommandGroup heading="Edge servers">
               {servers.map((server) => (
                 <CommandItem
                   key={server.id}

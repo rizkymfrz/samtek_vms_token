@@ -138,7 +138,7 @@ export const HeaderNotifications = ({
             nativeButton={false}
             render={<Link href="/alerts" />}
           >
-            View all alerts
+            View all alarms
           </Button>
         </div>
       </PopoverContent>

@@ -69,7 +69,7 @@ export const HeaderStatus = ({
   return (
     <div className="hidden items-center gap-4 text-xs xl:flex">
       <Status icon={CctvIcon} label="Cameras" items={cameras} />
-      <Status icon={ServerIcon} label="Servers" items={servers} />
+      <Status icon={ServerIcon} label="Edge servers" items={servers} />
     </div>
   );
 };
