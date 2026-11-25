@@ -57,9 +57,12 @@ kecuali bagian bertanda **[Keputusan produk]**.
     side panel, toolbar, empty state, dialog hapus, toast): diaudit
     untuk teks dan aksesibilitas (§2.1 dan §2.2). Isi `components/ui/*`
     (primitif) tidak diaudit baris per baris.
-  - **Halaman lain** (alerts, playback, floorplan, map, analytics,
-    cameras, navigasi): hanya dicari lewat pencarian teks untuk istilah
-    yang diputuskan. Belum diaudit menyeluruh.
+  - **Semua halaman, header, sidebar, dan fitur pendukung** (talk,
+    edge-status, recognitions) sudah diaudit teksnya. Daftar per bagian
+    ada di §3.9 sampai §3.29. Pengecualian: `/showcase` (halaman demo
+    developer) dan teks dalam `components/ui/*` yang bukan bawaan kita.
+  - Verifikasi hanya lewat kode, lint, `tsc`, dan unit test. Belum ada
+    pemeriksaan tampilan di browser dan belum ada uji pembaca layar.
 - Bagian bertanda **[Belum diaudit]** belum diverifikasi. Jangan
   menganggapnya baku.
 - Tidak ada sistem i18n atau berkas copy terpusat. Teks UI ditulis
@@ -111,8 +114,17 @@ kecuali bagian bertanda **[Keputusan produk]**.
 | Loading state | Skeleton jika bentuk konten diketahui. Teks hanya jika perlu: `Loading {noun}`. Untuk proses yang sedang berjalan, akhiri dengan satu karakter elipsis `…` (bukan tiga titik) tanpa titik tambahan. | `Loading alarms`, `Connecting…` |
 
 Pola form, validation, notification, tooltip, confirmation, dan loading
-adalah pola awal. Belum diverifikasi menyeluruh terhadap halaman selain
-Dashboard **[Belum diaudit]**.
+sudah dicocokkan dengan semua halaman yang diaudit (§3.9 sampai
+§3.29). Pengecualian yang disetujui dicatat di bagian halaman masing-
+masing.
+
+Metadata dan halaman error:
+- Judul tab memakai `{judul halaman} · SAMTEK` (template di
+  `app/layout.tsx`), deskripsi situs `Video management system`.
+- Halaman error global (`app/(app)/error.tsx`): `This page couldn't
+  load` dan `The SAMTEK server or an edge server may be unreachable.
+  Try again in a moment.` Tombol `Try again`. Apostrof memakai tanda
+  lurus (`'`), bukan tanda lengkung.
 
 ### 2.1 Jenis teks
 
@@ -350,7 +362,9 @@ Catatan kode (tidak diubah):
   toast hapus/restart pada halaman itu sudah disesuaikan. Sisa teks di
   halaman Edge servers (tab scan, detail, metrik) belum diaudit.
 
-**[Belum diaudit]** Konektivitas. Label menu yang ada: `Cameras`.
+Konektivitas: kondisi terhubung memakai `Online` dan `Offline` untuk
+edge server dan perangkat bodyworn (§3.16, §3.26), serta state kamera
+(§3.10). Dua istilah itu tidak dipakai untuk kamera.
 
 ### 3.9 Live view dan PTZ
 
