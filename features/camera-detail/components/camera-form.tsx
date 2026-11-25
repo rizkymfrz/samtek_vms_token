@@ -2,18 +2,9 @@
 import { CctvIcon, CircleDotIcon, PowerIcon, Trash2Icon } from "lucide-react";
 import { useId, useState } from "react";
 import { Controller, type UseFormReturn, useWatch } from "react-hook-form";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Pick } from "@/components/shared/pick";
 import { ToggleCard } from "@/components/shared/toggle-card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -243,27 +234,17 @@ export const CameraForm = ({
           </div>
         </div>
       </CardContent>
-      <AlertDialog open={isConfirming} onOpenChange={setIsConfirming}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete {detail.name}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              The camera is removed from the system and from every layout. This
-              cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              disabled={isRemoving}
-              onClick={onRemove}
-            >
-              Delete camera
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        isOpen={isConfirming}
+        icon={Trash2Icon}
+        variant="destructive"
+        title="Delete this camera?"
+        description="The camera is removed from the system and from every layout. This cannot be undone."
+        confirmLabel="Delete camera"
+        isConfirmDisabled={isRemoving}
+        onClose={() => setIsConfirming(false)}
+        onConfirm={onRemove}
+      />
     </Card>
   );
 };

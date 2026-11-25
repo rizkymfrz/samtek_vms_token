@@ -3,12 +3,13 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   PlusIcon,
+  Trash2Icon,
   UsersIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
-import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { useFailureToast } from "@/hooks/use-failure-toast";
@@ -164,9 +165,11 @@ export const UsersView = ({
             }
           }}
         />
-        <DeleteConfirmDialog
+        <ConfirmDialog
+          icon={Trash2Icon}
+          variant="destructive"
           isOpen={pendingDelete !== null}
-          title={`Delete ${pendingDelete?.username}?`}
+          title="Delete this user?"
           description="The account can no longer sign in. Its username and email stay reserved."
           confirmLabel="Delete user"
           onClose={() => setPendingDelete(null)}

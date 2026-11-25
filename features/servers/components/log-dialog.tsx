@@ -122,8 +122,7 @@ export const LogDialog = ({
             <DialogHeader icon={ScrollTextIcon}>
               <DialogTitle>Log stream</DialogTitle>
               <DialogDescription>
-                {server.name}. Sample lines only, until the edge exposes its
-                real log.
+                Sample lines only, until Edge exposes its real log.
               </DialogDescription>
             </DialogHeader>
             <Separator />

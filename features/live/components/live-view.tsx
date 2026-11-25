@@ -9,11 +9,12 @@ import {
   MinimizeIcon,
   PlusIcon,
   SignalIcon,
+  Trash2Icon,
 } from "lucide-react";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
-import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { TileSlot } from "@/components/shared/tile-slot";
@@ -291,9 +292,11 @@ export const LiveView = ({
           )}
         </div>
         <PtzPanel />
-        <DeleteConfirmDialog
+        <ConfirmDialog
+          icon={Trash2Icon}
+          variant="destructive"
           isOpen={isDeleting}
-          title={`Delete ${summary.name}?`}
+          title="Delete this layout?"
           description="The layout is removed. The cameras in it are not deleted."
           confirmLabel="Delete layout"
           onConfirm={() => {

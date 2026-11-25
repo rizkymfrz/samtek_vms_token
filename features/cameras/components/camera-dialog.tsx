@@ -75,7 +75,7 @@ const Form = ({
         <DialogTitle>{editing ? "Edit camera" : "Add camera"}</DialogTitle>
         <DialogDescription>
           {editing
-            ? `Camera ID ${editing.id}`
+            ? "Change the details of this camera."
             : "Register a camera on an edge server."}
         </DialogDescription>
       </DialogHeader>

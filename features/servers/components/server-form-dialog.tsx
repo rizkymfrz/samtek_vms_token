@@ -151,7 +151,7 @@ const Form = ({
         </DialogTitle>
         <DialogDescription>
           {editing
-            ? `Edge server ID ${editing.id}`
+            ? "Change the details of this edge server."
             : "Register an edge server. Its ID is assigned automatically."}
         </DialogDescription>
       </DialogHeader>

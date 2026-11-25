@@ -88,7 +88,9 @@ const Form = ({
       <DialogHeader icon={UserIcon}>
         <DialogTitle>{editing ? "Edit user" : "Add user"}</DialogTitle>
         <DialogDescription>
-          {editing ? editing.username : "Create a user account."}
+          {editing
+            ? "Change the details of this user account."
+            : "Create a user account."}
         </DialogDescription>
       </DialogHeader>
       <Separator />

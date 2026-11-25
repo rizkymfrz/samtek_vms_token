@@ -79,11 +79,11 @@ export const RecognitionDialog = ({
           <>
             <DialogHeader icon={ScanFaceIcon}>
               <div className="flex items-center gap-2">
-                <DialogTitle>{recognition.name}</DialogTitle>
+                <DialogTitle>Recognition details</DialogTitle>
                 <Badge>{recognition.group}</Badge>
               </div>
               <DialogDescription>
-                Recognized by {recognition.camera}.
+                Details of this recognition.
               </DialogDescription>
             </DialogHeader>
             <Separator />

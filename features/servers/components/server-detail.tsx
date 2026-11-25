@@ -7,16 +7,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mqttConfig } from "@/config/mqtt";
@@ -179,56 +170,30 @@ export const ServerDetail = ({
           empty={empty}
         />
       </div>
-      <AlertDialog
-        open={confirm === "restart"}
-        onOpenChange={(open) => !open && setConfirm(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reboot {server.name}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Its {server.cameraCount} cameras stop streaming and analyzing
-              until the edge server is back, which takes about a minute.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                setConfirm(null);
-                onRestart();
-              }}
-            >
-              Reboot
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog
-        open={confirm === "edge"}
-        onOpenChange={(open) => !open && setConfirm(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Restart {server.name}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              The Edge process stops and is started again by its service
-              manager. Cameras stop streaming and analyzing until it is back.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                setConfirm(null);
-                onRestartEdge();
-              }}
-            >
-              Restart edge server
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        isOpen={confirm === "restart"}
+        icon={PowerIcon}
+        title="Reboot this edge server?"
+        description="Its cameras stop streaming and analyzing until the edge server is back, which takes about a minute."
+        confirmLabel="Reboot"
+        onClose={() => setConfirm(null)}
+        onConfirm={() => {
+          setConfirm(null);
+          onRestart();
+        }}
+      />
+      <ConfirmDialog
+        isOpen={confirm === "edge"}
+        icon={PowerIcon}
+        title="Restart this edge server?"
+        description="The Edge process stops and is started again by its service manager. Cameras stop streaming and analyzing until it is back."
+        confirmLabel="Restart edge server"
+        onClose={() => setConfirm(null)}
+        onConfirm={() => {
+          setConfirm(null);
+          onRestartEdge();
+        }}
+      />
     </div>
   );
 };

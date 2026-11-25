@@ -7,12 +7,13 @@ import {
   LayoutGridIcon,
   PlusIcon,
   ScanSearchIcon,
+  Trash2Icon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type CSSProperties, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
-import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
@@ -296,9 +297,11 @@ export const CamerasView = ({
           setDialog("new");
         }}
       />
-      <DeleteConfirmDialog
+      <ConfirmDialog
+        icon={Trash2Icon}
+        variant="destructive"
         isOpen={pendingDelete !== null}
-        title={`Delete ${pendingDelete?.name}?`}
+        title="Delete this camera?"
         description="The camera is removed from every layout and stops streaming. Alarms it already raised are kept."
         confirmLabel="Delete camera"
         onClose={() => setPendingDelete(null)}

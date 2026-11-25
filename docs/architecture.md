@@ -436,7 +436,14 @@ Susun dialog dalam tiga bagian yang dipisah `Separator`: `DialogHeader`
 `md` ke atas, bertumpuk di layar kecil. Lebarkan dialog dengan prop
 `size` pada `DialogContent` (`sm` default, `md`, `lg`, `xl`), bukan
 dengan `className`. `DialogHeader` wajib menerima prop `icon` (ikon
-lucide), ditampilkan di kiri judul seperti header Setup Camera.
+lucide), ditampilkan di kiri judul seperti header Camera setup.
+
+Dialog konfirmasi (hapus, reboot, restart) memakai
+`components/shared/confirm-dialog.tsx` (`ConfirmDialog`), bukan
+`AlertDialog` yang ditulis manual di fitur. Prop `icon` (ikon lucide)
+wajib, sama seperti `DialogHeader`. `variant="destructive"` untuk aksi
+yang menghapus data, `default` untuk aksi lain. Judul dan deskripsi
+dialog bersifat generic (`docs/ui-text.md` §4 aturan 30).
 
 ### 8.3 Tabel
 

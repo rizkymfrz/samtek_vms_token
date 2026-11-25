@@ -161,11 +161,11 @@ export const SearchDialog = ({
         <>
           <DialogHeader icon={SearchIcon}>
             <div className="flex items-center gap-2">
-              <DialogTitle>{target.camera}</DialogTitle>
+              <DialogTitle>Search result</DialogTitle>
               <Badge variant="outline">{target.row.label}</Badge>
             </div>
             <DialogDescription>
-              {formatSeenAt(target.row.seenAt)}
+              Details of this search result.
             </DialogDescription>
           </DialogHeader>
           <Separator />

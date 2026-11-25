@@ -1,13 +1,5 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Trash2Icon } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { canDelete } from "../lib/edit-server";
 import type { ServerRecord } from "../types";
 
@@ -22,35 +14,25 @@ export const DeleteServerDialog = ({
   onOpenChange: (isOpen: boolean) => void;
   onConfirm: () => void;
 }) => {
+  const isDeletable = server !== null && canDelete(server);
   return (
-    <AlertDialog open={isOpen && server !== null} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        {server && (
-          <>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete {server.name}?</AlertDialogTitle>
-              <AlertDialogDescription>
-                {canDelete(server)
-                  ? "The edge server is removed from the system. This cannot be undone."
-                  : `It still has ${server.cameraCount} cameras. Move or delete them first; an edge server with cameras cannot be deleted.`}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                disabled={!canDelete(server)}
-                onClick={() => {
-                  onOpenChange(false);
-                  onConfirm();
-                }}
-              >
-                Delete edge server
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </>
-        )}
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmDialog
+      isOpen={isOpen && server !== null}
+      icon={Trash2Icon}
+      variant="destructive"
+      title="Delete this edge server?"
+      description={
+        isDeletable || server === null
+          ? "The edge server is removed from the system. This cannot be undone."
+          : "It still has cameras. Move or delete them first; an edge server with cameras cannot be deleted."
+      }
+      confirmLabel="Delete edge server"
+      isConfirmDisabled={!isDeletable}
+      onClose={() => onOpenChange(false)}
+      onConfirm={() => {
+        onOpenChange(false);
+        onConfirm();
+      }}
+    />
   );
 };

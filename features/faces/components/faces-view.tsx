@@ -4,21 +4,13 @@ import {
   ChevronRightIcon,
   PlusIcon,
   ScanFaceIcon,
+  Trash2Icon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { type DialogTarget, FaceDialog } from "./face-dialog";
@@ -37,7 +29,7 @@ import type { FacesData, Person } from "../types";
 
 const PAGE_SIZE = 20;
 
-type PendingDelete = { title: string; persons: Person[] };
+type PendingDelete = { kind: "person" | "group"; persons: Person[] };
 
 export const FacesView = ({
   data,
@@ -91,7 +83,7 @@ export const FacesView = ({
           }}
           onDeleteGroup={(group) =>
             setPending({
-              title: `person group "${group}"`,
+              kind: "group",
               persons: persons.filter((person) => person.group === group),
             })
           }
@@ -147,7 +139,7 @@ export const FacesView = ({
             <PersonTable
               persons={visible}
               onDelete={(person) =>
-                setPending({ title: person.name, persons: [person] })
+                setPending({ kind: "person", persons: [person] })
               }
             />
           </div>
@@ -172,33 +164,26 @@ export const FacesView = ({
           }
         }}
       />
-      <AlertDialog
-        open={pending !== null}
-        onOpenChange={(open) => !open && setPending(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete {pending?.title}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {pending?.persons.length ?? 0} people and all their photos are
-              removed from the face gallery. They will no longer be recognized.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={() => {
-                if (!pending) return;
-                setPending(null);
-                remove.mutate(pending.persons);
-              }}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        isOpen={pending !== null}
+        icon={Trash2Icon}
+        variant="destructive"
+        title={`Delete this ${pending?.kind === "group" ? "person group" : "person"}?`}
+        description={`${
+          pending?.kind === "group"
+            ? "The people in this group and all their photos are"
+            : "This person and all their photos are"
+        } removed from the face gallery. They will no longer be recognized.`}
+        confirmLabel={
+          pending?.kind === "group" ? "Delete person group" : "Delete person"
+        }
+        onClose={() => setPending(null)}
+        onConfirm={() => {
+          if (!pending) return;
+          setPending(null);
+          remove.mutate(pending.persons);
+        }}
+      />
     </PageShell>
   );
 };

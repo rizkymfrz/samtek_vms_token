@@ -61,8 +61,8 @@ export const PlateDialog = ({
       {recognition && (
         <>
           <DialogHeader icon={ScanLineIcon}>
-            <DialogTitle>{recognition.plate ?? "Unreadable plate"}</DialogTitle>
-            <DialogDescription>Read by {recognition.camera}.</DialogDescription>
+            <DialogTitle>Plate details</DialogTitle>
+            <DialogDescription>Details of this plate read.</DialogDescription>
           </DialogHeader>
           <Separator />
           <DialogBody>
