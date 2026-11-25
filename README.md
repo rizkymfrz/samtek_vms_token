@@ -20,6 +20,30 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Memasang di server
+
+Skrip di [`deploy/`](deploy) memasang VMS tanpa Node, npm maupun PM2 di server (rancangannya di `samtek_edge/docs/deployment.md`): satu binary Node dan folder standalone Next.js di `/opt/samtek/vms/releases/<versi>`, unit systemd di `127.0.0.1:3100`, dan situs nginx di depannya.
+
+```bash
+npm install
+deploy/build-package.sh --version 1.0.0     # dist-package/samtek-vms-1.0.0-linux-x86_64.tar.gz (membangun di salinan, bukan di .next)
+# di server: ekstrak, lalu
+sudo deploy/install.sh --public-url https://vms.example.com --api-url http://127.0.0.1:3000
+sudo deploy/verify.sh
+```
+
+`install.sh` membaca `samtek-api` dan `samtek-mosquitto` yang ada di mesin yang sama untuk `CENTRAL_API_URL` dan alamat MQTT browser (`/mqtt` di nginx diteruskan ke WebSocket broker di loopback). Nilai `NEXT_PUBLIC_*` dibangun sebagai placeholder dan ditulis saat instalasi dari `/etc/samtek/vms/public.env`, jadi satu paket melayani semua instalasi; ubah berkas itu lalu `deploy/install.sh --reapply`. Nilai itu terkirim ke setiap browser: pakai akun MQTT yang hanya boleh membaca. `SAMTEK_STANDALONE=1` di `next.config.ts` hanya dipakai skrip build; `npm run build` dan `next start` tidak berubah.
+
+| Skrip | Fungsi |
+| --- | --- |
+| `build-package.sh` | Membangun dan mengemas (binary Node + standalone + skrip), `--worktree` untuk working tree dengan perubahan yang belum di-commit |
+| `install.sh` | User `samtek-vms`, env (0640), nilai browser, situs nginx (ditulis sekali; `--rewrite-nginx` untuk mengubah), unit |
+| `upgrade.sh` | Dari paket baru: ganti rilis, `verify.sh`, rollback bila gagal |
+| `uninstall.sh` | Bawaan hanya unit, situs nginx dan rilis; `--purge-config` dan `--purge-data` meminta frasa |
+| `verify.sh` | Baca-saja: Node hanya di loopback, tanpa placeholder tersisa, `/login`, nginx, `/mqtt` (handshake 101) |
+
+`SAMTEK_ROOT=<folder>` menaruh semua path di bawah folder itu dan melewati user, systemd dan reload nginx, untuk mencoba skrip tanpa root.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
