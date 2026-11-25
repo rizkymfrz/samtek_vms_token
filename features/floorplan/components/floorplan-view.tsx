@@ -138,7 +138,7 @@ export const FloorplanView = ({
       setEdits((all) => (all[id] === placements ? without(all, id) : all));
       if (isLive) void refresh();
     },
-    onError: reportFailure("Could not save the placements"),
+    onError: reportFailure("Failed to save the placements"),
   });
   const { mutate: saveNow, isPending: saving } = save;
   const failed = useRef<Record<string, FloorplanDevice[]> | null>(null);
@@ -168,7 +168,7 @@ export const FloorplanView = ({
       setSelectedId(null);
       await refresh();
     },
-    onError: reportFailure("Could not delete the floor plan"),
+    onError: reportFailure("Failed to delete the floor plan"),
   });
   const create = useMutation({
     mutationFn: createFloorplanRequest,
@@ -183,7 +183,7 @@ export const FloorplanView = ({
     mutationFn: ({ id, file }: { id: string; file: File }) =>
       uploadImageRequest(id, file),
     onSuccess: refresh,
-    onError: reportFailure("Could not upload the image"),
+    onError: reportFailure("Failed to upload the image"),
   });
   const createDialog = (
     <FloorplanFormDialog
@@ -209,8 +209,8 @@ export const FloorplanView = ({
             {isLive && data.groups.length === 0 && (
               <PanelEmpty
                 icon={<FolderIcon />}
-                title="No groups yet"
-                description="Create an edge server group first, a floor plan belongs to one."
+                title="No groups"
+                description="Create an edge server group first. A floor plan belongs to one."
               />
             )}
             <Button disabled={!canCreate} onClick={() => setCreating(true)}>
@@ -222,7 +222,7 @@ export const FloorplanView = ({
         <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
           <EmptyState
             icon={<LayersIcon />}
-            title="No floor plans yet"
+            title="No floor plans"
             description={
               canCreate
                 ? "Add a floor plan to place cameras on it."

@@ -90,7 +90,7 @@ export const HeaderSearch = ({
                 </CommandItem>
               ))}
             </CommandGroup>
-            <CommandGroup heading="Floorplans">
+            <CommandGroup heading="Floor plans">
               {floorplans.map((plan) => (
                 <CommandItem
                   key={plan.id}

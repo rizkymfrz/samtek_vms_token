@@ -63,7 +63,7 @@ export const CameraMarker = ({
     >
       <PopoverTrigger
         type="button"
-        aria-label={`${camera.name}, ${DEVICE_STATE_LABEL[camera.state]}${camera.alerts ? `, ${camera.alerts} alerts` : ""}`}
+        aria-label={`${camera.name}, ${DEVICE_STATE_LABEL[camera.state]}${camera.alerts ? `, ${camera.alerts} ${camera.alerts === 1 ? "alarm" : "alarms"}` : ""}`}
         aria-pressed={selected}
         title={camera.name}
         style={{ left: `${x * 100}%`, top: `${y * 100}%` }}

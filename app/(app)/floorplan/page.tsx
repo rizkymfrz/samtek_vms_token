@@ -13,7 +13,7 @@ const FloorplanContent = async () => {
   return <FloorplanView data={data} isLive={isLiveSource} />;
 };
 
-export const metadata: Metadata = { title: "Floorplan" };
+export const metadata: Metadata = { title: "Floor plans" };
 
 const Page = () => {
   return (

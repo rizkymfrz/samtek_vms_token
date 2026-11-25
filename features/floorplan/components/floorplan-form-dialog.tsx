@@ -86,7 +86,7 @@ const Form = ({
                 id={`${formId}-name`}
                 value={name}
                 maxLength={100}
-                placeholder="Floor 1"
+                placeholder="e.g. Floor 1"
                 onChange={(event) => setName(event.target.value)}
               />
             </Field>

@@ -134,7 +134,7 @@ export const FloorplanPanel = ({
         actions={
           isLive
             ? {
-                createLabel: "New floor plan",
+                createLabel: "Add floor plan",
                 deleteLabel: "Delete floor plan",
                 isDeleteDisabled: isBusy,
                 onCreate,

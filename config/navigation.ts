@@ -43,7 +43,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       {
         href: "/floorplan",
-        title: "Floorplan",
+        title: "Floor plans",
         icon: Building2Icon,
         children: "floorplan",
       },
