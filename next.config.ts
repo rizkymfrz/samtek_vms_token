@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  ...(process.env.SAMTEK_STANDALONE === "1" ? { output: "standalone" } : {}),
   experimental: {
     agentFeedback: true,
   },
