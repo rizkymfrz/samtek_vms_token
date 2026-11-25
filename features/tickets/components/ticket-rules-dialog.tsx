@@ -2,6 +2,7 @@
 import { ServerIcon, SlidersHorizontalIcon } from "lucide-react";
 import { useState } from "react";
 import { Pick } from "@/components/shared/pick";
+import { alarmKindLabel } from "@/config/display-labels";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -82,7 +83,7 @@ export const TicketRulesDialog = ({
                   >
                     <div className="flex min-w-0 flex-col gap-1">
                       <span className="flex items-center gap-2 font-medium">
-                        {rule.kind}
+                        {alarmKindLabel(rule.kind)}
                         {!rule.isReviewed && (
                           <Badge variant="default">New</Badge>
                         )}

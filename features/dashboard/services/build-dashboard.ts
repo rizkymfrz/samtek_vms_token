@@ -1,3 +1,4 @@
+import { alarmKindLabel, recognizerLabel } from "@/config/display-labels";
 import { type AlertClip, buildAlerts } from "@/lib/mock/alerts-source";
 import {
   canRaiseAlarms,
@@ -434,14 +435,19 @@ export const buildDashboard = (devices: DeviceInfo[], now = Date.now()) => {
     alarmsByKind: withOther(
       countBy(
         alarms,
-        (a) => a.title,
+        (a) => a.kind || a.title,
         undefined,
-        (title) => title,
+        (key) => alarmKindLabel(key),
       ),
       5,
       "types",
     ),
-    recognitionsByType: countBy(recognitions, (r) => r.recognizer),
+    recognitionsByType: countBy(
+      recognitions,
+      (r) => r.recognizer,
+      undefined,
+      recognizerLabel,
+    ),
     deviceNames: Object.fromEntries(deviceName),
     recentAlarms,
     relays: {} as Record<string, AlertClip["relay"]>,

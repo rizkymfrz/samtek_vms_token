@@ -1,4 +1,5 @@
 import type { EdgeAlarmMessage, EdgeClipMessage } from "@/features/edge-status";
+import { alarmKindLabel } from "@/config/display-labels";
 import { formatDate, formatTime, titleCase } from "./format-alert";
 import type { EdgeAlarm } from "../schemas/edge-alarm";
 import type { AlertClip, AlertRow } from "../types";
@@ -51,7 +52,7 @@ export const toRow = (
     at: occurredAt.getTime(),
     time: formatTime(occurredAt),
     date: formatDate(occurredAt),
-    title: alarm.title,
+    title: alarmKindLabel(alarm.kind, alarm.title),
     description: alarm.description,
     risk: alarm.risk_level,
     camera: cameraNames.get(alarm.device_id) ?? alarm.device_id,

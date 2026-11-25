@@ -1,3 +1,4 @@
+import { alarmKindLabel } from "@/config/display-labels";
 import { edgeAlarmsResponseSchema, toAlertRow } from "@/features/alerts";
 import { listCentralDevices } from "@/lib/api/central-devices";
 import { type EdgeTarget, getFromEdge } from "@/lib/api/edge-client";
@@ -6,7 +7,7 @@ import { queryEdges } from "@/lib/api/fan-out";
 import { requireAccessToken } from "@/lib/auth/session";
 import { buildDashboard } from "./build-dashboard";
 import { withOther } from "../lib/aggregate";
-import { clock, delta, HOUR, titleCase } from "../lib/format";
+import { clock, delta, HOUR } from "../lib/format";
 import { RECENT_ALARMS } from "../lib/recent-alarms";
 import {
   type EdgeAlarmSummary,
@@ -101,7 +102,7 @@ export const getLiveDashboard = async (now = Date.now()) => {
   }
   const alarmsByKind: BarItem[] = withOther(
     [...kindCounts.entries()]
-      .map(([kind, value]) => ({ label: titleCase(kind), value }))
+      .map(([kind, value]) => ({ label: alarmKindLabel(kind), value }))
       .sort((a, b) => b.value - a.value),
     KIND_ITEMS,
     "types",

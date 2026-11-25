@@ -66,8 +66,9 @@ kecuali bagian bertanda **[Keputusan produk]**.
 - Bagian bertanda **[Belum diaudit]** belum diverifikasi. Jangan
   menganggapnya baku.
 - Tidak ada sistem i18n atau berkas copy terpusat. Teks UI ditulis
-  langsung di komponen dan config. Satu-satunya peta label yang ada
-  adalah `config/analytics-catalog.ts` (id analytic ke label).
+  langsung di komponen dan config. Peta label kanonik: id analytic
+  di `config/analytics-catalog.ts`, kind alarm dan id recognizer di
+  `config/display-labels.ts` (§6.3).
 
 ## 1. Aturan umum
 
@@ -532,8 +533,8 @@ Catatan kode:
   memutar ulang otomatis dan tidak menampilkan teks akhir. Jika kelak
   ditampilkan, gunakan `End of clip`, dan bedakan dari `End of
   recording` lewat sumber sesi (`device_id` atau `event_id`).
-- Judul alarm pada penanda timeline berasal dari Edge dan belum lewat
-  peta label (§6.3).
+- Judul alarm pada penanda timeline memakai label kanonik kind alarm
+  (§6.3), dengan judul Edge sebagai cadangan.
 - Pesan error sesi playback berasal dari dua sumber: teks kode
   (`The playback session ended`, fallback `Failed to play the
   recording.`) dan pesan Edge yang diteruskan apa adanya.
@@ -563,10 +564,10 @@ Catatan:
 - Pesan error pemutar klip: `Failed to control the alarm clip.`,
   `Failed to play the alarm clip.`, `The alarm clip session ended.`
 - Rincian tambahan pada dialog (`Details`) diberi label dari kunci
-  Edge lewat `titleCase()`. Kapitalisasinya tidak terkontrol
-  frontend. Menunggu canonical label mapping (§6.3).
-- Judul alarm di filter `Type`, kolom, dan dialog berasal dari Edge
-  (§6.2).
+  Edge lewat `titleCase()` (huruf pertama kapital, garis bawah
+  menjadi spasi). Kuncinya bebas dari Edge, jadi tidak ada peta label.
+- Judul alarm di filter `Type`, kolom, dan dialog memakai label
+  kanonik kind alarm (§6.3), dengan judul Edge sebagai cadangan.
 - Waktu relatif (notifikasi): `now`, `{n}m ago`, `{n}h ago`,
   `{n}d ago`.
 
@@ -619,7 +620,7 @@ lewat WhatsApp) berjudul `Ticket`.
 |---|---|---|---|---|
 | Ticket | Catatan tindak lanjut atas alarm dari satu kamera dan analytic, dengan assignee, status, bukti foto, dan riwayat. Dibuat otomatis oleh ticket rule. | Seluruh halaman Tickets. | Case, incident | `Tickets`, `Ticket ID` |
 | Ticket rule | Pengaturan per Edge server dan event kind: apakah alarm jenis itu membuat tiket. Perubahan berlaku untuk alarm yang diterima sesudahnya. | Dialog `Ticket rules`. | Policy | `Ticket rules` |
-| Event kind | Jenis alarm (`kind` dari Edge) pada daftar rule. | Daftar rule. Tampil mentah sampai ada canonical label mapping (§6.3). | Alarm type di dialog ini | `Create tickets for {kind}` |
+| Event kind | Jenis alarm (`kind` dari Edge) pada daftar rule. | Daftar rule. Memakai label kanonik kind alarm (§6.3). | Alarm type di dialog ini | `Create tickets for {kind}` |
 | Assignee | Orang yang ditugaskan menangani tiket. `Unassigned` bila kosong. | Kolom, filter, field. | Owner, officer | `Assignee`, `Assigned to me` |
 | Supervisor | Penerima eskalasi bila tidak ada yang acknowledge sampai batas waktu. | Riwayat dan peringatan eskalasi. | Manager | `Escalated to a supervisor` |
 | Acknowledge | Aksi assignee menyatakan tiket diterima. Batasnya `Acknowledge before`. | Tombol dan status `Acknowledged`. | Accept, confirm | `Acknowledge` |
@@ -650,8 +651,8 @@ Catatan:
   needs to step in.` Kata `officer` tidak dipakai.
 - Pesan error service (`Ticket not found`, `Rule not found`, dan
   sejenisnya) belum terbukti tampil ke pengguna. Tidak diubah.
-- Teks pada ticket rule (`rule.kind`, `rule.analyticId`) menunggu
-  canonical label mapping.
+- Event kind pada ticket rule memakai label kanonik kind alarm (§6.3).
+  `rule.analyticId` masih tampil mentah.
 
 ### 3.15 Floor plans
 
@@ -1221,15 +1222,18 @@ Label analytic lain di kedua berkas itu masih Title Case.
 |---|---|---|
 | Id analytic (`people_counting_dwelling`, `phone_calling`, ...) | Peta label sudah ada di `config/analytics-catalog.ts` (18 entri). | Label Title Case. Harus menjadi sentence case. |
 | Judul grup analytic | `features/analytics/lib/analytic-groups.ts`. Dulu menulis judul sendiri, berbeda dari katalog. | Sekarang diturunkan dari katalog untuk grup satu analytic (§3.19). |
-| Judul alarm (`alarm.title`) | Dashboard menampilkan string Edge apa adanya pada `Alarms by type`. Contoh: `Dwelling Alarm`, `Fire Smoke Alarm`, `Sleep Alarm`, `PPE Violation`. | Title Case dan akhiran `Alarm` tidak konsisten. Tidak ada peta label. |
+| Judul alarm (`alarm.title`) | (Kondisi sebelum §6.3 diterapkan.) Dashboard menampilkan string Edge apa adanya pada `Alarms by type`. Contoh: `Dwelling Alarm`, `Fire Smoke Alarm`, `Sleep Alarm`, `PPE Violation`. | Title Case dan akhiran `Alarm` tidak konsisten. Tidak ada peta label. |
 | Kind alarm (`ppe_missing`, `phone_call`, ...) | Enum stabil, terdokumentasi di `docs/database-schema.md`. | Namespace berbeda dari id analytic. |
 | Recognizer (`face_recognition`, ...) | Dashboard memakai `titleCase()` pada id. | `titleCase()` hanya menaikkan huruf pertama dan mengganti `_` dengan spasi. Namanya menyesatkan. |
 | Atribut wajah | Memakai `plainLabel()` (sentence case). | Sesuai aturan. |
 
-### 6.3 Desain canonical label mapping (rekomendasi)
+### 6.3 Canonical label mapping (diterapkan)
 
 Produk memutuskan memakai **satu** mekanisme canonical display label.
-Dokumen ini hanya menetapkan desainnya. Implementasi belum dilakukan.
+Diterapkan sebagai berikut:
+- Id analytic: `config/analytics-catalog.ts` (`analyticLabel`).
+- Kind alarm dan id recognizer: `config/display-labels.ts`
+  (`alarmKindLabel`, `recognizerLabel`).
 
 Prinsip:
 1. **Satu sumber.** Perluas peta di `config/analytics-catalog.ts`.
@@ -1259,17 +1263,31 @@ Prinsip:
    database, payload, dan query tetap memakai id asli.
 6. **Fallback dilaporkan.** Identifier yang jatuh ke fallback sebaiknya
    terlihat di log pengembangan agar peta bisa dilengkapi.
-7. **Bentuk peta (usulan, belum diputuskan).** Satu modul config dengan
-   tiga peta terpisah (kind, analytic, recognizer), masing-masing
-   `id -> label`, dan satu fungsi pencarian per namespace dengan
-   fallback di atas.
+7. **Bentuk peta (final).** Tiga peta terpisah (kind, analytic,
+   recognizer), masing-masing `id -> label`, dengan satu fungsi
+   pencarian per namespace dan fallback di atas.
 
-Dampak yang perlu dicek saat implementasi:
-- Dashboard `Alarms by type` mengelompokkan berdasarkan `alarm.title`.
-  Setelah ada peta, pengelompokan sebaiknya memakai kind, agar dua judul
-  Edge berbeda untuk kind yang sama tidak terpecah.
-- Perubahan label tidak boleh mengubah hasil filter atau query yang
-  memakai id.
+Label kind alarm (kanonik): `area_dwell` `Dwelling alarm`,
+`ppe_missing` `PPE violation`, `fire_smoke_detected` `Fire and smoke
+alarm`, `crowd_limit_exceeded` `Crowd monitoring alarm`,
+`worker_absent` `Worker absent alarm`, `cat_detected` `Cat detection
+alarm`, `phone_call` `Phone calling alarm`, `sleep_on_duty` `Sleep
+alarm`, `motion_detected` `Motion alarm`, `dust_detected` `Dust
+detected`, `face_not_in_whitelist` `Outside whitelist`, `face_stranger`
+`Stranger`. Label ini diturunkan dari judul Edge yang dikenal (versi
+contoh) dan keputusan di glossary. Kind baru dari Edge jatuh ke judul
+Edge sampai ditambahkan ke peta.
+
+Hasil penerapan:
+- Dashboard `Alarms by type` dikelompokkan berdasarkan kind, bukan
+  judul Edge. Mode live yang sebelumnya menampilkan id (`Ppe missing`)
+  sekarang memakai label kanonik.
+- Tabel, filter `Type`, dialog, penanda timeline Playback, dan toast
+  Alarms memakai label kanonik lewat satu titik (`toRow`).
+- Event kind pada ticket rule dan statistik recognizer di Dashboard
+  memakai peta yang sama.
+- Perubahan label tidak mengubah filter atau query: kunci tetap id.
+- Butir 6 (laporan fallback ke log pengembangan) belum diterapkan.
 
 ## 7. Penyesuaian teks
 
@@ -1279,7 +1297,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 
 | Kelompok | Status |
 |---|---|
-| Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
+| Dashboard | Diterapkan, termasuk `Alarms by type` (label kanonik, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
 | Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, `Header dan sidebar`, `Talk`, `Edge status`, dan `Recognitions` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
