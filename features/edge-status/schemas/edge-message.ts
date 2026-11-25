@@ -74,6 +74,7 @@ export const edgeStateSchema = z.object({
         z.object({
           device_id: z.string(),
           status: z.string(),
+          reason: z.string().optional().catch(undefined),
           talk: z
             .object({ supported: z.boolean() })
             .optional()

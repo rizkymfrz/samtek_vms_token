@@ -1,3 +1,4 @@
+import { deviceStateOf } from "@/lib/device-state";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isServerOnline } from "@/config/server-status";
 import { buildLiveSource } from "@/lib/mock/live-source";
@@ -23,11 +24,11 @@ export const buildLive = (now = Date.now()): LiveData => {
       analyticId: d.analyticId,
       perimeters: null,
       isRecordingEnabled: d.isRecordingEnabled,
-      state: !d.isEnabled
-        ? "disabled"
-        : isOnline(s)
-          ? "live"
-          : "server-offline",
+      state: deviceStateOf({
+        isEnabled: d.isEnabled,
+        isServerActive: s.isActive,
+        isServerOnline: isOnline(s),
+      }),
       hasSubStream: d.sourceSub !== null,
       hasThirdStream: d.sourceThird !== null,
       webrtcUrl: s.webrtcUrl,

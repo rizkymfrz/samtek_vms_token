@@ -2,6 +2,7 @@ import type { MqttClient } from "mqtt";
 import type { z } from "zod";
 import { EDGE_UP_TOPIC, mqttConfig } from "@/config/mqtt";
 import { EDGE_STATUS_TIMEOUT_MS } from "@/config/server-status";
+import type { DeviceFault } from "@/lib/device-state";
 import { connectMqtt } from "@/lib/mqtt/browser-client";
 import { toDescriptors } from "./analytic-catalog";
 import { toDetectionObject } from "./detection-object";
@@ -54,7 +55,7 @@ const EMPTY: EdgeStatusState = {
   error: null,
   entries: new Map(),
   online: new Set(),
-  faulty: new Set(),
+  faulty: new Map(),
   talk: new Map(),
   bodyworn: new Map(),
   catalog: new Map(),
@@ -102,6 +103,9 @@ const onlineSet = (
 const sameSet = (a: ReadonlySet<string>, b: ReadonlySet<string>) =>
   a.size === b.size && [...a].every((id) => b.has(id));
 
+const sameMap = <V>(a: ReadonlyMap<string, V>, b: ReadonlyMap<string, V>) =>
+  a.size === b.size && [...a].every(([id, value]) => b.get(id) === value);
+
 const toSample = (data: EdgeStatusMessage, now: number): EdgeSample => ({
   receivedAt: now,
   uptimeSeconds: data.uptime_seconds,
@@ -128,7 +132,7 @@ const setState = (next: Partial<EdgeStatusState>) => {
     ...state,
     ...next,
     online: sameSet(online, state.online) ? state.online : online,
-    faulty: sameSet(faulty, state.faulty) ? state.faulty : faulty,
+    faulty: sameMap(faulty, state.faulty) ? state.faulty : faulty,
   };
   emit();
 };
@@ -179,18 +183,32 @@ const setSearchIndex = (edgeId: string, next: EdgeSearchIndex | null) => {
 export const faultKey = (edgeId: string, deviceId: string) =>
   `${edgeId}:${deviceId}`;
 
+const STREAM_REASONS: ReadonlySet<string> = new Set([
+  "stream_offline",
+  "stream_degraded",
+]);
+
+const faultOf = (device: {
+  status: string;
+  reason?: string;
+}): DeviceFault | null => {
+  if (device.status !== "error") return null;
+  return device.reason === undefined || STREAM_REASONS.has(device.reason)
+    ? "stream"
+    : "device";
+};
+
 const setFaulty = (
   edgeId: string,
-  devices: { device_id: string; status: string }[],
+  devices: { device_id: string; status: string; reason?: string }[],
 ) => {
   const prefix = faultKey(edgeId, "");
-  const faulty = new Set(
-    [...state.faulty].filter((key) => !key.startsWith(prefix)),
+  const faulty = new Map(
+    [...state.faulty].filter(([key]) => !key.startsWith(prefix)),
   );
   for (const device of devices) {
-    if (device.status === "error") {
-      faulty.add(faultKey(edgeId, device.device_id));
-    }
+    const fault = faultOf(device);
+    if (fault) faulty.set(faultKey(edgeId, device.device_id), fault);
   }
   setState({ faulty });
 };

@@ -1,10 +1,12 @@
 import { CctvIcon, CctvOffIcon } from "lucide-react";
+import { DeviceError } from "@/components/shared/device-error";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { MediaTile } from "@/components/shared/media-tile";
 import { StatusDot } from "@/components/shared/status-dot";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Badge } from "@/components/ui/badge";
 import { Thumbnail } from "@/features/live";
+import { isServerDown } from "@/lib/device-state";
 import { STATE_LABEL } from "../lib/camera-state";
 import type { StreamState } from "../types";
 
@@ -42,18 +44,20 @@ export const CameraCard = ({
       onSelect={onSelect}
       className={className}
     >
-      {state === "server-offline" ? (
-        <EdgeOffline />
+      {isServerDown(state) ? (
+        <EdgeOffline isDisabled={state === "server-disabled"} />
       ) : state === "stream-offline" ? (
         <StreamOffline />
+      ) : state === "device-error" ? (
+        <DeviceError />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
           <Icon className="size-8" />
         </div>
       )}
-      {state !== "server-offline" && state !== "stream-offline" && (
-        <Thumbnail id={id} />
-      )}
+      {!isServerDown(state) &&
+        state !== "stream-offline" &&
+        state !== "device-error" && <Thumbnail id={id} />}
     </MediaTile>
   );
 };

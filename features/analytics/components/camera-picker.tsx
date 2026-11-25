@@ -1,4 +1,5 @@
 "use client";
+import { isServerDown } from "@/lib/device-state";
 import { useState } from "react";
 import { PanelSection } from "@/components/layout/side-panel";
 import {
@@ -29,14 +30,14 @@ export const CameraPicker = ({
           matchesQuery(query, tile.name, tile.analytic),
       );
       if (cameras.length === 0) return [];
-      const isOnline = cameras.some((tile) => tile.state !== "server-offline");
+      const isOnline = cameras.some((tile) => !isServerDown(tile.state));
       return [
         {
           id: serverId,
           kind: "server",
           title: cameras[0].serverName,
           subtitle: `${cameras.length} ${cameras.length === 1 ? "camera" : "cameras"}`,
-          state: isOnline ? "live" : "server-offline",
+          state: isOnline ? "live" : cameras[0].state,
           children: cameras.map((tile) => ({
             id: tile.id,
             kind: "device",

@@ -1,6 +1,7 @@
 "use client";
 import { CctvOffIcon } from "lucide-react";
 import { useRef } from "react";
+import { DeviceError } from "@/components/shared/device-error";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { StatusDot } from "@/components/shared/status-dot";
 import { StreamOffline } from "@/components/shared/stream-offline";
@@ -28,8 +29,10 @@ import type { StreamQuality, StreamState, Tile } from "../types";
 const HINT: Record<StreamState, string | null> = {
   live: null,
   disabled: "Camera is disabled",
+  "server-disabled": null,
   "server-offline": null,
   "stream-offline": null,
+  "device-error": null,
 };
 
 export const CameraTile = ({
@@ -85,8 +88,10 @@ export const CameraTile = ({
           </div>
         ) : tile.state === "stream-offline" ? (
           <StreamOffline />
+        ) : tile.state === "device-error" ? (
+          <DeviceError />
         ) : (
-          <EdgeOffline />
+          <EdgeOffline isDisabled={tile.state === "server-disabled"} />
         )}
         {isLive && (
           <StreamDetections

@@ -1,4 +1,5 @@
 "use client";
+import { deviceStateOf } from "@/lib/device-state";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
@@ -6,6 +7,7 @@ import { SidePanel } from "@/components/layout/side-panel";
 import { toast } from "@/components/ui/toast";
 import {
   useBodyworn,
+  useDeviceFault,
   useDeviceFaulty,
   useServerOnline,
 } from "@/features/edge-status";
@@ -114,6 +116,7 @@ export const MapView = ({
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const serverOnline = useServerOnline();
   const isFaulty = useDeviceFaulty();
+  const fault = useDeviceFault();
   const online = new Set(
     data.servers.filter((s) => serverOnline(s, s.online)).map((s) => s.id),
   );
@@ -194,13 +197,12 @@ export const MapView = ({
           name: selected.name,
           serverId: selected.edgeServerId,
           serverName: server?.name ?? "Unknown",
-          state: !selected.isEnabled
-            ? "disabled"
-            : !server || !online.has(server.id)
-              ? "server-offline"
-              : isFaulty(server.id, selected.id)
-                ? "stream-offline"
-                : "live",
+          state: deviceStateOf({
+            isEnabled: selected.isEnabled,
+            isServerActive: server?.isActive ?? true,
+            isServerOnline: server ? online.has(server.id) : false,
+            fault: fault(server?.id ?? "", selected.id),
+          }),
           hasSubStream: selected.hasSubStream,
           analyticId: selected.analyticId,
           webrtcUrl: server?.webrtcUrl ?? null,

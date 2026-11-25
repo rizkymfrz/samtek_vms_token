@@ -1,11 +1,13 @@
 "use client";
 import { CctvOffIcon, XIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { DeviceError } from "@/components/shared/device-error";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { StreamOffline } from "@/components/shared/stream-offline";
 import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import { TalkControl } from "@/features/talk";
+import type { DeviceState } from "@/lib/device-state";
 import { SpeakerToggle } from "./speaker-toggle";
 import { WebrtcPlayer } from "./webrtc-player";
 import { streamName } from "../lib/relay-url";
@@ -16,7 +18,7 @@ export type PreviewCamera = {
   serverId: string;
   serverName: string;
   analyticId?: string | null;
-  state: "live" | "disabled" | "server-offline" | "stream-offline";
+  state: DeviceState;
   hasSubStream: boolean;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
@@ -75,8 +77,10 @@ export const CameraPreview = ({
           </div>
         ) : camera.state === "stream-offline" ? (
           <StreamOffline />
+        ) : camera.state === "device-error" ? (
+          <DeviceError />
         ) : (
-          <EdgeOffline />
+          <EdgeOffline isDisabled={camera.state === "server-disabled"} />
         )}
       </div>
       {details}

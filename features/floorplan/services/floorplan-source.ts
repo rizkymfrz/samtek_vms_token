@@ -1,3 +1,4 @@
+import { deviceStateOf } from "@/lib/device-state";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isServerOnline } from "@/config/server-status";
 import { buildAlerts } from "@/lib/mock/alerts-source";
@@ -133,7 +134,11 @@ export const buildFloorplanSource = (
       webrtcUrlLocal: s.webrtcUrlLocal,
       analytic: d.analyticId ? analyticLabel(d.analyticId) : null,
       analyticId: d.analyticId ?? null,
-      state: !d.isEnabled ? "disabled" : reachable ? "live" : "server-offline",
+      state: deviceStateOf({
+        isEnabled: d.isEnabled,
+        isServerActive: s.isActive,
+        isServerOnline: reachable,
+      }),
       alerts: alerts.get(d.name) ?? 0,
     };
   });

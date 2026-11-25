@@ -1,3 +1,4 @@
+import { DEVICE_STATE_LABEL, deviceStateOf } from "@/lib/device-state";
 import type {
   ApplyState,
   CameraRecord,
@@ -9,19 +10,16 @@ export const cameraState = (
   camera: CameraRecord,
   servers: ServerOption[],
 ): StreamState => {
-  if (!camera.isEnabled) return "disabled";
-  if (!servers.find((s) => s.id === camera.edgeServerId)?.online) {
-    return "server-offline";
-  }
-  return camera.isFaulty ? "stream-offline" : "live";
+  const server = servers.find((s) => s.id === camera.edgeServerId);
+  return deviceStateOf({
+    isEnabled: camera.isEnabled,
+    isServerActive: server?.isActive ?? true,
+    isServerOnline: server?.online ?? false,
+    fault: camera.fault,
+  });
 };
 
-export const STATE_LABEL: Record<StreamState, string> = {
-  live: "Live",
-  disabled: "Disabled",
-  "server-offline": "Server offline",
-  "stream-offline": "Stream unavailable",
-};
+export const STATE_LABEL = DEVICE_STATE_LABEL;
 
 export const applyState = (camera: CameraRecord): ApplyState =>
   camera.applyStatus ?? "pending";

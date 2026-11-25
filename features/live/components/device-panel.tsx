@@ -12,6 +12,7 @@ import {
   type DeviceTreeNode,
   matchesQuery,
 } from "@/components/shared/device-tree";
+import { deviceStateOf } from "@/lib/device-state";
 import type { LiveLayout, LiveLayoutSummary, ServerNode, Tile } from "../types";
 
 export const CameraTreePanel = ({
@@ -47,7 +48,10 @@ export const CameraTreePanel = ({
       kind: "server",
       title: server.name,
       subtitle: `${placed}/${cameras.length} ${placedLabel}`,
-      state: server.online ? "live" : "server-offline",
+      state: deviceStateOf({
+        isServerActive: server.isActive,
+        isServerOnline: server.online,
+      }),
       actions: (
         <>
           <PanelIconAction

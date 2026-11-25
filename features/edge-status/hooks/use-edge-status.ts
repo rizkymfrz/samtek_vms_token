@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useSyncExternalStore } from "react";
+import type { DeviceFault } from "@/lib/device-state";
 import { mqttConfig } from "@/config/mqtt";
 import {
   faultKey,
@@ -49,6 +50,19 @@ export const useDeviceFaulty = () => {
   return useCallback(
     (edgeId: string, deviceId: string) =>
       mqttConfig ? faulty.has(faultKey(edgeId, deviceId)) : false,
+    [faulty],
+  );
+};
+
+export const useDeviceFault = () => {
+  const faulty = useSyncExternalStore(
+    subscribeEdgeStatus,
+    getFaultyDevices,
+    getServerFaultyDevices,
+  );
+  return useCallback(
+    (edgeId: string, deviceId: string): DeviceFault | null =>
+      mqttConfig ? (faulty.get(faultKey(edgeId, deviceId)) ?? null) : null,
     [faulty],
   );
 };

@@ -1,4 +1,5 @@
 import type { ParamValue } from "@/lib/api/analytic-params";
+import type { DeviceFault } from "@/lib/device-state";
 
 export type EdgeSample = {
   receivedAt: number;
@@ -81,7 +82,7 @@ export type EdgeStatusState = {
   error: string | null;
   entries: ReadonlyMap<string, EdgeEntry>;
   online: ReadonlySet<string>;
-  faulty: ReadonlySet<string>;
+  faulty: ReadonlyMap<string, DeviceFault>;
   talk: ReadonlyMap<string, ReadonlySet<string>>;
   bodyworn: ReadonlyMap<string, BodywornState>;
   catalog: ReadonlyMap<string, AnalyticDescriptor[]>;

@@ -1,3 +1,4 @@
+import type { DeviceFault, DeviceState } from "@/lib/device-state";
 type ApplyError = {
   code: string;
   field: string | null;
@@ -16,7 +17,7 @@ export type CameraRecord = {
   isRecordingEnabled: boolean;
   applyStatus: "applied" | "rejected" | null;
   applyError: ApplyError | null;
-  isFaulty?: boolean;
+  fault?: DeviceFault | null;
 };
 
 export type ServerOption = {
@@ -39,7 +40,6 @@ export type CameraData = {
   failures: CameraFailure[];
 };
 
-export type StreamState =
-  "live" | "disabled" | "server-offline" | "stream-offline";
+export type StreamState = DeviceState;
 
 export type ApplyState = "applied" | "rejected" | "pending";

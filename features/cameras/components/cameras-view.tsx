@@ -17,7 +17,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
 import { analyticLabel } from "@/config/analytics-catalog";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import { useDeviceFault, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraCard } from "./camera-card";
 import { CameraDialog, type DialogTarget } from "./camera-dialog";
@@ -77,14 +77,14 @@ export const CamerasView = ({
     failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
   const serverOnline = useServerOnline();
-  const isFaulty = useDeviceFaulty();
+  const fault = useDeviceFault();
   const cameras = useMemo(
     () =>
       current.cameras.map((camera) => ({
         ...camera,
-        isFaulty: isFaulty(camera.edgeServerId, camera.id),
+        fault: fault(camera.edgeServerId, camera.id),
       })),
-    [current.cameras, isFaulty],
+    [current.cameras, fault],
   );
   const servers = useMemo(
     () =>

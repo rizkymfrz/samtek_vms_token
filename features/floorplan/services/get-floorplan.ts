@@ -1,3 +1,4 @@
+import { deviceStateOf } from "@/lib/device-state";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
@@ -124,11 +125,11 @@ export const getFloorplan = async (): Promise<FloorplanData> => {
       webrtcUrlLocal: server?.webrtcUrlLocal ?? null,
       analytic: device.analyticId ? analyticLabel(device.analyticId) : null,
       analyticId: device.analyticId ?? null,
-      state: !device.isEnabled
-        ? "disabled"
-        : server && isServerOnline(server, now)
-          ? "live"
-          : "server-offline",
+      state: deviceStateOf({
+        isEnabled: device.isEnabled,
+        isServerActive: server?.isActive ?? true,
+        isServerOnline: server ? isServerOnline(server, now) : false,
+      }),
       alerts: alarmCounts.get(device.id) ?? 0,
     };
   });

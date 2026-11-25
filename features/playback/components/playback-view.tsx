@@ -1,4 +1,5 @@
 "use client";
+import { isServerDown } from "@/lib/device-state";
 import {
   BellIcon,
   ChevronLeftIcon,
@@ -100,7 +101,7 @@ export const PlaybackView = ({
     visible.map((tile) => tile.name),
     isLive,
   );
-  const hasOnline = visible.some((tile) => tile.state !== "server-offline");
+  const hasOnline = visible.some((tile) => !isServerDown(tile.state));
   return (
     <PageShell>
       <SidePanel>

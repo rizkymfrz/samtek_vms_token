@@ -10,20 +10,13 @@ import {
   PlusIcon,
   SignalIcon,
 } from "lucide-react";
-import {
-  type CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { DeleteConfirmDialog } from "@/components/shared/delete-confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
 import { PtzPanel, setPtzCamera } from "@/features/ptz";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
@@ -34,6 +27,7 @@ import { useFullscreen } from "../hooks/use-fullscreen";
 import { useLayout } from "../hooks/use-layout";
 import { useLayoutActions } from "../hooks/use-layout-actions";
 import { useLive } from "../hooks/use-live";
+import { useLiveTiles } from "../hooks/use-live-tiles";
 import {
   addCameras,
   GRID_PRESETS,
@@ -42,7 +36,7 @@ import {
   removeCameras,
 } from "../lib/edit-layout";
 import { gridPreferenceStore } from "../lib/grid-preference-store";
-import type { LiveData, LiveLayout, StreamQuality, Tile } from "../types";
+import type { LiveData, LiveLayout, StreamQuality } from "../types";
 
 const QUALITY_ITEMS = [
   { value: "sub", label: "Sub stream" },
@@ -74,28 +68,7 @@ export const LiveView = ({
     "Some edge servers did not respond",
     failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
-  const serverOnline = useServerOnline();
-  const servers = useMemo(
-    () =>
-      live.servers.map((s) => ({ ...s, online: serverOnline(s, s.online) })),
-    [live.servers, serverOnline],
-  );
-  const isFaulty = useDeviceFaulty();
-  const tiles = useMemo(() => {
-    const online = new Map(servers.map((s) => [s.id, s.online]));
-    return live.tiles.map((tile): Tile =>
-      tile.state === "disabled"
-        ? tile
-        : {
-            ...tile,
-            state: !online.get(tile.serverId)
-              ? "server-offline"
-              : isFaulty(tile.serverId, tile.id)
-                ? "stream-offline"
-                : "live",
-          },
-    );
-  }, [live.tiles, servers, isFaulty]);
+  const { servers, tiles } = useLiveTiles(live);
   const actions = useLayoutActions(isLive);
   useFailureToast("Failed to update the layout", [actions.error]);
   const [pickedId, setPickedId] = useState<string | null>(null);

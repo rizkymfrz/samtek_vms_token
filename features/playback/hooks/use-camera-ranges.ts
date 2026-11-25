@@ -1,4 +1,5 @@
 "use client";
+import { isServerDown } from "@/lib/device-state";
 import { useQueries } from "@tanstack/react-query";
 import { mqttConfig } from "@/config/mqtt";
 import { dayBounds, extendToNewest } from "@/features/camera-detail/playback";
@@ -29,7 +30,7 @@ export const useCameraRanges = (
       ],
       queryFn: () =>
         queryRecording(tile.serverId, tile.id, stream(tile), from, to),
-      enabled: mqttConfig !== null && tile.state !== "server-offline",
+      enabled: mqttConfig !== null && !isServerDown(tile.state),
       refetchInterval: REFRESH_MS,
       retry: false,
     })),

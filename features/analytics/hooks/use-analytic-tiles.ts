@@ -1,6 +1,7 @@
 "use client";
+import { deviceStateOf } from "@/lib/device-state";
 import { useMemo } from "react";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import { useDeviceFault, useServerOnline } from "@/features/edge-status";
 import { type LiveData, type Tile, useLive } from "@/features/live";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 
@@ -15,7 +16,7 @@ export const useAnalyticTiles = (
     live.failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
   const serverOnline = useServerOnline();
-  const isFaulty = useDeviceFaulty();
+  const fault = useDeviceFault();
   return useMemo(
     () =>
       live.tiles
@@ -27,16 +28,17 @@ export const useAnalyticTiles = (
         )
         .map((tile): Tile => {
           const server = live.servers.find((s) => s.id === tile.serverId);
-          const online = server ? serverOnline(server, server.online) : false;
           return {
             ...tile,
-            state: !online
-              ? "server-offline"
-              : isFaulty(tile.serverId, tile.id)
-                ? "stream-offline"
-                : "live",
+            state: deviceStateOf({
+              isServerActive: server?.isActive ?? true,
+              isServerOnline: server
+                ? serverOnline(server, server.online)
+                : false,
+              fault: fault(tile.serverId, tile.id),
+            }),
           };
         }),
-    [live.tiles, live.servers, analyticIds, serverOnline, isFaulty],
+    [live.tiles, live.servers, analyticIds, serverOnline, fault],
   );
 };

@@ -17,6 +17,9 @@ const STATUS_ITEMS = [
   { value: "live", label: "Live" },
   { value: "disabled", label: "Disabled" },
   { value: "server-offline", label: "Server offline" },
+  { value: "server-disabled", label: "Edge server disabled" },
+  { value: "stream-offline", label: "Stream unavailable" },
+  { value: "device-error", label: "Camera error" },
 ];
 
 const ANALYTIC_ITEMS = [

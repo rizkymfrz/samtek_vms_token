@@ -1,4 +1,5 @@
 "use client";
+import { deviceStateOf, isServerDown } from "@/lib/device-state";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { analyticLabel } from "@/config/analytics-catalog";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import { useDeviceFault, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { CameraForm } from "./camera-form";
 import { LivePanel } from "./live-panel";
@@ -66,17 +67,16 @@ export const CameraDetailView = ({
   const analyticId = useWatch({ control: form.control, name: "analyticId" });
   const { specs, isKnown } = useParamSpecs(detail.edgeServerId, analyticId);
   const serverOnline = useServerOnline();
-  const isFaulty = useDeviceFaulty();
-  const state: StreamState = !detail.isEnabled
-    ? "disabled"
-    : serverOnline(
-          { id: detail.edgeServerId, isActive: detail.isServerActive },
-          detail.isServerOnline,
-        )
-      ? isFaulty(detail.edgeServerId, detail.id)
-        ? "stream-offline"
-        : "live"
-      : "server-offline";
+  const fault = useDeviceFault();
+  const state: StreamState = deviceStateOf({
+    isEnabled: detail.isEnabled,
+    isServerActive: detail.isServerActive,
+    isServerOnline: serverOnline(
+      { id: detail.edgeServerId, isActive: detail.isServerActive },
+      detail.isServerOnline,
+    ),
+    fault: fault(detail.edgeServerId, detail.id),
+  });
   const isPerimetersChanged = !isSamePerimeters(perimeters, saved);
   const params = useWatch({ control: form.control, name: "analyticParams" });
   const isParamsChanged = Boolean(form.formState.dirtyFields.analyticParams);
@@ -190,7 +190,7 @@ export const CameraDetailView = ({
         >
           <PlaybackPanel
             detail={detail}
-            isOnline={state !== "server-offline"}
+            isOnline={!isServerDown(state)}
             isLive={isLive}
           />
         </TabsContent>

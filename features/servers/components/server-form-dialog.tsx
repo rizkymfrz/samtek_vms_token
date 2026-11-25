@@ -205,7 +205,7 @@ const Form = ({
               id={`${formId}-active`}
               icon={<PowerIcon />}
               label="Active"
-              description="An inactive edge server is ignored and shown as offline."
+              description="An inactive edge server is ignored and shown as disabled."
               checked={field.value}
               onCheckedChange={field.onChange}
             />

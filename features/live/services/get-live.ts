@@ -1,3 +1,4 @@
+import { deviceStateOf } from "@/lib/device-state";
 import { analyticLabel } from "@/config/analytics-catalog";
 import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
@@ -46,11 +47,11 @@ export const getLive = async (): Promise<LiveData> => {
     analyticId: device.analyticId,
     perimeters: device.perimeters,
     isRecordingEnabled: device.isRecordingEnabled,
-    state: !device.isEnabled
-      ? "disabled"
-      : online.get(device.edgeServerId)
-        ? "live"
-        : "server-offline",
+    state: deviceStateOf({
+      isEnabled: device.isEnabled,
+      isServerActive: serverById.get(device.edgeServerId)?.isActive ?? true,
+      isServerOnline: online.get(device.edgeServerId) ?? false,
+    }),
     hasSubStream: device.sourceSub !== null,
     hasThirdStream: device.sourceThird !== null,
     webrtcUrl: serverById.get(device.edgeServerId)?.webrtcUrl ?? null,

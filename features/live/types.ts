@@ -1,7 +1,7 @@
+import type { DeviceState } from "@/lib/device-state";
 import type { Perimeters } from "@/lib/api/perimeters";
 
-export type StreamState =
-  "live" | "disabled" | "server-offline" | "stream-offline";
+export type StreamState = DeviceState;
 
 export type Tile = {
   id: string;

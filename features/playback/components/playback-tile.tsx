@@ -1,4 +1,5 @@
 "use client";
+import { isServerDown } from "@/lib/device-state";
 import { useCallback, useEffect, useRef } from "react";
 import { EdgeOffline } from "@/components/shared/edge-offline";
 import { Badge } from "@/components/ui/badge";
@@ -42,7 +43,9 @@ const PlaybackScreen = ({
   hasPosition: boolean;
 }) => {
   const boxes = usePlaybackBoxes(session?.sessionId ?? null);
-  if (tile.state === "server-offline") return <EdgeOffline />;
+  if (isServerDown(tile.state)) {
+    return <EdgeOffline isDisabled={tile.state === "server-disabled"} />;
+  }
   if (error) {
     return (
       <span role="alert" className="px-4 text-center">
@@ -147,7 +150,7 @@ export const PlaybackTile = ({
     return (isFullscreen ? subscribeLocal : subscribe)(follow);
   }, [isFullscreen, adopt, read, subscribe, subscribeLocal, playAt, follow]);
   const active = isFullscreen ? local : clock;
-  const isOnline = tile.state !== "server-offline";
+  const isOnline = !isServerDown(tile.state);
   return (
     <div
       ref={root}

@@ -1,3 +1,4 @@
+import { isServerDown } from "@/lib/device-state";
 import { ImageUpIcon, MapIcon, ScanEyeIcon } from "lucide-react";
 import { useRef } from "react";
 import {
@@ -91,9 +92,7 @@ export const FloorplanPanel = ({
       kind: "server",
       title: serverName,
       subtitle: `${onPlan}/${own.length} on this plan`,
-      state: own.some((c) => c.state !== "server-offline")
-        ? "live"
-        : "server-offline",
+      state: own.some((c) => !isServerDown(c.state)) ? "live" : own[0].state,
       children: own.map((camera) => {
         const placement = placementOf.get(camera.id);
         return {

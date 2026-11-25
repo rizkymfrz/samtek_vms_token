@@ -1,30 +1,31 @@
 "use client";
 import { useMemo } from "react";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import { useDeviceFault, useServerOnline } from "@/features/edge-status";
+import { deviceStateOf } from "@/lib/device-state";
 import type { LiveData, Tile } from "../types";
 
 export const useLiveTiles = (live: LiveData) => {
   const serverOnline = useServerOnline();
-  const isFaulty = useDeviceFaulty();
+  const fault = useDeviceFault();
   const servers = useMemo(
     () =>
       live.servers.map((s) => ({ ...s, online: serverOnline(s, s.online) })),
     [live.servers, serverOnline],
   );
   const tiles = useMemo(() => {
-    const online = new Map(servers.map((s) => [s.id, s.online]));
-    return live.tiles.map((tile): Tile =>
-      tile.state === "disabled"
-        ? tile
-        : {
-            ...tile,
-            state: !online.get(tile.serverId)
-              ? "server-offline"
-              : isFaulty(tile.serverId, tile.id)
-                ? "stream-offline"
-                : "live",
-          },
-    );
-  }, [live.tiles, servers, isFaulty]);
+    const byId = new Map(servers.map((s) => [s.id, s]));
+    return live.tiles.map((tile): Tile => {
+      if (tile.state === "disabled") return tile;
+      const server = byId.get(tile.serverId);
+      return {
+        ...tile,
+        state: deviceStateOf({
+          isServerActive: server?.isActive ?? true,
+          isServerOnline: server?.online ?? false,
+          fault: fault(tile.serverId, tile.id),
+        }),
+      };
+    });
+  }, [live.tiles, servers, fault]);
   return { servers, tiles };
 };

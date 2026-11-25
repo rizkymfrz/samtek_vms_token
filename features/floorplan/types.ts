@@ -1,3 +1,4 @@
+import type { DeviceState } from "@/lib/device-state";
 export type Floorplan = {
   id: string;
   groupId: string;
@@ -37,7 +38,7 @@ export type PlanCamera = {
   hasSubStream: boolean;
   webrtcUrl: string | null;
   webrtcUrlLocal: string | null;
-  state: "live" | "disabled" | "server-offline" | "stream-offline";
+  state: DeviceState;
   alerts: number;
 };
 

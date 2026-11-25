@@ -1,4 +1,5 @@
 "use client";
+import { deviceStateOf } from "@/lib/device-state";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FolderIcon, LayersIcon, PlusIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,7 +13,7 @@ import {
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import { useDeviceFaulty, useServerOnline } from "@/features/edge-status";
+import { useDeviceFault, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { messageOf } from "@/lib/axios/browser-client";
 import { DeleteFloorplanDialog } from "./delete-floorplan-dialog";
@@ -86,10 +87,13 @@ export const FloorplanView = ({
       router.replace(`/floorplan?id=${planKey}`, { scroll: false });
   }, [planKey, linkedId, router]);
   const serverOnline = useServerOnline();
-  const isFaulty = useDeviceFaulty();
+  const fault = useDeviceFault();
   const cameras = useMemo(() => {
-    const online = new Map(
-      data.servers.map((s) => [s.id, serverOnline(s, s.online)]),
+    const servers = new Map(
+      data.servers.map((s) => [
+        s.id,
+        { isActive: s.isActive, online: serverOnline(s, s.online) },
+      ]),
     );
     return new Map(
       data.cameras.map((c): [string, PlanCamera] => [
@@ -98,15 +102,15 @@ export const FloorplanView = ({
           ? c
           : {
               ...c,
-              state: !online.get(c.serverId)
-                ? "server-offline"
-                : isFaulty(c.serverId, c.id)
-                  ? "stream-offline"
-                  : "live",
+              state: deviceStateOf({
+                isServerActive: servers.get(c.serverId)?.isActive ?? true,
+                isServerOnline: servers.get(c.serverId)?.online ?? false,
+                fault: fault(c.serverId, c.id),
+              }),
             },
       ]),
     );
-  }, [data.cameras, data.servers, serverOnline, isFaulty]);
+  }, [data.cameras, data.servers, serverOnline, fault]);
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: FLOORPLAN_QUERY_KEY });
   const save = useMutation({
