@@ -17,6 +17,7 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Map** (`/map`, `features/map`): diaudit teksnya (§3.16).
   - **Floor plans** (`/floorplan`, `features/floorplan`): diaudit
     teksnya (§3.15).
   - **Tickets** (`/tickets`, halaman publik `/t`, `features/tickets`):
@@ -624,6 +625,35 @@ Catatan:
 - Teks ruangan dan nama plan pada data contoh (`Lobby`, `Reception`)
   adalah data, bukan teks UI.
 
+### 3.16 Map
+
+Menu dan page title: `Map`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Map | Halaman peta geografis berisi grup, edge server, dan kamera yang punya koordinat. Bukan `Floor plans` (denah gedung). | Menu dan judul. | Maps, GIS | `Map` |
+| Location | Posisi geografis (`latitude`, `longitude`) pada grup, edge server, atau kamera. Dapat berasal dari edge server (`From edge server`) atau ditempatkan manual. | Panel dan daftar `Locations`. | Position (untuk lokasi tetap) | `Locations` |
+| Marker | Titik item pada peta. | Aria dan tooltip memakai nama item. | Pin | `{name}` |
+| Add to the map | Aksi menempatkan item yang belum punya lokasi: pilih item, klik peta. | Tombol ikon pada daftar. | Place | `Add {name} to the map`, `Cancel adding {name}` |
+| Remove from the map | Aksi menghapus lokasi item. | Tombol ikon pada daftar. | Unplace | `Remove {name} from the map` |
+| Movement trail | Jejak posisi perangkat bodyworn pada hari terpilih. | Toast dan lapisan peta. | Route, history | `Failed to load the movement trail` |
+| Bodyworn | Perangkat yang dipakai petugas, dengan nama, nomor polisi, jaringan, baterai, dan posisi dari Edge. | Detail pada peta. | Body cam | `Bodyworn` |
+| Police number | Nomor polisi petugas (`police_number`). | Field detail bodyworn. | `Police No.` | `Police number` |
+
+Catatan:
+- Koordinat ditampilkan dengan 6 desimal di seluruh peta.
+- Pesan validasi: `Latitude and longitude must be set together.`,
+  `Edge server is required for a device.`
+- Status `Online` / `Offline` pada detail bodyworn berasal dari field
+  `bodyworn.online` dari Edge. Artinya belum terdokumentasi di repo
+  (apakah terhubung ke server bodyworn atau ke Edge server).
+  **[Pending]** konfirmasi tim Edge. Teks tidak diubah.
+- Nilai `Network` ditampilkan huruf besar dari nilai mentah Edge dan
+  tidak lewat peta label.
+- Pohon `Locations` memakai state kamera dari satu sumber
+  (`DEVICE_STATE_LABEL`), tetapi belum membedakan `Edge server
+  disabled` dan `Camera error` (§3.10).
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -808,7 +838,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets` dan `Map` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1007,6 +1037,17 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `floorplan-view.tsx` | `No groups yet`, `No floor plans yet` | `No groups`, `No floor plans` |
 | `floorplan-view.tsx` | `Create an edge server group first, a floor plan belongs to one.` | `Create an edge server group first. A floor plan belongs to one.` |
 | `floorplan-form-dialog.tsx` | placeholder `Floor 1` | `e.g. Floor 1` |
+
+### Map (§3.16, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `map-view.tsx` | `Could not save the location`, `Could not load the movement trail` | `Failed to save the location`, `Failed to load the movement trail` |
+| `bodyworn-details.tsx` | `Police No.` | `Police number` |
+| `map-panel.tsx` | `Place {name} on the map`, `Cancel placing {name}`, `Click the map to place it` | `Add {name} to the map`, `Cancel adding {name}`, `Click the map to add it` |
+| `map-panel.tsx` | badge `From server` | `From edge server` |
+| `map-panel.tsx` | koordinat 5 desimal | 6 desimal |
+| `schemas/map.ts` | `Latitude and longitude go together`, `A device needs its edge server` | `Latitude and longitude must be set together.`, `Edge server is required for a device.` |
 
 ### Label analytic (sentence case, §6.1)
 
