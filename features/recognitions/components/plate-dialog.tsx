@@ -106,7 +106,7 @@ export const PlateDialog = ({
                 />
                 <Field
                   icon={ScanSearchIcon}
-                  label="Detection"
+                  label="Confidence"
                   value={`${Math.round(recognition.confidence * 100)}%`}
                 />
               </div>

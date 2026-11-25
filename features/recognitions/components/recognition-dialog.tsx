@@ -91,12 +91,12 @@ export const RecognitionDialog = ({
               <DialogSection className="md:flex-[1.35]">
                 <Tabs key={recognition.id} defaultValue="capture">
                   <TabsList variant="line" size="sm">
-                    <TabsTrigger value="capture">Live Capture</TabsTrigger>
+                    <TabsTrigger value="capture">Live capture</TabsTrigger>
                     <TabsTrigger
                       value="reference"
                       disabled={!recognition.referenceUrl}
                     >
-                      Reference Image
+                      Reference image
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="capture">
@@ -133,7 +133,7 @@ export const RecognitionDialog = ({
                     />
                     <Field
                       icon={TagIcon}
-                      label="Group"
+                      label="Person group"
                       value={recognition.group}
                     />
                     <Field
@@ -153,7 +153,7 @@ export const RecognitionDialog = ({
                     />
                     <Field
                       icon={ScanSearchIcon}
-                      label="Detection"
+                      label="Confidence"
                       value={`${Math.round(recognition.confidence * 100)}%`}
                     />
                   </div>
