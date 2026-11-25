@@ -1,10 +1,14 @@
 "use client";
-import { SlidersHorizontalIcon, TicketIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SlidersHorizontalIcon,
+  TicketIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Pager } from "@/components/shared/pager";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useFailureToast } from "@/hooks/use-failure-toast";
@@ -42,6 +46,10 @@ export const TicketsView = () => {
   if (isPending) return <TicketsSkeleton />;
   const tickets = data?.items ?? [];
   const total = data?.total ?? 0;
+  const page = filters.page - 1;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const goTo = (next: number) =>
+    setFilters((current) => ({ ...current, page: next + 1 }));
   return (
     <PageShell>
       <SidePanel>
@@ -54,11 +62,36 @@ export const TicketsView = () => {
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="secondary" onClick={() => setIsRulesOpen(true)}>
             <SlidersHorizontalIcon />
             Rules
           </Button>
+          <div className="flex items-center gap-2">
+            <span className="mr-2 text-xs text-muted-foreground tabular-nums">
+              {total === 0
+                ? "0 tickets"
+                : `${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, total)} of ${total}`}
+            </span>
+            <Button
+              variant="secondary"
+              size="icon"
+              aria-label="Previous page"
+              disabled={page === 0}
+              onClick={() => goTo(page - 1)}
+            >
+              <ChevronLeftIcon />
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              aria-label="Next page"
+              disabled={page >= pages - 1}
+              onClick={() => goTo(page + 1)}
+            >
+              <ChevronRightIcon />
+            </Button>
+          </div>
         </div>
         {tickets.length === 0 ? (
           <EmptyState
@@ -71,23 +104,13 @@ export const TicketsView = () => {
             }
           />
         ) : (
-          <>
-            <div className="flex flex-col overflow-hidden rounded border lg:min-h-0 lg:flex-1">
-              <TicketTable
-                tickets={tickets}
-                serverNames={serverNames}
-                onSelect={setSelected}
-              />
-            </div>
-            <Pager
-              page={filters.page - 1}
-              pageSize={PAGE_SIZE}
-              total={total}
-              onPageChange={(page) =>
-                setFilters((current) => ({ ...current, page: page + 1 }))
-              }
+          <div className="flex flex-col overflow-hidden rounded border lg:min-h-0 lg:flex-1">
+            <TicketTable
+              tickets={tickets}
+              serverNames={serverNames}
+              onSelect={setSelected}
             />
-          </>
+          </div>
         )}
         <TicketDetailDialog
           ticketId={selected}
