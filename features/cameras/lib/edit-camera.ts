@@ -46,10 +46,10 @@ const optionalSource = z
 export const cameraDraftSchema = z
   .object({
     name: requiredText("Name", 100),
-    edgeServerId: z.string().min(1, "Choose an edge server."),
+    edgeServerId: z.string().min(1, "Edge server is required."),
     sourceMain: z
       .string()
-      .refine((value) => value.trim() !== "", "The main stream is required.")
+      .refine((value) => value.trim() !== "", "Main stream is required.")
       .refine((value) => isStreamSource(value.trim()), STREAM_MESSAGE),
     sourceSub: optionalSource,
     sourceThird: optionalSource,

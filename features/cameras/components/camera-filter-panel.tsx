@@ -51,7 +51,7 @@ export const CameraFilterPanel = ({
   const rows = [
     {
       id: ALL,
-      name: "All servers",
+      name: "All edge servers",
       online: null as boolean | null,
       count: total,
     },
@@ -68,7 +68,7 @@ export const CameraFilterPanel = ({
         <PanelSearch
           value={filters.query}
           onChange={(query) => onChange({ query })}
-          placeholder="Search cameras..."
+          placeholder="Search cameras…"
         />
         <PanelField label="Status">
           <Pick

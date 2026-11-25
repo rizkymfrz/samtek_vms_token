@@ -105,8 +105,8 @@ export const CamerasView = ({
   const [pendingDelete, setPendingDelete] = useState<CameraRecord | null>(null);
   const { save, remove, toggle, saveError, removeError, toggleError } =
     useCameraActions(isLive);
-  useFailureToast("Could not update the camera", [toggleError]);
-  useFailureToast("Could not delete the camera", [removeError]);
+  useFailureToast("Failed to update the camera", [toggleError]);
+  useFailureToast("Failed to delete the camera", [removeError]);
   const [rows, columns] = grid.split("x").map(Number);
   const pageSize = view === "grid" ? rows * columns : LIST_PAGE_SIZE;
   const matches = useMemo(
@@ -163,7 +163,7 @@ export const CamerasView = ({
             </Button>
             <Button variant="secondary" onClick={() => setIsScanOpen(true)}>
               <ScanSearchIcon />
-              Scan
+              Scan cameras
             </Button>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -217,7 +217,7 @@ export const CamerasView = ({
         {matches.length === 0 ? (
           <EmptyState
             icon={<CctvIcon />}
-            title={cameras.length === 0 ? "No cameras yet" : "No cameras found"}
+            title={cameras.length === 0 ? "No cameras" : "No cameras found"}
             description={
               cameras.length === 0
                 ? "Add the first one."

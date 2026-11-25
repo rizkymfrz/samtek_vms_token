@@ -58,7 +58,7 @@ export const useDeviceScan = () => {
           message:
             failure instanceof Error
               ? failure.message
-              : "The scan did not start.",
+              : "Failed to start the scan.",
         });
       }
     },
@@ -73,7 +73,7 @@ export const useDeviceScan = () => {
         message:
           failure instanceof Error
             ? failure.message
-            : "Could not stop the scan.",
+            : "Failed to stop the scan.",
       }),
     );
   }, []);

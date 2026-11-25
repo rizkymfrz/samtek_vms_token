@@ -63,7 +63,7 @@ export const CameraTable = ({
           <TableHead icon={ServerIcon}>Edge server</TableHead>
           <TableHead icon={ScanSearchIcon}>Analytic</TableHead>
           <TableHead icon={ActivityIcon}>Status</TableHead>
-          <TableHead icon={CircleCheckIcon}>Config</TableHead>
+          <TableHead icon={CircleCheckIcon}>Configuration</TableHead>
           <TableHead icon={RadioIcon}>Streams</TableHead>
           <TableHead icon={PowerIcon}>Enabled</TableHead>
           <TableHead icon={CircleDotIcon}>Recording</TableHead>
@@ -117,7 +117,13 @@ export const CameraTable = ({
                 </span>
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {camera.sourceSub ? "Main + Sub" : "Main"}
+                {[
+                  "Main",
+                  camera.sourceSub && "Sub",
+                  camera.sourceThird && "Third",
+                ]
+                  .filter(Boolean)
+                  .join(" + ")}
               </TableCell>
               <TableCell onClick={(event) => event.stopPropagation()}>
                 <Switch
@@ -145,7 +151,7 @@ export const CameraTable = ({
                     variant="destructive"
                     size="icon"
                     aria-label={`Delete ${camera.name}`}
-                    title="Delete"
+                    title={`Delete ${camera.name}`}
                     onClick={() => onDelete(camera)}
                   >
                     <Trash2Icon />

@@ -95,7 +95,7 @@ export const ScanDialog = ({
   const submit = () => {
     const form = parseScanForm(ipRange, ports, SCAN_LOGINS);
     if (!serverId) {
-      setFormError("Choose an edge server.");
+      setFormError("Edge server is required.");
       return;
     }
     if (!form.ok) {

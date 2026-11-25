@@ -219,7 +219,7 @@ const Form = ({
               id={`${formId}-recording`}
               icon={<CircleDotIcon />}
               label="Recording"
-              description="Record this camera's footage on the edge server."
+              description="Record this camera on the edge server."
               checked={field.value}
               onCheckedChange={field.onChange}
             />
