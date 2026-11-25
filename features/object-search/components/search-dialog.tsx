@@ -80,7 +80,7 @@ const SearchPlayer = ({
             {playback.error}
           </span>
         ) : session?.state === "ended" ? (
-          <span>End of recording</span>
+          <span>End of recording.</span>
         ) : session ? (
           <>
             <WebrtcPlayer
@@ -116,7 +116,7 @@ const SearchPlayer = ({
         <Button
           variant="secondary"
           size="icon"
-          aria-label="Rewind"
+          aria-label="Slower"
           disabled={!canControl}
           onClick={() =>
             void playback.changeSpeed(stepSpeed(session?.speed ?? 1, -1))
@@ -125,12 +125,12 @@ const SearchPlayer = ({
           <RewindIcon />
         </Button>
         <span className="flex size-10 items-center justify-center rounded border bg-card text-xs tabular-nums">
-          {session?.speed ?? 1}
+          {session?.speed ?? 1}x
         </span>
         <Button
           variant="secondary"
           size="icon"
-          aria-label="Fast forward"
+          aria-label="Faster"
           disabled={!canControl}
           onClick={() =>
             void playback.changeSpeed(stepSpeed(session?.speed ?? 1, 1))
@@ -214,7 +214,7 @@ export const SearchDialog = ({
                   />
                   <DetailField
                     icon={BoxIcon}
-                    label="Label"
+                    label="Object"
                     value={target.row.label}
                   />
                   <DetailField
@@ -226,11 +226,11 @@ export const SearchDialog = ({
               </div>
               {target.row.confidence !== null && (
                 <div className="flex flex-col gap-2">
-                  <DetailLabel>Confidence</DetailLabel>
+                  <DetailLabel>Match</DetailLabel>
                   <Progress
                     value={Math.round(target.row.confidence * 100)}
                     variant="segmented"
-                    aria-label="Match confidence"
+                    aria-label="Match"
                     className="flex-nowrap items-center gap-4"
                   >
                     <ProgressValue className="ml-0 text-lg text-foreground">

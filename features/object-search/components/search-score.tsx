@@ -10,14 +10,14 @@ export const SearchScore = ({ row }: { row: SearchRow }) =>
       title="Raw text-image similarity. Around 0.15 is a good match."
     >
       <ScanSearchIcon className="size-3 shrink-0" />
-      sim {formatSimilarity(row.similarity)}
+      Similarity {formatSimilarity(row.similarity)}
     </span>
   ) : (
     <Progress
       value={Math.round(row.confidence * 100)}
       variant="segmented"
       segments={10}
-      aria-label="Match confidence"
+      aria-label="Match"
       title={`Similarity ${formatSimilarity(row.similarity)}`}
       className="flex-nowrap items-center gap-2"
     >

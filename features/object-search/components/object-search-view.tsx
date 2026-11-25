@@ -11,7 +11,7 @@ import { useFailureToast } from "@/hooks/use-failure-toast";
 import { SearchCard } from "./search-card";
 import { SearchDialog, type SearchTarget } from "./search-dialog";
 import { useObjectSearch } from "../hooks/use-object-search";
-import { DEFAULT_FILTERS, type Submitted } from "../lib/filters";
+import type { Submitted } from "../lib/filters";
 import { MAX_QUERY_LENGTH, SearchInputError } from "../lib/validate-search";
 
 const MIN_CONFIDENCE = 20;
@@ -61,7 +61,6 @@ export const ObjectSearchView = () => {
     if (text === "") return;
     setSubmitted((previous) => ({
       q: text,
-      filters: DEFAULT_FILTERS,
       nonce: (previous?.nonce ?? 0) + 1,
     }));
   };
@@ -144,8 +143,8 @@ export const ObjectSearchView = () => {
       ) : error && !inputError ? (
         <EmptyState
           icon={<SearchIcon />}
-          title="Search failed"
-          description="The search request failed. Try again."
+          title="Failed to search objects"
+          description="The search could not be completed. Try again."
         >
           <Button variant="secondary" onClick={() => void search.refetch()}>
             Try again
@@ -154,8 +153,8 @@ export const ObjectSearchView = () => {
       ) : isUnavailable ? (
         <EmptyState
           icon={<SearchIcon />}
-          title="Search is not available on this edge"
-          description="The text model is missing or failed to load, or the edge does not run on Linux."
+          title="Search is not available on this edge server"
+          description="The text model is missing or failed to load, or the edge server does not run on Linux."
         />
       ) : data && rows.length === 0 ? (
         <EmptyState

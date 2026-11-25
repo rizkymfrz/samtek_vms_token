@@ -24,7 +24,7 @@ export const fetchSearch = async (query: SearchQuery, signal: AbortSignal) => {
     if (axios.isAxiosError(error) && error.response?.status === 400) {
       throw new SearchInputError(
         typeof body?.field === "string" ? body.field : "q",
-        typeof body?.error === "string" ? body.error : "Invalid search",
+        typeof body?.error === "string" ? body.error : "The search is invalid.",
       );
     }
     throw error;

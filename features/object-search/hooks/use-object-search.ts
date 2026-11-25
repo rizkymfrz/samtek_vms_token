@@ -7,7 +7,7 @@ export const useObjectSearch = (submitted: Submitted | null) =>
   useQuery({
     queryKey: ["object-search", submitted],
     queryFn: ({ signal }) =>
-      fetchSearch(toQuery(submitted as Submitted, Date.now()), signal),
+      fetchSearch(toQuery(submitted as Submitted), signal),
     enabled: submitted !== null,
     retry: false,
     refetchOnWindowFocus: false,
