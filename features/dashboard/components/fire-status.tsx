@@ -33,7 +33,7 @@ export const FireStatus = ({ fire }: { fire: Dashboard["fire"] }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground">
             <FlameIcon className="size-4" />
-            <span className="text-xs">Fire & smoke</span>
+            <span className="text-xs">Fire and smoke</span>
           </div>
           <span
             className={cn(
@@ -79,7 +79,7 @@ export const FireStatus = ({ fire }: { fire: Dashboard["fire"] }) => {
           <span className="truncate text-muted-foreground">
             {fire.last
               ? `Last: ${fire.last.device} · ${fire.last.time}`
-              : "No fire or smoke alarms in 24 hours."}
+              : "No fire or smoke alarms in the last 24 hours."}
           </span>
           <div className="flex shrink-0 items-center gap-4">
             <span className="flex items-center gap-2">

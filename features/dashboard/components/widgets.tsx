@@ -108,7 +108,7 @@ export const WIDGETS: Widget[] = [
     when: always,
     render: (d) => (
       <KpiCard
-        label="Avg alarms per hour"
+        label="Average alarms per hour"
         value={(d.kpis.alarms.value / d.timeline.length).toLocaleString(
           "en-US",
           { maximumFractionDigits: 1 },
@@ -195,7 +195,7 @@ export const WIDGETS: Widget[] = [
     span: 3,
     when: (d) => d.modules.reid,
     render: (d) => (
-      <Panel title="New persons">
+      <Panel title="New people">
         <NewPersons
           value={d.kpis.newPersons.value}
           total={d.kpis.newPersons.total}
@@ -238,7 +238,10 @@ export const WIDGETS: Widget[] = [
     span: 6,
     when: always,
     render: (d) => (
-      <Panel title="Activity by camera" description="Alarms per hour">
+      <Panel
+        title="Activity by camera"
+        description="Last 24 hours, alarms per hour"
+      >
         {d.heatmap.length ? (
           <Heatmap rows={d.heatmap} hours={d.timeline.map((b) => b.label)} />
         ) : (
@@ -406,7 +409,7 @@ export const WIDGETS: Widget[] = [
     span: 4,
     when: (d) => d.modules.faceRecognition,
     render: (d) => (
-      <Panel title="Recognized faces">
+      <Panel title="Recognized people">
         <RecentFaces faces={d.recentFaces} deviceNames={d.deviceNames} />
       </Panel>
     ),
@@ -426,7 +429,7 @@ export const WIDGETS: Widget[] = [
           <Stats
             items={[
               [d.reid.sightings, "Sightings"],
-              [d.reid.people, "Different people"],
+              [d.reid.people, "Unique people"],
             ]}
           />
           {d.reid.byCamera.length ? (
@@ -560,7 +563,7 @@ export const WIDGETS: Widget[] = [
         <div className="flex flex-col gap-4">
           <Stats
             items={[
-              [d.behavior.phone, "Phone calls"],
+              [d.behavior.phone, "Phone use"],
               [d.behavior.sleep, "Asleep on duty"],
             ]}
           />
