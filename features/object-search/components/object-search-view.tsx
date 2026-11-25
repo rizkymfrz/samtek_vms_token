@@ -168,7 +168,7 @@ export const ObjectSearchView = () => {
           description={
             hiddenCount > 0
               ? `${hiddenCount} person results are hidden below ${MIN_CONFIDENCE}% confidence.`
-              : "Only objects from cameras with the search index turned on are searchable, and only after they were seen for at least 10 frames. Indexed data is removed after the retention period (7 days by default)."
+              : "Only cameras with the search index on are searched. Data is kept for 7 days by default."
           }
         />
       ) : data ? (
