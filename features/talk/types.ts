@@ -6,5 +6,6 @@ export type TalkSnapshot = {
   deviceId: string | null;
   isHeld: boolean;
   error: string | null;
+  errorTitle: string | null;
   peers: ReadonlyMap<string, string>;
 };

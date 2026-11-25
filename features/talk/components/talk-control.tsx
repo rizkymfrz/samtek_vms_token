@@ -9,6 +9,7 @@ import { useTalkSupported } from "@/features/edge-status";
 import { useTalk } from "../hooks/use-talk";
 import {
   endText,
+  endTitle,
   isLive,
   TALK_IDLE,
   type TalkSession,
@@ -40,15 +41,19 @@ export const TalkControl = ({
       : isMine
         ? talk.error
         : null;
+  const failureTitle =
+    isMine && session.phase === "ended" && session.reason !== "stopped"
+      ? endTitle(session.reason)
+      : (talk.errorTitle ?? "Talk ended");
   useEffect(() => {
     if (!failure) return;
     toast.add({
-      title: "Talk",
+      title: failureTitle,
       description: failure,
       type: "error",
       timeout: 8000,
     });
-  }, [failure]);
+  }, [failure, failureTitle]);
   useEffect(
     () => () => {
       const current = getTalk();

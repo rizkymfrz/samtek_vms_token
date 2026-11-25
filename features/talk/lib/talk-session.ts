@@ -39,15 +39,25 @@ export const TALK_IDLE: TalkSession = { phase: "idle" };
 
 const REASON_TEXT: Record<TalkEndReason, string> = {
   stopped: "Talk ended.",
-  replaced: "Another operator took over this device.",
+  replaced: "Another user took over this camera.",
   idle: "Talk ended after 60 seconds without audio.",
-  failed: "The device could not be reached.",
-  device_removed: "The device was removed or can no longer talk.",
+  failed: "The camera could not be reached.",
+  device_removed: "The camera was removed or can no longer talk.",
   edge_offline: "The edge server went offline.",
-  connection_lost: "The connection to the broker was lost. Start talk again.",
-  timeout: "The device did not answer within 30 seconds.",
+  connection_lost:
+    "The connection to the MQTT broker was lost. Start talk again.",
+  timeout: "The camera did not answer within 30 seconds.",
   rejected: "The edge server refused to start talk.",
 };
+
+const START_FAILURES: ReadonlySet<TalkEndReason> = new Set([
+  "failed",
+  "rejected",
+  "timeout",
+]);
+
+export const endTitle = (reason: TalkEndReason) =>
+  START_FAILURES.has(reason) ? "Failed to start talk" : "Talk ended";
 
 export const endText = (reason: TalkEndReason, detail: string | null) =>
   detail && (reason === "failed" || reason === "rejected")

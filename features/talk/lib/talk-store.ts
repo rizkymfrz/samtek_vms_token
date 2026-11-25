@@ -34,6 +34,7 @@ let snapshot: TalkSnapshot = {
   deviceId: null,
   isHeld: false,
   error: null,
+  errorTitle: null,
   peers: EMPTY_PEERS,
 };
 
@@ -215,10 +216,11 @@ const failMessage = (error: unknown) => {
   const code =
     error instanceof Error && "code" in error ? String(error.code) : "";
   if (code === "unavailable") {
-    return "The device cannot talk now: it is not running on this edge, or does not support talk.";
+    return "This camera cannot talk now. It is not running on this edge server, or it does not support talk.";
   }
-  if (code === "invalid_field") return "The edge rejected the talk request.";
-  return error instanceof Error ? error.message : "Could not start talk.";
+  if (code === "invalid_field")
+    return "The edge server rejected the talk request.";
+  return error instanceof Error ? error.message : "Failed to start talk.";
 };
 
 export const startTalk = async (
@@ -238,6 +240,7 @@ export const startTalk = async (
     edgeId,
     deviceId,
     error: null,
+    errorTitle: null,
     isHeld: false,
   });
   let micHandle: MicCapture;
@@ -246,19 +249,23 @@ export const startTalk = async (
       isMuted: isMutedNow,
       onChunk,
       onEnded: () => {
-        patch({ error: "The microphone was disconnected." });
+        patch({
+          error: "The microphone was disconnected.",
+          errorTitle: "Talk ended",
+        });
         void stopTalk();
       },
     });
   } catch (error) {
     patch({
       session: TALK_IDLE,
+      errorTitle: "Failed to start talk",
       error:
         error instanceof DOMException && error.name === "NotAllowedError"
           ? "Microphone access was denied."
           : error instanceof Error
             ? error.message
-            : "Could not open the microphone.",
+            : "Failed to open the microphone.",
     });
     return;
   }
@@ -280,7 +287,8 @@ export const startTalk = async (
       session_id: sessionId,
     });
     const parsed = talkResultSchema.safeParse(result.talk);
-    if (!parsed.success) throw new Error("The edge sent an unreadable answer");
+    if (!parsed.success)
+      throw new Error("The edge server sent an unreadable answer.");
     dispatch({ type: "result", sessionId, state: parsed.data.state });
     if (parsed.data.state === "connecting") {
       connectTimer = window.setTimeout(() => {
