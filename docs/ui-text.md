@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Tickets** (`/tickets`, halaman publik `/t`, `features/tickets`):
+    diaudit teksnya (§3.14).
   - **Object search** (`/search`, `features/object-search`): diaudit
     teksnya (§3.13).
   - **Alarms** (halaman `/alerts`, `features/alerts`, plus popover
@@ -548,6 +550,50 @@ Catatan:
 - Satu orang yang muncul lagi di kamera mendapat `Track key` baru.
   Tidak ada identitas lintas track. Itu batas fitur, bukan galat.
 
+### 3.14 Tickets
+
+Menu dan page title: `Tickets`. Halaman publik `/t` (link yang dikirim
+lewat WhatsApp) berjudul `Ticket`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Ticket | Catatan tindak lanjut atas alarm dari satu kamera dan analytic, dengan assignee, status, bukti foto, dan riwayat. Dibuat otomatis oleh ticket rule. | Seluruh halaman Tickets. | Case, incident | `Tickets`, `Ticket ID` |
+| Ticket rule | Pengaturan per Edge server dan event kind: apakah alarm jenis itu membuat tiket. Perubahan berlaku untuk alarm yang diterima sesudahnya. | Dialog `Ticket rules`. | Policy | `Ticket rules` |
+| Event kind | Jenis alarm (`kind` dari Edge) pada daftar rule. | Daftar rule. Tampil mentah sampai ada canonical label mapping (§6.3). | Alarm type di dialog ini | `Create tickets for {kind}` |
+| Assignee | Orang yang ditugaskan menangani tiket. `Unassigned` bila kosong. | Kolom, filter, field. | Owner, officer | `Assignee`, `Assigned to me` |
+| Supervisor | Penerima eskalasi bila tidak ada yang acknowledge sampai batas waktu. | Riwayat dan peringatan eskalasi. | Manager | `Escalated to a supervisor` |
+| Acknowledge | Aksi assignee menyatakan tiket diterima. Batasnya `Acknowledge before`. | Tombol dan status `Acknowledged`. | Accept, confirm | `Acknowledge` |
+| Start | Aksi mulai menangani tiket. Status `In progress`, riwayat `Work started`. | Tombol. | Begin | `Start` |
+| Request resolution | Aksi assignee meminta penyelesaian, dengan catatan dan hasil (`Resolved` atau `False alarm`). Status menjadi `Awaiting approval`. Wajib ada minimal satu foto bukti. | Tombol dan judul form. | Close (sebagai nama aksi) | `Request resolution` |
+| Approve / Reject | Aksi supervisor menyetujui atau menolak resolusi. | Tombol dan judul form (`Approve resolution`, `Reject resolution`). | Accept, decline | `Approve`, `Reject` |
+| Awaiting approval | Status sesudah resolusi diminta (`resolve_requested`), sebelum supervisor menjawab. | Badge status. Satu keadaan, berbeda dari aksi `Request resolution`. | Pending | `Awaiting approval` |
+| Resolved | Hasil tiket yang diselesaikan. | Status dan hasil. | Closed | `Resolved` |
+| False alarm | Hasil tiket yang ternyata bukan kejadian nyata. | Status dan hasil. Sama dengan istilah di Dashboard. | Not an issue | `False alarm` |
+| Evidence | Foto bukti yang diunggah pada tiket. | Section dan tombol `Add photo`. | Attachment | `Add photo` |
+
+Catatan:
+- Status tiket (final): `Open`, `Acknowledged`, `In progress`,
+  `Awaiting approval`, `Resolved`, `False alarm`. Status adalah
+  keadaan, aksi adalah tindakan. Jangan menyatukan `Awaiting approval`
+  dan `Request resolution`.
+- Tombol `Acknowledge` dan `Start` dibiarkan tanpa objek. Konteks
+  dialog tiket sudah jelas.
+- Server pada halaman ini adalah Edge server: `Edge server`,
+  `All edge servers`, `Edge server {id}` (§3.8).
+- Hitungan kejadian memakai `×` (`Reassigned 2×`). Pengali kecepatan
+  memakai `x` (`1x`). Dua tanda ini berbeda fungsi dan tidak
+  dicampur.
+- `Acknowledge before` adalah batas waktu acknowledge
+  (`ackDeadlineAt`). Bila lewat tanpa acknowledge, tiket naik ke
+  supervisor.
+- Teks `No officer acknowledged. A supervisor needs to step in.`
+  memakai `officer` untuk assignee. **[Pending]** satu istilah
+  (`assignee`).
+- Pesan error service (`Ticket not found`, `Rule not found`, dan
+  sejenisnya) belum terbukti tampil ke pengguna. Tidak diubah.
+- Teks pada ticket rule (`rule.kind`, `rule.analyticId`) menunggu
+  canonical label mapping.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -608,6 +654,8 @@ Catatan:
     larangan singkatan (§1).
 28. Pesan error pemutar klip mengikuti pola `Failed to {verb} {object}.`
     (inline, bertitik).
+29. Hitungan kejadian memakai `×` setelah angka (`2×`). Pengali
+    kecepatan memakai `x` (`1x`).
 
 ## 5. Copy patterns
 
@@ -730,7 +778,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, dan `Object search` diterapkan. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, dan `Object search` diterapkan. `Tickets` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -900,6 +948,22 @@ Tidak berubah: judul popover `Alerts`, `No alerts.`, `Mark all as read`,
 | `search-dialog.tsx` | `End of recording`, `Rewind`, `Fast forward`, kecepatan `1` | `End of recording.`, `Slower`, `Faster`, `1x` |
 | `search-score.tsx` | `sim 0.152`, aria `Match confidence` | `Similarity 0.152`, `Match` |
 | `lib/filters.ts` | `RANGES`, `LIMIT_ITEMS`, dan tipe `Filters` tanpa UI | Dihapus. Query selalu memakai nilai bawaan (semua kamera, semua waktu, batas 100). |
+
+### Tickets (§3.14, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `ticket-filter-panel.tsx` | `All servers`, field dan pick `Server` | `All edge servers`, `Edge server` |
+| `ticket-rules-dialog.tsx` | pick `Server`, `This server has not sent any alarms yet...` | `Edge server`, `This edge server has not sent any alarms yet...` |
+| `ticket-detail-summary.tsx` | field `Server` | `Edge server` |
+| `ticket-detail-dialog.tsx`, `ticket-table.tsx` | fallback `Server {id}` | `Edge server {id}` |
+| `tickets-view.tsx` | `Could not load tickets` / `Tickets could not be loaded.` | `Failed to load tickets` / `Failed to load tickets.` |
+| `ticket-detail-dialog.tsx` | `The ticket could not be loaded.` | `Failed to load the ticket.` |
+| `ticket-link-view.tsx` | `The ticket could not be loaded` | `Failed to load the ticket` |
+| `ticket-rules-dialog.tsx` | `Rules could not be loaded. You may not have access to them.` | `Failed to load the rules. You may not have access to them.` |
+
+Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
+`Acknowledge`, `Start`, `{n}×`.
 
 ### Label analytic (sentence case, §6.1)
 
