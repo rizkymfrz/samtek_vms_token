@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Header dan sidebar** (`components/layout`, `components/ui/sidebar.tsx`):
+    diaudit teksnya (§3.26).
   - **Settings** (`/settings`): diperiksa (§3.25). Halaman kosong.
   - **Login** (`/login`, `features/auth`, menu pengguna): diaudit
     teksnya (§3.24).
@@ -928,6 +930,35 @@ Catatan:
   aturan §1 sampai §5. Bagian pengaturan yang menyangkut istilah di
   glossary (misalnya `Edge server`, `Alarm`) memakai istilah resmi.
 
+### 3.26 Header dan sidebar
+
+Tampil di semua halaman aplikasi.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Sidebar group | Pengelompokan menu: `Monitoring`, `Locations`, `Devices`, `Reports`, `Administration`. | Label grup. `Devices` memuat `Cameras` dan `Edge servers`, sesuai definisi device (§3.2). | | `Devices` |
+| Global search | Pencarian cepat halaman, kamera, floor plan, dan edge server (`Ctrl K`). | Tombol, dialog, placeholder. | Command palette | `Search` |
+| Status bar | Ringkasan jumlah kamera dan edge server yang online di header. | Tooltip `{label}: {n} of {total} online`. | | `Edge servers: 2 of 3 online` |
+| Notification | Popover berisi alert (§3.1) terbaru. | Judul `Alerts`, aksi `Mark all as read`, tautan `View all alarms`. | | `Alerts` |
+| Theme | Pilihan tampilan antarmuka: `Default` (tema teal) dan `Desktop` (tampilan seperti aplikasi desktop). Disimpan di browser. | Menu tema. | Skin | `Theme` |
+
+Catatan:
+- Notifikasi: judul popover tetap `Alerts` (notifikasi), tetapi
+  tautan ke halaman daftar memakai `View all alarms` karena tujuannya
+  halaman Alarms (§3.1).
+- Status bar dan pencarian memakai `Edge servers`, bukan `Servers`.
+- Placeholder pencarian: `Search pages, cameras, floor plans, edge
+  servers…`.
+- Teks bawaan komponen sidebar (`Toggle sidebar`, judul tersembunyi
+  `Sidebar`) ditulis sentence case. `Displays the mobile sidebar.`
+  adalah deskripsi tersembunyi untuk pembaca layar dan tidak diubah.
+- Kontrol jendela (`Minimize`, `Fullscreen`, `Close`) hanya untuk
+  aplikasi desktop. `Close` tanpa objek karena konteksnya jelas.
+- Jam memakai format 24 jam `en-GB`; tanggal `Mon, 3 Nov 2026`;
+  sebelum termuat `--:--:--`.
+- Merek ditulis `SAMTEK` pada teks dan `Samtek` pada alt logo
+  (perbedaan tidak dipermasalahkan; alt bukan teks tampil).
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1112,7 +1143,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, dan `Settings` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, dan `Header dan sidebar` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1413,6 +1444,15 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `schemas/login.ts` | `Use at most 255 characters.`, `Use at most 1024 characters.` | `Username or email must be at most 255 characters.`, `Password must be at most 1024 characters.` |
 | `use-sign-in.ts` | `Sign-in failed` | `Failed to sign in` |
 | `user-menu.tsx` | `Logout` | `Sign out` |
+
+### Header dan sidebar (§3.26, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `header-status.tsx` | `Servers` | `Edge servers` |
+| `header-search.tsx` | grup `Servers`, `...or server.`, placeholder `...servers...` | `Edge servers`, `...or edge server.`, `...edge servers…` |
+| `header-notifications.tsx` | `View all alerts` | `View all alarms` |
+| `components/ui/sidebar.tsx` | `Toggle Sidebar` | `Toggle sidebar` |
 
 ### Label analytic (sentence case, §6.1)
 
