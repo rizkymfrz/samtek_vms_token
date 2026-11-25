@@ -147,7 +147,7 @@ export const MapPanel = ({
         <PlacementAction
           isPlaced={false}
           addLabel={
-            isPlacing ? `Cancel placing ${name}` : `Place ${name} on the map`
+            isPlacing ? `Cancel adding ${name}` : `Add ${name} to the map`
           }
           removeLabel=""
           isDisabled={isBusy}
@@ -169,7 +169,7 @@ export const MapPanel = ({
   };
   const subtitle = (node: Node) =>
     placing?.type === node.place.type && placing.id === node.place.id
-      ? "Click the map to place it"
+      ? "Click the map to add it"
       : (node.place.analytic ?? "No analytic");
   const toTree = (node: Node, children?: DeviceTreeNode[]): DeviceTreeNode => ({
     id: node.key,
@@ -211,16 +211,16 @@ export const MapPanel = ({
             </PanelDetail>
           )}
           <PanelDetail label="Latitude">
-            <span className="tabular-nums">{selected.latitude.toFixed(5)}</span>
+            <span className="tabular-nums">{selected.latitude.toFixed(6)}</span>
           </PanelDetail>
           <PanelDetail label="Longitude">
             <span className="tabular-nums">
-              {selected.longitude.toFixed(5)}
+              {selected.longitude.toFixed(6)}
             </span>
           </PanelDetail>
           {selected.type === "device" && selected.inherited && (
             <PanelDetail label="Location">
-              <Badge variant="secondary">From server</Badge>
+              <Badge variant="secondary">From edge server</Badge>
             </PanelDetail>
           )}
         </PanelSelected>

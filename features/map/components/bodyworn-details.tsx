@@ -46,7 +46,7 @@ export const BodywornDetails = ({ state }: { state: BodywornState }) => {
     <dl className="grid grid-cols-2 gap-x-4 gap-y-1 border-t p-2 text-xs">
       {name !== null && <Row icon={UserIcon} label="Name" value={name} />}
       {policeNumber !== null && (
-        <Row icon={IdCardIcon} label="Police No." value={policeNumber} />
+        <Row icon={IdCardIcon} label="Police number" value={policeNumber} />
       )}
       {isOnline !== null && (
         <Row

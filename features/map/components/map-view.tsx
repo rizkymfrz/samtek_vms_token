@@ -83,7 +83,7 @@ export const MapView = ({
     onSuccess: () => queryClient.invalidateQueries({ queryKey: MAP_QUERY_KEY }),
     onError: (error) =>
       toast.add({
-        title: "Could not save the location",
+        title: "Failed to save the location",
         description: messageOf(error),
         type: "error",
       }),
@@ -142,7 +142,7 @@ export const MapView = ({
       ? { edgeServerId: selected.edgeServerId, deviceId: selected.id }
       : null;
   const history = useDevicePositions(trackTarget, dayStart);
-  useFailureToast("Could not load the movement trail", [
+  useFailureToast("Failed to load the movement trail", [
     history.error && messageOf(history.error),
   ]);
   const livePosition = selectedBodyworn?.position ?? null;

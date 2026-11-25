@@ -43,10 +43,10 @@ export const locationInputSchema = z
     longitude: z.number().min(-180).max(180).nullable(),
   })
   .refine((value) => (value.latitude === null) === (value.longitude === null), {
-    message: "Latitude and longitude go together",
+    message: "Latitude and longitude must be set together.",
   })
   .refine((value) => value.type !== "device" || value.edgeServerId, {
-    message: "A device needs its edge server",
+    message: "Edge server is required for a device.",
   });
 
 export const devicePositionsResponseSchema = z.object({
