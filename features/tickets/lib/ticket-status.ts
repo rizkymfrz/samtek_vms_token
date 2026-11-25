@@ -1,3 +1,7 @@
+import {
+  formatDateTime as formatFull,
+  formatShortDateTime as formatShort,
+} from "@/lib/format-date";
 import { EVIDENCE_STATUSES } from "../schemas/ticket";
 import type { TicketAction, TicketRecord, TicketStatus } from "../types";
 
@@ -61,11 +65,6 @@ export const availableActions = (
   }
 };
 
-export const formatDateTime = (iso: string) =>
-  new Date(iso).toLocaleString("en-GB", {
-    timeZone: "Asia/Jakarta",
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+export const formatDateTime = (iso: string) => formatFull(iso);
+
+export const formatShortDateTime = (iso: string) => formatShort(iso);

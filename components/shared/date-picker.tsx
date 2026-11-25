@@ -41,7 +41,7 @@ export const DatePicker = ({
       >
         <CalendarIcon />
         {value ? (
-          format(value, "d MMM yyyy")
+          format(value, "dd MMM yyyy")
         ) : (
           <span className="text-muted-foreground">{placeholder}</span>
         )}

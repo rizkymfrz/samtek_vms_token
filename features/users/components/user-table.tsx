@@ -17,14 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDate } from "@/lib/format-date";
 import type { RoleOption, UserRecord } from "../types";
-
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 
 export const UserTable = ({
   users,

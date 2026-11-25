@@ -1,6 +1,6 @@
-import { format } from "date-fns";
+import { formatDateTime } from "@/lib/format-date";
 
-export const formatSeenAt = (at: number) => format(at, "dd MMM yyyy HH:mm:ss");
+export const formatSeenAt = (at: number) => formatDateTime(at);
 export const formatSimilarity = (similarity: number) => similarity.toFixed(3);
 
 export const formatConfidence = (confidence: number) =>

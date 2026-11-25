@@ -126,6 +126,26 @@ Metadata dan halaman error:
   Try again in a moment.` Tombol `Try again`. Apostrof memakai tanda
   lurus (`'`), bukan tanda lengkung.
 
+Format tanggal dan waktu (zona `Asia/Jakarta`, 24 jam, nama bulan
+tetap `Jan` sampai `Dec`). Satu sumber: `lib/format-date.ts`.
+
+| Bentuk | Format | Contoh | Dipakai untuk |
+|---|---|---|---|
+| Tanggal | `dd MMM yyyy` | `03 Sep 2026` | Kolom tanggal, pemilih tanggal |
+| Waktu | `HH:mm:ss` | `14:05:09` | Jam peristiwa |
+| Tanggal dan waktu | `dd MMM yyyy HH:mm:ss` | `03 Sep 2026 14:05:09` | Detail dialog dan field |
+| Tanggal dan waktu ringkas | `dd MMM HH:mm` | `03 Sep 14:05` | Kolom tabel |
+| Hari dan bulan | `dd MMM` | `03 Sep` | Daftar yang sudah memuat konteks tahun |
+
+Pengecualian yang disetujui:
+- Sumbu grafik dan label jam Dashboard memakai `HH:mm`.
+- Jam dan tanggal di header memakai `HH:mm:ss` dan `Mon, 3 Nov 2026`
+  (gaya header).
+- Timeline playback memakai `HH:mm:ss` atau `HH:mm` menurut zoom.
+- Jangan memakai `Intl` atau `toLocale*String` langsung untuk teks
+  tampil. Pakai helper bersama agar nama bulan tidak berubah antar
+  versi ICU (`Sept` vs `Sep`).
+
 ### 2.1 Jenis teks
 
 Satu aksi dapat punya beberapa teks. Aturannya tidak sama untuk semuanya.
@@ -1599,6 +1619,17 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `recognition-dialog.tsx` | tab `Live Capture`, `Reference Image` | `Live capture`, `Reference image` |
 | `recognition-dialog.tsx`, `plate-dialog.tsx` | field `Detection` | `Confidence` |
 | `recognition-dialog.tsx` | field `Group` | `Person group` |
+
+### Format tanggal dan waktu (§2, diterapkan)
+
+| Lokasi | Format lama | Format baru |
+|---|---|---|
+| `recognitions/lib/format-recognition.ts` | `Intl` lokal | helper bersama |
+| `alerts/lib/format-alert.ts` | `Intl` lokal | helper bersama |
+| `object-search/lib/format-score.ts` | `date-fns`, zona peramban | helper bersama (Jakarta) |
+| `tickets/lib/ticket-status.ts` | `03 Sep, 14:05` (tanpa tahun, dengan koma) | detail `03 Sep 2026 14:05:09`, tabel `03 Sep 14:05` |
+| `users/components/user-table.tsx` | `3 Sep 2026` | `03 Sep 2026` |
+| `date-picker.tsx`, `date-range-dialog.tsx` | `d MMM yyyy` | `dd MMM yyyy` |
 
 ### Label analytic (sentence case, §6.1)
 

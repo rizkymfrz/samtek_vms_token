@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TicketStatusBadge } from "./ticket-status-badge";
-import { formatDateTime } from "../lib/ticket-status";
+import { formatShortDateTime } from "../lib/ticket-status";
 import type { TicketRecord } from "../types";
 
 export const TicketTable = ({
@@ -82,7 +82,7 @@ export const TicketTable = ({
             )}
           </TableCell>
           <TableCell className="text-muted-foreground tabular-nums">
-            {formatDateTime(ticket.lastAlertAt)}
+            {formatShortDateTime(ticket.lastAlertAt)}
           </TableCell>
         </TableRow>
       ))}

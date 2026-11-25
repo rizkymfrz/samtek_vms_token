@@ -18,7 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-const formatDay = (date: Date) => format(date, "d MMM yyyy");
+const formatDay = (date: Date) => format(date, "dd MMM yyyy");
 
 const describe = (range: DateRange | undefined) => {
   if (!range?.from) return "Pick a start and an end date.";
