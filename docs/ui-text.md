@@ -17,6 +17,7 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Talk** (`features/talk`): diaudit teksnya (§3.27).
   - **Header dan sidebar** (`components/layout`, `components/ui/sidebar.tsx`):
     diaudit teksnya (§3.26).
   - **Settings** (`/settings`): diperiksa (§3.25). Halaman kosong.
@@ -959,6 +960,53 @@ Catatan:
 - Merek ditulis `SAMTEK` pada teks dan `Samtek` pada alt logo
   (perbedaan tidak dipermasalahkan; alt bukan teks tampil).
 
+### 3.27 Talk
+
+Talk adalah komunikasi satu arah dari browser ke kamera lewat
+mikrofon pengguna (suara dikirim ke perangkat kamera lewat Edge
+server). Tombolnya ada pada tile kamera (§3.9).
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Talk | Sesi bicara dari pengguna ke kamera. Satu sesi aktif pada satu waktu di seluruh aplikasi. | Tombol dan pesan. | Intercom, speak | `Start talk` |
+| Hold to speak | Menahan tombol untuk membuka mikrofon selama bicara (push-to-talk). | Toggle yang tampil saat sesi aktif. | Mute | `Hold to speak` |
+| User | Pengguna yang mengambil alih sesi talk. | Pesan pengambilalihan. | Operator | `Another user took over this camera.` |
+| Microphone | Mikrofon browser pengguna. Perlu HTTPS atau localhost. | Pesan kesalahan mikrofon. | Mic | `Microphone access was denied.` |
+
+Judul toast:
+- `Talk ended`: sesi berakhir tidak normal (diambil alih, tanpa audio
+  60 detik, kamera dihapus, Edge server offline, koneksi ke MQTT broker
+  terputus, mikrofon terputus).
+- `Failed to start talk`: sesi tidak jadi mulai (kamera tidak
+  terjangkau, ditolak Edge server, tidak menjawab dalam 30 detik,
+  mikrofon tidak dapat dibuka atau ditolak).
+
+Pesan (teks lengkap):
+- `Another user took over this camera.`
+- `Talk ended after 60 seconds without audio.`
+- `The camera could not be reached.`
+- `The camera was removed or can no longer talk.`
+- `The edge server went offline.`
+- `The connection to the MQTT broker was lost. Start talk again.`
+- `The camera did not answer within 30 seconds.`
+- `The edge server refused to start talk.`
+- `This camera cannot talk now. It is not running on this edge server, or it does not support talk.`
+- `The edge server rejected the talk request.`
+- `The microphone was disconnected.`, `Microphone access was denied.`,
+  `Failed to open the microphone.`, `The microphone needs HTTPS or
+  localhost.`
+
+Catatan:
+- Teks pesan memakai `camera` dan `edge server`, bukan `device` atau
+  `edge` (§3.2, §3.8).
+- Istilah `broker` ditulis `MQTT broker` agar sama dengan halaman Edge
+  servers.
+- Pesan `The edge sent an unreadable answer` pada talk menjadi `The
+  edge server sent an unreadable answer.` Pesan serupa di edge-status
+  (PTZ, playback, rekaman) belum diubah dan menunggu audit edge-status.
+- Alasan tombol nonaktif: `Talk needs a signed-in user`, `Talk is in
+  use on another camera` (§2.1).
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1143,7 +1191,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, dan `Header dan sidebar` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, `Header dan sidebar`, dan `Talk` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1453,6 +1501,17 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `header-search.tsx` | grup `Servers`, `...or server.`, placeholder `...servers...` | `Edge servers`, `...or edge server.`, `...edge servers…` |
 | `header-notifications.tsx` | `View all alerts` | `View all alarms` |
 | `components/ui/sidebar.tsx` | `Toggle Sidebar` | `Toggle sidebar` |
+
+### Talk (§3.27, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `talk-session.ts` | `Another operator took over this device.` | `Another user took over this camera.` |
+| `talk-session.ts` | `The device could not be reached.`, `The device was removed or can no longer talk.`, `The device did not answer within 30 seconds.` | `The camera ...` |
+| `talk-session.ts` | `The connection to the broker was lost.` | `The connection to the MQTT broker was lost.` |
+| `talk-store.ts` | `The device cannot talk now: it is not running on this edge, or does not support talk.` | `This camera cannot talk now. It is not running on this edge server, or it does not support talk.` |
+| `talk-store.ts` | `The edge rejected the talk request.`, `The edge sent an unreadable answer`, `Could not start talk.`, `Could not open the microphone.` | `The edge server rejected the talk request.`, `The edge server sent an unreadable answer.`, `Failed to start talk.`, `Failed to open the microphone.` |
+| `talk-control.tsx` | judul toast `Talk` | `Talk ended` atau `Failed to start talk` |
 
 ### Label analytic (sentence case, §6.1)
 
