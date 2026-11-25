@@ -15,9 +15,15 @@ kecuali bagian bertanda **[Keputusan produk]**.
   **[Pending]**.
 - Cakupan verifikasi terhadap kode:
   - **Dashboard**: diaudit menyeluruh.
-  - **Halaman lain** (alerts, playback, floorplan, analytics, cameras,
-    navigasi): hanya dicari lewat pencarian teks untuk istilah yang
-    diputuskan. Belum diaudit menyeluruh.
+  - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
+    teks dan state-nya (§3.9 dan §3.10).
+  - **Komponen shared** yang dipakai Live view dan PTZ (`Pick`,
+    side panel, toolbar, empty state, dialog hapus, toast): diaudit
+    untuk teks dan aksesibilitas (§2.1 dan §2.2). Isi `components/ui/*`
+    (primitif) tidak diaudit baris per baris.
+  - **Halaman lain** (alerts, playback, floorplan, map, analytics,
+    cameras, navigasi): hanya dicari lewat pencarian teks untuk istilah
+    yang diputuskan. Belum diaudit menyeluruh.
 - Bagian bertanda **[Belum diaudit]** belum diverifikasi. Jangan
   menganggapnya baku.
 - Tidak ada sistem i18n atau berkas copy terpusat. Teks UI ditulis
@@ -58,16 +64,63 @@ kecuali bagian bertanda **[Keputusan produk]**.
 | Form label | Kata benda, tanpa titik dan tanpa titik dua. | `Camera name` |
 | Placeholder | Contoh nilai atau petunjuk singkat. Bukan pengganti label. | `e.g. Main entrance` |
 | Validation | Kalimat lengkap, menyebut field, diakhiri titik. | `Camera name is required.` |
-| Empty state | `No {plural noun}.` diakhiri titik. Jika terikat waktu: `No {plural noun} in the last 24 hours.` | `No alarms.` |
-| Error message | Apa yang gagal, dalam bahasa pengguna, diakhiri titik. Tanpa stack trace atau detail internal. | `Failed to connect to the server.` |
+| Empty state | `No {plural noun}.` diakhiri titik. Jika terikat waktu: `No {plural noun} in the last 24 hours.` Keterangan tempat boleh ditambahkan: `No presets saved on this camera.` Pada `EmptyState`, judul memakai pola ini (dengan titik) dan deskripsi berisi langkah berikutnya sebagai satu kalimat bertitik. | `No layouts.` / `Create a layout to start watching cameras.` |
+| Error message (inline) | Apa yang gagal, dalam bahasa pengguna, diakhiri titik. Tanpa stack trace atau detail internal. | `Failed to connect to the server.` |
+| Toast (error) | Judul: `Failed to {verb} {object}` tanpa titik, karena berfungsi sebagai judul. Deskripsi: kalimat lengkap bertitik, berisi penyebab jika diketahui. Fallback deskripsi: `The command could not be completed.` | judul `Failed to update the layout` |
+| Toast (peringatan sebagian) | Judul: kalimat singkat tanpa titik yang menyebut apa yang tidak lengkap. | `Some edge servers did not respond` |
 | Success notification | Objek + kata kerja lampau + `successfully`, diakhiri titik. | `Camera added successfully.` |
-| Tooltip | Frasa pendek, tanpa titik. | `Fullscreen` |
+| Tooltip dan aria-label | Frasa pendek, tanpa titik. Keduanya menyebut tindakan dan objeknya dengan kata kerja yang sama. `aria-label` boleh lebih spesifik (menambah nama item), tetapi tidak boleh lebih samar dari tooltip. | `Close PTZ controls`, `Go to preset` / `Go to Gate` |
 | Confirmation dialog | Judul berupa pertanyaan dengan objek. Tombol memakai kata kerja yang sama dengan aksinya. | `Delete this camera?` / `Delete` |
-| Loading state | Skeleton jika bentuk konten diketahui. Teks hanya jika perlu: `Loading {noun}`. | `Loading alarms` |
+| Loading state | Skeleton jika bentuk konten diketahui. Teks hanya jika perlu: `Loading {noun}`. Untuk proses yang sedang berjalan, akhiri dengan satu karakter elipsis `…` (bukan tiga titik) tanpa titik tambahan. | `Loading alarms`, `Connecting…` |
 
 Pola form, validation, notification, tooltip, confirmation, dan loading
 adalah pola awal. Belum diverifikasi menyeluruh terhadap halaman selain
 Dashboard **[Belum diaudit]**.
+
+### 2.1 Jenis teks
+
+Satu aksi dapat punya beberapa teks. Aturannya tidak sama untuk semuanya.
+
+| Jenis | Siapa yang melihat | Aturan |
+|---|---|---|
+| Visible text | Semua pengguna | Mengikuti §1 sampai §2. |
+| Tooltip (atribut `title`) | Pengguna mouse. Tidak tampil di layar sentuh dan tidak andal untuk keyboard. | Mengulang nama tindakan. Jangan menjadi satu-satunya tempat informasi penting, termasuk alasan tombol nonaktif. |
+| Accessible name (`aria-label`, label field) | Pembaca layar | Menyebut tindakan dan objek. Sama dengan visible text atau tooltip, atau lebih spesifik. Tidak boleh bertentangan. |
+| Accessible description (`aria-description`, `aria-describedby`) | Pembaca layar | Untuk penjelasan tambahan, misalnya alasan tombol nonaktif. Saat ini tidak dipakai di mana pun di luar `components/ui`. |
+| Technical identifier (`id`, `kind`, `value`, kunci state) | Kode | Tidak pernah diubah demi teks UI. |
+
+Aturan tambahan:
+- Kontrol ikon saja: `aria-label` dan `title` memakai teks yang sama
+  (komponen shared sudah melakukannya dari satu prop `label`).
+- Tombol toggle: pilih **satu** cara. Label tetap dengan `aria-pressed`
+  (contoh: `Detections`), atau label berubah menurut state tanpa
+  `aria-pressed` (contoh: `Show PTZ controls` / `Hide PTZ controls`).
+  Jangan memakai keduanya.
+- Tombol yang tidak bisa ditekan dan butuh alasan (contoh: `Talk is in
+  use on another camera`): alasan harus ada di accessible description,
+  bukan hanya di `title`.
+- Aksi sekali tekan (membuka halaman, menjalankan perintah) bukan
+  toggle. Jangan beri `aria-pressed`.
+
+### 2.2 Komponen shared yang membawa teks
+
+| Komponen | Prop teks | Jenis teks | Dipakai oleh |
+|---|---|---|---|
+| `Pick` (`components/shared/pick.tsx`) | `label`, `items[].label` | `label` = accessible name saja (tidak tampil). `items[].label` = visible text. | 27 file: 25 di 11 fitur (live, playback, alerts, cameras, camera-detail, users, tickets, floorplan, servers, analytics, faces) dan 2 komponen shared (`time-picker`, `side-panel`). |
+| `PanelPicker` + `PanelActions` | `title`, `createLabel`, `deleteLabel` | `title` = accessible name Pick dan section. `deleteLabel` = visible text + `aria-label` + `title`. | `PanelPicker`: live, floorplan. `PanelActions`: servers (dan lewat `PanelPicker`). |
+| `PanelIconAction`, `PlacementAction` | `label`, `addLabel`, `removeLabel` | `aria-label` + `title` (satu sumber). | live, floorplan, map |
+| `PanelSearch` | `placeholder` | Placeholder (visible). `aria-label` diturunkan dengan `placeholder.replace(/\.+$/, "")`. | users, cameras, alerts, faces, `DeviceTree` (live, floorplan, map, analytics) |
+| `PanelSection` | `title` | `aria-label` section. Judul tidak tampil. | live, ptz, floorplan, servers |
+| `PanelEmpty`, `EmptyState` | `title`, `description` | Visible text | 17 file (§7 Komponen shared) |
+| `PanelReset` | teks tetap `Reset` | Visible text | tickets, users, cameras, alerts, faces |
+| `PanelSelected`, `PanelDetail` | `Status` + `DEVICE_STATE_LABEL` | Visible text | map, floorplan |
+| `ToolbarToggle` | `label` | `aria-label` + `title`, plus `aria-pressed` | live, ptz, talk, edge-status |
+| `DeleteConfirmDialog` | `title`, `description`, `confirmLabel`, teks tetap `Cancel` | Visible text | users, cameras |
+| `useFailureToast` | `title`, pesan | Judul toast + deskripsi (pesan digabung dengan ` · `). Toast tidak hilang otomatis (`timeout: 0`) dan ditutup saat komponen unmount. | 15 file di 13 fitur (live, users, tickets, map, floorplan, analytics, camera-detail, servers, cameras, playback, faces, alerts, object-search) |
+| Tooltip primitif (`components/ui/tooltip`) | | Hanya dipakai `components/ui/sidebar.tsx` dan halaman showcase. Semua tooltip lain memakai atribut `title`. | sidebar |
+
+Catatan: `DeviceTree` (shared) membuat teks sendiri: `Search {noun}...`,
+`No {noun} match`, `No {noun}`, `Try a different search.`
 
 ## 3. Glossary
 
@@ -233,8 +286,132 @@ Catatan kode:
 
 ### 3.8 Recording, playback, server
 
-**[Belum diaudit]** Recording, playback, server, dan konektivitas belum
-diaudit. Label menu yang ada: `Playback`, `Servers`, `Cameras`.
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Edge server | Server yang menjalankan SAMTEK Edge. Data tersimpan sebagai `edgeServers`/`servers` di Central. | Semua teks yang merujuk ke server tersebut. | `Server` saja, `edge` saja sebagai kata benda (`the edge`) | `Edge server is offline` |
+
+Keputusan: gunakan `Edge server` untuk server yang menjalankan SAMTEK
+Edge. `Server` saja hanya boleh bila konteks sudah jelas dari judul
+halaman dan tidak ada server lain yang mungkin dirujuk.
+
+Catatan kode (tidak diubah):
+- Teks yang memakai `server` saja: menu `Servers`, `Add server`,
+  `Edit server`, `No servers yet`, `Could not delete the server`,
+  label state `Server offline` (`lib/device-state.ts`).
+- Teks yang memakai `edge` saja: `Could not restart the edge`,
+  `Search is not available on this edge`, `The edge rejected the talk
+  request.`, `The edge sent an unreadable answer`, `The edge refused`.
+- Teks yang sudah sesuai: `Edge server is offline`, `Some edge servers
+  did not respond`, `The edge server went offline.`
+- **[Pending]** apakah menu `Servers` menjadi `Edge servers`. Halaman
+  itu mengelola server Edge, tetapi daftar servernya disimpan di
+  Central, jadi perlu konfirmasi bahwa tidak ada jenis server lain.
+
+**[Belum diaudit]** Recording, playback, dan konektivitas. Label menu
+yang ada: `Playback`, `Cameras`.
+
+### 3.9 Live view dan PTZ
+
+Teks menu dan page title: `Live view` (sentence case, §1). Section PTZ:
+`Speed scale`, bukan `Speed Scale`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Layout | Susunan kamera yang disimpan pengguna (`/v1/layouts`), berisi nama, deskripsi opsional, flag default, dan daftar kamera per slot. Nama bawaan dibuat otomatis: `Layout {n}`. | Teks yang merujuk ke susunan kamera pada Live view. | View, scene | `New layout`, `Delete layout` |
+| Slot | Satu sel dalam grid layout. | Hanya untuk sel yang belum berisi kamera. | Cell, box | `Empty slot` |
+| Stream | Aliran video langsung dari kamera lewat relay WebRTC. | Konteks Live view. Bedakan dari stream playback. | Feed, channel | `Stream` |
+| Main stream | Sumber utama kamera (`sourceMain`). Selalu tersedia. | Pilihan kualitas. Label pendek: `Main`. | High quality, HD | `Main stream` |
+| Sub stream | Sumber kedua kamera (`sourceSub`). Hanya ada jika diset. | Pilihan kualitas bawaan di Live view. Label pendek: `Sub`. | Low quality | `Sub stream` |
+| Third stream | Sumber ketiga kamera (`sourceThird`). Hanya ada jika diset. | Pilihan kualitas. Label pendek: `Third`. | Extra stream | `Third stream` |
+| PTZ | Pan, tilt, zoom. Akronim baku, selalu uppercase. | Tulis `PTZ` di semua teks, termasuk `PTZ controls`. | Ptz, Pan-tilt-zoom (kecuali penjelasan) | `PTZ controls` |
+| Pan | Gerak kamera ke kiri atau kanan. | Kontrol arah. | Rotate, turn | `Pan left`, `Pan right` |
+| Tilt | Gerak kamera ke atas atau bawah. | Kontrol arah. | Angle | `Tilt up`, `Tilt down` |
+| Zoom | Perbesaran lensa. | Kontrol lensa. | Scale | `Zoom in`, `Zoom out` |
+| Focus | Fokus lensa. | Kontrol lensa. | Sharpness | `Increase focus`, `Decrease focus` |
+| Preset | Posisi PTZ bernama yang disimpan pada kamera (token + nama). Bawaan jika tanpa nama: `Preset {token}`. | Daftar posisi tersimpan. | Position, bookmark | `Add preset`, `Go to preset` |
+| Home position | Posisi awal PTZ (perintah `home`). | Tombol kembali ke posisi awal. | Reset | `Go to home position` |
+| Speed scale | Pengali kecepatan gerak PTZ, 0.1 sampai 1.0 (nilai slider dikalikan ke sumbu pan, tilt, zoom). | Label slider. | Speed Scale | `Speed scale` |
+
+Catatan kode:
+- Terminologi stream: id teknis `main`, `sub`, `third` tidak diubah. Di
+  pilihan toolbar Live view tertulis `Sub stream` dan `Main stream`;
+  di pilihan per kamera tertulis `Main`, `Sub`, `Third`. Bentuk pendek
+  dan panjang boleh dipakai selama konteksnya jelas, tetapi `Third
+  stream` belum muncul di toolbar global karena hanya ada dua opsi.
+- Gerak diagonal pada pad PTZ (final): `Move up left`, `Move up right`,
+  `Move down left`, `Move down right`. Label saat ini (`Pan up left`
+  dan sejenisnya) mengirim pan dan tilt sekaligus
+  (`axes: { pan: -1, tilt: 1 }`), jadi nama `Pan` tidak akurat.
+- `REC` (final) tetap dipakai sebagai indikator recording pada tile
+  (`isRecordingEnabled`). Ini pengecualian dari larangan singkatan di
+  §1 dan masuk daftar akronim baku.
+- Fokus (final): `Decrease focus` / `Increase focus`.
+- `Speaker` (`SpeakerToggle`, `Mute speaker`) dan `Mute` pada player
+  WebRTC (`aria-label` `Mute` / `Unmute`) mengatur audio yang sama
+  secara konsep, tetapi bernama berbeda. **[Pending]** satu istilah
+  untuk audio kamera (kandidat: `audio`). `Talk` adalah mikrofon ke
+  kamera dan berbeda dari keduanya.
+
+### 3.10 Status kamera dan stream
+
+Ada dua lapis status yang berbeda dan tidak boleh dicampur.
+
+**Lapis 1: state tile** (`StreamState` di `features/live/types.ts`):
+
+| State | Cara penentuan di kode | Definisi | Overlay saat ini | Label di `aria-label` saat ini |
+|---|---|---|---|---|
+| `live` | Kamera aktif, server online, device tidak error. | Stream sedang dipantau. | Video | `Live` |
+| `disabled` | Server: `!device.isEnabled` (`get-live.ts`). | Kamera dinonaktifkan. | `Camera is disabled` | `Disabled` |
+| `server-offline` | Server: `isServerOnline` gagal. Client: `server.isActive && edge ada di daftar MQTT online`; tanpa MQTT, memakai nilai server. | Edge server tidak dapat dihubungi. | `Edge server is offline` | `Offline` |
+| `stream-offline` | Client: device ada di daftar *faulty*, yaitu device dengan `status === "error"` pada pesan status Edge. | Stream kamera tidak tersedia. | `Camera stream is offline` | `Offline` |
+
+Temuan: dua state berbeda memakai label yang sama, `Offline`, pada
+`aria-label` tile (`${tile.name}, ${label}`). Overlay visual sudah
+berbeda, tetapi pengguna pembaca layar tidak bisa membedakannya.
+
+**Lapis 2: status player WebRTC** (`PlayerStatus`, hanya saat tile
+`live`):
+
+| Status | Cara penentuan | Definisi | Teks saat ini |
+|---|---|---|---|
+| `connecting` | Awal sesi atau URL berubah. | Stream sedang menghubungkan. | `Connecting…` |
+| `reconnecting` | Koneksi terputus atau perlu dicoba ulang. | Stream mencoba terhubung kembali. | `Reconnecting…` |
+| `unavailable` | Relay tidak punya alamat WebRTC (`webrtcUrl` dan `webrtcUrlLocal` kosong) atau elemen video belum ada. | Alamat stream belum tersedia. Bukan berarti kamera mati. | `Stream address is not available` |
+| `playing` | Frame pertama diterima. | Berjalan normal. | Tanpa teks |
+
+Pemetaan istilah yang diputuskan produk:
+
+| Kondisi | Istilah | Status verifikasi |
+|---|---|---|
+| Edge server tidak dapat dihubungi | `Server offline` | Sesuai dengan `server-offline`. **[Pending validation]** state ini juga muncul bila `server.isActive` bernilai false (server dinonaktifkan), bukan hanya tidak terjangkau. |
+| Stream kamera tidak tersedia | `Stream unavailable` | Sesuai dengan `stream-offline`. **[Pending validation]** hanya nilai `status === "error"` yang dikenali sebagai faulty. Nilai status device lain dari Edge tidak terdokumentasi di repo. |
+| Kamera dinonaktifkan | `Disabled` | Sesuai dengan `disabled`. |
+| Stream sedang menghubungkan | `Connecting` | Sesuai dengan status player `connecting`. |
+| Stream mencoba terhubung kembali | `Reconnecting` | Sesuai dengan status player `reconnecting`. |
+| Player `unavailable` (alamat relay kosong) | `Stream unavailable` | Diputuskan produk untuk konteks stream. Catatan: label ini sekarang mencakup dua penyebab berbeda (device `error` dan alamat relay kosong). Teks penjelas saat ini `Stream address is not available` dapat dipertahankan sebagai deskripsi. |
+
+Sumber label yang sudah ada:
+- `lib/device-state.ts` memuat `DEVICE_STATE_LABEL`:
+  `Live`, `Disabled`, `Server offline`, `Stream offline`. Dipakai
+  `PanelSelected` pada map dan floorplan.
+- `features/live/components/camera-tile.tsx` punya peta sendiri
+  (`Offline` untuk dua state) yang tidak memakai `DEVICE_STATE_LABEL`.
+- Union empat state yang sama dideklarasikan tiga kali:
+  `StreamState` (`features/live/types.ts`), `DeviceState`
+  (`lib/device-state.ts`), dan `floorplan/types.ts`.
+- Rekomendasi: label state hanya berasal dari `DEVICE_STATE_LABEL`,
+  dengan `Stream offline` diganti `Stream unavailable` sesuai keputusan.
+  Ini bagian dari canonical label mapping (§6.3). Belum diimplementasikan.
+
+Aturan:
+- Jangan memakai satu label `Offline` untuk `server-offline` dan
+  `stream-offline`.
+- Label `aria-label` tile memakai istilah dari tabel di atas.
+- `Live` adalah label state, bukan perintah. Tidak diubah.
+- Satu istilah dipakai di seluruh halaman yang memakai state ini.
+  Peta dan floorplan memakai union state yang sama
+  (`floorplan/types.ts`, `map-panel.tsx`) dan belum diaudit. Jangan
+  menyatakan keduanya sudah sesuai.
 
 ## 4. Quality rules
 
@@ -259,6 +436,32 @@ diaudit. Label menu yang ada: `Playback`, `Servers`, `Cameras`.
 13. Jangan mengganti istilah hanya demi seragam jika maknanya berbeda
     (contoh: `people seen` yang menghitung baris bukan orang unik).
     Laporkan sebagai perbedaan semantik.
+14. Judul toast tidak diakhiri titik. Deskripsi toast adalah kalimat
+    bertitik.
+15. Pesan error memakai pola `Failed to {verb} {object}`. Jangan
+    memakai `Could not {verb}` atau `{Object} failed`. Sebelum mengubah
+    pesan, periksa operasi sebenarnya yang dijalankan kode.
+16. Pasangan kontrol bersifat simetris: `Zoom in` / `Zoom out`,
+    `Increase focus` / `Decrease focus`, `Pan left` / `Pan right`,
+    `Tilt up` / `Tilt down`.
+17. Tooltip dan `aria-label` menyebut tindakan dan objek. Jangan
+    memakai `Close` saja jika `aria-label` menyebut objeknya.
+18. Satu label tidak boleh dipakai untuk dua kondisi dengan arti
+    berbeda (contoh: `Offline` untuk server dan stream).
+19. Akronim baku (PPE, ID, PTZ) ditulis uppercase di semua posisi.
+20. Placeholder berupa contoh diawali `e.g.`.
+21. Empty state dibedakan: data memang kosong, `No {plural noun}.`;
+    hasil pencarian atau filter kosong, `No {plural noun} found.`
+    dengan deskripsi `Try a different search.` atau
+    `No {plural noun} match the filters.`. Jangan memakai `yet`.
+22. Teks proses berjalan memakai satu karakter elipsis `…`
+    (`Loading layout…`, `Search users…`). Jangan memakai `...`.
+23. Aksi destruktif memakai dialog konfirmasi
+    (`DeleteConfirmDialog`): judul `Delete {name}?`, tombol
+    `Delete {object}`, `Cancel` untuk batal, deskripsi menjelaskan
+    akibat dalam kalimat bertitik.
+24. Alasan sebuah kontrol nonaktif harus tersedia sebagai accessible
+    description, bukan hanya `title` (§2.1).
 
 ## 5. Copy patterns
 
@@ -271,6 +474,10 @@ diaudit. Label menu yang ada: `Playback`, `Servers`, `Cameras`.
 | Validation | `{Field} is required.` | `Camera name is required.` |
 | Button | `{Verb} {object}` | `Add camera` |
 | Confirmation | `{Verb} this {object}?` | `Delete this camera?` |
+| Toast error (judul) | `Failed to {verb} {object}` | `Failed to update the layout` |
+| Toast error (fallback deskripsi) | `The command could not be completed.` | |
+| Kontrol berpasangan | `{Verb} {object}` / lawannya | `Increase focus` / `Decrease focus` |
+| Placeholder | `e.g. {example}` | `e.g. Gate` |
 | KPI | `{Noun} ({range})` | `Alarms (24h)` |
 | Chart description | `{Range}, by {dimension}` | `Last 24 hours, by risk level` |
 | Count with unit | `{n} {singular or plural}` | `1 alarm`, `2 alarms` |
@@ -394,6 +601,7 @@ Hanya untuk referensi saat penerapan. Teks di kode belum diubah.
 | `app/(app)/live/page.tsx:16` | `Live View` | `Live view` |
 | `app/(app)/search/page.tsx:4` | `Object Search` | `Object search` |
 | `features/camera-detail/components/live-panel.tsx:21,29` | `Live View`, `Pause Live View` | `Live view`, `Pause live view` |
+| `features/ptz/components/ptz-panel.tsx:132` | `Speed Scale` | `Speed scale` (juga di §7 Live view dan PTZ) |
 
 ### Alert menjadi alarm (keputusan final, §3.1)
 
@@ -410,6 +618,74 @@ Hanya untuk referensi saat penerapan. Teks di kode belum diubah.
 Tidak berubah: rute `/alerts`, endpoint `/v1/alarms` dan `/api/alerts`,
 nama fitur dan komponen, enum, dan nilai status `alert` di
 `features/edge-status`.
+
+### Live view dan PTZ (§3.9, §3.10)
+
+| Lokasi | Teks saat ini | Teks sesuai aturan |
+|---|---|---|
+| `features/ptz/components/ptz-panel.tsx:132` | `Speed Scale` | `Speed scale` |
+| `features/live/components/live-view.tsx:124` | `No layouts yet` | `No layouts.` |
+| `features/live/components/live-view.tsx:125` | `Create a layout to start watching cameras.` | Sudah sesuai |
+| `features/live/components/live-view.tsx:132` (tombol) | `Create layout` | Sudah sesuai |
+| `features/live/components/live-view.tsx:99` | `Could not update the layout` | `Failed to update the layout` (konteks: create, delete, dan ubah slot, jadi `update` bersifat umum) |
+| `features/ptz/hooks/use-ptz.ts:105` | `Could not go home` | `Failed to move the camera to its home position` |
+| `features/ptz/hooks/use-ptz.ts:110` | `Could not go to the preset` | `Failed to move the camera to the preset` (usulan) |
+| `features/ptz/hooks/use-ptz.ts:117` | `Could not save the preset` | `Failed to save the preset` |
+| `features/ptz/hooks/use-ptz.ts:125` | `Could not delete the preset` | `Failed to delete the preset` |
+| `features/ptz/hooks/use-ptz.ts:27` | `The command failed` (fallback) | `The command could not be completed.` |
+| `features/ptz/hooks/use-ptz.ts:61` | `PTZ command failed` (gerak dan fokus) | `Failed to send the PTZ command` (usulan) |
+| `features/ptz/hooks/use-ptz.ts:85` | `PTZ stop failed` | `Failed to stop the PTZ movement` (usulan) |
+| `features/ptz/components/ptz-panel.tsx` (fokus) | `Focus decrease` / `Focus increase` | `Decrease focus` / `Increase focus` (final) |
+| `features/ptz/lib/pad.tsx` (diagonal) | `Pan up left`, `Pan up right`, `Pan down left`, `Pan down right` | `Move up left`, `Move up right`, `Move down left`, `Move down right` (final) |
+| `features/ptz/components/ptz-panel.tsx:214-215` | `aria-label` `Close PTZ controls`, tooltip `Close` | Tooltip `Close PTZ controls` |
+| `features/live/components/camera-preview.tsx:46-47` | `aria-label` `Close {camera}`, tooltip `Close` | Tooltip `Close {camera}` |
+| `features/ptz/components/ptz-preset-dialog.tsx:57` | placeholder `Gate` | `e.g. Gate` |
+| `features/live/components/camera-tile.tsx:28-31` | label `Offline` untuk `server-offline` dan `stream-offline` | `Server offline` dan `Stream unavailable` (setelah validasi §3.10) |
+| `components/shared/edge-offline.tsx` | `Edge server is offline` | Sudah sesuai (§3.8) |
+| `components/shared/stream-offline.tsx`, `webrtc-player.tsx:22` | `Camera stream is offline`, `Stream address is not available` | `Stream unavailable` sebagai judul, teks lama sebagai deskripsi (§3.10) |
+| `features/live/components/webrtc-player.tsx:175` | `Mute` / `Unmute` | **[Pending]** istilah audio (§3.9) |
+| `features/live/components/camera-tile.tsx` | badge `REC` | Dipertahankan (final, §3.9) |
+| `features/live/components/live-view.tsx:73` | `Some edge servers did not respond` | Sudah sesuai (peringatan sebagian) |
+
+Catatan: jangan mengubah pesan error sebelum operasi sebenarnya
+dikonfirmasi. Hasil pemeriksaan: toast di `use-ptz.ts` berasal dari
+`act(title, command)` dan `hold()`. Deskripsi toast berisi pesan dari
+Edge jika error adalah `Error`, sehingga hanya judul dan fallback yang
+dikendalikan frontend.
+
+### Komponen shared (§2.1, §2.2)
+
+Hasil audit teks:
+
+| Lokasi | Temuan | Rekomendasi |
+|---|---|---|
+| `device-panel.tsx` (`createLabel`) | `New layout` di panel, `Create layout` di empty state, untuk aksi yang sama | Satu istilah, kandidat `Create layout` |
+| `floorplan-panel.tsx` (`createLabel`) | `New floor plan` | Selaraskan dengan pola `{Verb} {object}` |
+| `server-list-panel.tsx` (`createLabel`) | `Add server` | `Add edge server` sesuai §3.8 |
+| `PanelSearch` pemakai | `Search users...`, `Search cameras...`, `Search people...`, `Search alerts...`, `Search {noun}...` (DeviceTree) | Elipsis `…` (aturan 22). `Search alerts…` ikut menjadi `Search alarms…` (§3.1) |
+| `multi-select.tsx`, `search-index-fields.tsx` | placeholder `Add...` dan `Add label...` | `Add…`, `Add label…` |
+| `alerts-view.tsx:114` | `Loading...` | `Loading…` |
+| Empty state di 17 file | `No users yet`, `No floor plans yet`, `No perimeters yet`, `No servers yet`, `No faces yet`, `No groups yet`, `No layouts yet`, `No alerts found`, `No cameras`, `No tickets`, `No ${noun} match` | Aturan 21. Variasi dengan dan tanpa `yet`, dengan dan tanpa `found`, belum seragam |
+| `DeleteConfirmDialog` pemakai | Judul `Delete {name}?` sudah sesuai. Deskripsi cameras: `Alerts it already raised are kept.` | `Alarms` (§3.1) |
+| `useFailureToast` pemakai | Pola dominan `Could not {verb} {object}` di users, tickets, map, analytics, camera-detail, servers, live, cameras, faces. `Could not delete` (faces) tanpa objek | Aturan 15 (`Failed to ...`). Ini perubahan lintas 13 fitur dan butuh keputusan cakupan sebelum diterapkan |
+| Pesan `Error` yang dilempar kode | `The edge sent an unreadable answer`, `The edge refused`, `The edge rejected the talk request.`, `The device cannot talk now: ...` | `Edge server` (§3.8). `device` untuk kamera diganti `camera` (§3.2). Tampil sebagai deskripsi toast |
+| `lib/device-state.ts` | `Stream offline` | `Stream unavailable` (§3.10) |
+| `camera-tile.tsx` | `Offline` untuk dua state | Pakai `DEVICE_STATE_LABEL` (§3.10) |
+| `PanelPicker` Live | Tombol `Delete layout` langsung menghapus tanpa konfirmasi | Aturan 23. Ini temuan perilaku, bukan hanya teks |
+
+Hasil audit aksesibilitas:
+
+| Lokasi | Temuan | Rekomendasi |
+|---|---|---|
+| `ToolbarToggle` + `fullscreen-toggle`, `speaker-toggle`, `ptz-toggle` | Label berubah menurut state dan `aria-pressed` juga di-set. State diumumkan dua kali dan dapat membingungkan | Pilih satu cara (§2.1). Contoh: label tetap `Fullscreen` dengan `aria-pressed`, atau label berubah tanpa `aria-pressed` |
+| `camera-web-toggle.tsx` | `pressed={false}` konstan pada aksi sekali tekan (`Open camera web page`) | Bukan toggle. Hilangkan `aria-pressed` |
+| `talk-control.tsx` | `aria-label="Talk"` tetap, tetapi `title` berubah: `Talk needs a signed-in user`, `Talk is in use on another camera` | Alasan nonaktif ke accessible description |
+| `talk-control.tsx` | `Hold to speak`, `Stop talk`, `Talk`: tiga label untuk satu fitur | Tinjau urutan kata kerja (`Start talk` / `Stop talk`) **[Pending]** |
+| `camera-preview.tsx`, `ptz-panel.tsx` | `aria-label` spesifik, tooltip `Close` | Samakan (rekomendasi di §7 Live view dan PTZ) |
+| `Pick` | `label` hanya menjadi accessible name. Teks tidak tampil, nilai terpilih saja yang tampil. Dua pick terkait memakai nama berbeda: `Stream` (toolbar) dan `Stream quality` (per kamera) | Satu nama per pengaturan. Putuskan `Stream quality` untuk keduanya **[Pending]** |
+| `PanelSearch` | `aria-label` diturunkan dari placeholder dengan regex `/\.+$/` | Saat placeholder memakai `…`, regex harus ikut diubah, atau `aria-label` diberi prop sendiri |
+| Seluruh app | `aria-description` / `aria-describedby` tidak dipakai di luar `components/ui` | Mulai dari alasan kontrol nonaktif (aturan 24) |
+| Tooltip | Semua tooltip aplikasi adalah atribut `title`. `components/ui/tooltip` hanya dipakai sidebar | Jangan menaruh informasi penting hanya di `title` |
 
 ### Label analytic (sentence case, §6.1)
 
@@ -434,6 +710,11 @@ Hasil pemeriksaan keputusan produk terhadap kode:
 | People, Visitors, Recognized people | Sesuai untuk definisi. Teks di kode masih memakai `persons` dan `faces`. |
 | Unique people | Sesuai untuk panel re-identification (dedup `person_id`). Tidak untuk `people seen`. Lihat §3.3. |
 | Phone use | **[Pending]** Belum terbukti. Nama teknis memakai `calling`. Label analytic dan alarm memakai `Phone calling`. Perlu konfirmasi Edge. Lihat §3.6. |
+| Status kamera dan stream (§3.10) | Perbedaan semantik terbukti: `server-offline` dan `stream-offline` berbeda sumber (heartbeat server vs status device `error`), tetapi berbagi label `Offline`. Pemetaan final **[Pending validation]** untuk server `isActive` false dan nilai status device selain `error`. |
+| Pesan error Live view dan PTZ | Konteks diverifikasi: `Could not update the layout` dipakai untuk create, delete, dan ubah slot. Pesan PTZ berasal dari `act()` dan `hold()`. |
+| Istilah PTZ, stream, preset | Definisi ditelusuri ke kode (`sourceMain/Sub/Third`, `axes`, `PtzPreset`). Istilah audio, diagonal, `REC`, dan `Server` vs `Edge server` **[Pending]**. |
+| Komponen shared (§2.2) | Penggunaan dihitung dari pencarian impor di `app`, `features`, `components`, `lib`, `hooks`. Teks tiap komponen ditelusuri. Primitif `components/ui/*` tidak diaudit baris per baris. |
+| Aksesibilitas | Diperiksa lewat kode, tidak diuji dengan pembaca layar atau alat audit otomatis. Temuan di §7 bersifat kode, bukan hasil uji. |
 | Label analytic sentence case | Sesuai keputusan. Kode masih Title Case dan punya dua sumber label (`analytics-catalog.ts`, `analytic-groups.ts`). Lihat §6.2. |
 | Menu sentence case | Sesuai. Teks di kode masih Title Case. Lihat §7. |
 
