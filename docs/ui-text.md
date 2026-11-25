@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Camera detail** (`/cameras/[id]`, `features/camera-detail`):
+    diaudit teksnya (§3.21).
   - **Users** (`/users`, `features/users`): diaudit teksnya (§3.20).
   - **Analytics** (`/analytics`, `features/analytics`): diaudit
     teksnya (§3.19). Halaman kelola wajah (`faces`) belum diaudit.
@@ -787,6 +789,39 @@ Catatan:
 - Placeholder memakai `e.g.` (`e.g. +628123456789`, `e.g. operator`).
 - Tombol tambah role di dalam dialog user: `Add role`.
 
+### 3.21 Camera detail
+
+Page title: nama kamera (fallback `Camera`). Tab: `Configuration`,
+`Playback`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Perimeter | Garis atau area yang digambar pada frame kamera untuk analytic. Dua jenis: line crossing dan area. | Panel perimeter, daftar, dan field Alarms. | Zone (kecuali penjelasan) | `Perimeter drawing area` |
+| Line | Alat menggambar garis hitung. Hasilnya line crossing, dengan dua arah. | Tombol alat. | | `Line` |
+| Polygon | Alat menggambar area. Hasilnya area. | Tombol alat. | | `Polygon` |
+| Direction A / Direction B | Dua arah lintas pada line crossing. Namanya dapat diubah, nilai bawaan `Direction A` dan `Direction B`. | Field nama perimeter. | In/Out | `Direction A name` |
+| Analytic parameter | Pengaturan per analytic (sensitivity, jam hitung, grup whitelist, dan sebagainya). Spesifikasinya dari katalog Edge; bila Edge offline, parameter belum dimuat. | Section parameter pada form. Label diturunkan dari kunci Edge. | Setting | `Sensitivity` |
+| Search index | Pengaturan indeks untuk Object search (§3.13): label yang diindeks dan interval. Perubahannya me-restart analisis. | Toggle `Object search`. | Embedding index | `Index status` |
+| Index status | Status indeks: `Off`, `Starting`, `Active`, `Unavailable`. | Badge. `Off` berarti indeks mati, berbeda dari `Disabled` pada kamera. | | `Active` |
+| Labels to index | Jenis objek yang diindeks (`person`, dan sebagainya). | Field. | | `Labels to index` |
+| Indexing | Proses membuat embedding teks-gambar untuk objek. Interval dalam detik. | Teks UI. Istilah teknis `embedding` tidak ditampilkan. | Embedding | `Seconds between indexing` |
+
+Catatan:
+- Panel Live pada tab Configuration memakai sentence case: `Live
+  view`, `Pause live view`, `Restart camera`, `Pause analytics`.
+- Tiga tombol di panel itu (`Pause live view`, `Restart camera`,
+  `Pause analytics`) belum punya handler. Hanya teksnya yang
+  disesuaikan. Fungsinya belum ada. **[Pending]** apakah tombol
+  dihapus atau diimplementasikan.
+- Kontrol pemutar pada tab Playback sama dengan halaman Playback
+  (§3.11): `Slower`, `Faster`, `Stream quality`, `End of recording.`,
+  kecepatan `1x`.
+- Label parameter analytic dibuat dari kunci Edge dan menunggu
+  canonical label mapping (§6.3). `Max stay in seconds (0 = off)`
+  adalah satu-satunya label yang ditulis tangan.
+- Empty state perimeter: judul `No perimeters`, deskripsi `Pick Line
+  or Polygon, then draw on the frame.`
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -971,7 +1006,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, dan `Users` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, dan `Camera detail` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1239,6 +1274,16 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `user-dialog.tsx`, `role-form-dialog.tsx` | placeholder `+628123456789`, `operator` | `e.g. +628123456789`, `e.g. operator` |
 | `edit-user.ts` | `Select a server.`, `Select a role for this server.` | `Edge server is required.`, `Edge server role is required.` |
 | `get-users.ts` | sumber `Servers` | `Edge servers` |
+
+### Camera detail (§3.21, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `live-panel.tsx` | `Live View`, `Pause Live View`, `Restart Camera`, `Pause Analytics` | `Live view`, `Pause live view`, `Restart camera`, `Pause analytics` |
+| `camera-detail-view.tsx` | `Could not save the changes` | `Failed to save the changes` |
+| `perimeter-list.tsx` | `No perimeters yet`, tooltip `Delete` | `No perimeters`, `Delete {name}` |
+| `playback-panel.tsx` | `End of recording`, `Rewind`, `Fast forward`, `Stream`, kecepatan `1` | `End of recording.`, `Slower`, `Faster`, `Stream quality`, `1x` |
+| `search-index-fields.tsx` | `Add label...`, `Seconds between embeddings` | `Add label…`, `Seconds between indexing` |
 
 ### Label analytic (sentence case, §6.1)
 
