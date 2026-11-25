@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Camera web page** (`/cameras/[id]/web`, `features/camera-web`):
+    diaudit (§3.22). Hampir tanpa teks UI.
   - **Camera detail** (`/cameras/[id]`, `features/camera-detail`):
     diaudit teksnya (§3.21).
   - **Users** (`/users`, `features/users`): diaudit teksnya (§3.20).
@@ -822,6 +824,31 @@ Catatan:
 - Empty state perimeter: judul `No perimeters`, deskripsi `Pick Line
   or Polygon, then draw on the frame.`
 
+### 3.22 Camera web page
+
+Halaman ini menampilkan halaman web milik kamera (lewat proxy server)
+di dalam iframe. Hampir tidak ada teks UI.
+
+| Teks | Sumber | Aturan |
+|---|---|---|
+| `Camera web page` | page title | Sentence case, tanpa titik. |
+| `{nama kamera} web page` | judul iframe (accessible name) | Menyebut kamera dan isi. |
+| `Open camera web page` | tombol di Live view | Sudah sesuai (§3.9). |
+
+Catatan:
+- Respons error proxy berupa JSON, bukan teks UI: `Invalid camera`
+  (400), `This camera has no web page` (404). Respons API tidak diatur
+  aturan teks UI dan dibiarkan tanpa titik.
+- `Camera did not respond` adalah error internal (timeout ke kamera)
+  dan tidak ditampilkan. Bila suatu saat ditampilkan, ikuti pola
+  `Failed to {verb} {object}.`
+- Usulan fitur, bukan perubahan teks: state tersendiri bila kamera
+  tidak memiliki halaman web atau tidak merespons. Saat ini iframe
+  menampilkan JSON mentah atau halaman kosong. **[Pending]** keputusan
+  produk.
+- Teks pada halaman web milik kamera (merek, firmware) adalah isi
+  pihak ketiga dan di luar aturan ini.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1006,7 +1033,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, dan `Camera detail` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, dan `Camera web page` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
