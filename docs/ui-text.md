@@ -17,6 +17,7 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Settings** (`/settings`): diperiksa (§3.25). Halaman kosong.
   - **Login** (`/login`, `features/auth`, menu pengguna): diaudit
     teksnya (§3.24).
   - **Manage faces** (`/analytics/[slug]/faces`, `features/faces`):
@@ -910,6 +911,23 @@ Catatan:
 - Pada mode contoh (`!isLiveSource`), login selalu berhasil tanpa
   memeriksa kredensial.
 
+### 3.25 Settings
+
+Menu pengguna dan page title: `Settings`.
+
+Halaman `/settings` belum punya isi: `app/(app)/settings/page.tsx`
+mengembalikan `null` dan tidak ada fitur `settings`. Tidak ada teks UI
+selain judul halaman dan label menu.
+
+Catatan:
+- Item menu `Settings` (menu pengguna, `SETTINGS_ITEM`) mengarah ke
+  halaman kosong. Menyembunyikan item, atau menambah empty state
+  sementara, adalah keputusan produk dan bukan perubahan teks.
+  **[Pending]**
+- Saat halaman diisi, teksnya diaudit pada saat itu dan mengikuti
+  aturan §1 sampai §5. Bagian pengaturan yang menyangkut istilah di
+  glossary (misalnya `Edge server`, `Alarm`) memakai istilah resmi.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1094,7 +1112,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, dan `Login` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, dan `Settings` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
