@@ -109,7 +109,7 @@ export const ServerListPanel = ({
               ) : (
                 <RadarIcon />
               )}
-              {scanning ? "Scanning" : "Scan"}
+              {scanning ? "Scanning…" : "Scan network"}
             </Button>
           }
         >
@@ -133,7 +133,7 @@ export const ServerListPanel = ({
                   icon={<RadarIcon />}
                   title={
                     tab === "registered"
-                      ? "Nothing registered yet"
+                      ? "No registered devices"
                       : "No new devices"
                   }
                   description={

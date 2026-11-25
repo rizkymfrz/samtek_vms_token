@@ -23,7 +23,7 @@ export const getServers = async (): Promise<ServersData> => {
   ]);
   const failures: ServerFailure[] = [];
   if (!groups) {
-    failures.push({ serverName: "Groups", message: "Could not be loaded" });
+    failures.push({ serverName: "Groups", message: "Failed to load" });
   }
   return {
     now,

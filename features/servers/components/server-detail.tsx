@@ -86,12 +86,12 @@ export const ServerDetail = ({
           {!isLive && (
             <Button variant="secondary" onClick={onLogs}>
               <TerminalIcon />
-              Log Stream
+              Log stream
             </Button>
           )}
           <Button variant="default" onClick={onEdit}>
             <PencilIcon />
-            Edit Server
+            Edit edge server
           </Button>
           {mqttConfig && (
             <Button
@@ -110,18 +110,18 @@ export const ServerDetail = ({
               onClick={() => setConfirm("restart")}
             >
               <RotateCwIcon className={cn(restarting && "animate-spin")} />
-              Restart Server
+              Reboot edge server
             </Button>
           )}
           <Button variant="destructive" onClick={onDelete}>
             <Trash2Icon />
-            Delete Server
+            Delete edge server
           </Button>
         </div>
       </div>
       <div className="grid gap-4 lg:flex-1 lg:grid-cols-2 lg:auto-rows-fr">
         <MetricChart
-          title="CPU Temperature"
+          title="CPU temperature"
           value={`${temp} °C`}
           level={tempLevel(temp)}
           points={metrics?.cpuTemp ?? []}
@@ -132,7 +132,7 @@ export const ServerDetail = ({
           empty={empty}
         />
         <MetricChart
-          title="Memory Usage"
+          title="Memory usage"
           value={`${Math.round(memory)}%`}
           level={percentLevel(memory)}
           points={metrics?.memory ?? []}
@@ -156,7 +156,7 @@ export const ServerDetail = ({
           }
         />
         <MetricChart
-          title="CPU Usage"
+          title="CPU usage"
           value={`${Math.round(cpu)}%`}
           level={percentLevel(cpu)}
           points={metrics?.cpu ?? []}
@@ -185,10 +185,10 @@ export const ServerDetail = ({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Restart {server.name}?</AlertDialogTitle>
+            <AlertDialogTitle>Reboot {server.name}?</AlertDialogTitle>
             <AlertDialogDescription>
               Its {server.cameraCount} cameras stop streaming and analyzing
-              until the server is back, which takes about a minute.
+              until the edge server is back, which takes about a minute.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -199,7 +199,7 @@ export const ServerDetail = ({
                 onRestart();
               }}
             >
-              Restart
+              Reboot
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -210,11 +210,9 @@ export const ServerDetail = ({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Restart the edge of {server.name}?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Restart Edge on {server.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              The edge process stops and is started again by its service
+              The Edge process stops and is started again by its service
               manager. Cameras stop streaming and analyzing until it is back.
             </AlertDialogDescription>
           </AlertDialogHeader>

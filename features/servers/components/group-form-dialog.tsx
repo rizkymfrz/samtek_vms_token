@@ -74,7 +74,7 @@ const Form = ({
                 id={`${formId}-name`}
                 value={name}
                 maxLength={100}
-                placeholder="Cabang Jakarta"
+                placeholder="e.g. Jakarta branch"
                 onChange={(event) => setName(event.target.value)}
               />
             </Field>
@@ -84,7 +84,7 @@ const Form = ({
                 id={`${formId}-code`}
                 value={shownCode}
                 maxLength={100}
-                placeholder="jakarta"
+                placeholder="e.g. jakarta"
                 aria-invalid={codeInvalid}
                 onChange={(event) => setCode(event.target.value)}
               />

@@ -60,28 +60,36 @@ const FIELDS: {
   hint?: string;
 }[] = [
   { key: "name", label: "Name" },
-  { key: "description", label: "Description", placeholder: "Main building" },
+  {
+    key: "description",
+    label: "Description",
+    placeholder: "e.g. Main building",
+  },
   {
     key: "hostAddress",
     label: "Host address",
-    placeholder: "192.168.1.20:443",
+    placeholder: "e.g. 192.168.1.20:443",
   },
   {
     key: "localHostAddress",
     label: "Local host address",
-    placeholder: "192.168.1.20:8889",
+    placeholder: "e.g. 192.168.1.20:8889",
   },
   {
     key: "webrtcUrl",
     label: "WebRTC URL",
-    placeholder: "https://edge.example.com/webrtc",
+    placeholder: "e.g. https://edge.example.com/webrtc",
   },
   {
     key: "webrtcUrlLocal",
     label: "WebRTC URL (local network)",
-    placeholder: "http://192.168.1.20:8889",
+    placeholder: "e.g. http://192.168.1.20:8889",
   },
-  { key: "macAddress", label: "MAC address", placeholder: "00:1A:2B:3C:4D:5E" },
+  {
+    key: "macAddress",
+    label: "MAC address",
+    placeholder: "e.g. 00:1A:2B:3C:4D:5E",
+  },
 ];
 
 const Form = ({
@@ -143,7 +151,7 @@ const Form = ({
         </DialogTitle>
         <DialogDescription>
           {editing
-            ? `Edge ID ${editing.id}`
+            ? `Edge server ID ${editing.id}`
             : "Register an edge server. Its ID is assigned automatically."}
         </DialogDescription>
       </DialogHeader>

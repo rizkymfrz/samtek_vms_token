@@ -28,7 +28,7 @@ export const StorageCard = ({
       <CardContent className="flex h-full flex-col gap-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">
-            <span className="text-sm font-medium">Storage Usage</span>
+            <span className="text-sm font-medium">Storage usage</span>
             <span className="text-xs text-muted-foreground">Current</span>
           </div>
           {!empty && (

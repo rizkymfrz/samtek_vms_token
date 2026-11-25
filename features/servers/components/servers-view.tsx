@@ -39,7 +39,7 @@ export const ServersView = ({
   const { data: current } = useServers(data, isLive);
   const { servers, groups, metrics, failures, now } = current;
   useFailureToast(
-    "Some data could not be loaded",
+    "Some data did not load",
     failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
   const actions = useServerActions(isLive);
@@ -62,14 +62,12 @@ export const ServersView = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const { entries, recording, error: brokerError } = useEdgeStatus();
   useFailureToast(
-    "Could not reach the MQTT broker",
+    "Failed to reach the MQTT broker",
     mqttConfig && brokerError
-      ? [`Server status and metrics are unavailable. ${brokerError}`]
+      ? [`Edge server status and metrics are unavailable. ${brokerError}`]
       : [],
   );
-  useFailureToast("Failed to restart the edge server", [
-    actions.restartEdgeError,
-  ]);
+  useFailureToast("Failed to restart Edge", [actions.restartEdgeError]);
   useFailureToast("Failed to delete the edge server", [actions.removeError]);
   const serverOnline = useServerOnline();
   const online = useMemo(
