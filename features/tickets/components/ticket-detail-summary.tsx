@@ -78,7 +78,7 @@ export const TicketDetailSummary = ({
     )}
     {ticket.escalatedAt && !ticket.acknowledgedAt && (
       <Badge variant="destructive">
-        No officer acknowledged. A supervisor needs to step in.
+        Nobody acknowledged this ticket. A supervisor needs to step in.
       </Badge>
     )}
     <DetailIdBox

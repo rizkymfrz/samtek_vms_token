@@ -626,9 +626,8 @@ Catatan:
 - `Acknowledge before` adalah batas waktu acknowledge
   (`ackDeadlineAt`). Bila lewat tanpa acknowledge, tiket naik ke
   supervisor.
-- Teks `No officer acknowledged. A supervisor needs to step in.`
-  memakai `officer` untuk assignee. **[Pending]** satu istilah
-  (`assignee`).
+- Peringatan eskalasi: `Nobody acknowledged this ticket. A supervisor
+  needs to step in.` Kata `officer` tidak dipakai.
 - Pesan error service (`Ticket not found`, `Rule not found`, dan
   sejenisnya) belum terbukti tampil ke pengguna. Tidak diubah.
 - Teks pada ticket rule (`rule.kind`, `rule.analyticId`) menunggu
@@ -837,10 +836,10 @@ Page title: nama kamera (fallback `Camera`). Tab: `Configuration`,
 Catatan:
 - Panel Live pada tab Configuration memakai sentence case: `Live
   view`, `Pause live view`, `Restart camera`, `Pause analytics`.
-- Tiga tombol di panel itu (`Pause live view`, `Restart camera`,
-  `Pause analytics`) belum punya handler. Hanya teksnya yang
-  disesuaikan. Fungsinya belum ada. **[Pending]** apakah tombol
-  dihapus atau diimplementasikan.
+- Tiga tombol yang dulu ada di panel itu (`Pause live view`, `Restart
+  camera`, `Pause analytics`) tidak punya handler sama sekali, jadi
+  dihapus. Bila fungsinya dibuat nanti, tambahkan lagi dengan teks
+  sentence case.
 - Kontrol pemutar pada tab Playback sama dengan halaman Playback
   (§3.11): `Slower`, `Faster`, `Stream quality`, `End of recording.`,
   kecepatan `1x`.
@@ -868,10 +867,12 @@ Catatan:
 - `Camera did not respond` adalah error internal (timeout ke kamera)
   dan tidak ditampilkan. Bila suatu saat ditampilkan, ikuti pola
   `Failed to {verb} {object}.`
-- Usulan fitur, bukan perubahan teks: state tersendiri bila kamera
-  tidak memiliki halaman web atau tidak merespons. Saat ini iframe
-  menampilkan JSON mentah atau halaman kosong. **[Pending]** keputusan
-  produk.
+- Kamera tanpa halaman web (sumber stream bukan alamat yang punya
+  halaman web) menampilkan empty state: judul `No web page`,
+  deskripsi `{nama kamera} has no web page to open.` Kamera yang
+  memiliki halaman web tetapi tidak merespons masih menampilkan
+  respons mentah di dalam iframe, karena kegagalan di dalam iframe
+  tidak dapat dideteksi dari halaman induk. **[Pending]**
 - Teks pada halaman web milik kamera (merek, firmware) adalah isi
   pihak ketiga dan di luar aturan ini.
 
@@ -936,15 +937,13 @@ Catatan:
 
 Menu pengguna dan page title: `Settings`.
 
-Halaman `/settings` belum punya isi: `app/(app)/settings/page.tsx`
-mengembalikan `null` dan tidak ada fitur `settings`. Tidak ada teks UI
-selain judul halaman dan label menu.
+Halaman `/settings` belum punya isi, tidak ada fitur `settings`.
+Halaman menampilkan empty state sementara: judul `Settings are not
+available`, deskripsi `There is nothing to configure here yet.`
 
 Catatan:
-- Item menu `Settings` (menu pengguna, `SETTINGS_ITEM`) mengarah ke
-  halaman kosong. Menyembunyikan item, atau menambah empty state
-  sementara, adalah keputusan produk dan bukan perubahan teks.
-  **[Pending]**
+- Item menu `Settings` (menu pengguna, `SETTINGS_ITEM`) tetap ada dan
+  mengarah ke empty state itu (keputusan: menu tidak disembunyikan).
 - Saat halaman diisi, teksnya diaudit pada saat itu dan mengikuti
   aturan §1 sampai §5. Bagian pengaturan yang menyangkut istilah di
   glossary (misalnya `Edge server`, `Alarm`) memakai istilah resmi.

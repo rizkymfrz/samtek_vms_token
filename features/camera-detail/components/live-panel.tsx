@@ -1,5 +1,3 @@
-import { PauseIcon, RotateCcwIcon, ScanEyeIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { StreamDetections } from "@/features/edge-status";
 import { SpeakerToggle } from "@/features/live";
 import { PtzControls } from "@/features/ptz";
@@ -22,20 +20,6 @@ export const LivePanel = ({
         <p className="text-xs text-muted-foreground">
           The main stream of this camera, as the edge server relays it.
         </p>
-      </div>
-      <div className="flex gap-2">
-        <Button className="flex-1">
-          <PauseIcon />
-          Pause live view
-        </Button>
-        <Button variant="secondary" className="flex-1">
-          <RotateCcwIcon />
-          Restart camera
-        </Button>
-        <Button variant="destructive" className="flex-1">
-          <ScanEyeIcon />
-          Pause analytics
-        </Button>
       </div>
       <div className="group/tile relative aspect-video w-full overflow-hidden border bg-sidebar">
         <StreamFrame detail={detail} state={state} quality="main" />
