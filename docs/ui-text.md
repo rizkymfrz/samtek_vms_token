@@ -17,6 +17,10 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Playback** (`features/playback`, plus `PlaybackTimeline` dan
+    `use-playback-session` dari `features/camera-detail`): diaudit
+    teksnya (§3.11). Halaman camera-detail yang memakai komponen yang
+    sama belum diaudit.
   - **Komponen shared** yang dipakai Live view dan PTZ (`Pick`,
     side panel, toolbar, empty state, dialog hapus, toast): diaudit
     untuk teks dan aksesibilitas (§2.1 dan §2.2). Isi `components/ui/*`
@@ -59,12 +63,13 @@ kecuali bagian bertanda **[Keputusan produk]**.
 | KPI label | Kata benda + rentang waktu dalam kurung. | `Alarms (24h)` |
 | Chart legend/series | Nama kategori, singular, sama dengan glossary. | `Medium`, `Stranger` |
 | Chart axis/tooltip | Waktu `HH:mm`. Tooltip menyertakan hitungan dengan plural benar. | `Camera 1 · 14:00 · 1 alarm` |
-| Unit | Satuan singkat tanpa spasi untuk `s`, `m`, `h`, `%`. Unit lain ditulis lengkap, huruf kecil. | `45s`, `1h 2m`, `12 reads` |
+| Unit | Satuan singkat tanpa spasi untuk `s`, `m`, `h`, `%`, `x`. Unit lain ditulis lengkap, huruf kecil. Pengali kecepatan memakai `x`. | `45s`, `1h 2m`, `12 reads`, `0.25x` |
 | Button/action | Kata kerja + objek, sentence case, tanpa titik. | `Add camera` |
 | Form label | Kata benda, tanpa titik dan tanpa titik dua. | `Camera name` |
 | Placeholder | Contoh nilai atau petunjuk singkat. Bukan pengganti label. | `e.g. Main entrance` |
 | Validation | Kalimat lengkap, menyebut field, diakhiri titik. | `Camera name is required.` |
-| Empty state | `No {plural noun}.` diakhiri titik. Jika terikat waktu: `No {plural noun} in the last 24 hours.` Keterangan tempat boleh ditambahkan: `No presets saved on this camera.` Pada `EmptyState`, judul memakai pola ini (dengan titik) dan deskripsi berisi langkah berikutnya sebagai satu kalimat bertitik. | `No layouts.` / `Create a layout to start watching cameras.` |
+| Empty state (teks biasa, `NoData`) | `No {plural noun}.` diakhiri titik. Jika terikat waktu: `No {plural noun} in the last 24 hours.` Keterangan tempat boleh ditambahkan: `No presets saved on this camera.` | `No alarms.` |
+| Empty state (komponen `EmptyState`) | Judul: `No {plural noun}` **tanpa titik** (judul, sama dengan judul error state seperti `Search failed`). Deskripsi: langkah berikutnya sebagai satu kalimat bertitik. | `No layouts` / `Create a layout to start watching cameras.` |
 | Error message (inline) | Apa yang gagal, dalam bahasa pengguna, diakhiri titik. Tanpa stack trace atau detail internal. | `Failed to connect to the server.` |
 | Toast (error) | Judul: `Failed to {verb} {object}` tanpa titik, karena berfungsi sebagai judul. Deskripsi: kalimat lengkap bertitik, berisi penyebab jika diketahui. Fallback deskripsi: `The command could not be completed.` | judul `Failed to update the layout` |
 | Toast (peringatan sebagian) | Judul: kalimat singkat tanpa titik yang menyebut apa yang tidak lengkap. | `Some edge servers did not respond` |
@@ -93,12 +98,14 @@ Aturan tambahan:
 - Kontrol ikon saja: `aria-label` dan `title` memakai teks yang sama
   (komponen shared sudah melakukannya dari satu prop `label`).
 - Tombol toggle: pilih **satu** cara. Label tetap dengan `aria-pressed`
-  (contoh: `Detections`), atau label berubah menurut state tanpa
-  `aria-pressed` (contoh: `Show PTZ controls` / `Hide PTZ controls`).
-  Jangan memakai keduanya.
+  (contoh: `Detections`, `Fullscreen`, `Audio`, `PTZ controls`), atau
+  label berubah menurut state tanpa `aria-pressed` (contoh tombol biasa:
+  `Mute audio` / `Unmute audio`). Jangan memakai keduanya. Semua
+  `ToolbarToggle` memakai label tetap dengan `aria-pressed`.
 - Tombol yang tidak bisa ditekan dan butuh alasan (contoh: `Talk is in
-  use on another camera`): alasan harus ada di accessible description,
-  bukan hanya di `title`.
+  use on another camera`): alasan ada di accessible description
+  (`aria-description`) dan boleh juga di `title`, tetapi tidak hanya di
+  `title`.
 - Aksi sekali tekan (membuka halaman, menjalankan perintah) bukan
   toggle. Jangan beri `aria-pressed`.
 
@@ -120,7 +127,7 @@ Aturan tambahan:
 | Tooltip primitif (`components/ui/tooltip`) | | Hanya dipakai `components/ui/sidebar.tsx` dan halaman showcase. Semua tooltip lain memakai atribut `title`. | sidebar |
 
 Catatan: `DeviceTree` (shared) membuat teks sendiri: `Search {noun}...`,
-`No {noun} match`, `No {noun}`, `Try a different search.`
+`No {noun} found`, `No {noun}`, `Try a different search.`
 
 ## 3. Glossary
 
@@ -255,27 +262,24 @@ Catatan kode:
 | Headcount | Jumlah orang yang terhitung di area. | Deskripsi. | Count of people | `Peak headcount at alarm vs limit` |
 | Dust level | Tingkat debu saat alarm `dust_detected`. | Judul panel. | Dust concentration | `Dust level` |
 | Worker absence | Alarm `worker_absent`: pekerja tidak berada di area. | Judul panel. | Absent worker | `Worker absence` |
-| Phone use **[Pending]** | Aktivitas penggunaan ponsel, bukan jumlah panggilan telepon. Display terminology sementara. | Label statistik dan teks UI generik. | Phone calls | `Phone use` |
-| Phone calling | Nama analytic `phone_calling` dan alarm-nya. | Label analytic dan alarm tipe ini (sesuai nama teknis). | Mengganti nama analytic | `Phone calling` |
+| Phone calling | Orang yang sedang menelepon: pergelangan tangan dekat kepala (jarak < 0,75 lebar bahu) bertahan 1 detik, dan mayoritas dari 10 penilaian terakhir positif. Alarm `phone_call`, analytic `phone_calling`. | Statistik, label analytic, dan alarm tipe ini. | `Phone use`, `Phone calls` | `Phone calling` |
 | Asleep on duty | Alarm `sleep_on_duty`. | Label statistik. | Sleeping | `Asleep on duty` |
 
 Catatan kode:
-- `Phone use` **[Pending]**: di kode, alarm bernama `phone_call`,
-  analytic `phone_calling` berlabel `Phone Calling`, dan judul edge
-  `Phone Calling Alarm`. Tidak ada definisi di repo yang menyatakan
-  apakah deteksinya hanya mengenali orang yang sedang menelepon atau
-  semua penggunaan ponsel. Karena itu:
-  - `Phone use` dipertahankan sebagai display terminology sementara.
-    Definisinya menunggu konfirmasi tim Edge.
-  - Jangan menganggap analytic mencakup seluruh aktivitas penggunaan
-    ponsel.
-  - Label analytic dan alarm tipe ini memakai `Phone calling`, sama
-    dengan nama teknisnya.
+- `Phone calling` (final, dikonfirmasi tim Edge): analytic ini
+  mendeteksi orang yang sedang menelepon, bukan keberadaan ponsel.
+  Cara kerja: model pose, pelacakan ByteTrack, tangan dekat kepala
+  selama 1 detik, alarm maksimal sekali per 5 detik per orang. Tidak ada
+  deteksi objek ponsel.
+  - `Phone use` dan `Phone calls` **tidak dipakai**. `Phone use` terlalu
+    luas, `Phone calls` terdengar seperti jumlah panggilan.
+  - Batasan: tangan diam di dekat telinga (menggaruk kepala,
+    membetulkan topi) dapat memicu alarm. Ponsel yang dipakai jauh dari
+    kepala (membaca) tidak terdeteksi. Analytic belum diuji dengan orang
+    yang benar-benar menelepon. Jangan menulis teks UI yang menjanjikan
+    deteksi penggunaan ponsel secara umum.
   - Technical identifier (`phone_call`, `phone_calling`) tidak berubah.
-  - Jika Edge mengonfirmasi cakupannya, selaraskan `Phone use` dan
-    `Phone calling` menjadi satu istilah.
-- `Fire and smoke`: judul panel di kode masih `Fire & smoke`
-  (`fire-status.tsx`). Daftar di §7.
+- `Fire and smoke`: judul panel sudah diterapkan di `fire-status.tsx`.
 
 ### 3.7 Access control
 
@@ -303,12 +307,12 @@ Catatan kode (tidak diubah):
   request.`, `The edge sent an unreadable answer`, `The edge refused`.
 - Teks yang sudah sesuai: `Edge server is offline`, `Some edge servers
   did not respond`, `The edge server went offline.`
-- **[Pending]** apakah menu `Servers` menjadi `Edge servers`. Halaman
-  itu mengelola server Edge, tetapi daftar servernya disimpan di
-  Central, jadi perlu konfirmasi bahwa tidak ada jenis server lain.
+- Menu dan page title `Servers` menjadi `Edge servers` (final). Teks
+  di panel daftar, dialog tambah/ubah, dialog hapus, empty state, dan
+  toast hapus/restart pada halaman itu sudah disesuaikan. Sisa teks di
+  halaman Edge servers (tab scan, detail, metrik) belum diaudit.
 
-**[Belum diaudit]** Recording, playback, dan konektivitas. Label menu
-yang ada: `Playback`, `Cameras`.
+**[Belum diaudit]** Konektivitas. Label menu yang ada: `Cameras`.
 
 ### 3.9 Live view dan PTZ
 
@@ -346,11 +350,16 @@ Catatan kode:
   (`isRecordingEnabled`). Ini pengecualian dari larangan singkatan di
   §1 dan masuk daftar akronim baku.
 - Fokus (final): `Decrease focus` / `Increase focus`.
-- `Speaker` (`SpeakerToggle`, `Mute speaker`) dan `Mute` pada player
-  WebRTC (`aria-label` `Mute` / `Unmute`) mengatur audio yang sama
-  secara konsep, tetapi bernama berbeda. **[Pending]** satu istilah
-  untuk audio kamera (kandidat: `audio`). `Talk` adalah mikrofon ke
-  kamera dan berbeda dari keduanya.
+- Audio kamera (final): istilahnya `Audio`. Toggle di toolbar tile
+  berlabel `Audio` (dengan `aria-pressed`), tombol di player berlabel
+  `Mute audio` / `Unmute audio`. Hindari `Speaker`. `Talk` adalah
+  mikrofon ke kamera dan berbeda dari audio.
+- Talk (final): `Start talk`, `Hold to speak`, `Stop talk`.
+- Pengaturan kualitas stream (final): `Stream quality` di toolbar dan
+  per kamera.
+- Aksi buat layout (final): `Create layout` di panel dan empty state.
+- Hapus layout memakai dialog konfirmasi: judul `Delete {name}?`,
+  tombol `Delete layout`.
 
 ### 3.10 Status kamera dan stream
 
@@ -383,8 +392,9 @@ Pemetaan istilah yang diputuskan produk:
 
 | Kondisi | Istilah | Status verifikasi |
 |---|---|---|
-| Edge server tidak dapat dihubungi | `Server offline` | Sesuai dengan `server-offline`. **[Pending validation]** state ini juga muncul bila `server.isActive` bernilai false (server dinonaktifkan), bukan hanya tidak terjangkau. |
-| Stream kamera tidak tersedia | `Stream unavailable` | Sesuai dengan `stream-offline`. **[Pending validation]** hanya nilai `status === "error"` yang dikenali sebagai faulty. Nilai status device lain dari Edge tidak terdokumentasi di repo. |
+| Edge server tidak dapat dihubungi | `Server offline` | Sesuai dengan `server-offline` bila server aktif tetapi tidak terjangkau. |
+| Edge server dinonaktifkan (`server.isActive` false) | `Edge server disabled` (final: label tersendiri, seperti kamera memiliki `Disabled`) | **Belum diterapkan.** Saat ini kondisi ini jatuh ke `server-offline`, dan teks form edge server menyatakan `An inactive edge server is ignored and shown as offline.` Dampak penerapan ada di bawah. |
+| Stream kamera tidak tersedia | `Stream unavailable` | Tepat hanya untuk `status === "error"` dengan `detail === "stream offline"`. Lihat tabel status device di bawah. |
 | Kamera dinonaktifkan | `Disabled` | Sesuai dengan `disabled`. |
 | Stream sedang menghubungkan | `Connecting` | Sesuai dengan status player `connecting`. |
 | Stream mencoba terhubung kembali | `Reconnecting` | Sesuai dengan status player `reconnecting`. |
@@ -403,6 +413,50 @@ Sumber label yang sudah ada:
   dengan `Stream offline` diganti `Stream unavailable` sesuai keputusan.
   Ini bagian dari canonical label mapping (§6.3). Belum diimplementasikan.
 
+Status device dari Edge (`devices[].status` pada `edge.state`,
+dikonfirmasi tim Edge):
+
+| Status | Arti | `Stream unavailable`? | Penanganan di kode saat ini |
+|---|---|---|---|
+| `running` | Berjalan normal. | Tidak | `live` |
+| `starting` | Menyambung stream atau memuat model (sementara). | Tidak. Jangan tampil sebagai kegagalan. | `live` |
+| `stopped` | `enabled: false` atau dihentikan. Dimatikan, bukan rusak. | Tidak | `live`. Status `disabled` berasal dari data device, bukan dari status ini. |
+| `degraded` | Sebagian stream (main atau sub) putus, yang lain hidup. `detail`: `a stream is offline`. | Sebagian | `live` (tidak dibedakan) |
+| `error` | Gagal. `detail` menjelaskan penyebab. | Hanya jika `detail` = `stream offline` | `stream-offline` untuk **semua** `error` |
+
+Isi `detail` pada `error`: `stream offline` (semua stream putus lebih
+dari 1 detik, ini `Stream unavailable` yang sebenarnya), pesan
+konfigurasi atau model dari Edge (bukan masalah stream), dan pesan
+worker kamera yang gagal, macet, atau hang (dapat terkait stream atau
+pipeline). `detail` berupa teks bebas, bukan kode enum.
+
+Akibatnya, `stream-offline` pada tile saat ini terlalu luas: error
+konfigurasi atau model ikut tampil sebagai `Stream unavailable`.
+Aturan sementara:
+- `Stream unavailable` tetap dipakai untuk `error` sampai keputusan di
+  bawah diambil. Jangan mencocokkan teks `detail` di frontend karena
+  teks bebas tidak stabil.
+- `detail` dari Edge tampil apa adanya sebagai deskripsi bila
+  ditampilkan.
+- `degraded` dapat ditampilkan sebagai `Partial stream unavailable`.
+  Belum ada state untuk itu di union (`StreamState`).
+
+**[Keputusan produk]** Apakah Edge diminta menambah field kode pada
+status device (contoh `reason: "stream_offline"`)? Ini perubahan
+kontrak. Dengan field itu, `stream_offline` menjadi `Stream
+unavailable`, error lain menjadi label umum (misalnya `Camera error`
+dengan `detail`), dan `degraded` menjadi `Partial stream unavailable`.
+
+Dampak penerapan `Edge server disabled`: state `server-offline` dipakai
+di 15+ berkas (live, playback, cameras, floorplan, map, analytics,
+camera-detail) dan sering dipakai sebagai gerbang `state !==
+"server-offline"` (contoh: `playback-tile`, `use-camera-ranges`,
+`stream-frame`, `camera-card`). State baru (kandidat `server-disabled`)
+harus ikut diperlakukan sebagai tidak online pada semua gerbang itu.
+Tipe `StreamState`, `DeviceState`, `floorplan/types.ts`, dan
+`cameras/types.ts` harus diubah bersama (lihat duplikasi di atas),
+dan teks form edge server harus diubah.
+
 Aturan:
 - Jangan memakai satu label `Offline` untuk `server-offline` dan
   `stream-offline`.
@@ -413,11 +467,44 @@ Aturan:
   (`floorplan/types.ts`, `map-panel.tsx`) dan belum diaudit. Jangan
   menyatakan keduanya sudah sesuai.
 
+### 3.11 Playback dan recording
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Playback | Menonton rekaman kamera lewat sesi playback di Edge server. | Menu, page title, judul. | Replay, history | `Playback` |
+| Recording | Rekaman video yang disimpan Edge server, diaktifkan per kamera (`isRecordingEnabled`). | Teks tentang data rekaman. Indikator pada tile live memakai `REC` (§3.9). | Footage, video archive | `No recording at this time.` |
+| Recording range | Rentang waktu yang tercakup rekaman (`RecordingRange`: `from`, `to`). | Isi timeline. Istilah teknis, jarang tampil. | Segment | |
+| Clip | Rentang rekaman yang menyambung. Pada Playback, rentang digabung dari semua kamera terpilih (`mergeRanges`). | Tombol lompat antar rentang. | Chapter | `Previous clip`, `Next clip` |
+| Timeline | Garis waktu satu hari dengan rentang rekaman, posisi, dan penanda alarm. | Accessible name dan deskripsi. | Scrubber, seekbar | `Seek recording timeline` |
+| Alarm marker | Penanda alarm pada timeline. Isinya judul alarm dan dapat difilter per tipe. | Filter di bawah timeline. | Alert marker, event marker | `Alarm type`, `All alarms` |
+| Playback speed | Pengali kecepatan putar: 0.25, 0.5, 1, 2, 4, 8 (`SPEEDS`). | Ditulis dengan `x`. | Rate, tanpa unit | `1x`, `0.25x` |
+| Slower / Faster | Menurunkan dan menaikkan satu langkah pada daftar kecepatan. Bukan lompat waktu. | Tombol kontrol. | Rewind, Fast forward | `Slower`, `Faster` |
+
+Catatan kode:
+- Tombol kecepatan (final): `Slower` / `Faster`. Tombol ini hanya
+  mengubah kecepatan (`stepSpeed`), bukan memutar mundur, jadi
+  `Rewind` / `Fast forward` tidak akurat. Ikon tidak berubah.
+- `End of recording` (final, dikonfirmasi tim Edge): state `ended`
+  berarti rekaman device itu habis. Bukan akhir klip dan bukan akhir
+  hari. Celah antar segmen sampai 300 detik dilompati otomatis. Edge
+  memandang rekaman sebagai satu timeline kontinu tanpa batas hari.
+  Sesi masih dapat di-seek ulang. Sesi klip alarm (`event_id`) juga
+  berstatus `ended` di akhir jendela klip, tetapi pemutar klip alarm
+  memutar ulang otomatis dan tidak menampilkan teks akhir. Jika kelak
+  ditampilkan, gunakan `End of clip`, dan bedakan dari `End of
+  recording` lewat sumber sesi (`device_id` atau `event_id`).
+- Judul alarm pada penanda timeline berasal dari Edge dan belum lewat
+  peta label (§6.3).
+- Pesan error sesi playback berasal dari dua sumber: teks kode
+  (`The playback session ended`, fallback `Failed to play the
+  recording.`) dan pesan Edge yang diteruskan apa adanya.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
 2. Panel description tidak diakhiri titik.
-3. Empty state mengikuti pola `No {plural noun}.` dengan titik.
+3. Empty state teks biasa mengikuti pola `No {plural noun}.` dengan
+   titik. Judul `EmptyState` tanpa titik (§2).
 4. Rentang waktu: label KPI memakai `(24h)`. Deskripsi panel memakai
    `Last 24 hours`. Empty state memakai `in the last 24 hours`. Panel
    berbasis waktu wajib menyebut rentangnya.
@@ -450,8 +537,8 @@ Aturan:
     berbeda (contoh: `Offline` untuk server dan stream).
 19. Akronim baku (PPE, ID, PTZ) ditulis uppercase di semua posisi.
 20. Placeholder berupa contoh diawali `e.g.`.
-21. Empty state dibedakan: data memang kosong, `No {plural noun}.`;
-    hasil pencarian atau filter kosong, `No {plural noun} found.`
+21. Empty state dibedakan: data memang kosong, `No {plural noun}`;
+    hasil pencarian atau filter kosong, `No {plural noun} found`
     dengan deskripsi `Try a different search.` atau
     `No {plural noun} match the filters.`. Jangan memakai `yet`.
 22. Teks proses berjalan memakai satu karakter elipsis `…`
@@ -462,12 +549,18 @@ Aturan:
     akibat dalam kalimat bertitik.
 24. Alasan sebuah kontrol nonaktif harus tersedia sebagai accessible
     description, bukan hanya `title` (§2.1).
+25. Pesan status di dalam area video (tile Live dan Playback) adalah
+    kalimat bertitik: `No recording at this time.`, `End of recording.`.
+    Label state pendek (`Live`, `Disabled`) tidak bertitik.
+26. Kecepatan putar memakai pengali dengan `x` (`1x`), bukan angka
+    telanjang.
 
 ## 5. Copy patterns
 
 | Komponen | Pola | Contoh |
 |---|---|---|
-| Empty state | `No {plural noun}.` | `No cameras found.` |
+| Empty state (judul `EmptyState`) | `No {plural noun}` | `No cameras found` |
+| Empty state (teks biasa) | `No {plural noun}.` | `No alarms.` |
 | Empty state (waktu) | `No {plural noun} in the last 24 hours.` | `No alarms in the last 24 hours.` |
 | Success | `{Object} {past verb} successfully.` | `Camera added successfully.` |
 | Error | `Failed to {verb} {object}.` | `Failed to connect to the server.` |
@@ -510,11 +603,12 @@ Semua label analytic dan alarm mengikuti sentence case. Akronim baku
 | `People Counting and Dwelling` | `People counting and dwelling` |
 | `Phone Calling` | `Phone calling` |
 
-Catatan: `Fire smoke alarm` adalah bentuk yang diputuskan untuk judul
-alarm. Glossary memakai `Fire and smoke` untuk judul panel (§3.6). Dua
-bentuk ini ada di konteks berbeda (nama alarm vs judul panel).
-**[Pending]** konfirmasi apakah nama alarm juga menjadi
-`Fire and smoke alarm`.
+Catatan: nama alarm kebakaran memakai `Fire and smoke alarm` (final),
+sejalan dengan judul panel `Fire and smoke` (§3.6). Contoh `Fire smoke
+alarm` di tabel di atas adalah teks Edge lama, bukan bentuk target.
+`Cat Detection Alert` menjadi `Cat detection alarm` (final, sudah
+diterapkan pada `analytics-catalog.ts` dan `analytic-groups.ts`).
+Label analytic lain di kedua berkas itu masih Title Case.
 
 ### 6.2 Kondisi saat ini (hasil pemeriksaan kode)
 
@@ -572,7 +666,26 @@ Dampak yang perlu dicek saat implementasi:
 - Perubahan label tidak boleh mengubah hasil filter atau query yang
   memakai id.
 
-## 7. Teks yang belum sesuai keputusan
+## 7. Penyesuaian teks
+
+### 7.0 Status penerapan
+
+Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
+
+| Kelompok | Status |
+|---|---|
+| Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
+| Menu dan page title | `Live view` dan `Edge servers` diterapkan. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Alert menjadi alarm | Diterapkan hanya pada Playback (`Alarm type`, `All alarms`). Sisanya belum. |
+| Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
+| Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
+| Playback | Diterapkan, termasuk `Slower` / `Faster`. |
+| Label analytic Title Case | Hanya `Cat detection alarm` yang diterapkan. |
+
+Catatan: baris yang memuat `No ... yet` atau titik pada judul
+`EmptyState` di tabel lama mengikuti aturan terbaru (§2): judul tanpa
+titik.
+
 
 Hanya untuk referensi saat penerapan. Teks di kode belum diubah.
 
@@ -584,7 +697,7 @@ Hanya untuk referensi saat penerapan. Teks di kode belum diubah.
 | `widgets.tsx` (`faces`) | `Recognized faces` | `Recognized people` |
 | `widgets.tsx` (`kpi-average`) | `Avg alarms per hour` | `Average alarms per hour` |
 | `widgets.tsx` (`reid`) | `Different people` | `Unique people` (definisi sesuai, lihat §3.3) |
-| `widgets.tsx` (`behavior`) | `Phone calls` | `Phone use` (konfirmasi edge, lihat §3.6) |
+| `widgets.tsx` (`behavior`) | `Phone calls` | `Phone calling` (final, diterapkan, lihat §3.6) |
 | `fire-status.tsx` | `Fire & smoke` | `Fire and smoke` |
 | `fire-status.tsx` | `No fire or smoke alarms in 24 hours.` | `No fire or smoke alarms in the last 24 hours.` |
 | `widgets.tsx` (`heatmap`) | `Alarms per hour` tanpa rentang | `Last 24 hours, alarms per hour` |
@@ -643,7 +756,7 @@ nama fitur dan komponen, enum, dan nilai status `alert` di
 | `features/live/components/camera-tile.tsx:28-31` | label `Offline` untuk `server-offline` dan `stream-offline` | `Server offline` dan `Stream unavailable` (setelah validasi §3.10) |
 | `components/shared/edge-offline.tsx` | `Edge server is offline` | Sudah sesuai (§3.8) |
 | `components/shared/stream-offline.tsx`, `webrtc-player.tsx:22` | `Camera stream is offline`, `Stream address is not available` | `Stream unavailable` sebagai judul, teks lama sebagai deskripsi (§3.10) |
-| `features/live/components/webrtc-player.tsx:175` | `Mute` / `Unmute` | **[Pending]** istilah audio (§3.9) |
+| `features/live/components/webrtc-player.tsx:175` | `Mute` / `Unmute` | `Mute audio` / `Unmute audio` (final, diterapkan) |
 | `features/live/components/camera-tile.tsx` | badge `REC` | Dipertahankan (final, §3.9) |
 | `features/live/components/live-view.tsx:73` | `Some edge servers did not respond` | Sudah sesuai (peringatan sebagian) |
 
@@ -680,19 +793,34 @@ Hasil audit aksesibilitas:
 | `ToolbarToggle` + `fullscreen-toggle`, `speaker-toggle`, `ptz-toggle` | Label berubah menurut state dan `aria-pressed` juga di-set. State diumumkan dua kali dan dapat membingungkan | Pilih satu cara (§2.1). Contoh: label tetap `Fullscreen` dengan `aria-pressed`, atau label berubah tanpa `aria-pressed` |
 | `camera-web-toggle.tsx` | `pressed={false}` konstan pada aksi sekali tekan (`Open camera web page`) | Bukan toggle. Hilangkan `aria-pressed` |
 | `talk-control.tsx` | `aria-label="Talk"` tetap, tetapi `title` berubah: `Talk needs a signed-in user`, `Talk is in use on another camera` | Alasan nonaktif ke accessible description |
-| `talk-control.tsx` | `Hold to speak`, `Stop talk`, `Talk`: tiga label untuk satu fitur | Tinjau urutan kata kerja (`Start talk` / `Stop talk`) **[Pending]** |
+| `talk-control.tsx` | `Hold to speak`, `Stop talk`, `Talk`: tiga label untuk satu fitur | `Start talk`, `Hold to speak`, `Stop talk` (final, diterapkan) |
 | `camera-preview.tsx`, `ptz-panel.tsx` | `aria-label` spesifik, tooltip `Close` | Samakan (rekomendasi di §7 Live view dan PTZ) |
-| `Pick` | `label` hanya menjadi accessible name. Teks tidak tampil, nilai terpilih saja yang tampil. Dua pick terkait memakai nama berbeda: `Stream` (toolbar) dan `Stream quality` (per kamera) | Satu nama per pengaturan. Putuskan `Stream quality` untuk keduanya **[Pending]** |
+| `Pick` | `label` hanya menjadi accessible name. Teks tidak tampil, nilai terpilih saja yang tampil. Dua pick terkait memakai nama berbeda: `Stream` (toolbar) dan `Stream quality` (per kamera) | `Stream quality` untuk keduanya (final, diterapkan) |
 | `PanelSearch` | `aria-label` diturunkan dari placeholder dengan regex `/\.+$/` | Saat placeholder memakai `…`, regex harus ikut diubah, atau `aria-label` diberi prop sendiri |
 | Seluruh app | `aria-description` / `aria-describedby` tidak dipakai di luar `components/ui` | Mulai dari alasan kontrol nonaktif (aturan 24) |
 | Tooltip | Semua tooltip aplikasi adalah atribut `title`. `components/ui/tooltip` hanya dipakai sidebar | Jangan menaruh informasi penting hanya di `title` |
+
+### Playback (§3.11)
+
+| Lokasi | Teks saat ini | Teks sesuai aturan |
+|---|---|---|
+| `features/playback/components/playback-view.tsx:246`, `features/camera-detail/components/playback-panel.tsx:239` | `Alert type` | `Alarm type` |
+| `features/alerts/hooks/use-alert-markers.ts:30` | `All alerts` | `All alarms` |
+| `features/playback/components/playback-view.tsx:211` | `No cameras in playback` | `No cameras in playback.` |
+| `features/playback/components/playback-tile.tsx:57-58` | `No recording at this time`, `Select a time on the timeline to play.` | `No recording at this time.`, kalimat kedua sudah sesuai |
+| `features/playback/components/playback-tile.tsx:62` | `End of recording` | `End of recording.` |
+| `features/camera-detail/hooks/use-playback-session.ts:38` | `Playback failed` | `Failed to play the recording.` |
+| `features/camera-detail/hooks/use-playback-session.ts:102` | `The playback session ended` | `The playback session ended.` |
+| `features/playback/components/playback-controls.tsx:68` | `{speed}` | `{speed}x` |
+| `features/playback/components/playback-view.tsx:153,163` | `Grid`, `Stream` (accessible name) | `Stream quality` (final, diterapkan) |
+| `features/playback/components/playback-controls.tsx` | `Rewind`, `Fast forward` | `Slower`, `Faster` (final, diterapkan) |
 
 ### Label analytic (sentence case, §6.1)
 
 | Lokasi | Teks saat ini | Teks sesuai aturan |
 |---|---|---|
 | `config/analytics-catalog.ts` | 18 label Title Case (`People Counting and Dwelling`, `PPE Violation Advance`, `People Re-Identification`, `Phone Calling`, ...) | Sentence case, PPE tetap kapital |
-| `config/analytics-catalog.ts:46` dan `analytic-groups.ts:145` | `Cat Detection Alert` | `Cat detection alert` **[Pending]**: kata `Alert` di nama analytic mungkin seharusnya `alarm` |
+| `config/analytics-catalog.ts:46` dan `analytic-groups.ts:145` | `Cat Detection Alert` | `Cat detection alarm` (final, diterapkan) |
 | `analytic-groups.ts` | Judul grup Title Case, `Fire & Smoke Detection` | Sentence case, `and`. Selaraskan dengan peta canonical (§6.3) |
 | Dashboard `Alarms by type` | Judul Edge: `Dwelling Alarm`, `Fire Smoke Alarm`, `Sleep Alarm` | Label dari peta canonical (§6.3) |
 | `phone_calling` / `phone_call` | `Phone Calling` | `Phone calling` |
@@ -709,10 +837,10 @@ Hasil pemeriksaan keputusan produk terhadap kode:
 | Device = perangkat/endpoint | Perbedaan: semua `Device` di database adalah kamera. Lihat §3.2. |
 | People, Visitors, Recognized people | Sesuai untuk definisi. Teks di kode masih memakai `persons` dan `faces`. |
 | Unique people | Sesuai untuk panel re-identification (dedup `person_id`). Tidak untuk `people seen`. Lihat §3.3. |
-| Phone use | **[Pending]** Belum terbukti. Nama teknis memakai `calling`. Label analytic dan alarm memakai `Phone calling`. Perlu konfirmasi Edge. Lihat §3.6. |
+| Phone calling | Dikonfirmasi tim Edge: mendeteksi orang menelepon (pose + tangan dekat kepala). Belum diuji dengan orang sungguhan. Lihat §3.6. |
 | Status kamera dan stream (§3.10) | Perbedaan semantik terbukti: `server-offline` dan `stream-offline` berbeda sumber (heartbeat server vs status device `error`), tetapi berbagi label `Offline`. Pemetaan final **[Pending validation]** untuk server `isActive` false dan nilai status device selain `error`. |
 | Pesan error Live view dan PTZ | Konteks diverifikasi: `Could not update the layout` dipakai untuk create, delete, dan ubah slot. Pesan PTZ berasal dari `act()` dan `hold()`. |
-| Istilah PTZ, stream, preset | Definisi ditelusuri ke kode (`sourceMain/Sub/Third`, `axes`, `PtzPreset`). Istilah audio, diagonal, `REC`, dan `Server` vs `Edge server` **[Pending]**. |
+| Istilah PTZ, stream, preset | Definisi ditelusuri ke kode (`sourceMain/Sub/Third`, `axes`, `PtzPreset`). Istilah audio, diagonal, `REC`, dan `Edge server` sudah final. |
 | Komponen shared (§2.2) | Penggunaan dihitung dari pencarian impor di `app`, `features`, `components`, `lib`, `hooks`. Teks tiap komponen ditelusuri. Primitif `components/ui/*` tidak diaudit baris per baris. |
 | Aksesibilitas | Diperiksa lewat kode, tidak diuji dengan pembaca layar atau alat audit otomatis. Temuan di §7 bersifat kode, bukan hasil uji. |
 | Label analytic sentence case | Sesuai keputusan. Kode masih Title Case dan punya dua sumber label (`analytics-catalog.ts`, `analytic-groups.ts`). Lihat §6.2. |
