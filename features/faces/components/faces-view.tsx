@@ -53,7 +53,7 @@ export const FacesView = ({
     failures.map((failure) => `${failure.edgeName}: ${failure.message}`),
   );
   const { save, remove, saveError, removeError } = useFaceActions(isLive);
-  useFailureToast("Could not delete", [removeError]);
+  useFailureToast("Failed to delete the people", [removeError]);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(0);
   const [dialog, setDialog] = useState<DialogTarget>(null);
@@ -91,7 +91,7 @@ export const FacesView = ({
           }}
           onDeleteGroup={(group) =>
             setPending({
-              title: `group "${group}"`,
+              title: `person group "${group}"`,
               persons: persons.filter((person) => person.group === group),
             })
           }
@@ -104,7 +104,7 @@ export const FacesView = ({
             onClick={() => setDialog("new")}
           >
             <PlusIcon />
-            Add face
+            Add person
           </Button>
           <div className="flex items-center gap-2">
             <span className="mr-2 text-xs text-muted-foreground tabular-nums">
@@ -135,10 +135,10 @@ export const FacesView = ({
         {matches.length === 0 ? (
           <EmptyState
             icon={<ScanFaceIcon />}
-            title={persons.length === 0 ? "No faces yet" : "No people found"}
+            title={persons.length === 0 ? "No people" : "No people found"}
             description={
               persons.length === 0
-                ? "Register the first face."
+                ? "Register the first person."
                 : "No people match the filters."
             }
           />

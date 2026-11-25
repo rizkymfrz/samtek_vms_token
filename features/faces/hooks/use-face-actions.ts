@@ -48,7 +48,7 @@ export const useFaceActions = (isLive: boolean) => {
         ),
       );
       if (results.some((result) => result.status === "rejected")) {
-        throw new Error("Some photos could not be deleted.");
+        throw new Error("Failed to delete some photos.");
       }
     },
     onSettled: refresh,

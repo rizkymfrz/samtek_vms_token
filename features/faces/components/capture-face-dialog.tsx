@@ -34,7 +34,7 @@ export const CaptureFaceDialog = ({
     enabled: capture !== null,
     staleTime: Infinity,
   });
-  useFailureToast("Could not load the capture", [
+  useFailureToast("Failed to load the capture", [
     error ? messageOf(error, "The captured face is unavailable.") : null,
   ]);
   const { save, saveError } = useFaceActions(isLive);

@@ -8,6 +8,7 @@ import {
 } from "@/components/layout/side-panel";
 import { Pick } from "@/components/shared/pick";
 import { Button } from "@/components/ui/button";
+import { groupLabel } from "../lib/edit-face";
 import { ALL, type Filters, isFiltered } from "../lib/filter-persons";
 import type { EdgeOption } from "../types";
 
@@ -37,7 +38,7 @@ export const FaceGroupPanel = ({
         <PanelSearch
           value={filters.query}
           onChange={(query) => onChange({ query })}
-          placeholder="Search people..."
+          placeholder="Search people…"
         />
         {edges.length > 1 && (
           <PanelField label="Edge server">
@@ -53,7 +54,7 @@ export const FaceGroupPanel = ({
         )}
         <PanelReset isDisabled={!isFiltered(filters)} onClick={onClear} />
       </PanelSection>
-      <PanelSection title="Groups">
+      <PanelSection title="Person groups">
         <ul className="flex flex-col">
           {[{ group: ALL, count: total }, ...groups].map((item) => {
             const selected = filters.group === item.group;
@@ -66,7 +67,9 @@ export const FaceGroupPanel = ({
                   }
                 >
                   <span className="flex-1 truncate">
-                    {item.group === ALL ? "All groups" : item.group}
+                    {item.group === ALL
+                      ? "All person groups"
+                      : groupLabel(item.group)}
                   </span>
                   <span className="text-muted-foreground tabular-nums">
                     {item.count}
@@ -82,7 +85,7 @@ export const FaceGroupPanel = ({
             onClick={() => onDeleteGroup(filters.group)}
           >
             <Trash2Icon />
-            Delete group
+            Delete person group
           </Button>
         )}
       </PanelSection>

@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { groupLabel } from "../lib/edit-face";
 import type { Person } from "../types";
 
 export const PersonTable = ({
@@ -30,7 +31,7 @@ export const PersonTable = ({
       <TableHeader>
         <TableRow>
           <TableHead icon={UserIcon}>Person</TableHead>
-          <TableHead icon={TagIcon}>Group</TableHead>
+          <TableHead icon={TagIcon}>Person group</TableHead>
           <TableHead icon={ServerIcon}>Edge server</TableHead>
           <TableHead icon={EllipsisIcon} className="text-right">
             Actions
@@ -57,7 +58,7 @@ export const PersonTable = ({
               </div>
             </TableCell>
             <TableCell>
-              <Badge variant="secondary">{person.group}</Badge>
+              <Badge variant="secondary">{groupLabel(person.group)}</Badge>
             </TableCell>
             <TableCell>{person.edgeName}</TableCell>
             <TableCell>
@@ -66,7 +67,7 @@ export const PersonTable = ({
                   variant="destructive"
                   size="icon"
                   aria-label={`Delete ${person.name}`}
-                  title="Delete"
+                  title={`Delete ${person.name}`}
                   onClick={() => onDelete(person)}
                 >
                   <Trash2Icon />

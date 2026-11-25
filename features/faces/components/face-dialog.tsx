@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   DEFAULT_GROUP,
+  groupLabel,
   type Draft,
   emptyDraft,
   faceDraftSchema,
@@ -63,7 +64,7 @@ const Form = ({
   return (
     <>
       <DialogHeader icon={ScanFaceIcon}>
-        <DialogTitle>Add face</DialogTitle>
+        <DialogTitle>Add person</DialogTitle>
         <DialogDescription>
           Register a person from one photo with exactly one face.
         </DialogDescription>
@@ -121,10 +122,10 @@ const Form = ({
                     options={groups}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder={DEFAULT_GROUP}
+                    placeholder={groupLabel(DEFAULT_GROUP)}
                     maxLength={GROUP_MAX}
                     emptyLabel={(typed) =>
-                      typed ? `Create group "${typed}"` : "No groups yet."
+                      typed ? `Create group "${typed}"` : "No person groups."
                     }
                     aria-invalid={!!errors.group}
                   />
@@ -176,7 +177,7 @@ const Form = ({
           Cancel
         </Button>
         <Button type="submit" form={formId} disabled={isPending}>
-          Add face
+          Add person
         </Button>
       </DialogFooter>
     </>

@@ -5,6 +5,9 @@ import type { FaceRecord } from "../types";
 
 export const DEFAULT_GROUP = "nogroup";
 
+export const groupLabel = (group: string) =>
+  group === DEFAULT_GROUP ? "No group" : group;
+
 export type Draft = {
   edgeId: string;
   name: string;
@@ -20,7 +23,7 @@ export const emptyDraft = (edgeId: string): Draft => ({
 });
 
 export const faceDraftSchema = z.object({
-  edgeId: z.string().min(1, "Choose an edge server."),
+  edgeId: z.string().min(1, "Edge server is required."),
   name: requiredText("Name", NAME_MAX),
   group: z
     .string()
@@ -30,7 +33,7 @@ export const faceDraftSchema = z.object({
     ),
   photo: z
     .custom<File | null>()
-    .refine((file) => file instanceof File, "Choose a JPEG photo.")
+    .refine((file) => file instanceof File, "Photo is required.")
     .refine(
       (file) => !(file instanceof File) || file.type === "image/jpeg",
       "The photo must be a JPEG.",
