@@ -12,6 +12,8 @@ export const useSignIn = () => {
   return {
     signIn: mutation.mutateAsync,
     isPending: mutation.isPending,
-    error: mutation.error ? messageOf(mutation.error, "Sign-in failed") : null,
+    error: mutation.error
+      ? messageOf(mutation.error, "Failed to sign in")
+      : null,
   };
 };

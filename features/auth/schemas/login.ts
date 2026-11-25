@@ -4,12 +4,12 @@ export const loginInputSchema = z.object({
   identifier: z
     .string()
     .trim()
-    .min(1, "Enter your username or email.")
-    .max(255, "Use at most 255 characters."),
+    .min(1, "Username or email is required.")
+    .max(255, "Username or email must be at most 255 characters."),
   password: z
     .string()
-    .min(1, "Enter your password.")
-    .max(1024, "Use at most 1024 characters."),
+    .min(1, "Password is required.")
+    .max(1024, "Password must be at most 1024 characters."),
   remember: z.boolean().default(false),
 });
 

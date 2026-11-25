@@ -41,7 +41,8 @@ const Page = () => {
               Welcome back
             </h1>
             <p className="text-sm text-muted-foreground">
-              Sign in to monitor cameras, alerts and devices across your sites.
+              Sign in to monitor cameras, alarms and edge servers across your
+              sites.
             </p>
           </div>
           <QueryProvider>
