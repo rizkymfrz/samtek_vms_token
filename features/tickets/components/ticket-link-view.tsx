@@ -194,7 +194,7 @@ export const TicketLinkView = () => {
   if (error) {
     return (
       <Gone
-        title="The ticket could not be loaded"
+        title="Failed to load the ticket"
         description="Check your connection and reload the page."
       />
     );

@@ -64,7 +64,7 @@ export const TicketTable = ({
               <span>{ticket.deviceName}</span>
               <span className="text-muted-foreground">
                 {serverNames.get(ticket.edgeServerId) ??
-                  `Server ${ticket.edgeServerId}`}
+                  `Edge server ${ticket.edgeServerId}`}
               </span>
             </div>
           </TableCell>

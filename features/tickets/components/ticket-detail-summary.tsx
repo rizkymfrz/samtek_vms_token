@@ -29,7 +29,11 @@ export const TicketDetailSummary = ({
       <div className="grid grid-cols-2 gap-x-4 gap-y-4">
         <DetailField icon={CctvIcon} label="Camera" value={ticket.deviceName} />
         {serverName && (
-          <DetailField icon={ServerIcon} label="Server" value={serverName} />
+          <DetailField
+            icon={ServerIcon}
+            label="Edge server"
+            value={serverName}
+          />
         )}
         <DetailField
           icon={ScanSearchIcon}

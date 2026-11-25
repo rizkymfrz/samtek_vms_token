@@ -36,7 +36,7 @@ export const TicketsView = () => {
     () => new Map(servers.map((server) => [server.id, server.name])),
     [servers],
   );
-  useFailureToast("Could not load tickets", [error ? messageOf(error) : null]);
+  useFailureToast("Failed to load tickets", [error ? messageOf(error) : null]);
   const change = (patch: Partial<TicketFilters>) =>
     setFilters((current) => ({ ...current, ...patch, page: 1 }));
   if (isPending) return <TicketsSkeleton />;
@@ -66,7 +66,7 @@ export const TicketsView = () => {
             title="No tickets"
             description={
               error
-                ? "Tickets could not be loaded."
+                ? "Failed to load tickets."
                 : "No ticket matches the filters."
             }
           />

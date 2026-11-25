@@ -47,7 +47,7 @@ export const TicketRulesDialog = ({
         <DialogBody>
           <DialogSection>
             <Pick
-              label="Server"
+              label="Edge server"
               icon={ServerIcon}
               items={servers.map((server) => ({
                 value: server.id,
@@ -64,13 +64,13 @@ export const TicketRulesDialog = ({
             )}
             {loadError && (
               <FieldError>
-                Rules could not be loaded. You may not have access to them.
+                Failed to load the rules. You may not have access to them.
               </FieldError>
             )}
             {data && data.items.length === 0 && (
               <p className="py-8 text-center text-xs text-muted-foreground">
-                This server has not sent any alarms yet. Event kinds show up
-                here after their first alarm.
+                This edge server has not sent any alarms yet. Event kinds show
+                up here after their first alarm.
               </p>
             )}
             {data && data.items.length > 0 && (

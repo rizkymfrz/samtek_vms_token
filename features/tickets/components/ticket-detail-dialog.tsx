@@ -208,7 +208,7 @@ export const TicketDetailDialog = ({
             ticket={ticket}
             serverName={
               serverNames.get(ticket.edgeServerId) ??
-              `Server ${ticket.edgeServerId}`
+              `Edge server ${ticket.edgeServerId}`
             }
             userId={userId}
           />
@@ -217,7 +217,7 @@ export const TicketDetailDialog = ({
             <DialogHeader icon={ShieldAlertIcon}>
               <DialogTitle>Ticket</DialogTitle>
               <DialogDescription>
-                {error ? "The ticket could not be loaded." : "Loading…"}
+                {error ? "Failed to load the ticket." : "Loading…"}
               </DialogDescription>
             </DialogHeader>
             <Separator />

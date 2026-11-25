@@ -33,7 +33,7 @@ export const TicketFilterPanel = ({
   onClear: () => void;
 }) => {
   const serverItems = [
-    { value: ALL, label: "All servers" },
+    { value: ALL, label: "All edge servers" },
     ...servers.map((server) => ({ value: server.id, label: server.name })),
   ];
   const isFiltered =
@@ -43,9 +43,9 @@ export const TicketFilterPanel = ({
   return (
     <>
       <PanelSection title="Filters">
-        <PanelField label="Server">
+        <PanelField label="Edge server">
           <Pick
-            label="Server"
+            label="Edge server"
             icon={ServerIcon}
             items={serverItems}
             value={filters.edgeServerId ?? ALL}
