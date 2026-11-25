@@ -40,7 +40,7 @@ export const UsersView = ({
   const { data: current } = useUsers(data, isLive);
   const { users, roles, servers, failures } = current;
   useFailureToast(
-    "Some data could not be loaded",
+    "Some data did not load",
     failures.map((failure) => `${failure.source}: ${failure.message}`),
   );
   const { save, addRole, remove, addRoleError, saveError, removeError } =
@@ -52,7 +52,7 @@ export const UsersView = ({
   const [pendingDelete, setPendingDelete] = useState<UserRecord | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   useFailureToast("Saved with a problem", [warning]);
-  useFailureToast("Could not delete the user", [removeError]);
+  useFailureToast("Failed to delete the user", [removeError]);
   const matches = useMemo(() => filterUsers(users, filters), [users, filters]);
   const counts = useMemo(() => countByRole(users, filters), [users, filters]);
   const change = (patch: Partial<Filters>) => {
@@ -114,7 +114,7 @@ export const UsersView = ({
         {matches.length === 0 ? (
           <EmptyState
             icon={<UsersIcon />}
-            title={users.length === 0 ? "No users yet" : "No users found"}
+            title={users.length === 0 ? "No users" : "No users found"}
             description={
               users.length === 0
                 ? "Add the first one."

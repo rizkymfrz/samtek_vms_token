@@ -43,7 +43,7 @@ export const UserTable = ({
       <TableHeader>
         <TableRow>
           <TableHead icon={UserIcon}>User</TableHead>
-          <TableHead icon={ShieldIcon}>Role</TableHead>
+          <TableHead icon={ShieldIcon}>Platform role</TableHead>
           <TableHead icon={MessageCircleIcon}>WhatsApp</TableHead>
           <TableHead icon={ActivityIcon}>Status</TableHead>
           <TableHead icon={CalendarIcon}>Created</TableHead>
@@ -74,7 +74,7 @@ export const UserTable = ({
             <TableCell>
               {user.platformRoleId ? (
                 <Badge variant="secondary">
-                  {roleName.get(user.platformRoleId) ?? "Unknown role"}
+                  {roleName.get(user.platformRoleId) ?? "Unknown platform role"}
                 </Badge>
               ) : (
                 <span className="text-muted-foreground">No role</span>
@@ -85,7 +85,7 @@ export const UserTable = ({
             </TableCell>
             <TableCell>
               <Badge variant={user.isActive ? "default" : "secondary"}>
-                {user.isActive ? "Active" : "Disabled"}
+                {user.isActive ? "Active" : "Inactive"}
               </Badge>
             </TableCell>
             <TableCell className="text-muted-foreground tabular-nums">
@@ -97,7 +97,7 @@ export const UserTable = ({
                   variant="destructive"
                   size="icon"
                   aria-label={`Delete ${user.username}`}
-                  title="Delete"
+                  title={`Delete ${user.username}`}
                   onClick={() => onDelete(user)}
                 >
                   <Trash2Icon />

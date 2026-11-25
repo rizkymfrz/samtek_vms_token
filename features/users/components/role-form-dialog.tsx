@@ -79,7 +79,7 @@ const Form = ({
                 id={`${formId}-name`}
                 value={name}
                 maxLength={100}
-                placeholder="operator"
+                placeholder="e.g. operator"
                 onChange={(event) => setName(event.target.value)}
               />
             </Field>

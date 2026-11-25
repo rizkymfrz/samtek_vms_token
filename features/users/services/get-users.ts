@@ -28,7 +28,7 @@ export const getUsers = async (): Promise<UsersData> => {
     fetchAllPages(client, "/v1/users", userSchema),
     settle("Roles", fetchAllPages(client, "/v1/roles", roleSchema)),
     settle(
-      "Servers",
+      "Edge servers",
       fetchAllPages(client, "/v1/edge-servers", serverOptionSchema),
     ),
   ]);

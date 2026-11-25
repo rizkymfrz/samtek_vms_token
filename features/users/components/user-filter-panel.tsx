@@ -13,7 +13,7 @@ import type { RoleOption } from "../types";
 const STATUS_ITEMS = [
   { value: ALL, label: "All statuses" },
   { value: "active", label: "Active" },
-  { value: "disabled", label: "Disabled" },
+  { value: "disabled", label: "Inactive" },
 ];
 
 export const UserFilterPanel = ({
@@ -31,7 +31,7 @@ export const UserFilterPanel = ({
 }) => {
   const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
   const rows = [
-    { id: ALL, name: "All roles", count: total },
+    { id: ALL, name: "All platform roles", count: total },
     ...roles.map((role) => ({
       id: role.id,
       name: role.name,
@@ -44,7 +44,7 @@ export const UserFilterPanel = ({
         <PanelSearch
           value={filters.query}
           onChange={(query) => onChange({ query })}
-          placeholder="Search users..."
+          placeholder="Search users…"
         />
         <PanelField label="Status">
           <Pick
@@ -58,7 +58,7 @@ export const UserFilterPanel = ({
         </PanelField>
         <PanelReset isDisabled={!isFiltered(filters)} onClick={onClear} />
       </PanelSection>
-      <PanelSection title="Roles">
+      <PanelSection title="Platform roles">
         <ul className="flex flex-col">
           {rows.map((row) => {
             const selected = filters.role === row.id;

@@ -76,7 +76,7 @@ const Form = ({
   });
   const roleField = editing ? "platformRoleId" : "serverRoleId";
   const serverItems = [
-    { value: NO_SERVER, label: "Select a server" },
+    { value: NO_SERVER, label: "Select an edge server" },
     ...servers.map((server) => ({ value: server.id, label: server.name })),
   ];
   const roleItems = [
@@ -88,7 +88,7 @@ const Form = ({
       <DialogHeader icon={UserIcon}>
         <DialogTitle>{editing ? "Edit user" : "Add user"}</DialogTitle>
         <DialogDescription>
-          {editing ? editing.username : "Create an account for a teammate."}
+          {editing ? editing.username : "Create a user account."}
         </DialogDescription>
       </DialogHeader>
       <Separator />
@@ -130,7 +130,7 @@ const Form = ({
               </FieldLabel>
               <Input
                 id={`${formId}-whatsapp`}
-                placeholder="+628123456789"
+                placeholder="e.g. +628123456789"
                 {...register("whatsapp")}
                 aria-invalid={!!errors.whatsapp}
               />
@@ -157,13 +157,13 @@ const Form = ({
             )}
             {!editing && (
               <Field data-invalid={!!errors.serverId}>
-                <FieldLabel>Server</FieldLabel>
+                <FieldLabel>Edge server</FieldLabel>
                 <Controller
                   control={control}
                   name="serverId"
                   render={({ field }) => (
                     <Pick
-                      label="Server"
+                      label="Edge server"
                       items={serverItems}
                       value={field.value ?? NO_SERVER}
                       onChange={(value) =>
@@ -179,14 +179,16 @@ const Form = ({
               </Field>
             )}
             <Field data-invalid={!!errors.serverRoleId}>
-              <FieldLabel>{editing ? "Platform role" : "Role"}</FieldLabel>
+              <FieldLabel>
+                {editing ? "Platform role" : "Edge server role"}
+              </FieldLabel>
               <div className="flex gap-2">
                 <Controller
                   control={control}
                   name={roleField}
                   render={({ field }) => (
                     <Pick
-                      label="Role"
+                      label={editing ? "Platform role" : "Edge server role"}
                       items={roleItems}
                       value={field.value ?? NO_ROLE}
                       onChange={(value) =>
@@ -199,8 +201,8 @@ const Form = ({
                 <Button
                   type="button"
                   size="icon"
-                  aria-label="New role"
-                  title="New role"
+                  aria-label="Add role"
+                  title="Add role"
                   onClick={() => setIsRoleOpen(true)}
                 >
                   <PlusIcon />

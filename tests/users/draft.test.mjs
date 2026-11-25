@@ -19,8 +19,8 @@ const messages = (draft, editingId = null) => {
 
 test("a new user must pick a server and a role on it", () => {
   assert.deepEqual(messages(valid), [
-    "Select a server.",
-    "Select a role for this server.",
+    "Edge server is required.",
+    "Edge server role is required.",
   ]);
 });
 

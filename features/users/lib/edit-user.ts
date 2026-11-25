@@ -98,14 +98,14 @@ export const userDraftSchema = (
       .nullable()
       .refine(
         (value) => editingId !== null || value !== null,
-        "Select a server.",
+        "Edge server is required.",
       ),
     serverRoleId: z
       .string()
       .nullable()
       .refine(
         (value) => editingId !== null || value !== null,
-        "Select a role for this server.",
+        "Edge server role is required.",
       ),
   });
 
