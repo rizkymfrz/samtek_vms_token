@@ -10,7 +10,8 @@ import type { PlaybackSession, RecordingStream } from "../types";
 
 const toSession = (result: { playback?: unknown }): PlaybackSession => {
   const parsed = playbackResultSchema.safeParse(result.playback);
-  if (!parsed.success) throw new Error("The edge sent an unreadable answer");
+  if (!parsed.success)
+    throw new Error("The edge server sent an unreadable answer.");
   const { session_id, app, stream, state, position, speed, boxes } =
     parsed.data;
   return {

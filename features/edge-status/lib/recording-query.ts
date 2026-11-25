@@ -26,7 +26,8 @@ export const queryRecording = async (
     },
   );
   const parsed = recordingResultSchema.safeParse(result.recording);
-  if (!parsed.success) throw new Error("The edge sent an unreadable answer");
+  if (!parsed.success)
+    throw new Error("The edge server sent an unreadable answer.");
   return {
     segmentSeconds: parsed.data.segment_seconds,
     ranges: parsed.data.ranges.map((range) => ({

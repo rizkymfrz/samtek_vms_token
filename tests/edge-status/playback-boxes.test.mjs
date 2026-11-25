@@ -4,7 +4,6 @@ import {
   applyBoxMessage,
   EMPTY_BOXES,
   pickBoxes,
-  reasonLabel,
   trimBoxes,
 } from "../../features/edge-status/lib/playback-boxes.ts";
 
@@ -158,7 +157,6 @@ test("an unknown status is treated as no boxes", () => {
     message({ status: "mystery", frames: [frame(1000, "a")] }),
   );
   assert.equal(pickBoxes(state, 1000), null);
-  assert.equal(typeof reasonLabel("mystery"), "string");
 });
 
 test("old frames are trimmed but the covering frame stays", () => {

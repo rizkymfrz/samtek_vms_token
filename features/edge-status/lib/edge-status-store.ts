@@ -353,7 +353,10 @@ const receive = (topic: string, payload: Uint8Array) => {
     else {
       waiting.reject(
         Object.assign(
-          new Error(result.data.data.error?.message ?? "The edge refused"),
+          new Error(
+            result.data.data.error?.message ??
+              "The edge server refused the request.",
+          ),
           { code: result.data.data.error?.code },
         ),
       );
@@ -508,7 +511,7 @@ const whenConnected = () =>
       return;
     }
     if (!mqttConfig) {
-      reject(new Error("Not connected to the MQTT broker"));
+      reject(new Error("Not connected to the MQTT broker."));
       return;
     }
     const done = (error?: Error) => {
@@ -521,7 +524,7 @@ const whenConnected = () =>
       if (state.isConnected) done();
     };
     const timer = window.setTimeout(
-      () => done(new Error("Not connected to the MQTT broker")),
+      () => done(new Error("Not connected to the MQTT broker.")),
       CONNECT_WAIT_MS,
     );
     listeners.add(onChange);
@@ -535,14 +538,14 @@ export const sendEdgeCommand = async (
   await whenConnected();
   return new Promise<EdgeResultData>((resolve, reject) => {
     if (!client) {
-      reject(new Error("Not connected to the MQTT broker"));
+      reject(new Error("Not connected to the MQTT broker."));
       return;
     }
     const message = buildEnvelope(type, data);
     const { id } = message;
     const timer = window.setTimeout(() => {
       pending.delete(id);
-      reject(new Error("The edge did not answer"));
+      reject(new Error("The edge server did not answer."));
     }, COMMAND_TIMEOUT_MS);
     pending.set(id, { resolve, reject, timer });
     client.publish(topic, JSON.stringify(message), { qos: 1 }, (error) => {

@@ -23,7 +23,8 @@ const send = (
 
 const readPtz = (result: { ptz?: unknown }) => {
   const parsed = ptzResultSchema.safeParse(result.ptz);
-  if (!parsed.success) throw new Error("The edge sent an unreadable answer");
+  if (!parsed.success)
+    throw new Error("The edge server sent an unreadable answer.");
   return parsed.data;
 };
 
@@ -41,7 +42,7 @@ export const setPtzPreset = async (
   const { preset } = readPtz(
     await send(edgeId, "ptz.set_preset", deviceId, { preset_name: name }),
   );
-  if (!preset) throw new Error("The edge sent an unreadable answer");
+  if (!preset) throw new Error("The edge server sent an unreadable answer.");
   return preset;
 };
 
