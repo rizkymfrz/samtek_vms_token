@@ -106,8 +106,8 @@ export const CountingStatsView = ({
     range,
     isPolling: isLive,
   });
-  useFailureToast("Could not load statistics", [
-    error ? messageOf(error, "Could not load statistics.") : null,
+  useFailureToast("Failed to load statistics", [
+    error ? messageOf(error, "Failed to load statistics.") : null,
   ]);
   const labels = useMemo(() => (data ? labelsOf(data) : []), [data]);
   const active = labels.includes(label) ? label : ALL;
@@ -137,8 +137,8 @@ export const CountingStatsView = ({
           <Button
             variant="secondary"
             size="icon"
-            aria-label="Back"
-            title="Back"
+            aria-label={`Back to ${group.title}`}
+            title={`Back to ${group.title}`}
             nativeButton={false}
             render={<Link href={`/analytics/${group.slug}`} />}
           >

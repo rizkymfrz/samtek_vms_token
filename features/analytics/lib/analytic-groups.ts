@@ -17,6 +17,8 @@ import {
   WindIcon,
 } from "lucide-react";
 
+import { analyticLabel } from "@/config/analytics-catalog";
+
 export type AnalyticGroup = {
   slug: string;
   title: string;
@@ -26,18 +28,19 @@ export type AnalyticGroup = {
   recognizer?: string;
 };
 
-export const ANALYTIC_GROUPS: AnalyticGroup[] = [
+type GroupSource = Omit<AnalyticGroup, "title"> & { title?: string };
+
+const GROUPS: GroupSource[] = [
   {
     slug: "fire-smoke-detection",
-    title: "Fire & Smoke Detection",
     description:
-      "Automatically detects fire and smoke events from camera footage.",
+      "Automatically detects fire and smoke events from camera video.",
     icon: FlameIcon,
     analyticIds: ["fire_smoke"],
   },
   {
     slug: "ppe-violation",
-    title: "Personnel Protective Equipment (PPE)",
+    title: "Personal protective equipment (PPE)",
     description:
       "Identifies whether workers are wearing required safety gear such as helmets and vests.",
     icon: HardHatIcon,
@@ -45,7 +48,6 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "people-counting-dwelling",
-    title: "People Counting and Dwelling",
     description:
       "Counts people crossing a line or entering an area, and how long they stay.",
     icon: UsersIcon,
@@ -53,7 +55,6 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "vehicle-counting-dwelling",
-    title: "Vehicle Counting and Dwelling",
     description:
       "Counts vehicles passing through in real time, and how long they stay.",
     icon: CarFrontIcon,
@@ -61,7 +62,6 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "people-crowd-monitoring",
-    title: "People Crowd Monitoring",
     description:
       "Raises an alarm when the number of people in an area exceeds its limit.",
     icon: UsersRoundIcon,
@@ -69,7 +69,6 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "people-worker-dwelling",
-    title: "People Worker Dwelling",
     description:
       "Detects when a worker is absent from a post for an extended period.",
     icon: ClockIcon,
@@ -77,21 +76,19 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "people-sleep-on-duty",
-    title: "People Sleep On Duty",
     description: "Detects people who fall asleep while on duty.",
     icon: BedIcon,
     analyticIds: ["people_sleep_on_duty"],
   },
   {
     slug: "phone-calling",
-    title: "Phone Calling",
-    description: "Detects people using a phone in restricted areas.",
+    description:
+      "Detects people on a phone call, with a hand held near the head.",
     icon: SmartphoneIcon,
     analyticIds: ["phone_calling"],
   },
   {
     slug: "face-recognition",
-    title: "Face Recognition",
     description:
       "Recognizes and matches faces for identification and verification.",
     icon: ScanFaceIcon,
@@ -100,7 +97,6 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "face-visitor-attendance",
-    title: "Face Visitor Attendance",
     description:
       "Registers unknown faces as visitors and records how often they return.",
     icon: UserCheckIcon,
@@ -108,7 +104,6 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "face-attribute",
-    title: "Face Attribute",
     description:
       "Reads gender, age group, mask, glasses and emotion from detected faces.",
     icon: SmileIcon,
@@ -116,7 +111,7 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "license-plate-recognition",
-    title: "License Plate Recognition",
+    title: "License plate recognition",
     description:
       "Captures and reads vehicle license plate numbers automatically.",
     icon: ScanLineIcon,
@@ -128,21 +123,18 @@ export const ANALYTIC_GROUPS: AnalyticGroup[] = [
   },
   {
     slug: "motion-detection",
-    title: "Motion Detection",
     description: "Detects movement inside the areas drawn on a camera.",
     icon: ActivityIcon,
     analyticIds: ["motion"],
   },
   {
     slug: "dust-spreading",
-    title: "Dust Spreading",
     description: "Detects dust clouds and how far they spread.",
     icon: WindIcon,
     analyticIds: ["dust_spreading"],
   },
   {
     slug: "cat-detection",
-    title: "Cat detection alarm",
     description: "Detects cats in the monitored area.",
     icon: CatIcon,
     analyticIds: ["cat_detection"],
@@ -160,3 +152,8 @@ export const COUNTING_STATS_SLUGS = [
   "people-counting-dwelling",
   "vehicle-counting-dwelling",
 ];
+
+export const ANALYTIC_GROUPS: AnalyticGroup[] = GROUPS.map((group) => ({
+  ...group,
+  title: group.title ?? analyticLabel(group.analyticIds[0]),
+}));

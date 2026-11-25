@@ -59,7 +59,7 @@ export const AnalyticRecognitionHistory = ({
   return (
     <>
       <HistoryPanel
-        title="Recognition History"
+        title="Recognition history"
         emptyIcon={ScanFaceIcon}
         emptyTitle="No recognitions"
         emptyDescription="Nobody has been recognized yet."

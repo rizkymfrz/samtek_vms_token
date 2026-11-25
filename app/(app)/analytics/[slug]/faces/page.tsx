@@ -19,7 +19,7 @@ export const generateMetadata = async ({
 }: PageProps<"/analytics/[slug]/faces">): Promise<Metadata> => {
   const { slug } = await params;
   const group = findAnalyticGroup(slug);
-  return { title: group ? `Manage Faces · ${group.title}` : "Manage Faces" };
+  return { title: group ? `Manage faces · ${group.title}` : "Manage faces" };
 };
 
 const FacesContent = async ({

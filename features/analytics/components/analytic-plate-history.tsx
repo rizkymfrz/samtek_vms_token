@@ -37,7 +37,7 @@ export const AnalyticPlateHistory = ({
   return (
     <>
       <HistoryPanel
-        title="Plate History"
+        title="Plate history"
         emptyIcon={ScanLineIcon}
         emptyTitle="No plates"
         emptyDescription="No license plate has been read yet."
