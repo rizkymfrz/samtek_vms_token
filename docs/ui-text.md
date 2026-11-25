@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Edge status** (`features/edge-status`): diaudit teksnya
+    (§3.28). `recognitions` belum diaudit.
   - **Talk** (`features/talk`): diaudit teksnya (§3.27).
   - **Header dan sidebar** (`components/layout`, `components/ui/sidebar.tsx`):
     diaudit teksnya (§3.26).
@@ -1007,6 +1009,35 @@ Catatan:
 - Alasan tombol nonaktif: `Talk needs a signed-in user`, `Talk is in
   use on another camera` (§2.1).
 
+### 3.28 Edge status
+
+Lapisan yang menggambar kotak deteksi di atas video dan mengurus pesan
+dan perintah ke Edge server. Bukan halaman.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Detection | Kotak objek terdeteksi pada video, dengan label, persen keyakinan, dan keterangan tambahan. | Toggle toolbar `Detections`. | Box (di teks UI) | `Detections` |
+| Detection status | Status objek: `OK`, `Warning`, `Alert`, `Measuring`. `Alert` adalah nilai teknis status (§3.1), bukan notifikasi. | Ikon status pada kotak. | | `Warning` |
+| Measuring | Status `unknown` dari Edge, antara lain status PPE `unknown`. Artinya belum terdokumentasi di repo: **[Pending]** konfirmasi tim Edge. | Ikon status. | | `Measuring` |
+| Missing item | Item PPE yang tidak terdeteksi pada seseorang. | Tag di atas kotak. Tampil `No {item}`. | | `No helmet` |
+| Perimeters | Garis dan area perimeter pada video (§3.21). | Toggle toolbar. | Zones | `Perimeters` |
+
+Pesan error ke Edge server (muncul sebagai deskripsi toast di PTZ,
+Playback, rekaman, scan, dan Talk):
+- `The edge server sent an unreadable answer.`
+- `The edge server refused the request.` (balasan error tanpa pesan)
+- `The edge server did not answer.`
+- `Not connected to the MQTT broker.`
+
+Catatan:
+- Label objek dan item PPE tampil mentah dari Edge dan diberi huruf
+  besar lewat CSS. Mereka menunggu canonical label mapping (§6.3).
+- Pesan error memakai `edge server`, bukan `edge` (§3.8). Bentuk sama
+  dengan pesan Talk (§3.27).
+- `Not connected to the MQTT broker.` adalah keadaan, bukan kegagalan
+  aksi. Pesan kegagalan terhubung di halaman Edge servers memakai
+  `Failed to reach the MQTT broker`.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -1191,7 +1222,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, `Header dan sidebar`, dan `Talk` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, `Users`, `Camera detail`, `Camera web page`, `Manage faces`, `Login`, `Settings`, `Header dan sidebar`, `Talk`, dan `Edge status` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1512,6 +1543,15 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `talk-store.ts` | `The device cannot talk now: it is not running on this edge, or does not support talk.` | `This camera cannot talk now. It is not running on this edge server, or it does not support talk.` |
 | `talk-store.ts` | `The edge rejected the talk request.`, `The edge sent an unreadable answer`, `Could not start talk.`, `Could not open the microphone.` | `The edge server rejected the talk request.`, `The edge server sent an unreadable answer.`, `Failed to start talk.`, `Failed to open the microphone.` |
 | `talk-control.tsx` | judul toast `Talk` | `Talk ended` atau `Failed to start talk` |
+
+### Edge status (§3.28, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `ptz-commands.ts`, `playback-commands.ts`, `recording-query.ts` | `The edge sent an unreadable answer` | `The edge server sent an unreadable answer.` |
+| `edge-status-store.ts` | `The edge refused`, `The edge did not answer` | `The edge server refused the request.`, `The edge server did not answer.` |
+| `edge-status-store.ts` | `Not connected to the MQTT broker` | `Not connected to the MQTT broker.` |
+| `tests/edge-status/playback-boxes.test.mjs` | mengimpor `reasonLabel` yang sudah dihapus (`bd31cd5`) | impor dan asersi dihapus |
 
 ### Label analytic (sentence case, §6.1)
 
