@@ -41,7 +41,8 @@ Usage: sudo deploy/install.sh [options]
                           samtek-mosquitto of this machine; none means no /mqtt
   --no-nginx              do not touch nginx (you put a proxy in front yourself)
   --install-deps          apt-get install nginx when it is missing
-  --disable-default-site  remove the stock nginx "default" site (it holds default_server on port 80)
+  --disable-default-site  remove the stock nginx "default" site (it holds default_server on port 80); done by
+                          itself when the site is the unmodified stock one and this site answers every host
   --reapply               copy the app of the package again into the active release and write the
                           browser values again (after editing $PUBLICENV)
   --rewrite-nginx         write the nginx site again with the options of this run (it is written once and
@@ -280,7 +281,12 @@ BLOCK
   printf '%s\n' "$text" >"$NGINX_CONF"
   [[ -z $STAGING ]] || { note "staging: nginx not reloaded"; return; }
   local stock=/etc/nginx/sites-enabled/default
-  if ((disable_default_site)) && [[ -L $stock ]]; then
+  if [[ -L $stock && $server_name == _ ]]; then
+    if ((disable_default_site)) || ! dpkg -V nginx-common 2>/dev/null | grep -q '/etc/nginx/sites-available/default'; then
+      note "removing the stock nginx site $stock, which holds default_server (the file stays in sites-available)"
+      rm -f "$stock"
+    fi
+  elif ((disable_default_site)) && [[ -L $stock ]]; then
     note "removing the stock site $stock (kept in sites-available)"
     rm -f "$stock"
   fi
