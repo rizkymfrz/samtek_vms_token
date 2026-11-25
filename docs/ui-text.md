@@ -17,6 +17,7 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Users** (`/users`, `features/users`): diaudit teksnya (§3.20).
   - **Analytics** (`/analytics`, `features/analytics`): diaudit
     teksnya (§3.19). Halaman kelola wajah (`faces`) belum diaudit.
   - **Edge servers** (`/servers`, `features/servers`): diaudit
@@ -761,6 +762,31 @@ Aturan:
   singkat. Pengecualian yang disetujui dari pola unit (§2).
 - Deskripsi empty state boleh memakai `yet`, judulnya tidak.
 
+### 3.20 Users
+
+Menu dan page title: `Users`.
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| User | Akun yang dapat masuk ke SAMTEK. | Seluruh halaman Users. | Teammate, member | `Add user` |
+| Role | Kumpulan permission dengan nama (`/v1/roles`). | Teks umum, dialog role. | Group | `Add role` |
+| Platform role | Role satu per user yang berlaku di seluruh platform (`platformRoleId`). Diubah saat edit. | Kolom tabel, filter, dialog ubah. | Role (di konteks yang membingungkan) | `Platform role` |
+| Edge server role | Role user pada satu edge server (`UserServerRole`, satu per pasangan user dan edge server). Dipilih saat user dibuat, bersama edge servernya. | Dialog tambah user. | Server role | `Edge server role` |
+| Permission | Izin bernama, diberikan lewat role. Kodenya (misalnya `floorplans.read`) tampil apa adanya. | Daftar permission pada dialog role. | Right, access | `Permissions` |
+| Active / Inactive | Status akun. Akun tidak aktif tidak dapat masuk. | Toggle, tabel, filter. Berbeda dari `Disabled` pada kamera dan edge server. | Disabled (untuk user) | `Inactive` |
+| WhatsApp | Nomor WhatsApp user, dipakai untuk notifikasi tiket. Opsional. | Kolom dan field. | Phone | `WhatsApp (optional)` |
+
+Catatan:
+- Dialog tambah user memilih `Edge server` dan `Edge server role`.
+  Dialog ubah user memilih `Platform role`. Dua role berbeda.
+- Kode permission mentah tampil apa adanya sampai ada label
+  (keputusan: dicatat, tidak diubah).
+- Pesan validasi: `Edge server is required.`, `Edge server role is
+  required.`
+- Deskripsi dialog tambah: `Create a user account.`
+- Placeholder memakai `e.g.` (`e.g. +628123456789`, `e.g. operator`).
+- Tombol tambah role di dalam dialog user: `Add role`.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -945,7 +971,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, dan `Analytics` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, `Object search`, dan `Floor plans` diterapkan. `Tickets`, `Map`, `Cameras`, `Edge servers`, `Analytics`, dan `Users` tidak berubah. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -1200,6 +1226,19 @@ Tidak berubah (keputusan): `Awaiting approval`, `Request resolution`,
 | `counting-stats-view.tsx` | `Could not load statistics` (toast dan pesan) | `Failed to load statistics` / `Failed to load statistics.` |
 | `counting-stats-view.tsx` | tombol `Back` | `Back to {judul analytic}` |
 | `app/(app)/analytics/[slug]/faces/page.tsx` | `Manage Faces · {judul}` | `Manage faces · {judul}` |
+
+### Users (§3.20, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `users-view.tsx` | `Could not delete the user`, `Some data could not be loaded` | `Failed to delete the user`, `Some data did not load` |
+| `users-view.tsx` | `No users yet` | `No users` |
+| `user-filter-panel.tsx` | `Search users...`, `All roles`, section `Roles`, item `Disabled` | `Search users…`, `All platform roles`, `Platform roles`, `Inactive` |
+| `user-table.tsx` | kolom `Role`, `Unknown role`, `Disabled`, tooltip `Delete` | `Platform role`, `Unknown platform role`, `Inactive`, `Delete {username}` |
+| `user-dialog.tsx` | `Server`, `Select a server`, `Role` (tambah), `New role`, `Create an account for a teammate.` | `Edge server`, `Select an edge server`, `Edge server role`, `Add role`, `Create a user account.` |
+| `user-dialog.tsx`, `role-form-dialog.tsx` | placeholder `+628123456789`, `operator` | `e.g. +628123456789`, `e.g. operator` |
+| `edit-user.ts` | `Select a server.`, `Select a role for this server.` | `Edge server is required.`, `Edge server role is required.` |
+| `get-users.ts` | sumber `Servers` | `Edge servers` |
 
 ### Label analytic (sentence case, §6.1)
 
