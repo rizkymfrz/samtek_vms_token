@@ -454,6 +454,12 @@ ikon yang menggambarkan isi pilihannya (bukan panah atau hiasan). Select di
 dalam form (field yang dikirim ke API) tidak memakai `icon` karena labelnya
 sudah ada di `Field`.
 
+### 8.5 Teks UI
+
+Aturan penulisan teks UI, glossary istilah, dan pola copy ada di
+`docs/ui-text.md`. Baca dokumen itu sebelum menambah atau mengubah teks
+yang tampil di UI.
+
 ## 9. Naming and File Organization
 
 Gunakan konvensi berikut:
