@@ -13,6 +13,7 @@ export type Tile = {
   perimeters: Perimeters | null;
   isRecordingEnabled: boolean;
   state: StreamState;
+  isPartial?: boolean;
   hasSubStream: boolean;
   hasThirdStream: boolean;
   webrtcUrl: string | null;

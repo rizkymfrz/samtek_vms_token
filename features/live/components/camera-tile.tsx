@@ -126,6 +126,12 @@ export const CameraTile = ({
         )}
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
           <div className="ml-auto flex items-center gap-2">
+            {tile.isPartial && isLive && (
+              <Badge variant="overlay">
+                <StatusDot status="caution" />
+                Stream unavailable
+              </Badge>
+            )}
             {tile.isRecordingEnabled && (
               <Badge variant="overlay">
                 <StatusDot status="danger" />

@@ -17,12 +17,14 @@ export const useLiveTiles = (live: LiveData) => {
     return live.tiles.map((tile): Tile => {
       if (tile.state === "disabled") return tile;
       const server = byId.get(tile.serverId);
+      const kind = fault(tile.serverId, tile.id);
       return {
         ...tile,
+        isPartial: kind === "partial",
         state: deviceStateOf({
           isServerActive: server?.isActive ?? true,
           isServerOnline: server?.online ?? false,
-          fault: fault(tile.serverId, tile.id),
+          fault: kind,
         }),
       };
     });

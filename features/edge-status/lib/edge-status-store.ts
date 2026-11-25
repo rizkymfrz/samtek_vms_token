@@ -192,6 +192,7 @@ const faultOf = (device: {
   status: string;
   reason?: string;
 }): DeviceFault | null => {
+  if (device.status === "degraded") return "partial";
   if (device.status !== "error") return null;
   return device.reason === undefined || STREAM_REASONS.has(device.reason)
     ? "stream"

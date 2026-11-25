@@ -49,3 +49,10 @@ test("both server states count as the server being down", () => {
   assert.equal(isServerDown("stream-offline"), false);
   assert.equal(isServerDown("live"), false);
 });
+
+test("a partial stream fault keeps the camera live", () => {
+  assert.equal(
+    deviceStateOf({ isServerOnline: true, fault: "partial" }),
+    "live",
+  );
+});

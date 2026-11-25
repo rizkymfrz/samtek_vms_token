@@ -6,7 +6,7 @@ export type DeviceState =
   | "stream-offline"
   | "device-error";
 
-export type DeviceFault = "stream" | "device";
+export type DeviceFault = "stream" | "device" | "partial";
 
 export const DEVICE_STATE_LABEL: Record<DeviceState, string> = {
   live: "Live",

@@ -48,8 +48,10 @@ export const useDeviceFaulty = () => {
     getServerFaultyDevices,
   );
   return useCallback(
-    (edgeId: string, deviceId: string) =>
-      mqttConfig ? faulty.has(faultKey(edgeId, deviceId)) : false,
+    (edgeId: string, deviceId: string) => {
+      const fault = mqttConfig ? faulty.get(faultKey(edgeId, deviceId)) : null;
+      return fault === "stream" || fault === "device";
+    },
     [faulty],
   );
 };
