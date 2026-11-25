@@ -122,14 +122,14 @@ const Controls = ({ edgeId, deviceId }: PtzCamera) => {
         />
         <Stepper
           label="Focus"
-          minusLabel="Focus decrease"
-          plusLabel="Focus increase"
+          minusLabel="Decrease focus"
+          plusLabel="Increase focus"
           onPress={(direction) => ptz.startFocus(direction * speed)}
           onRelease={ptz.release}
         />
       </PanelSection>
       <Separator />
-      <PanelSection title="Speed Scale">
+      <PanelSection title="Speed scale">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>0.1</span>
           <Slider
@@ -212,7 +212,7 @@ export const PtzPanel = ({ deviceId }: { deviceId?: string }) => {
           variant="ghost"
           size="icon-xs"
           aria-label="Close PTZ controls"
-          title="Close"
+          title="Close PTZ controls"
           onClick={() => setPtzCamera(null)}
         >
           <XIcon />

@@ -24,7 +24,9 @@ const fail = (title: string, failure: unknown) =>
   toast.add({
     title,
     description:
-      failure instanceof Error ? failure.message : "The command failed",
+      failure instanceof Error
+        ? failure.message
+        : "The command could not be completed.",
     type: "error",
   });
 
@@ -58,7 +60,7 @@ export const usePtz = (edgeId: string, deviceId: string) => {
       const run = () =>
         send().catch((failure) => {
           clearTimer();
-          fail("PTZ command failed", failure);
+          fail("Failed to send the PTZ command", failure);
         });
       void run();
       timer.current = window.setInterval(run, resendMs);
@@ -82,7 +84,7 @@ export const usePtz = (edgeId: string, deviceId: string) => {
     if (timer.current === null) return;
     clearTimer();
     stopPtz(edgeId, deviceId).catch((failure) =>
-      fail("PTZ stop failed", failure),
+      fail("Failed to stop the PTZ movement", failure),
     );
   }, [edgeId, deviceId, clearTimer]);
   const act = useCallback(
@@ -102,19 +104,22 @@ export const usePtz = (edgeId: string, deviceId: string) => {
     [clearTimer],
   );
   const goHome = useCallback(
-    () => act("Could not go home", () => homePtz(edgeId, deviceId)),
+    () =>
+      act("Failed to move the camera to its home position", () =>
+        homePtz(edgeId, deviceId),
+      ),
     [act, edgeId, deviceId],
   );
   const goPreset = useCallback(
     (token: string) =>
-      act("Could not go to the preset", () =>
+      act("Failed to move the camera to the preset", () =>
         callPtzPreset(edgeId, deviceId, token),
       ),
     [act, edgeId, deviceId],
   );
   const addPreset = useCallback(
     (name: string) =>
-      act("Could not save the preset", async () => {
+      act("Failed to save the preset", async () => {
         const preset = await setPtzPreset(edgeId, deviceId, name);
         setPresets((current) => [...current, preset]);
       }),
@@ -122,7 +127,7 @@ export const usePtz = (edgeId: string, deviceId: string) => {
   );
   const removePreset = useCallback(
     (token: string) =>
-      act("Could not delete the preset", async () => {
+      act("Failed to delete the preset", async () => {
         await deletePtzPreset(edgeId, deviceId, token);
         setPresets((current) => current.filter((p) => p.token !== token));
       }),

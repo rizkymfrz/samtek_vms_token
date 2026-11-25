@@ -13,7 +13,7 @@ const LiveContent = async () => {
   return <LiveView data={data} isLive={isLiveSource} />;
 };
 
-export const metadata: Metadata = { title: "Live View" };
+export const metadata: Metadata = { title: "Live view" };
 
 const Page = () => {
   return (

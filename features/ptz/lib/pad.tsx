@@ -20,13 +20,13 @@ type PadKey = {
 
 export const PAD: PadKey[] = [
   {
-    label: "Pan up left",
+    label: "Move up left",
     icon: <ArrowUpLeftIcon />,
     axes: { pan: -1, tilt: 1 },
   },
   { label: "Tilt up", icon: <ChevronUpIcon />, axes: { tilt: 1 } },
   {
-    label: "Pan up right",
+    label: "Move up right",
     icon: <ArrowUpRightIcon />,
     axes: { pan: 1, tilt: 1 },
   },
@@ -34,13 +34,13 @@ export const PAD: PadKey[] = [
   { label: "Go to home position", icon: <RefreshCwIcon />, axes: "home" },
   { label: "Pan right", icon: <ChevronRightIcon />, axes: { pan: 1 } },
   {
-    label: "Pan down left",
+    label: "Move down left",
     icon: <ArrowDownLeftIcon />,
     axes: { pan: -1, tilt: -1 },
   },
   { label: "Tilt down", icon: <ChevronDownIcon />, axes: { tilt: -1 } },
   {
-    label: "Pan down right",
+    label: "Move down right",
     icon: <ArrowDownRightIcon />,
     axes: { pan: 1, tilt: -1 },
   },

@@ -5,7 +5,7 @@ export const DEVICE_STATE_LABEL: Record<DeviceState, string> = {
   live: "Live",
   disabled: "Disabled",
   "server-offline": "Server offline",
-  "stream-offline": "Stream offline",
+  "stream-offline": "Stream unavailable",
 };
 
 export const deviceDot = (state: DeviceState) =>

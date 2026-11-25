@@ -96,7 +96,7 @@ export const LiveView = ({
     );
   }, [live.tiles, servers, isFaulty]);
   const actions = useLayoutActions(isLive);
-  useFailureToast("Could not update the layout", [actions.error]);
+  useFailureToast("Failed to update the layout", [actions.error]);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [pageState, setPageState] = useState({ layoutId: "", index: 0 });
   const { value: grid } = usePersistedStore(gridPreferenceStore);
@@ -121,7 +121,7 @@ export const LiveView = ({
         <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
           <EmptyState
             icon={<LayoutGridIcon />}
-            title="No layouts yet"
+            title="No layouts."
             description="Create a layout to start watching cameras."
           >
             {actions.error && (

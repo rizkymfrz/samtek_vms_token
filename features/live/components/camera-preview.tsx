@@ -44,7 +44,7 @@ export const CameraPreview = ({
           variant="ghost"
           size="icon-xs"
           aria-label={`Close ${camera.name}`}
-          title="Close"
+          title={`Close ${camera.name}`}
           onClick={onClose}
         >
           <XIcon />

@@ -3,6 +3,6 @@ import { CctvOffIcon } from "lucide-react";
 export const StreamOffline = () => (
   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
     <CctvOffIcon className="size-8" />
-    <span className="text-xs">Camera stream is offline</span>
+    <span className="text-xs">Stream unavailable</span>
   </div>
 );

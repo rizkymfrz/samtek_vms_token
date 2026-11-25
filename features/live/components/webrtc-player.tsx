@@ -19,7 +19,7 @@ const CAPTURE_EVERY_MS = 5 * 60 * 1000;
 const HINT = {
   connecting: "Connecting…",
   reconnecting: "Reconnecting…",
-  unavailable: "Stream address is not available",
+  unavailable: "Stream unavailable",
   playing: null,
 } as const;
 

@@ -154,7 +154,7 @@ export const DeviceTree = ({
       <PanelSearch
         value={query}
         onChange={onQuery}
-        placeholder={`Search ${noun}...`}
+        placeholder={`Search ${noun}…`}
       />
       <div className="flex flex-col">
         {nodes.map((node) => (
@@ -163,7 +163,7 @@ export const DeviceTree = ({
         {nodes.length === 0 && (
           <PanelEmpty
             icon={isSearching ? <SearchXIcon /> : emptyIcon}
-            title={isSearching ? `No ${noun} match` : `No ${noun}`}
+            title={isSearching ? `No ${noun} found.` : `No ${noun}.`}
             description={isSearching ? "Try a different search." : undefined}
           />
         )}

@@ -9,6 +9,7 @@ import { StreamDetections } from "@/features/edge-status";
 import { PtzPanel, PtzToggle } from "@/features/ptz";
 import { TalkControl } from "@/features/talk";
 import { usePersistedStore } from "@/hooks/use-persisted-store";
+import { DEVICE_STATE_LABEL } from "@/lib/device-state";
 import { cn } from "@/lib/utils";
 import { CameraWebToggle } from "./camera-web-toggle";
 import { FullscreenToggle } from "./fullscreen-toggle";
@@ -24,11 +25,11 @@ import {
 import { resolveQuality } from "../lib/stream-quality";
 import type { StreamQuality, StreamState, Tile } from "../types";
 
-const STATE: Record<StreamState, { label: string; hint: string | null }> = {
-  live: { label: "Live", hint: null },
-  disabled: { label: "Disabled", hint: "Camera is disabled" },
-  "server-offline": { label: "Offline", hint: null },
-  "stream-offline": { label: "Offline", hint: null },
+const HINT: Record<StreamState, string | null> = {
+  live: null,
+  disabled: "Camera is disabled",
+  "server-offline": null,
+  "stream-offline": null,
 };
 
 export const CameraTile = ({
@@ -42,7 +43,8 @@ export const CameraTile = ({
   className?: string;
   hasPtz?: boolean;
 }) => {
-  const { label, hint } = STATE[tile.state];
+  const label = DEVICE_STATE_LABEL[tile.state];
+  const hint = HINT[tile.state];
   const isLive = tile.state === "live";
   const root = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggle } = useFullscreen(root);

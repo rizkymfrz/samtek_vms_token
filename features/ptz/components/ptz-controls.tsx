@@ -88,13 +88,13 @@ export const PtzControls = ({
               />
               <Stepper
                 label="Focus"
-                minusLabel="Focus decrease"
-                plusLabel="Focus increase"
+                minusLabel="Decrease focus"
+                plusLabel="Increase focus"
                 onPress={(direction) => ptz.startFocus(direction * speed)}
                 onRelease={ptz.release}
               />
               <div className="flex flex-col gap-2">
-                <span className="text-xs">Speed Scale</span>
+                <span className="text-xs">Speed scale</span>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span>0.1</span>
                   <Slider

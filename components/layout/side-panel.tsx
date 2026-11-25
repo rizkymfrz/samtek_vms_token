@@ -128,7 +128,7 @@ export const PanelSearch = ({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        aria-label={placeholder.replace(/\.+$/, "")}
+        aria-label={placeholder.replace(/[.…]+$/, "")}
         className="pl-8"
       />
     </div>

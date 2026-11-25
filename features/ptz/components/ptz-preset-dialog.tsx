@@ -54,7 +54,7 @@ const Form = ({
                 id={`${formId}-name`}
                 value={name}
                 maxLength={64}
-                placeholder="Gate"
+                placeholder="e.g. Gate"
                 onChange={(event) => setName(event.target.value)}
               />
             </Field>

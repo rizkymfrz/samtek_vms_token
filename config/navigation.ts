@@ -31,7 +31,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Monitoring",
     items: [
       { href: "/dashboard", title: "Dashboard", icon: LayoutDashboardIcon },
-      { href: "/live", title: "Live View", icon: RadioIcon },
+      { href: "/live", title: "Live view", icon: RadioIcon },
       { href: "/playback", title: "Playback", icon: RewindIcon },
       { href: "/alerts", title: "Alerts", icon: BellIcon },
       { href: "/search", title: "Object Search", icon: ScanSearchIcon },

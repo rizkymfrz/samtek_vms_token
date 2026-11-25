@@ -20,7 +20,7 @@ export const STATE_LABEL: Record<StreamState, string> = {
   live: "Live",
   disabled: "Disabled",
   "server-offline": "Server offline",
-  "stream-offline": "Stream offline",
+  "stream-offline": "Stream unavailable",
 };
 
 export const applyState = (camera: CameraRecord): ApplyState =>
