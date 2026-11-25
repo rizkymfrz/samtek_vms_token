@@ -13,7 +13,7 @@ const AlertsContent = async () => {
   return <AlertsLive initialData={data} isPolling={isLiveSource} />;
 };
 
-export const metadata: Metadata = { title: "Alerts" };
+export const metadata: Metadata = { title: "Alarms" };
 
 const Page = () => {
   return (

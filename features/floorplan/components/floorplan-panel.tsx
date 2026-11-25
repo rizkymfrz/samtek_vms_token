@@ -176,7 +176,7 @@ export const FloorplanPanel = ({
           <PanelDetail label="Analytic">
             {selectedCamera.analytic ?? "None"}
           </PanelDetail>
-          <PanelDetail label="Alerts (24h)">
+          <PanelDetail label="Alarms (24h)">
             {selectedCamera.alerts}
           </PanelDetail>
           <div className="flex flex-col gap-2 pt-2">

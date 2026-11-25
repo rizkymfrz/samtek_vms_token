@@ -50,7 +50,7 @@ export const FilterPanel = ({
         <PanelSearch
           value={filters.query}
           onChange={(query) => onChange({ query })}
-          placeholder="Search alerts..."
+          placeholder="Search alarms…"
         />
         <PanelField label="Time range">
           <Pick

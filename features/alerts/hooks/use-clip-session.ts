@@ -74,7 +74,11 @@ export const useClipSession = (
         setSession(next);
         return next;
       } catch (failure) {
-        setError(failure instanceof Error ? failure.message : "Control failed");
+        setError(
+          failure instanceof Error
+            ? failure.message
+            : "Failed to control the alarm clip.",
+        );
         return null;
       } finally {
         setIsBusy(false);
@@ -154,14 +158,18 @@ export const useClipSession = (
             },
             () => {
               clearInterval(poll);
-              if (!isStopped) setError("The clip session ended");
+              if (!isStopped) setError("The alarm clip session ended.");
             },
           );
         }, STATUS_MS);
       },
       (failure: unknown) => {
         if (!isStopped)
-          setError(failure instanceof Error ? failure.message : "Clip failed");
+          setError(
+            failure instanceof Error
+              ? failure.message
+              : "Failed to play the alarm clip.",
+          );
       },
     );
     return () => {

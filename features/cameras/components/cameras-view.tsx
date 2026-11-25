@@ -299,7 +299,7 @@ export const CamerasView = ({
       <DeleteConfirmDialog
         isOpen={pendingDelete !== null}
         title={`Delete ${pendingDelete?.name}?`}
-        description="The camera is removed from every layout and stops streaming. Alerts it already raised are kept."
+        description="The camera is removed from every layout and stops streaming. Alarms it already raised are kept."
         confirmLabel="Delete camera"
         onClose={() => setPendingDelete(null)}
         onConfirm={() => {

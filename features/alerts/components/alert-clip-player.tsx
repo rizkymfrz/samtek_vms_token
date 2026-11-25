@@ -69,19 +69,16 @@ export const AlertClipPlayer = ({
               isTimed={boxes.isTimed}
               onFrameTime={boxes.onFrameTime}
             />
-            <PlaybackBoxLayer
-              objects={boxes.objects}
-              analyticId={analyticId}
-            />
+            <PlaybackBoxLayer objects={boxes.objects} analyticId={analyticId} />
           </>
         ) : (
-          <span>Loading clip…</span>
+          <span>Loading alarm clip…</span>
         )}
       </div>
       {duration !== null && duration > 0 && (
         <button
           type="button"
-          aria-label="Seek clip"
+          aria-label="Seek alarm clip"
           disabled={!canControl}
           onClick={(event) => {
             const rect = event.currentTarget.getBoundingClientRect();
@@ -128,19 +125,19 @@ export const AlertClipPlayer = ({
         <Button
           variant="secondary"
           size="icon"
-          aria-label="Rewind"
+          aria-label="Slower"
           disabled={!canControl}
           onClick={() => void changeSpeed(stepSpeed(session?.speed ?? 1, -1))}
         >
           <RewindIcon />
         </Button>
         <span className="flex size-10 items-center justify-center rounded border bg-card text-xs tabular-nums">
-          {session?.speed ?? 1}
+          {session?.speed ?? 1}x
         </span>
         <Button
           variant="secondary"
           size="icon"
-          aria-label="Fast forward"
+          aria-label="Faster"
           disabled={!canControl}
           onClick={() => void changeSpeed(stepSpeed(session?.speed ?? 1, 1))}
         >

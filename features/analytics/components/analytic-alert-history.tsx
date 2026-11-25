@@ -41,13 +41,13 @@ export const AnalyticAlertHistory = ({
   return (
     <>
       <HistoryPanel
-        title="Alert History"
+        title="Alarm history"
         emptyIcon={BellIcon}
-        emptyTitle="No alerts"
+        emptyTitle="No alarms"
         emptyDescription={
           cameraName === undefined
-            ? "No alerts from this analytic yet."
-            : "No alerts from this camera yet."
+            ? "No alarms from this analytic yet."
+            : "No alarms from this camera yet."
         }
         items={rows}
         range={range}

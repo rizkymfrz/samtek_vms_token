@@ -32,7 +32,7 @@ export const AlertsTable = ({
         <TableRow>
           <TableHead icon={ImageIcon}>Snapshot</TableHead>
           <TableHead icon={ClockIcon}>Time</TableHead>
-          <TableHead icon={ShieldAlertIcon}>Alert</TableHead>
+          <TableHead icon={ShieldAlertIcon}>Alarm</TableHead>
           <TableHead icon={CctvIcon}>Camera</TableHead>
           <TableHead icon={BoxIcon}>Object</TableHead>
           <TableHead icon={TriangleAlertIcon}>Risk</TableHead>

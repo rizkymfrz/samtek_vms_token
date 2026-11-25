@@ -30,6 +30,6 @@ export const GET = async (request: Request) => {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
     console.error("[api/alerts]", error);
-    return Response.json({ error: "Failed to load alerts" }, { status: 502 });
+    return Response.json({ error: "Failed to load alarms" }, { status: 502 });
   }
 };

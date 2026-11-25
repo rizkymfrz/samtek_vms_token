@@ -111,9 +111,9 @@ export const AlertsView = ({
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="mr-2 text-xs text-muted-foreground tabular-nums">
             {isLoading
-              ? "Loading..."
+              ? "Loading…"
               : matches.length === 0
-                ? "0 alerts"
+                ? "0 alarms"
                 : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, matches.length)} of ${matches.length}`}
           </span>
           <Button
@@ -160,8 +160,8 @@ export const AlertsView = ({
         {matches.length === 0 ? (
           <EmptyState
             icon={<BellIcon />}
-            title="No alerts found"
-            description="No alerts match the filters."
+            title="No alarms found"
+            description="No alarms match the filters."
           />
         ) : view === "grid" ? (
           <div

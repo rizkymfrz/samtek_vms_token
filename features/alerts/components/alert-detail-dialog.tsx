@@ -60,7 +60,7 @@ export const AlertDetailDialog = ({
                   <TabsList variant="line" size="sm">
                     <TabsTrigger value="image">Image</TabsTrigger>
                     <TabsTrigger value="clip" disabled={!alert.clip}>
-                      Clip
+                      Alarm clip
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="image">
