@@ -3,6 +3,7 @@ import { PentagonIcon, ScanEyeIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { ToolbarToggle } from "@/components/shared/toolbar-toggle";
 import type { Perimeters } from "@/lib/api/perimeters";
+import { cn } from "@/lib/utils";
 import { DetectionBox } from "./detection-box";
 import { hasPerimeters, PerimeterOverlay } from "./perimeter-overlay";
 import { PoseSkeleton } from "./pose-skeleton";
@@ -45,6 +46,8 @@ export const StreamDetections = ({
   analyticId,
   perimeters,
   isDefaultOn = false,
+  detections,
+  className,
   trailing,
   children,
 }: {
@@ -53,6 +56,8 @@ export const StreamDetections = ({
   analyticId?: string | null;
   perimeters?: Perimeters | null;
   isDefaultOn?: boolean;
+  detections?: ReactNode;
+  className?: string;
   trailing?: ReactNode;
   children?: ReactNode;
 }) => {
@@ -63,14 +68,20 @@ export const StreamDetections = ({
       {hasPerimeterLines && perimeters && (
         <PerimeterOverlay perimeters={perimeters} />
       )}
-      {hasDetections && (
-        <DetectionOverlay
-          edgeId={edgeId}
-          deviceId={deviceId}
-          analyticId={analyticId}
-        />
-      )}
-      <div className="absolute right-2 bottom-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/tile:opacity-100 has-[:focus-visible]:opacity-100 has-data-[talk=live]:opacity-100">
+      {hasDetections &&
+        (detections ?? (
+          <DetectionOverlay
+            edgeId={edgeId}
+            deviceId={deviceId}
+            analyticId={analyticId}
+          />
+        ))}
+      <div
+        className={cn(
+          "absolute right-2 bottom-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/tile:opacity-100 has-[:focus-visible]:opacity-100 has-data-[talk=live]:opacity-100",
+          className,
+        )}
+      >
         {children}
         {hasPerimeters(perimeters) && (
           <ToolbarToggle

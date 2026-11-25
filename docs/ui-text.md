@@ -410,6 +410,13 @@ Teks menu dan page title: `Live view` (sentence case, §1). Section PTZ:
 | Speed scale | Pengali kecepatan gerak PTZ, 0.1 sampai 1.0 (nilai slider dikalikan ke sumbu pan, tilt, zoom). | Label slider. | Speed Scale | `Speed scale` |
 
 Catatan kode:
+- Toolbar tile Playback memakai `StreamDetections` yang sama dengan Live
+  view (kanan bawah, muncul saat hover): `Audio`, `Open camera detail`,
+  `Open camera web page`, `Perimeters`, `Detections`, `Fullscreen`.
+  `Talk`, `PTZ controls`, dan `Stream quality` tidak ada karena
+  rekaman tidak memakainya (kualitas diatur satu kontrol untuk semua
+  tile). Pada mode fullscreen toolbar pindah ke kanan atas agar tidak
+  menimpa kontrol dan timeline.
 - Terminologi stream: id teknis `main`, `sub`, `third` tidak diubah. Di
   pilihan toolbar Live view tertulis `Sub stream` dan `Main stream`;
   di pilihan per kamera tertulis `Main`, `Sub`, `Third`. Bentuk pendek

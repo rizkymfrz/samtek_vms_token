@@ -12,10 +12,13 @@ import {
   type PlaybackSession,
   type RecordingRange,
   type RecordingStream,
+  StreamDetections,
   usePlaybackBoxes,
 } from "@/features/edge-status";
 import {
   CameraDetailToggle,
+  CameraWebToggle,
+  FullscreenToggle,
   SpeakerToggle,
   type Tile,
   useFullscreen,
@@ -37,13 +40,14 @@ const PlaybackScreen = ({
   session,
   error,
   hasPosition,
+  boxes,
 }: {
   tile: Tile;
   session: PlaybackSession | null;
   error: string | null;
   hasPosition: boolean;
+  boxes: ReturnType<typeof usePlaybackBoxes>;
 }) => {
-  const boxes = usePlaybackBoxes(session?.sessionId ?? null);
   if (isServerDown(tile.state)) {
     return <EdgeOffline isDisabled={tile.state === "server-disabled"} />;
   }
@@ -76,7 +80,6 @@ const PlaybackScreen = ({
         isTimed={boxes.isTimed}
         onFrameTime={boxes.onFrameTime}
       />
-      <PlaybackBoxLayer objects={boxes.objects} analyticId={tile.analyticId} />
     </>
   );
 };
@@ -102,6 +105,7 @@ export const PlaybackTile = ({
   const { isFullscreen, toggle } = useFullscreen(root);
   const local = usePlaybackClock();
   const playback = usePlaybackSession(tile.serverId, tile.id, stream);
+  const boxes = usePlaybackBoxes(playback.session?.sessionId ?? null);
   const { seek, pause, resume, changeSpeed, stop } = playback;
   const latest = useRef({ ranges, session: playback.session });
   useEffect(() => {
@@ -172,6 +176,7 @@ export const PlaybackTile = ({
           session={playback.session}
           error={playback.error}
           hasPosition={active.position !== null}
+          boxes={boxes}
         />
         <Badge
           variant="overlay"
@@ -179,10 +184,29 @@ export const PlaybackTile = ({
         >
           <span className="truncate">{tile.name}</span>
         </Badge>
-        <div className="absolute top-2 right-2 flex items-center gap-1">
-          <SpeakerToggle audioId={`${tile.id}:playback`} />
-          <CameraDetailToggle id={tile.id} tab="playback" />
-        </div>
+        {isOnline && (
+          <StreamDetections
+            edgeId={tile.serverId}
+            deviceId={tile.id}
+            analyticId={tile.analyticId}
+            perimeters={tile.perimeters}
+            isDefaultOn
+            detections={
+              <PlaybackBoxLayer
+                objects={boxes.objects}
+                analyticId={tile.analyticId}
+              />
+            }
+            className={cn(isFullscreen && "bottom-auto top-2")}
+            trailing={
+              <FullscreenToggle isFullscreen={isFullscreen} onToggle={toggle} />
+            }
+          >
+            <SpeakerToggle audioId={`${tile.id}:playback`} />
+            <CameraDetailToggle id={tile.id} tab="playback" />
+            <CameraWebToggle id={tile.id} />
+          </StreamDetections>
+        )}
         {isFullscreen && (
           <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 border-t bg-background/90 p-2 backdrop-blur-md">
             <PlaybackControls
