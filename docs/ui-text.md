@@ -17,6 +17,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Dashboard**: diaudit menyeluruh.
   - **Live view dan PTZ** (`features/live`, `features/ptz`): diaudit
     teks dan state-nya (§3.9 dan §3.10).
+  - **Object search** (`/search`, `features/object-search`): diaudit
+    teksnya (§3.13).
   - **Alarms** (halaman `/alerts`, `features/alerts`, plus popover
     notifikasi di header): diaudit teksnya (§3.12).
   - **Playback** (`features/playback`, plus `PlaybackTimeline` dan
@@ -506,6 +508,46 @@ Catatan:
 - Waktu relatif (notifikasi): `now`, `{n}m ago`, `{n}h ago`,
   `{n}d ago`.
 
+### 3.13 Object search
+
+Menu dan page title: `Object search` (sentence case).
+
+| Canonical | Definition | Context & preferred wording | Avoid | Example |
+|---|---|---|---|---|
+| Object search | Pencarian objek lewat teks bebas (`GET /v1/search`, model teks-gambar SigLIP 2). | Menu, judul. | Text search, visual search | `Object search` |
+| Search index | Penyimpanan embedding objek per kamera. Hanya kamera yang indeksnya aktif yang dicari. | Konteks pengaturan kamera dan empty state. | Database | `Search index` |
+| Object | Jenis objek hasil (`label` dari Edge, misalnya `person`). | Field pada kartu dan dialog. Sama dengan `Object` di halaman Alarms. | Label | `Object` |
+| Match | Kecocokan teks query dan objek, dikalibrasi ke 0..100% (`confidence`). Hanya untuk `person`. | Progress dan persen pada kartu dan dialog. | Confidence (di Object search) | `Match` |
+| Similarity | Kemiripan mentah teks dan gambar (kosinus). Ada untuk semua objek. Nilainya kecil secara alami: sekitar 0.15 sudah baik. | Ditampilkan sebagai angka, bukan persen. | `sim`, persen | `Similarity 0.152` |
+| Track key | ULID yang dibuat Edge saat track pertama terlihat. Unik global. | Salin dan kelompokkan hasil. | Track ID (konsep berbeda) | `Track key` |
+| Text model | Model yang mengubah teks query menjadi embedding. | Pesan tidak tersedia. | Language model | `The text model is missing` |
+
+Catatan:
+- `Match` ditampilkan bila `confidence` ada (hanya `person`). Bila
+  tidak ada, tampilkan `Similarity` apa adanya. Jangan menampilkan
+  similarity sebagai persen, karena `15%` menyesatkan.
+- `Confidence` pada Alarms adalah skor detektor (seberapa yakin
+  detektor bahwa kotak itu objeknya). Itu bukan kecocokan dengan teks,
+  jadi jangan memakai nama `Match` di sana, dan jangan memakai
+  `Confidence` di Object search. Skor detektor (`object.confidence`)
+  tidak ditampilkan di Object search.
+- `Track key` dan `Track ID` (Alarms) bukan konsep yang sama.
+  `track_id` berasal dari ByteTrack, integer, dan mulai dari 1 lagi
+  setiap tracker dibuat ulang. `track_key` unik global. Keduanya tidak
+  bisa dipetakan lewat API saat ini. Jangan membandingkan atau
+  menampilkan keduanya seolah satu id.
+- Tab `Recording` pada dialog memutar rekaman kamera (sesi playback
+  `device_id`) mulai sebelum waktu hasil, sama dengan Playback. Tombol
+  `Slower` / `Faster` hanya mengubah kecepatan. `End of recording.`
+  berarti rekaman kamera itu habis (§3.11).
+- Pesan validasi mengikuti pola `{Field} is required.` dan kalimat
+  bertitik: `Search text is required.`, `Search text contains control
+  characters.`, `Start time must be before end time.`
+- Pesan `Search is not available on this edge server` menggantikan
+  `edge` saja (§3.8).
+- Satu orang yang muncul lagi di kamera mendapat `Track key` baru.
+  Tidak ada identitas lintas track. Itu batas fitur, bukan galat.
+
 ## 4. Quality rules
 
 1. Panel title tidak diakhiri titik.
@@ -688,7 +730,7 @@ Tabel di bawah mencatat teks lama dan teks target. Status per kelompok:
 |---|---|
 | Dashboard | Diterapkan, kecuali `Alarms by type` (menunggu canonical label mapping, §6.3). |
 | Status kamera dan stream (§3.10) | Diterapkan: `server-disabled`, `device-error`, label tunggal, `reason` dari Edge. Pengecualian: peta (pohon perangkat), `degraded`. |
-| Menu dan page title | `Live view` dan `Edge servers` diterapkan. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
+| Menu dan page title | `Live view`, `Edge servers`, `Alarms`, dan `Object search` diterapkan. `Alerts` menjadi `Alarms` belum diterapkan di navigasi dan halamannya. |
 | Alert menjadi alarm | Diterapkan: halaman Alarms, navigasi, Playback, riwayat analytic, floorplan, cameras, dan pesan API. Popover notifikasi tetap `Alerts`. |
 | Live view dan PTZ | Diterapkan, termasuk toggle, Talk, Audio, `Stream quality`, `Create layout`, dan konfirmasi hapus layout. |
 | Komponen shared | Diterapkan untuk `ToolbarToggle` (label tetap), `camera-web-toggle`, `DeviceTree`, `StreamOffline`, dan label state. Pola `Failed to ...` baru pada halaman yang diaudit. |
@@ -843,6 +885,21 @@ Hasil audit aksesibilitas:
 
 Tidak berubah: judul popover `Alerts`, `No alerts.`, `Mark all as read`,
 `Notifications`.
+
+### Object search (§3.13, diterapkan)
+
+| Lokasi | Teks lama | Teks baru |
+|---|---|---|
+| `config/navigation.ts`, `app/(app)/search/page.tsx` | `Object Search` | `Object search` |
+| `object-search-view.tsx` | `Search failed` / `The search request failed. Try again.` | `Failed to search objects` / `The search could not be completed. Try again.` |
+| `object-search-view.tsx` | `Search is not available on this edge` / `...or the edge does not run on Linux.` | `...on this edge server` / `...or the edge server does not run on Linux.` |
+| `validate-search.ts` | `Invalid time`, `Enter a search text`, `Search text has control characters`, `Start must be before end` | `Time is invalid.`, `Search text is required.`, `Search text contains control characters.`, `Start time must be before end time.` |
+| `validate-search.ts` | `Search text is at most N characters`, `Label is at most N characters`, `Limit must be 1 to 1000` | Kalimat bertitik: `Search text must be at most N characters.` dan sejenisnya |
+| `fetch-search.ts` | `Invalid search` (fallback pesan) | `The search is invalid.` |
+| `search-dialog.tsx` | field `Label`, section `Confidence`, aria `Match confidence` | `Object`, `Match`, `Match` |
+| `search-dialog.tsx` | `End of recording`, `Rewind`, `Fast forward`, kecepatan `1` | `End of recording.`, `Slower`, `Faster`, `1x` |
+| `search-score.tsx` | `sim 0.152`, aria `Match confidence` | `Similarity 0.152`, `Match` |
+| `lib/filters.ts` | `RANGES`, `LIMIT_ITEMS`, dan tipe `Filters` tanpa UI | Dihapus. Query selalu memakai nilai bawaan (semua kamera, semua waktu, batas 100). |
 
 ### Label analytic (sentence case, §6.1)
 
