@@ -62,6 +62,12 @@
   --color-primary-hover: var(--primary-hover);
   --color-destructive-hover: var(--destructive-hover);
   --color-secondary-hover: var(--secondary-hover);
+  --color-primary-disabled: var(--primary-disabled);
+  --color-primary-foreground-disabled: var(--primary-foreground-disabled);
+  --color-destructive-disabled: var(--destructive-disabled);
+  --color-destructive-foreground-disabled: var(--destructive-foreground-disabled);
+  --color-secondary-disabled: var(--secondary-disabled);
+  --color-secondary-foreground-disabled: var(--secondary-foreground-disabled);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -211,13 +217,19 @@
   --overlay: oklch(0 0 0 / 0.1);
 }
 
-/* Solid hover fills: the accent mixed into the page background, so a hovered
-   button never turns see-through. */
+/* Solid hover and disabled fills: the accent mixed into the page background,
+   so a button never turns see-through. */
 :root,
 .dark {
   --primary-hover: color-mix(in oklch, var(--primary) 80%, var(--background));
   --destructive-hover: color-mix(in oklch, var(--destructive) 80%, var(--background));
   --secondary-hover: color-mix(in oklch, var(--secondary), var(--foreground) 5%);
+  --primary-disabled: color-mix(in oklch, var(--primary) 50%, var(--background));
+  --primary-foreground-disabled: color-mix(in oklch, var(--primary-foreground) 50%, var(--primary-disabled));
+  --destructive-disabled: color-mix(in oklch, var(--destructive) 50%, var(--background));
+  --destructive-foreground-disabled: color-mix(in oklch, var(--destructive-foreground) 50%, var(--destructive-disabled));
+  --secondary-disabled: color-mix(in oklch, var(--secondary) 50%, var(--background));
+  --secondary-foreground-disabled: color-mix(in oklch, var(--secondary-foreground) 50%, var(--secondary-disabled));
 }
 
 /* Scrollbar tokens: derived from the theme so they follow light/dark. */
