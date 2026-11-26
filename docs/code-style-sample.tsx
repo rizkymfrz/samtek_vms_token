@@ -373,11 +373,11 @@ const SampleProvider = ({
 };
 
 const sampleVariants = cva(
-  "group/sample inline-flex shrink-0 items-center justify-center rounded-none border border-transparent text-xs font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "group/sample inline-flex shrink-0 items-center justify-center rounded-none border border-transparent text-xs font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:bg-primary-disabled disabled:text-primary-foreground-disabled [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
