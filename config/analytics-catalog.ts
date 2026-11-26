@@ -66,6 +66,12 @@ export const ANALYTICS = [
     edge: "Parking",
   },
   {
+    id: "speed_violation",
+    label: "Speed violation",
+    camera: "Main Road",
+    edge: "Parking",
+  },
+  {
     id: "dust_spreading",
     label: "Dust spreading",
     camera: "Cement Silo",

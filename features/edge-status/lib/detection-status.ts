@@ -29,6 +29,7 @@ const ALERT_ANALYTICS = new Set([
   "cat_detection",
   "dust_spreading",
   "motion",
+  "speed_violation",
 ]);
 
 export const toneOf = (

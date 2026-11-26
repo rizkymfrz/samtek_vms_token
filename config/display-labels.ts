@@ -11,6 +11,7 @@ export const ALARM_KIND_LABEL: Record<string, string> = {
   phone_call: "Phone calling alarm",
   sleep_on_duty: "Sleep alarm",
   motion_detected: "Motion alarm",
+  speed_violation: "Speed violation alarm",
   dust_detected: "Dust detected",
   face_not_in_whitelist: "Outside whitelist",
   face_stranger: "Stranger",

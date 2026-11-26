@@ -97,4 +97,10 @@ export const ANALYTIC_PARAM_SPECS: Record<string, ParamSpec[]> = {
     time("motion_end", "23:59:59"),
   ],
   dust_spreading: [sensitivity(50)],
+  speed_violation: [
+    spec("trigger_input", "integer", null, { min: 0 }),
+    spec("attempts", "integer", null, { min: 1 }),
+    spec("cooldown_seconds", "integer", null, { min: 0 }),
+    spec("lapi_port", "integer", null, { min: 1, max: 65535 }),
+  ],
 };

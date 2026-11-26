@@ -5,6 +5,7 @@ import {
   CatIcon,
   ClockIcon,
   FlameIcon,
+  GaugeIcon,
   HardHatIcon,
   type LucideIcon,
   ScanFaceIcon,
@@ -125,6 +126,13 @@ const GROUPS: GroupSource[] = [
     description: "Detects movement inside the areas drawn on a camera.",
     icon: ActivityIcon,
     analyticIds: ["motion"],
+  },
+  {
+    slug: "speed-violation",
+    description:
+      "Reads the license plate of vehicles the radar flags for speeding.",
+    icon: GaugeIcon,
+    analyticIds: ["speed_violation"],
   },
   {
     slug: "dust-spreading",

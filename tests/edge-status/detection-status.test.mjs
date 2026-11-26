@@ -60,6 +60,7 @@ test("analytics that only report problems draw red without a status", () => {
     "cat_detection",
     "dust_spreading",
     "motion",
+    "speed_violation",
   ]) {
     assert.equal(colorOf(null, id), "text-detect-red");
   }

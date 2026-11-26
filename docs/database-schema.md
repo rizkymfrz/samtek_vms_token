@@ -632,7 +632,7 @@ Defined in `duckdb_database.cpp:78-92`. They are plain indexes, not constraints.
 - `risk_level`: `low` | `medium` | `high`. Alarms are only `medium` or `high` (`low` is recognition-internal). There is **no `critical`**.
 - `perimeter_shape`: `area` | `line` | `''` (never `polygon`).
 - Alarm `kind`: `area_dwell`, `ppe_missing`, `fire_smoke_detected`, `crowd_limit_exceeded`, `worker_absent`, `cat_detected`,
-  `phone_call`, `sleep_on_duty`, `motion_detected`, `dust_detected`, `face_not_in_whitelist`, `face_stranger`.
+  `phone_call`, `sleep_on_duty`, `motion_detected`, `speed_violation`, `dust_detected`, `face_not_in_whitelist`, `face_stranger`.
   (`line_cross` exists in the edge code but is never written.)
 - Recognition `kind`: `face_recognized`, `face_visitor_registered`, `face_attribute`, `license_plate`, `person_seen`.
 - Enums: gender `Male|Female`; age group `Child|Teenager|Adult|Elder`; mask/glasses `Yes|No`; emotion `ANGER|DISGUST|FEAR|HAPPINESS|NEUTRAL|SADNESS|SURPRISE`;
@@ -643,12 +643,12 @@ Defined in `duckdb_database.cpp:78-92`. They are plain indexes, not constraints.
 
 ## 3. Analytics the edge can run
 
-19 analytic ids; the list with labels is `config/analytics-catalog.ts`. Each camera runs exactly one
+20 analytic ids; the list with labels is `config/analytics-catalog.ts`. Each camera runs exactly one
 (`devices.json` -> `analytic.id`, mirrored in `Device.analyticId`).
 
 `people_counting_dwelling`, `vehicle_counting_dwelling`, `ppe_violation`, `ppe_violation_advance`, `fire_smoke`,
 `people_crowd_monitoring`, `people_worker_dwelling`, `cat_detection`, `phone_calling`, `people_sleep_on_duty`, `motion`,
-`dust_spreading`, `face_recognition`, `face_visitor_attendance`, `face_attribute`, `license_plate_recognition`,
+`speed_violation`, `dust_spreading`, `face_recognition`, `face_visitor_attendance`, `face_attribute`, `license_plate_recognition`,
 `vehicle_license_plate_recognition`, `people_reidentification`, `people_pose` (bbox only: no alarm, no recognition event).
 
 - `analyticParams` (JSON): flat object of bool, number, string or list of strings. Unknown keys are rejected by the edge.
@@ -656,6 +656,12 @@ Defined in `duckdb_database.cpp:78-92`. They are plain indexes, not constraints.
   limit per camera and exists only on `people_counting_dwelling` and `vehicle_counting_dwelling`; any other analytic rejects it.
   It used to be set per area inside `perimeters`, which the edge now rejects. A limit above 0 needs at least one area. The
   VMS drops a leftover `max_stay_seconds` from areas when it saves a camera's perimeters.
+- `speed_violation` (edge): no detector and no perimeters. A radar wired to the camera's Alarm In input triggers the
+  camera's manual ANPR (LAPI). One `speed_violation` alarm per violation, also when the plate is unread
+  (`plate_number` = `-`). It is a normal alarm, not a recognition event. Parameters: `trigger_input`, `attempts`,
+  `cooldown_seconds`, `lapi_port`. The edge reads host and credentials from the device `main_url` (`sub_url` if empty);
+  without user and password it rejects the analytic. `vehicle_type` is the camera's raw type code, not yet mapped to a
+  name. Not verified on a real Uniview camera yet.
 - `perimeters` (JSON): `{ areas: [{ name, polygon: [{x, y}, ...] }], lines: [{ name, line: {x1, y1, x2, y2},
   direction_a_name, direction_b_name }] }`. Coordinates are normalized 0..1. At most 32 areas and 32 lines; a polygon has 3 to 256 points.
 - Not stored anywhere (so not available to the UI): PPE "people checked" denominators, real-time occupancy per area,

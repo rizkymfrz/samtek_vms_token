@@ -1353,7 +1353,8 @@ Label kind alarm (kanonik): `area_dwell` `Dwelling alarm`,
 alarm`, `crowd_limit_exceeded` `Crowd monitoring alarm`,
 `worker_absent` `Worker absent alarm`, `cat_detected` `Cat detection
 alarm`, `phone_call` `Phone calling alarm`, `sleep_on_duty` `Sleep
-alarm`, `motion_detected` `Motion alarm`, `dust_detected` `Dust
+alarm`, `motion_detected` `Motion alarm`, `speed_violation` `Speed violation
+alarm`, `dust_detected` `Dust
 detected`, `face_not_in_whitelist` `Outside whitelist`, `face_stranger`
 `Stranger`. Label ini diturunkan dari judul Edge yang dikenal (versi
 contoh) dan keputusan di glossary. Kind baru dari Edge jatuh ke judul
