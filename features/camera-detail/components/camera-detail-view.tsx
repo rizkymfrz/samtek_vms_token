@@ -43,11 +43,9 @@ const toRecord = (detail: CameraDetail) => ({
 
 export const CameraDetailView = ({
   detail,
-  isLive,
   initialTab = "configuration",
 }: {
   detail: CameraDetail;
-  isLive: boolean;
   initialTab?: "configuration" | "playback";
 }) => {
   const record = toRecord(detail);
@@ -65,7 +63,7 @@ export const CameraDetailView = ({
       detail.searchIndex,
     ),
   });
-  const actions = useCameraActions(record, isLive);
+  const actions = useCameraActions(record);
   const analyticId = useWatch({ control: form.control, name: "analyticId" });
   const { specs, isKnown } = useParamSpecs(detail.edgeServerId, analyticId);
   const serverOnline = useServerOnline();
@@ -190,11 +188,7 @@ export const CameraDetailView = ({
           value="playback"
           className="pt-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
         >
-          <PlaybackPanel
-            detail={detail}
-            isOnline={!isServerDown(state)}
-            isLive={isLive}
-          />
+          <PlaybackPanel detail={detail} isOnline={!isServerDown(state)} />
         </TabsContent>
       </Tabs>
     </div>

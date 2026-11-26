@@ -15,20 +15,13 @@ import { HistoryPanel } from "./analytic-history-panel";
 export const AnalyticPlateHistory = ({
   recognizer,
   initialRecognitions,
-  isLive,
 }: {
   recognizer: string;
   initialRecognitions: RecognitionsData;
-  isLive: boolean;
 }) => {
   const [range, setRange] = useState<DateRange>();
   const [openId, setOpenId] = useState<string | null>(null);
-  const { data } = useRecognitionLog(
-    recognizer,
-    initialRecognitions,
-    isLive,
-    range,
-  );
+  const { data } = useRecognitionLog(recognizer, initialRecognitions, range);
   const rows = useMemo(
     () => (data ?? initialRecognitions).rows,
     [data, initialRecognitions],

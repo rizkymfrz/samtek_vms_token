@@ -1,5 +1,5 @@
 import { Progress } from "@/components/ui/progress";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 export const CrowdBullets = ({
   areas,

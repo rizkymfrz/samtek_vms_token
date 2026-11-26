@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { isLiveSource } from "@/config/env";
 import { getAlerts } from "@/features/alerts/services/get-alerts";
 import { CountingStatsSkeleton } from "@/features/analytics/components/counting-stats-skeleton";
 import { CountingStatsView } from "@/features/analytics/components/counting-stats-view";
@@ -45,7 +44,6 @@ const StatsContent = async ({
       }}
       live={live}
       alerts={alerts}
-      isLive={isLiveSource}
     />
   );
 };

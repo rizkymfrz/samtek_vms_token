@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { BreadcrumbTitle } from "@/components/shared/breadcrumb-title";
-import { isLiveSource } from "@/config/env";
 import { getAlerts } from "@/features/alerts/services/get-alerts";
 import { AnalyticAlertHistory } from "@/features/analytics/components/analytic-alert-history";
 import { AnalyticDetailSkeleton } from "@/features/analytics/components/analytic-detail-skeleton";
@@ -76,25 +75,21 @@ const AnalyticDetailContent = async ({
         analyticIds: group.analyticIds,
       }}
       live={live}
-      isLive={isLiveSource}
     >
       {history.recognizer === null ? (
         <AnalyticAlertHistory
           analyticIds={group.analyticIds}
           initialAlerts={history.alerts}
-          isLive={isLiveSource}
         />
       ) : group.slug === PLATE_RECOGNITION_SLUG ? (
         <AnalyticPlateHistory
           recognizer={history.recognizer}
           initialRecognitions={history.recognitions}
-          isLive={isLiveSource}
         />
       ) : (
         <AnalyticRecognitionHistory
           recognizer={history.recognizer}
           initialRecognitions={history.recognitions}
-          isLive={isLiveSource}
         />
       )}
     </AnalyticDetailView>

@@ -6,10 +6,10 @@ import type { FacesData } from "../types";
 
 export const FACES_QUERY_KEY = QUERY_KEYS.faces;
 
-export const useFaces = (initialData: FacesData, isLive: boolean) =>
+export const useFaces = (initialData: FacesData) =>
   useQuery({
     queryKey: FACES_QUERY_KEY,
     queryFn: fetchFaces,
     initialData,
-    staleTime: isLive ? LIVE_STALE_TIME_MS : Infinity,
+    staleTime: LIVE_STALE_TIME_MS,
   });

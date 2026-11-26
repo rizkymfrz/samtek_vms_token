@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import {
   serverIdResponseSchema,
   updateServerInputSchema,
@@ -13,7 +12,7 @@ type Context = { params: Promise<{ serverId: string }> };
 
 const resolve = async ({ params }: Context) => {
   const { serverId } = await params;
-  if (!isLiveSource || !isValidIds(serverId)) return null;
+  if (!isValidIds(serverId)) return null;
   return `/v1/edge-servers/${serverId}`;
 };
 

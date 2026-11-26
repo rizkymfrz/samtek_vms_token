@@ -130,37 +130,3 @@ export const toUpdatePayload = (draft: Draft, original: UserRecord) => ({
 
 export const hasChanges = (payload: Record<string, unknown>) =>
   Object.values(payload).some((value) => value !== undefined);
-
-export const saveUserLocally = (
-  users: UserRecord[],
-  draft: Draft,
-  editingId: string | null,
-): UserRecord[] => {
-  if (editingId === null) {
-    const id = String(Math.max(0, ...users.map((u) => Number(u.id) || 0)) + 1);
-    return [
-      ...users,
-      {
-        id,
-        username: draft.username.trim(),
-        email: draft.email.trim(),
-        whatsapp: orNull(draft.whatsapp),
-        avatar: null,
-        platformRoleId: draft.platformRoleId,
-        isActive: draft.isActive,
-        createdAt: new Date().toISOString(),
-      },
-    ];
-  }
-  return users.map((user) =>
-    user.id === editingId
-      ? {
-          ...user,
-          email: draft.email.trim(),
-          whatsapp: orNull(draft.whatsapp),
-          isActive: draft.isActive,
-          platformRoleId: draft.platformRoleId,
-        }
-      : user,
-  );
-};

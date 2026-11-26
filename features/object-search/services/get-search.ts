@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { EdgeError, type EdgeTarget, getFromEdge } from "@/lib/api/edge-client";
 import { getEdgeServers } from "@/lib/api/edge-registry";
 import { queryEdges } from "@/lib/api/fan-out";
@@ -52,15 +51,6 @@ const searchEdge = async (edge: EdgeTarget, query: SearchQuery) => {
 export const searchObjects = async (
   query: SearchQuery,
 ): Promise<SearchData> => {
-  if (!isLiveSource) {
-    return {
-      rows: [],
-      relays: {},
-      edgeCount: 0,
-      unavailable: [],
-      failures: [],
-    };
-  }
   const token = await requireAccessToken();
   const edges = (await getEdgeServers(token)).filter(
     (edge) => query.edgeId === null || edge.id === query.edgeId,

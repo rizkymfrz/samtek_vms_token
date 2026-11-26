@@ -6,10 +6,10 @@ import type { UsersData } from "../types";
 
 export const USERS_QUERY_KEY = QUERY_KEYS.users;
 
-export const useUsers = (initialData: UsersData, isLive: boolean) =>
+export const useUsers = (initialData: UsersData) =>
   useQuery({
     queryKey: USERS_QUERY_KEY,
     queryFn: fetchUsers,
     initialData,
-    staleTime: isLive ? LIVE_STALE_TIME_MS : Infinity,
+    staleTime: LIVE_STALE_TIME_MS,
   });

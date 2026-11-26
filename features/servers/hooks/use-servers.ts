@@ -6,10 +6,10 @@ import type { ServersData } from "../types";
 
 export const SERVERS_QUERY_KEY = QUERY_KEYS.servers;
 
-export const useServers = (initialData: ServersData, isLive: boolean) =>
+export const useServers = (initialData: ServersData) =>
   useQuery({
     queryKey: SERVERS_QUERY_KEY,
     queryFn: fetchServers,
     initialData,
-    staleTime: isLive ? LIVE_STALE_TIME_MS : Infinity,
+    staleTime: LIVE_STALE_TIME_MS,
   });

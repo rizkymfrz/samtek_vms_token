@@ -64,7 +64,6 @@ export const MapPanel = ({
   unplaced,
   selectedKey,
   query,
-  isLive,
   isBusy,
   placing,
   truncated,
@@ -79,7 +78,6 @@ export const MapPanel = ({
   unplaced: MapPlace[];
   selectedKey: string | null;
   query: string;
-  isLive: boolean;
   isBusy: boolean;
   placing: MapPlace | null;
   truncated: boolean;
@@ -138,7 +136,6 @@ export const MapPanel = ({
         )
       : null;
   const renderActions = (node: Node) => {
-    if (!isLive) return null;
     const { name } = node.place;
     if (!node.marker) {
       const isPlacing =

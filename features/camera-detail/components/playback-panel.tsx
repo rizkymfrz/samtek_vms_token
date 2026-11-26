@@ -89,11 +89,9 @@ const STREAM_ITEMS = [
 export const PlaybackPanel = ({
   detail,
   isOnline,
-  isLive,
 }: {
   detail: CameraDetail;
   isOnline: boolean;
-  isLive: boolean;
 }) => {
   const [applied, setApplied] = useState(() => new Date());
   const [selected, setSelected] = useState<Date | undefined>(applied);
@@ -109,7 +107,7 @@ export const PlaybackPanel = ({
     isOnline,
   );
   const playback = usePlaybackSession(detail.edgeServerId, detail.id, stream);
-  const alertMarkers = useAlertMarkers(applied, [detail.name], isLive);
+  const alertMarkers = useAlertMarkers(applied, [detail.name]);
   const { from, to } = dayBounds(applied);
   const ranges = extendToNewest(
     query.data?.ranges ?? [],

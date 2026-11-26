@@ -29,7 +29,6 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { isLiveSource } from "@/config/env";
 import { cn } from "@/lib/utils";
 import { SampleSkeleton } from "./sample-skeleton";
 import {
@@ -266,7 +265,6 @@ export const getFromSource = async <S extends z.ZodType>(
 };
 
 export const getSample = async (): Promise<RowsData> => {
-  if (!isLiveSource) return { now: Date.now(), rows: [] };
   const now = Date.now();
   const settled = await Promise.allSettled([fetchSample()]);
   const rows = settled
@@ -281,12 +279,12 @@ export const getSample = async (): Promise<RowsData> => {
   };
 };
 
-export const useSample = (initialData: RowsData, isPolling: boolean) =>
+export const useSample = (initialData: RowsData) =>
   useQuery({
     queryKey: ["sample"],
     queryFn: fetchSample,
     initialData,
-    refetchInterval: isPolling ? POLL_INTERVAL_MS : false,
+    refetchInterval: POLL_INTERVAL_MS,
   });
 
 const subscribe = (onTick: () => void) => {
@@ -777,7 +775,6 @@ export const GETWithParams = async (
   { params }: { params: Promise<{ edgeId: string; eventId: string }> },
 ) => {
   const { edgeId, eventId } = await params;
-  if (!isLiveSource) return new Response(null, { status: 404 });
   if (!/^[A-Za-z0-9-]+$/.test(eventId))
     return new Response(null, { status: 400 });
   return new Response(`${edgeId}:${eventId}`, {

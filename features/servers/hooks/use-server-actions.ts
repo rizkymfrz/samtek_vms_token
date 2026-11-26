@@ -7,8 +7,6 @@ import { invalidateServerData } from "@/lib/query/invalidate";
 import { SERVERS_QUERY_KEY } from "./use-servers";
 import {
   type Draft,
-  removeServer,
-  saveServer,
   toCreatePayload,
   toUpdatePayload,
 } from "../lib/edit-server";
@@ -20,17 +18,9 @@ import {
 } from "../services/server-api";
 import type { ServerRecord, ServersData } from "../types";
 
-export const useServerActions = (isLive: boolean) => {
+export const useServerActions = () => {
   const queryClient = useQueryClient();
-  const read = () =>
-    queryClient.getQueryData<ServersData>(SERVERS_QUERY_KEY)?.servers ?? [];
-  const edit = (change: (servers: ServerRecord[]) => ServerRecord[]) =>
-    queryClient.setQueryData<ServersData>(
-      SERVERS_QUERY_KEY,
-      (current) => current && { ...current, servers: change(current.servers) },
-    );
-  const refresh = () =>
-    isLive ? invalidateServerData(queryClient) : undefined;
+  const refresh = () => invalidateServerData(queryClient);
   const save = useMutation({
     mutationFn: async ({
       draft,
@@ -39,12 +29,9 @@ export const useServerActions = (isLive: boolean) => {
       draft: Draft;
       id: string | null;
     }): Promise<string> => {
-      if (!isLive) {
-        const next = saveServer(read(), draft, id);
-        edit(() => next);
-        return id ?? next[next.length - 1].id;
-      }
-      const original = read().find((server) => server.id === id);
+      const original = queryClient
+        .getQueryData<ServersData>(SERVERS_QUERY_KEY)
+        ?.servers.find((server) => server.id === id);
       return original
         ? updateServer(original.id, toUpdatePayload(draft, original))
         : createServer(toCreatePayload(draft));
@@ -52,31 +39,11 @@ export const useServerActions = (isLive: boolean) => {
     onSuccess: refresh,
   });
   const addGroup = useMutation({
-    mutationFn: async (draft: {
-      name: string;
-      code: string;
-    }): Promise<string> => {
-      if (isLive) return createGroup(draft);
-      const groups =
-        queryClient.getQueryData<ServersData>(SERVERS_QUERY_KEY)?.groups ?? [];
-      const id = String(Math.max(0, ...groups.map((g) => Number(g.id))) + 1);
-      queryClient.setQueryData<ServersData>(
-        SERVERS_QUERY_KEY,
-        (current) =>
-          current && {
-            ...current,
-            groups: [...current.groups, { id, name: draft.name }],
-          },
-      );
-      return id;
-    },
+    mutationFn: createGroup,
     onSuccess: refresh,
   });
   const remove = useMutation({
-    mutationFn: async (id: string) => {
-      if (isLive) await deleteServer(id);
-      else edit((all) => removeServer(all, id));
-    },
+    mutationFn: deleteServer,
     onSuccess: refresh,
   });
   const restartEdge = useMutation({
@@ -88,7 +55,6 @@ export const useServerActions = (isLive: boolean) => {
     addGroup,
     restartEdge,
     remove,
-    replaceServers: edit,
     addGroupError: addGroup.error ? messageOf(addGroup.error) : null,
     saveError: save.error ? messageOf(save.error) : null,
     restartEdgeError: restartEdge.error ? restartEdge.error.message : null,

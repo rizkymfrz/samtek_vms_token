@@ -8,7 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 const accessConfig = {
   outside: { label: "Outside whitelist", color: "var(--chart-3)" },

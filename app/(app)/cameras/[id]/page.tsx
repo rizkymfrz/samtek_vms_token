@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { cache, Suspense } from "react";
-import { isLiveSource } from "@/config/env";
 import { CameraDetailSkeleton } from "@/features/camera-detail/components/camera-detail-skeleton";
 import { CameraDetailView } from "@/features/camera-detail/components/camera-detail-view";
 import { getCameraDetail } from "@/features/camera-detail/services/get-camera-detail";
@@ -40,7 +39,6 @@ const CameraDetailContent = async ({
   return (
     <CameraDetailView
       detail={detail}
-      isLive={isLiveSource}
       initialTab={tab === "playback" ? "playback" : "configuration"}
     />
   );

@@ -55,7 +55,7 @@ cp -a "$repo/node_modules" "$src/node_modules"
 note "building (Next.js, standalone)"
 build_env=()
 while IFS= read -r line; do build_env+=("$line"); done < <(node "$here/apply-public-env.mjs" --print-build-env)
-(cd "$src" && env SAMTEK_STANDALONE=1 DATA_SOURCE=mock "${build_env[@]}" npx next build >"$work/build.log" 2>&1) \
+(cd "$src" && env SAMTEK_STANDALONE=1 "${build_env[@]}" npx next build >"$work/build.log" 2>&1) \
   || { tail -n 30 "$work/build.log" >&2; die "next build failed"; }
 [[ -f $src/.next/standalone/server.js ]] || die "the build made no standalone server.js (is SAMTEK_STANDALONE read by next.config.ts?)"
 name=samtek-vms-$version-linux-x86_64

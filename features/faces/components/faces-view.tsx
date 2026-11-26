@@ -31,20 +31,14 @@ const PAGE_SIZE = 20;
 
 type PendingDelete = { kind: "person" | "group"; persons: Person[] };
 
-export const FacesView = ({
-  data,
-  isLive,
-}: {
-  data: FacesData;
-  isLive: boolean;
-}) => {
-  const { data: current } = useFaces(data, isLive);
+export const FacesView = ({ data }: { data: FacesData }) => {
+  const { data: current } = useFaces(data);
   const { faces, edges, failures } = current;
   useFailureToast(
     "Some edge servers did not respond",
     failures.map((failure) => `${failure.edgeName}: ${failure.message}`),
   );
-  const { save, remove, saveError, removeError } = useFaceActions(isLive);
+  const { save, remove, saveError, removeError } = useFaceActions();
   useFailureToast("Failed to delete the people", [removeError]);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(0);

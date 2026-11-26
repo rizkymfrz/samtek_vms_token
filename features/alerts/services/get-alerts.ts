@@ -1,10 +1,8 @@
-import { isLiveSource } from "@/config/env";
 import { listCentralDevices } from "@/lib/api/central-devices";
 import { type EdgeTarget, getFromEdge } from "@/lib/api/edge-client";
 import { getCentralServers, getEdgeServers } from "@/lib/api/edge-registry";
 import { queryEdges } from "@/lib/api/fan-out";
 import { requireAccessToken } from "@/lib/auth/session";
-import { buildAlerts } from "@/lib/mock/alerts-source";
 import { toRow } from "../lib/alarm-row";
 import { DEFAULT_HOURS } from "../lib/filter-alerts";
 import {
@@ -52,7 +50,6 @@ export const getAlerts = async (query?: AlertsQuery): Promise<AlertsData> => {
     since: now - DEFAULT_HOURS * 3_600_000,
     until: null,
   };
-  if (!isLiveSource) return buildAlerts(now, window);
   const token = await requireAccessToken();
   const [edges, servers] = await Promise.all([
     getEdgeServers(token),

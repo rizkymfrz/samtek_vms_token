@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import {
   createDeviceInputSchema,
   deviceResponseSchema,
@@ -14,7 +13,7 @@ export const POST = async (
   { params }: { params: Promise<{ serverId: string }> },
 ) => {
   const { serverId } = await params;
-  if (!isLiveSource || !isValidIds(serverId)) {
+  if (!isValidIds(serverId)) {
     return new Response(null, { status: 404 });
   }
   const body = createDeviceInputSchema.safeParse(

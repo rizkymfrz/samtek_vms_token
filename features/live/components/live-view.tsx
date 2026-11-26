@@ -60,21 +60,15 @@ const gridItems = (rows: number, columns: number) => {
   }));
 };
 
-export const LiveView = ({
-  data,
-  isLive,
-}: {
-  data: LiveData;
-  isLive: boolean;
-}) => {
-  const { data: live } = useLive(data, isLive);
+export const LiveView = ({ data }: { data: LiveData }) => {
+  const { data: live } = useLive(data);
   const { layouts, failures } = live;
   useFailureToast(
     "Some edge servers did not respond",
     failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
   const { servers, tiles } = useLiveTiles(live);
-  const actions = useLayoutActions(isLive);
+  const actions = useLayoutActions();
   const isDragging = useDeviceDrag();
   useFailureToast("Failed to update the layout", [actions.error]);
   const [pickedId, setPickedId] = useState<string | null>(null);
@@ -89,7 +83,6 @@ export const LiveView = ({
   const { data: detail } = useLayout(
     summary?.id ?? null,
     summary ? data.details[summary.id] : undefined,
-    isLive,
   );
   const tileById = new Map(tiles.map((tile) => [tile.id, tile]));
   const createLayout = () =>

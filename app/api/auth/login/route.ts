@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { isLiveSource } from "@/config/env";
 import { loginInputSchema } from "@/features/auth/schemas/login";
 import { CentralError } from "@/lib/api/central-client";
 import { setAuthCookies } from "@/lib/auth/session";
@@ -15,7 +14,6 @@ export const POST = async (request: Request) => {
       { status: 400 },
     );
   }
-  if (!isLiveSource) return Response.json({ ok: true });
   try {
     const tokens = await login(body.data.identifier, body.data.password);
     setAuthCookies(await cookies(), tokens, body.data.remember);

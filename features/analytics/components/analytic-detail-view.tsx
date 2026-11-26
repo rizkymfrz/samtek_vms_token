@@ -29,15 +29,13 @@ const QUALITY_ITEMS = [
 export const AnalyticDetailView = ({
   group,
   live: initialLive,
-  isLive,
   children,
 }: {
   group: Pick<AnalyticGroup, "slug" | "title" | "analyticIds">;
   live: LiveData;
-  isLive: boolean;
   children: ReactNode;
 }) => {
-  const tiles = useAnalyticTiles(initialLive, isLive, group.analyticIds);
+  const tiles = useAnalyticTiles(initialLive, group.analyticIds);
   const [quality, setQuality] = useState<StreamQuality>("sub");
   const stage = useRef<HTMLDivElement>(null);
   const size = gridSize(tiles.length);

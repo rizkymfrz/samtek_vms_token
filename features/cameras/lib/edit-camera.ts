@@ -67,36 +67,6 @@ export const cameraDraftSchema = z
     },
   );
 
-export const saveCamera = (
-  cameras: CameraRecord[],
-  draft: Draft,
-  editingId: string | null,
-): CameraRecord[] => {
-  const record = (id: string): CameraRecord => ({
-    id,
-    edgeServerId: draft.edgeServerId,
-    name: draft.name.trim(),
-    isEnabled: draft.isEnabled,
-    sourceMain: draft.sourceMain.trim(),
-    sourceSub: draft.sourceSub.trim() || null,
-    sourceThird: draft.sourceThird.trim() || null,
-    analyticId: draft.analyticId,
-    isRecordingEnabled: draft.isRecordingEnabled,
-    applyStatus: "applied",
-    applyError: null,
-  });
-  if (editingId === null) {
-    const nextId = String(
-      Math.max(0, ...cameras.map((c) => Number(c.id) || 0)) + 1,
-    );
-    return [...cameras, record(nextId)];
-  }
-  return cameras.map((c) => (c.id === editingId ? record(c.id) : c));
-};
-
-export const removeCamera = (cameras: CameraRecord[], id: string) =>
-  cameras.filter((c) => c.id !== id);
-
 export const maskSource = (url: string | null): string => {
   if (!url) return "Not set";
   return url.replace(/^([a-z]+:\/\/)[^/@\s]*@/i, "$1");

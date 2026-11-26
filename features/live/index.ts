@@ -31,7 +31,6 @@ export {
   gridValue,
 } from "./lib/grid-preference-store";
 
-export type { ServerNode } from "./types";
 export { CameraWebToggle } from "./components/camera-web-toggle";
 export { StreamQualityPick } from "./components/stream-quality-pick";
 export { useStreamQuality } from "./hooks/use-stream-quality";

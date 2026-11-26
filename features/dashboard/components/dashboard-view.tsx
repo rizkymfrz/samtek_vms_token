@@ -1,6 +1,6 @@
 import { isShown, SECTIONS, WIDGETS } from "./widgets";
 import { packRows } from "../lib/layout";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 export const DashboardView = ({ data }: { data: Dashboard }) => {
   const visible = WIDGETS.filter(

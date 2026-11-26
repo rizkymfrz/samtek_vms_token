@@ -35,7 +35,6 @@ export const FloorplanPanel = ({
   onRemove,
   onRotate,
   onFov,
-  isLive,
   isBusy,
   onCreate,
   onUpload,
@@ -56,7 +55,6 @@ export const FloorplanPanel = ({
   onRemove: (id: string) => void;
   onRotate: (id: string, degrees: number) => void;
   onFov: (id: string, fov: number) => void;
-  isLive: boolean;
   isBusy: boolean;
   hasImage: boolean;
   onCreate: () => void;
@@ -131,42 +129,36 @@ export const FloorplanPanel = ({
         items={planItems}
         value={planId}
         onChange={onPlan}
-        actions={
-          isLive
-            ? {
-                createLabel: "Add floor plan",
-                deleteLabel: "Delete floor plan",
-                isDeleteDisabled: isBusy,
-                onCreate,
-                onDelete,
-              }
-            : undefined
-        }
+        actions={{
+          createLabel: "Add floor plan",
+          deleteLabel: "Delete floor plan",
+          isDeleteDisabled: isBusy,
+          onCreate,
+          onDelete,
+        }}
       >
-        {isLive && (
-          <>
-            <input
-              ref={fileInput}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              className="hidden"
-              aria-label="Floor plan image"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                event.target.value = "";
-                if (file) onUpload(file);
-              }}
-            />
-            <Button
-              variant="secondary"
-              disabled={isBusy}
-              onClick={() => fileInput.current?.click()}
-            >
-              <ImageUpIcon />
-              {hasImage ? "Replace image" : "Upload image"}
-            </Button>
-          </>
-        )}
+        <>
+          <input
+            ref={fileInput}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            className="hidden"
+            aria-label="Floor plan image"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (file) onUpload(file);
+            }}
+          />
+          <Button
+            variant="secondary"
+            disabled={isBusy}
+            onClick={() => fileInput.current?.click()}
+          >
+            <ImageUpIcon />
+            {hasImage ? "Replace image" : "Upload image"}
+          </Button>
+        </>
       </PanelPicker>
       {selected && selectedCamera && (
         <PanelSelected title={selectedCamera.name} state={selectedCamera.state}>

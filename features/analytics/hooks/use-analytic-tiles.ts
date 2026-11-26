@@ -7,10 +7,9 @@ import { deviceStateOf } from "@/lib/device-state";
 
 export const useAnalyticTiles = (
   initialLive: LiveData,
-  isLive: boolean,
   analyticIds: string[],
 ) => {
-  const { data: live } = useLive(initialLive, isLive);
+  const { data: live } = useLive(initialLive);
   useFailureToast(
     "Some edge servers did not respond",
     live.failures.map((failure) => `${failure.serverName}: ${failure.message}`),

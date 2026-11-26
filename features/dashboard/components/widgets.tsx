@@ -28,7 +28,7 @@ import { RiskDonut } from "./risk-donut";
 import { Stats } from "./stats";
 import { VehicleDonut } from "./vehicle-donut";
 import { duration } from "../lib/format";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 export type Widget = {
   id: string;

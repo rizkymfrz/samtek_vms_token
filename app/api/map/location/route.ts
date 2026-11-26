@@ -1,9 +1,7 @@
-import { isLiveSource } from "@/config/env";
 import { locationInputSchema } from "@/features/map/schemas/map";
 import { callCentral, errorResponse } from "@/lib/api/central-proxy";
 
 export const PATCH = async (request: Request) => {
-  if (!isLiveSource) return new Response(null, { status: 404 });
   const body = locationInputSchema.safeParse(
     await request.json().catch(() => null),
   );

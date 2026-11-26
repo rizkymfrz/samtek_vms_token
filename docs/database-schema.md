@@ -1,7 +1,7 @@
 # Database schema (reference for the UI)
 
-Two databases feed this app. Build pages and dummy data against these field names; do not
-invent columns. When a real API replaces the dummy data, keep these names.
+Two databases feed this app. Build pages against these field names; do not
+invent columns.
 
 | | Profile database | Analytics database |
 |---|---|---|
@@ -10,8 +10,6 @@ invent columns. When a real API replaces the dummy data, keep these names.
 | Holds | users, roles, edge servers, devices (cameras), layouts, floor plans, tickets | alarms, recognitions, counting statistics |
 | Naming | Prisma camelCase fields, snake_case columns | snake_case |
 | Keys | PK/FK/UNIQUE as in the schema below | **none**: no PK, FK or UNIQUE; relations only by `event_id` |
-
-Dummy data in this repo: `app/(app)/dashboard/_data/` (analytics) and `app/(app)/live/_data/` (profile).
 
 ---
 
@@ -546,13 +544,12 @@ straight from the edge, tickets live in the central database.
 
 **UI types** are in `features/tickets/types.ts`, parsed from `features/tickets/schemas/ticket.ts`. BFF routes:
 `/api/tickets` (with `/{id}`, `/{id}/{action}`, `/{id}/image`, `/{id}/evidence`, `/{id}/link-deliveries`),
-`/api/edge-servers/{serverId}/ticket-rules` and the public `/api/ticket-link/ticket/*`. With `DATA_SOURCE=mock` they use the in-memory store in
-`features/tickets/services/build-tickets.ts`; the mock link token is `demo` (opens ticket 1).
+`/api/edge-servers/{serverId}/ticket-rules` and the public `/api/ticket-link/ticket/*`.
 
 ## 2. Analytics database (DuckDB, written by the edge)
 
 Source of truth for the shape is the edge's DDL (`src/adapters/outbound/external/duckdb/duckdb_database.cpp` in
-`samtek_edge_new`). The UI types are in `app/(app)/dashboard/_data/types.ts`.
+`samtek_edge_new`). The UI types are in `features/dashboard/types.ts`.
 
 ### Alarms
 

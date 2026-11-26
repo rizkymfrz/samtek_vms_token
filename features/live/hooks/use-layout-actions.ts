@@ -11,7 +11,7 @@ import {
 } from "../services/live-api";
 import type { LiveData, LiveLayout, LiveLayoutSummary } from "../types";
 
-export const useLayoutActions = (isLive: boolean) => {
+export const useLayoutActions = () => {
   const queryClient = useQueryClient();
   const writeLayouts = (
     change: (layouts: LiveLayoutSummary[]) => LiveLayoutSummary[],
@@ -23,13 +23,10 @@ export const useLayoutActions = (isLive: boolean) => {
   const writeDetail = (layout: LiveLayout) =>
     queryClient.setQueryData(layoutQueryKey(layout.id), layout);
   const refreshDetail = (id: string) =>
-    isLive
-      ? queryClient.invalidateQueries({ queryKey: layoutQueryKey(id) })
-      : undefined;
+    queryClient.invalidateQueries({ queryKey: layoutQueryKey(id) });
   const create = useMutation({
     mutationFn: async (existing: LiveLayoutSummary[]): Promise<LiveLayout> => {
       const draft = createLayout(existing);
-      if (!isLive) return draft;
       const created = await createLayoutRequest({
         name: draft.name,
         isDefault: existing.length === 0,
@@ -42,18 +39,15 @@ export const useLayoutActions = (isLive: boolean) => {
     },
   });
   const remove = useMutation({
-    mutationFn: async (id: string) => {
-      if (isLive) await deleteLayoutRequest(id);
-    },
+    mutationFn: deleteLayoutRequest,
     onSuccess: (_result, id) => {
       writeLayouts((all) => all.filter((layout) => layout.id !== id));
       queryClient.removeQueries({ queryKey: layoutQueryKey(id) });
     },
   });
   const changeSlots = useMutation({
-    mutationFn: async ({ next }: { layout: LiveLayout; next: LiveLayout }) => {
-      if (isLive) await replaceCamerasRequest(next.id, next.cameras);
-    },
+    mutationFn: ({ next }: { layout: LiveLayout; next: LiveLayout }) =>
+      replaceCamerasRequest(next.id, next.cameras),
     onMutate: async ({ layout, next }) => {
       await queryClient.cancelQueries({ queryKey: layoutQueryKey(layout.id) });
       writeDetail(next);

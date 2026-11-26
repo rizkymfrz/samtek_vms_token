@@ -1,5 +1,4 @@
 import { connection } from "next/server";
-import { isLiveSource } from "@/config/env";
 import {
   devicePositionsQuerySchema,
   devicePositionsResponseSchema,
@@ -16,7 +15,7 @@ export const GET = async (
 ) => {
   await connection();
   const { serverId, id } = await params;
-  if (!isLiveSource || !isValidIds(serverId, id)) {
+  if (!isValidIds(serverId, id)) {
     return new Response(null, { status: 404 });
   }
   const query = devicePositionsQuerySchema.safeParse(

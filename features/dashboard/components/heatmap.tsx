@@ -1,4 +1,4 @@
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 const tint = (count: number, max: number) =>
   `color-mix(in oklch, var(--chart-2) ${Math.round((count / max) * 100)}%, var(--muted))`;

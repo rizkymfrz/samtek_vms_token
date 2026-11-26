@@ -1,14 +1,11 @@
-import { isLiveSource } from "@/config/env";
 import { createCentralClient } from "@/lib/api/central-client";
 import { fetchAllPages } from "@/lib/api/central-pages";
 import { listCentralServers } from "@/lib/api/edge-registry";
 import { requireAccessToken } from "@/lib/auth/session";
-import { buildServers } from "./build-servers";
 import { serverGroupSchema } from "../schemas/server";
 import type { ServerFailure, ServersData } from "../types";
 
 export const getServers = async (): Promise<ServersData> => {
-  if (!isLiveSource) return buildServers();
   const token = await requireAccessToken();
   const client = createCentralClient(token);
   const now = Date.now();
@@ -30,11 +27,8 @@ export const getServers = async (): Promise<ServersData> => {
     failures,
     servers: servers.map(({ deviceCount, ...server }) => ({
       ...server,
-      vendor: null,
       cameraCount: deviceCount,
     })),
     groups: groups ?? [],
-    discovered: [],
-    metrics: {},
   };
 };

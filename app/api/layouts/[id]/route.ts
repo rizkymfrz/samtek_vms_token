@@ -1,5 +1,4 @@
 import { connection } from "next/server";
-import { isLiveSource } from "@/config/env";
 import { summaryOf } from "@/features/live/lib/edit-layout";
 import {
   layoutResponseSchema,
@@ -16,7 +15,7 @@ type Context = { params: Promise<{ id: string }> };
 
 const resolve = async ({ params }: Context) => {
   const { id } = await params;
-  return isLiveSource && isValidIds(id) ? id : null;
+  return isValidIds(id) ? id : null;
 };
 
 export const GET = async (_request: Request, context: Context) => {

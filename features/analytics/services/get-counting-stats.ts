@@ -1,8 +1,6 @@
-import { isLiveSource } from "@/config/env";
 import { getFromEdge } from "@/lib/api/edge-client";
 import { getEdgeServers } from "@/lib/api/edge-registry";
 import { requireAccessToken } from "@/lib/auth/session";
-import { buildCountingStats } from "./build-counting-stats";
 import { edgeCountingStatsSchema } from "../schemas/counting-stats";
 import type { CountingStats, CountingStatsQuery } from "../types";
 
@@ -11,7 +9,6 @@ export class EdgeNotFoundError extends Error {}
 export const getCountingStats = async (
   query: CountingStatsQuery,
 ): Promise<CountingStats> => {
-  if (!isLiveSource) return buildCountingStats(Date.now(), query);
   const token = await requireAccessToken();
   const edge = (await getEdgeServers(token)).find(
     ({ id }) => id === query.edgeId,

@@ -27,15 +27,9 @@ import { appendFix, msUntilNextDay, startOfDay, trailOf } from "../lib/trail";
 import { saveLocationRequest } from "../services/map-api";
 import type { DevicePosition, MapData, MapMarker, MapPlace } from "../types";
 
-export const MapView = ({
-  data: initial,
-  isLive,
-}: {
-  data: MapData;
-  isLive: boolean;
-}) => {
+export const MapView = ({ data: initial }: { data: MapData }) => {
   const queryClient = useQueryClient();
-  const { data: fetched } = useMap(initial, isLive);
+  const { data: fetched } = useMap(initial);
   const bodyworn = useBodyworn();
   const data = useMemo(() => {
     const live = (edgeId: string, deviceId: string) =>
@@ -140,7 +134,7 @@ export const MapView = ({
     return () => clearTimeout(timer);
   }, [dayStart]);
   const trackTarget =
-    isLive && selected?.type === "device" && selectedBodyworn
+    selected?.type === "device" && selectedBodyworn
       ? { edgeServerId: selected.edgeServerId, deviceId: selected.id }
       : null;
   const history = useDevicePositions(trackTarget, dayStart);
@@ -235,7 +229,6 @@ export const MapView = ({
           onSelect={select}
           truncated={data.truncated}
           unplaced={data.unplaced}
-          isLive={isLive}
           isBusy={save.isPending}
           placing={placing}
           onPlacing={setPlacing}
@@ -248,7 +241,7 @@ export const MapView = ({
         isFaulty={isFaulty}
         selectedKey={selectedKey}
         onSelect={setSelectedKey}
-        isDraggable={isLive}
+        isDraggable
         isPlacing={placing !== null}
         onPlace={(latitude, longitude) => {
           if (placing) saveLocation(placing, latitude, longitude);

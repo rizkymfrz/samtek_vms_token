@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { updateUserInputSchema } from "@/features/users/schemas/user";
 import {
   callCentral,
@@ -10,7 +9,7 @@ type Context = { params: Promise<{ id: string }> };
 
 const resolve = async ({ params }: Context) => {
   const { id } = await params;
-  return isLiveSource && isValidIds(id) ? `/v1/users/${id}` : null;
+  return isValidIds(id) ? `/v1/users/${id}` : null;
 };
 
 export const PATCH = async (request: Request, context: Context) => {

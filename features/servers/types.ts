@@ -10,18 +10,10 @@ export type ServerRecord = {
   macAddress: string | null;
   isActive: boolean;
   lastSeenAt: number | null;
-  vendor: string | null;
   cameraCount: number;
 };
 
 export type ServerGroup = { id: string; name: string };
-
-export type Discovered = {
-  id: string;
-  ip: string;
-  vendor: string;
-  registeredServerId: string | null;
-};
 
 export type Metrics = {
   cpuTemp: number[];
@@ -37,13 +29,6 @@ export type Metrics = {
   };
 };
 
-export type LogLine = {
-  id: number;
-  at: number;
-  level: "INFO" | "WARN" | "DEBUG";
-  message: string;
-};
-
 export type ServerFailure = { serverName: string; message: string };
 
 export type ServersData = {
@@ -51,6 +36,4 @@ export type ServersData = {
   failures: ServerFailure[];
   servers: ServerRecord[];
   groups: ServerGroup[];
-  discovered: Discovered[];
-  metrics: Record<string, Metrics>;
 };

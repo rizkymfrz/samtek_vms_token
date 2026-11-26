@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { isLiveSource } from "@/config/env";
 import {
   FACE_RECOGNITION_SLUG,
   findAnalyticGroup,
@@ -31,7 +30,7 @@ const FacesContent = async ({
   const { slug } = await params;
   if (slug !== FACE_RECOGNITION_SLUG) notFound();
   const data = await redirectIfUnauthorized(getFaces());
-  return <FacesView data={data} isLive={isLiveSource} />;
+  return <FacesView data={data} />;
 };
 
 const Page = ({ params }: PageProps<"/analytics/[slug]/faces">) => {

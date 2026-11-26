@@ -58,12 +58,11 @@ const applyEvent = (previous: AlertsData, event: EdgeEvent, since: number) => {
 
 export const useAlerts = (
   initialData: AlertsData | undefined,
-  isPolling: boolean,
   filters: Filters,
 ) => {
   const key = rangeKey(filters);
   const queryClient = useQueryClient();
-  const isLive = isPolling && mqttConfig !== null;
+  const isLive = mqttConfig !== null;
   useEffect(() => {
     if (!isLive) return;
     const queryKey = ["alerts", key];
@@ -106,9 +105,7 @@ export const useAlerts = (
     initialData: key === rangeKey(DEFAULT_FILTERS) ? initialData : undefined,
     placeholderData: keepPreviousData,
     refetchInterval: () =>
-      isPolling &&
-      mqttConfig === null &&
-      alertWindow(filters, Date.now()).until === null
+      mqttConfig === null && alertWindow(filters, Date.now()).until === null
         ? POLL_INTERVAL_MS
         : false,
   });

@@ -9,17 +9,52 @@ import {
   ticketUpdatedMessageSchema,
   updateTicketRuleInputSchema,
 } from "../../features/tickets/schemas/ticket.ts";
-import { mockGetTicket } from "../../features/tickets/services/build-tickets.ts";
 
-test("the mock tickets satisfy the central response schema", () => {
-  for (const id of ["1", "2", "3", "4", "5"]) {
-    assert.doesNotThrow(() => ticketDetailSchema.parse(mockGetTicket(id)));
-  }
+const MINUTE_MS = 60_000;
+
+const at = (minutesAgo) =>
+  new Date(Date.now() - minutesAgo * MINUTE_MS).toISOString();
+
+const ticket = (patch = {}) => ({
+  id: "1",
+  edgeServerId: "1",
+  deviceId: "1",
+  deviceName: "Lobby",
+  analyticId: "line_crossing",
+  kind: "line_cross",
+  perimeterName: "Entrance line",
+  title: "Line crossing",
+  description: "A person crossed the entrance line",
+  riskLevel: "medium",
+  status: "open",
+  assigneeId: "1",
+  assigneeUsername: "Rizky Maulana",
+  assignedAt: at(2),
+  ackDeadlineAt: at(-3),
+  acknowledgedAt: null,
+  escalatedAt: null,
+  reassignCount: 0,
+  alertCount: 1,
+  firstAlertAt: at(2),
+  lastAlertAt: at(2),
+  hasImage: false,
+  resolutionType: null,
+  resolutionNote: null,
+  resolveRequestedAt: null,
+  closedAt: null,
+  createdAt: at(2),
+  updatedAt: null,
+  alerts: [],
+  evidence: [],
+  events: [
+    { id: "11", type: "created", actorUserId: null, createdAt: at(2) },
+    { id: "12", type: "assigned", actorUserId: null, createdAt: at(2) },
+  ],
+  ...patch,
 });
 
 test("central sends BIGINT ids as strings and the schema keeps them", () => {
-  const ticket = { ...mockGetTicket("1"), id: 5, assigneeId: 7 };
-  const parsed = ticketDetailSchema.parse(ticket);
+  const parsed = ticketDetailSchema.parse(ticket({ id: 5, assigneeId: 7 }));
   assert.equal(parsed.id, "5");
   assert.equal(parsed.assigneeId, "7");
 });
@@ -119,12 +154,21 @@ test("ticket.updated is read from the payload and ignores the rest", () => {
 });
 
 test("the detail carries the evidence photos", () => {
-  const parsed = ticketDetailSchema.parse(mockGetTicket("3"));
+  const withPhoto = ticket({
+    evidence: [
+      {
+        id: "31",
+        uploadedById: "1",
+        uploadedByUsername: "Rizky Maulana",
+        createdAt: at(30),
+      },
+    ],
+  });
+  const parsed = ticketDetailSchema.parse(withPhoto);
   assert.equal(parsed.evidence.length, 1);
   assert.equal(parsed.evidence[0].uploadedByUsername, "Rizky Maulana");
   assert.equal(
-    ticketDetailSchema.safeParse({ ...mockGetTicket("3"), evidence: undefined })
-      .success,
+    ticketDetailSchema.safeParse({ ...withPhoto, evidence: undefined }).success,
     false,
   );
 });

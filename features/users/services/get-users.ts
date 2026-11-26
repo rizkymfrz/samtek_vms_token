@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import {
   CentralError,
   createCentralClient,
@@ -6,12 +5,10 @@ import {
 } from "@/lib/api/central-client";
 import { fetchAllPages } from "@/lib/api/central-pages";
 import { requireAccessToken } from "@/lib/auth/session";
-import { buildUsers } from "./build-users";
 import { roleSchema, serverOptionSchema, userSchema } from "../schemas/user";
 import type { UserFailure, UsersData } from "../types";
 
 export const getUsers = async (): Promise<UsersData> => {
-  if (!isLiveSource) return buildUsers();
   const client = createCentralClient(await requireAccessToken());
   const settle = <T>(source: string, request: Promise<T[]>) =>
     request.then(

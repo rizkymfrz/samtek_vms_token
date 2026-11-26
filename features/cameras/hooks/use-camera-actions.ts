@@ -5,8 +5,6 @@ import { invalidateDeviceData } from "@/lib/query/invalidate";
 import { CAMERAS_QUERY_KEY } from "./use-cameras";
 import {
   type Draft,
-  removeCamera,
-  saveCamera,
   toCreatePayload,
   toUpdatePayload,
 } from "../lib/edit-camera";
@@ -19,7 +17,7 @@ import type { CameraData, CameraRecord } from "../types";
 
 type Flags = Partial<Pick<CameraRecord, "isEnabled" | "isRecordingEnabled">>;
 
-export const useCameraActions = (isLive: boolean) => {
+export const useCameraActions = () => {
   const queryClient = useQueryClient();
   const read = () =>
     queryClient.getQueryData<CameraData>(CAMERAS_QUERY_KEY)?.cameras ?? [];
@@ -28,14 +26,9 @@ export const useCameraActions = (isLive: boolean) => {
       CAMERAS_QUERY_KEY,
       (current) => current && { ...current, cameras: change(current.cameras) },
     );
-  const refresh = () =>
-    isLive ? invalidateDeviceData(queryClient) : undefined;
+  const refresh = () => invalidateDeviceData(queryClient);
   const save = useMutation({
     mutationFn: async ({ draft, id }: { draft: Draft; id: string | null }) => {
-      if (!isLive) {
-        edit((all) => saveCamera(all, draft, id));
-        return;
-      }
       const original = read().find((camera) => camera.id === id);
       if (original) {
         await updateCamera(original, toUpdatePayload(draft, original));
@@ -47,10 +40,6 @@ export const useCameraActions = (isLive: boolean) => {
   });
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      if (!isLive) {
-        edit((all) => removeCamera(all, id));
-        return;
-      }
       const original = read().find((camera) => camera.id === id);
       if (original) await deleteCamera(original);
     },
@@ -59,7 +48,7 @@ export const useCameraActions = (isLive: boolean) => {
   const toggle = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Flags }) => {
       const original = read().find((camera) => camera.id === id);
-      if (isLive && original) await updateCamera(original, patch);
+      if (original) await updateCamera(original, patch);
     },
     onMutate: async ({ id, patch }) => {
       await queryClient.cancelQueries({ queryKey: CAMERAS_QUERY_KEY });

@@ -27,16 +27,10 @@ import { NAV_GROUPS } from "@/config/navigation";
 import { BrandLogo } from "./brand-logo";
 import { useNavChildren } from "./use-nav-children";
 
-export const AppSidebar = ({
-  footer,
-  isLive,
-}: {
-  footer: ReactNode;
-  isLive: boolean;
-}) => {
+export const AppSidebar = ({ footer }: { footer: ReactNode }) => {
   const pathname = usePathname();
   const selectedId = useSearchParams().get("id");
-  const children = useNavChildren(isLive);
+  const children = useNavChildren();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   return (
     <Sidebar collapsible="icon">

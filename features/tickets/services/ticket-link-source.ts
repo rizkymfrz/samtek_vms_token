@@ -1,17 +1,9 @@
-import { isLiveSource } from "@/config/env";
 import {
   CentralError,
   createCentralClient,
   toCentralError,
 } from "@/lib/api/central-client";
 import { errorResponse } from "@/lib/api/central-proxy";
-import {
-  mockAddEvidence,
-  mockGetTicket,
-  mockLinkTicketId,
-  mockRunAction,
-} from "./build-tickets";
-import { fromMock, notFound } from "./ticket-source";
 import {
   ticketDetailResponseSchema,
   ticketEvidenceResponseSchema,
@@ -26,19 +18,6 @@ import type {
 
 export const LINK_HEADER = "X-Ticket-Link";
 const LINK_INVALID = "TICKET_LINK_INVALID";
-
-const invalid = () =>
-  new CentralError(
-    "This link is invalid or no longer active",
-    401,
-    LINK_INVALID,
-  );
-
-const mockTicketId = (token: string) => {
-  const id = mockLinkTicketId(token);
-  if (!id) throw invalid();
-  return id;
-};
 
 const linkCentral = async (
   token: string,
@@ -60,11 +39,6 @@ const linkCentral = async (
 };
 
 export const getLinkTicket = async (token: string): Promise<TicketDetail> => {
-  if (!isLiveSource) {
-    const ticket = mockGetTicket(mockTicketId(token));
-    if (!ticket) throw notFound();
-    return structuredClone(ticket);
-  }
   return ticketDetailResponseSchema.parse(await linkCentral(token, "get", ""))
     .data;
 };
@@ -74,15 +48,6 @@ export const runLinkAction = async (
   action: "acknowledge" | "start" | "request-resolution",
   body: ActionBody,
 ): Promise<TicketRecord> => {
-  if (!isLiveSource) {
-    try {
-      const ticket = mockRunAction(mockTicketId(token), action, body);
-      if (!ticket) throw notFound();
-      return ticket;
-    } catch (error) {
-      throw fromMock(error);
-    }
-  }
   return ticketResponseSchema.parse(
     await linkCentral(token, "post", `/${action}`, body),
   ).data;
@@ -92,15 +57,6 @@ export const addLinkEvidence = async (
   token: string,
   file: File,
 ): Promise<TicketEvidence> => {
-  if (!isLiveSource) {
-    try {
-      const evidence = mockAddEvidence(mockTicketId(token));
-      if (!evidence) throw notFound();
-      return evidence;
-    } catch (error) {
-      throw fromMock(error);
-    }
-  }
   const form = new FormData();
   form.append("file", file, file.name);
   return ticketEvidenceResponseSchema.parse(

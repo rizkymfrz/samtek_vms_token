@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { summaryOf } from "@/features/live/lib/edit-layout";
 import {
   createLayoutInputSchema,
@@ -7,7 +6,6 @@ import {
 import { callCentral, errorResponse } from "@/lib/api/central-proxy";
 
 export const POST = async (request: Request) => {
-  if (!isLiveSource) return new Response(null, { status: 404 });
   const body = createLayoutInputSchema.safeParse(
     await request.json().catch(() => null),
   );

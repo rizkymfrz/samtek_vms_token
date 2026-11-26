@@ -6,13 +6,9 @@ import { CUSTOM_RANGE, DEFAULT_FILTERS, toDateKey } from "../lib/filter-alerts";
 
 export const ALL_ALERTS = "all";
 
-export const useAlertMarkers = (
-  day: Date,
-  cameraNames: string[],
-  isLive: boolean,
-) => {
+export const useAlertMarkers = (day: Date, cameraNames: string[]) => {
   const key = toDateKey(day);
-  const { data } = useAlerts(undefined, isLive, {
+  const { data } = useAlerts(undefined, {
     ...DEFAULT_FILTERS,
     range: CUSTOM_RANGE,
     from: key,

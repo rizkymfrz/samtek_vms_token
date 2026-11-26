@@ -6,7 +6,6 @@ import { USERS_QUERY_KEY } from "./use-users";
 import {
   type Draft,
   hasChanges,
-  saveUserLocally,
   toCreatePayload,
   toUpdatePayload,
 } from "../lib/edit-user";
@@ -18,18 +17,13 @@ import {
   deleteUser,
   updateUser,
 } from "../services/user-api";
-import type { RoleDraft, UserRecord, UsersData } from "../types";
+import type { RoleDraft, UsersData } from "../types";
 
-export const useUserActions = (isLive: boolean) => {
+export const useUserActions = () => {
   const queryClient = useQueryClient();
   const read = () =>
     queryClient.getQueryData<UsersData>(USERS_QUERY_KEY)?.users ?? [];
-  const edit = (change: (users: UserRecord[]) => UserRecord[]) =>
-    queryClient.setQueryData<UsersData>(
-      USERS_QUERY_KEY,
-      (current) => current && { ...current, users: change(current.users) },
-    );
-  const refresh = () => (isLive ? invalidateUserData(queryClient) : undefined);
+  const refresh = () => invalidateUserData(queryClient);
   const save = useMutation({
     mutationFn: async ({
       draft,
@@ -38,10 +32,6 @@ export const useUserActions = (isLive: boolean) => {
       draft: Draft;
       id: string | null;
     }): Promise<{ warning: string | null }> => {
-      if (!isLive) {
-        edit((all) => saveUserLocally(all, draft, id));
-        return { warning: null };
-      }
       const original = read().find((user) => user.id === id);
       if (!original) {
         const createdId = await createUser(toCreatePayload(draft));
@@ -65,28 +55,11 @@ export const useUserActions = (isLive: boolean) => {
     onSettled: refresh,
   });
   const addRole = useMutation({
-    mutationFn: async (draft: RoleDraft): Promise<string> => {
-      if (isLive) return createRole(draft);
-      const roles =
-        queryClient.getQueryData<UsersData>(USERS_QUERY_KEY)?.roles ?? [];
-      const id = String(Math.max(0, ...roles.map((r) => Number(r.id))) + 1);
-      queryClient.setQueryData<UsersData>(
-        USERS_QUERY_KEY,
-        (current) =>
-          current && {
-            ...current,
-            roles: [...current.roles, { id, name: draft.name }],
-          },
-      );
-      return id;
-    },
+    mutationFn: (draft: RoleDraft) => createRole(draft),
     onSuccess: refresh,
   });
   const remove = useMutation({
-    mutationFn: async (id: string) => {
-      if (isLive) await deleteUser(id);
-      else edit((all) => all.filter((user) => user.id !== id));
-    },
+    mutationFn: deleteUser,
     onSuccess: refresh,
   });
   return {

@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { replacePlacementsInputSchema } from "@/features/floorplan/schemas/floorplan";
 import {
   callCentral,
@@ -11,8 +10,7 @@ export const PUT = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
-  if (!isLiveSource || !isValidIds(id))
-    return new Response(null, { status: 404 });
+  if (!isValidIds(id)) return new Response(null, { status: 404 });
   const body = replacePlacementsInputSchema.safeParse(
     await request.json().catch(() => null),
   );

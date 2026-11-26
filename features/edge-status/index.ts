@@ -62,7 +62,6 @@ export {
 } from "./lib/playback-commands";
 
 export { startDeviceScan, stopDeviceScan } from "./lib/scan-commands";
-export type { ScanRequest } from "./lib/scan-commands";
 
 export {
   type EdgeScanResult,

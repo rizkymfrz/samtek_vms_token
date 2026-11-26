@@ -2,7 +2,7 @@ import { FlameIcon } from "lucide-react";
 import { StatusDot } from "@/components/shared/status-dot";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 const MARKS = {
   fire: { label: "Fire", shape: "round", status: "danger" },

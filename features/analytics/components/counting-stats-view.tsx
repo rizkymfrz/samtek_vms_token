@@ -84,14 +84,12 @@ export const CountingStatsView = ({
   group,
   live,
   alerts,
-  isLive,
 }: {
   group: Pick<AnalyticGroup, "slug" | "title" | "analyticIds">;
   live: LiveData;
   alerts: AlertsData;
-  isLive: boolean;
 }) => {
-  const tiles = useAnalyticTiles(live, isLive, group.analyticIds);
+  const tiles = useAnalyticTiles(live, group.analyticIds);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [bucket, setBucket] = useState<StatsBucket>("hour");
   const [metric, setMetric] = useState<StatsMetric>("count");
@@ -104,7 +102,6 @@ export const CountingStatsView = ({
     deviceId: tile?.id ?? null,
     bucket,
     range,
-    isPolling: isLive,
   });
   useFailureToast("Failed to load statistics", [
     error ? messageOf(error, "Failed to load statistics.") : null,
@@ -245,7 +242,6 @@ export const CountingStatsView = ({
                     analyticIds={group.analyticIds}
                     cameraName={tile.name}
                     initialAlerts={alerts}
-                    isLive={isLive}
                   />
                 </div>
               </div>

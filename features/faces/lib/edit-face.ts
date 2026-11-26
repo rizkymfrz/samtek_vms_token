@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { requiredText } from "@/lib/forms/required-text";
 import { GROUP_MAX, NAME_MAX, PHOTO_MAX_BYTES } from "../schemas/face";
-import type { FaceRecord } from "../types";
 
 export const DEFAULT_GROUP = "nogroup";
 
@@ -51,23 +50,4 @@ export const toFormData = (draft: Draft) => {
   form.set("group", draft.group.trim());
   if (draft.photo) form.set("photo", draft.photo);
   return form;
-};
-
-export const enrollLocally = (
-  faces: FaceRecord[],
-  draft: Draft,
-  edgeName: string,
-): FaceRecord[] => {
-  return [
-    ...faces,
-    {
-      id: crypto.randomUUID(),
-      personId: crypto.randomUUID(),
-      name: draft.name.trim(),
-      group: draft.group.trim() || DEFAULT_GROUP,
-      hasPhoto: false,
-      edgeId: draft.edgeId,
-      edgeName,
-    },
-  ];
 };

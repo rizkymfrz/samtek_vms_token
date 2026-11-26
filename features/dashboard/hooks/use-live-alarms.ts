@@ -11,7 +11,7 @@ import {
   subscribeEdgeReconnect,
 } from "@/features/edge-status";
 import { RECENT_ALARMS } from "../lib/recent-alarms";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 const NO_RELAY = { webrtcUrl: null, webrtcUrlLocal: null };
 

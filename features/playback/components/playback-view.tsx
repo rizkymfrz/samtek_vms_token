@@ -65,14 +65,8 @@ const QUALITY_ITEMS = [
 const streamOf = (quality: StreamQuality) => (tile: Tile) =>
   resolveQuality(undefined, quality, tile) === "main" ? "main" : "sub";
 
-export const PlaybackView = ({
-  data,
-  isLive,
-}: {
-  data: LiveData;
-  isLive: boolean;
-}) => {
-  const { data: live } = useLive(data, isLive);
+export const PlaybackView = ({ data }: { data: LiveData }) => {
+  const { data: live } = useLive(data);
   useFailureToast(
     "Some edge servers did not respond",
     live.failures.map((failure) => `${failure.serverName}: ${failure.message}`),
@@ -108,7 +102,6 @@ export const PlaybackView = ({
   const alertMarkers = useAlertMarkers(
     day,
     visible.map((tile) => tile.name),
-    isLive,
   );
   const hasOnline = visible.some((tile) => !isServerDown(tile.state));
   return (

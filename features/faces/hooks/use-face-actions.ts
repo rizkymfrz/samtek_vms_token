@@ -2,46 +2,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { messageOf } from "@/lib/axios/browser-client";
 import { FACES_QUERY_KEY } from "./use-faces";
-import { type Draft, enrollLocally, toFormData } from "../lib/edit-face";
+import { type Draft, toFormData } from "../lib/edit-face";
 import { deleteFace, enrollFace } from "../services/face-api";
-import type { EnrolledFace, FaceRecord, FacesData, Person } from "../types";
+import type { EnrolledFace, Person } from "../types";
 
-export const useFaceActions = (isLive: boolean) => {
+export const useFaceActions = () => {
   const queryClient = useQueryClient();
-  const edit = (change: (data: FacesData) => FacesData) =>
-    queryClient.setQueryData<FacesData>(
-      FACES_QUERY_KEY,
-      (current) => current && change(current),
-    );
   const refresh = () =>
-    isLive
-      ? queryClient.invalidateQueries({ queryKey: FACES_QUERY_KEY })
-      : undefined;
+    queryClient.invalidateQueries({ queryKey: FACES_QUERY_KEY });
   const save = useMutation({
-    mutationFn: async (draft: Draft): Promise<EnrolledFace | null> => {
-      if (isLive) return enrollFace(toFormData(draft));
-      edit((data) => ({
-        ...data,
-        faces: enrollLocally(
-          data.faces,
-          draft,
-          data.edges.find((edge) => edge.id === draft.edgeId)?.name ?? "",
-        ),
-      }));
-      return null;
-    },
+    mutationFn: (draft: Draft): Promise<EnrolledFace | null> =>
+      enrollFace(toFormData(draft)),
     onSuccess: refresh,
   });
   const remove = useMutation({
     mutationFn: async (persons: Person[]) => {
-      if (!isLive) {
-        const gone = new Set(persons.flatMap((person) => person.faceIds));
-        edit((data) => ({
-          ...data,
-          faces: data.faces.filter((face: FaceRecord) => !gone.has(face.id)),
-        }));
-        return;
-      }
       const results = await Promise.allSettled(
         persons.flatMap((person) =>
           person.faceIds.map((id) => deleteFace(person.edgeId, id)),

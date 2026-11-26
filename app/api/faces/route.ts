@@ -1,5 +1,4 @@
 import { connection } from "next/server";
-import { isLiveSource } from "@/config/env";
 import {
   edgeFaceCreatedSchema,
   enrollFieldsSchema,
@@ -21,7 +20,6 @@ export const GET = async () => {
 };
 
 export const POST = async (request: Request) => {
-  if (!isLiveSource) return new Response(null, { status: 404 });
   const form = await request.formData().catch(() => null);
   const photo = form?.get("photo");
   const edgeId = form?.get("edgeId");

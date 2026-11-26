@@ -5,19 +5,9 @@ import { useAlerts } from "../hooks/use-alerts";
 import { DEFAULT_FILTERS, type Filters } from "../lib/filter-alerts";
 import type { AlertsData } from "../types";
 
-export const AlertsLive = ({
-  initialData,
-  isPolling,
-}: {
-  initialData: AlertsData;
-  isPolling: boolean;
-}) => {
+export const AlertsLive = ({ initialData }: { initialData: AlertsData }) => {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
-  const { data, isPlaceholderData } = useAlerts(
-    initialData,
-    isPolling,
-    filters,
-  );
+  const { data, isPlaceholderData } = useAlerts(initialData, filters);
   return (
     <AlertsView
       data={data ?? initialData}

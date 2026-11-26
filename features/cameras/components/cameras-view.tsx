@@ -64,14 +64,8 @@ const gridItems = GRID_PRESETS.map(([rows, columns]) => ({
 const analyticName = (id: string | null) =>
   id ? analyticLabel(id) : "No analytic";
 
-export const CamerasView = ({
-  data,
-  isLive,
-}: {
-  data: CameraData;
-  isLive: boolean;
-}) => {
-  const { data: current } = useCameras(data, isLive);
+export const CamerasView = ({ data }: { data: CameraData }) => {
+  const { data: current } = useCameras(data);
   const { failures } = current;
   useFailureToast(
     "Some edge servers did not respond",
@@ -105,7 +99,7 @@ export const CamerasView = ({
   const [isScanOpen, setIsScanOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<CameraRecord | null>(null);
   const { save, remove, toggle, saveError, removeError, toggleError } =
-    useCameraActions(isLive);
+    useCameraActions();
   useFailureToast("Failed to update the camera", [toggleError]);
   useFailureToast("Failed to delete the camera", [removeError]);
   const [rows, columns] = grid.split("x").map(Number);

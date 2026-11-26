@@ -23,12 +23,11 @@ const POLL_INTERVAL_MS = 15_000;
 export const useRecognitionLog = (
   recognizer: string,
   initialData: RecognitionsData,
-  isPolling: boolean,
   range: DateRange | undefined,
 ) => {
   const key = windowKey(range);
   const queryClient = useQueryClient();
-  const isLive = isPolling && mqttConfig !== null;
+  const isLive = mqttConfig !== null;
   useEffect(() => {
     if (!isLive) return;
     const queryKey = ["recognitions", recognizer, key];
@@ -75,9 +74,7 @@ export const useRecognitionLog = (
     initialData: range?.from ? undefined : initialData,
     placeholderData: keepPreviousData,
     refetchInterval: () =>
-      isPolling &&
-      mqttConfig === null &&
-      recognitionWindow(range, Date.now()).until === null
+      mqttConfig === null && recognitionWindow(range, Date.now()).until === null
         ? POLL_INTERVAL_MS
         : false,
   });

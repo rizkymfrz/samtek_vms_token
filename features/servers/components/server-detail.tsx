@@ -1,17 +1,9 @@
 "use client";
-import {
-  PencilIcon,
-  PowerIcon,
-  RotateCwIcon,
-  TerminalIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { PencilIcon, PowerIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mqttConfig } from "@/config/mqtt";
-import { cn } from "@/lib/utils";
 import { MetricChart } from "./metric-chart";
 import { Stats } from "./stats";
 import { StorageCard } from "./storage-card";
@@ -22,34 +14,26 @@ const last = (points: number[]) => points[points.length - 1];
 
 export const ServerDetail = ({
   server,
-  isLive,
   online,
-  restarting,
   isRestartingEdge,
   metrics,
-  onLogs,
   onEdit,
-  onRestart,
   onRestartEdge,
   onDelete,
 }: {
   server: ServerRecord;
-  isLive: boolean;
   online: boolean;
-  restarting: boolean;
   isRestartingEdge: boolean;
   metrics: Metrics | null;
-  onLogs: () => void;
   onEdit: () => void;
-  onRestart: () => void;
   onRestartEdge: () => void;
   onDelete: () => void;
 }) => {
-  const [confirm, setConfirm] = useState<"restart" | "edge" | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
   const empty = !online
     ? "No data. The edge server is offline."
     : !metrics
-      ? isLive && !mqttConfig
+      ? !mqttConfig
         ? "Metrics are not available from the API yet."
         : "Waiting for the first report."
       : undefined;
@@ -69,17 +53,8 @@ export const ServerDetail = ({
               </p>
             )}
           </div>
-          <div className="flex flex-wrap gap-2">
-            {server.vendor && <Badge variant="outline">{server.vendor}</Badge>}
-          </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {!isLive && (
-            <Button variant="secondary" onClick={onLogs}>
-              <TerminalIcon />
-              Log stream
-            </Button>
-          )}
           <Button variant="default" onClick={onEdit}>
             <PencilIcon />
             Edit edge server
@@ -88,20 +63,10 @@ export const ServerDetail = ({
             <Button
               variant="secondary"
               disabled={!online || isRestartingEdge}
-              onClick={() => setConfirm("edge")}
+              onClick={() => setIsConfirming(true)}
             >
               <PowerIcon />
               Restart edge server
-            </Button>
-          )}
-          {!isLive && (
-            <Button
-              variant="secondary"
-              disabled={restarting}
-              onClick={() => setConfirm("restart")}
-            >
-              <RotateCwIcon className={cn(restarting && "animate-spin")} />
-              Reboot edge server
             </Button>
           )}
           <Button variant="destructive" onClick={onDelete}>
@@ -171,26 +136,14 @@ export const ServerDetail = ({
         />
       </div>
       <ConfirmDialog
-        isOpen={confirm === "restart"}
-        icon={PowerIcon}
-        title="Reboot this edge server?"
-        description="Cameras stop streaming and analyzing for about a minute."
-        confirmLabel="Reboot edge server"
-        onClose={() => setConfirm(null)}
-        onConfirm={() => {
-          setConfirm(null);
-          onRestart();
-        }}
-      />
-      <ConfirmDialog
-        isOpen={confirm === "edge"}
+        isOpen={isConfirming}
         icon={PowerIcon}
         title="Restart this edge server?"
         description="Cameras stop streaming and analyzing until Edge is back."
         confirmLabel="Restart edge server"
-        onClose={() => setConfirm(null)}
+        onClose={() => setIsConfirming(false)}
         onConfirm={() => {
-          setConfirm(null);
+          setIsConfirming(false);
           onRestartEdge();
         }}
       />

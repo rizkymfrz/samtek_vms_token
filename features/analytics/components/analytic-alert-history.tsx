@@ -16,17 +16,15 @@ export const AnalyticAlertHistory = ({
   analyticIds,
   cameraName,
   initialAlerts,
-  isLive,
 }: {
   analyticIds: string[];
   cameraName?: string;
   initialAlerts: AlertsData;
-  isLive: boolean;
 }) => {
   const [range, setRange] = useState<DateRange>();
   const [openId, setOpenId] = useState<string | null>(null);
   const filters = useMemo(() => rangeFilters(range), [range]);
-  const { data } = useAlerts(initialAlerts, isLive, filters);
+  const { data } = useAlerts(initialAlerts, filters);
   const alerts = data ?? initialAlerts;
   const rows = useMemo(
     () =>

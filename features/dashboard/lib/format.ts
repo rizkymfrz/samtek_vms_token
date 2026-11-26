@@ -11,9 +11,6 @@ export const clock = new Intl.DateTimeFormat("en-GB", {
 export const titleCase = (value: string): string =>
   value.replace(/_/g, " ").replace(/^\w/, (char) => char.toUpperCase());
 
-export const plainLabel = (value: string) =>
-  value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-
 export const delta = (current: number, previous: number) =>
   previous === 0 ? 0 : Math.round(((current - previous) / previous) * 100);
 

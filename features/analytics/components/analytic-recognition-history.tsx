@@ -23,11 +23,9 @@ const UNKNOWN = "Unknown";
 export const AnalyticRecognitionHistory = ({
   recognizer,
   initialRecognitions,
-  isLive,
 }: {
   recognizer: string;
   initialRecognitions: RecognitionsData;
-  isLive: boolean;
 }) => {
   const [range, setRange] = useState<DateRange>();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -40,7 +38,6 @@ export const AnalyticRecognitionHistory = ({
   const { data: recognitions } = useRecognitionLog(
     recognizer,
     initialRecognitions,
-    isLive,
     range,
   );
   const entries = (recognitions ?? initialRecognitions).rows.map((row) => {
@@ -121,7 +118,6 @@ export const AnalyticRecognitionHistory = ({
       />
       <CaptureFaceDialog
         capture={capture}
-        isLive={isLive}
         onSaved={(person) => {
           if (!capture) return;
           setLinked((previous) => ({

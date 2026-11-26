@@ -6,10 +6,10 @@ import type { FloorplanData } from "../types";
 
 export const FLOORPLAN_QUERY_KEY = QUERY_KEYS.floorplan;
 
-export const useFloorplan = (initialData: FloorplanData, isLive: boolean) =>
+export const useFloorplan = (initialData: FloorplanData) =>
   useQuery({
     queryKey: FLOORPLAN_QUERY_KEY,
     queryFn: fetchFloorplan,
     initialData,
-    staleTime: isLive ? LIVE_STALE_TIME_MS : Infinity,
+    staleTime: LIVE_STALE_TIME_MS,
   });

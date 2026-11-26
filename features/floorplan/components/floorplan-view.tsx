@@ -48,15 +48,9 @@ const reportFailure = (title: string) => (error: unknown) =>
 const without = (edits: Record<string, FloorplanDevice[]>, id: string) =>
   Object.fromEntries(Object.entries(edits).filter(([key]) => key !== id));
 
-export const FloorplanView = ({
-  data: initial,
-  isLive,
-}: {
-  data: FloorplanData;
-  isLive: boolean;
-}) => {
+export const FloorplanView = ({ data: initial }: { data: FloorplanData }) => {
   const queryClient = useQueryClient();
-  const { data } = useFloorplan(initial, isLive);
+  const { data } = useFloorplan(initial);
   const linkedId = useSearchParams().get("id");
   const [planId, setPlanId] = useState(
     () =>
@@ -114,15 +108,13 @@ export const FloorplanView = ({
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: FLOORPLAN_QUERY_KEY });
   const save = useMutation({
-    mutationFn: async ({
+    mutationFn: ({
       id,
       placements,
     }: {
       id: string;
       placements: FloorplanDevice[];
-    }) => {
-      if (isLive) await replacePlacementsRequest(id, placements);
-    },
+    }) => replacePlacementsRequest(id, placements),
     onSuccess: (_result, { id, placements }) => {
       queryClient.setQueryData<FloorplanData>(
         FLOORPLAN_QUERY_KEY,
@@ -136,7 +128,7 @@ export const FloorplanView = ({
           },
       );
       setEdits((all) => (all[id] === placements ? without(all, id) : all));
-      if (isLive) void refresh();
+      void refresh();
     },
     onError: reportFailure("Failed to save the placements"),
   });
@@ -160,9 +152,7 @@ export const FloorplanView = ({
     return () => clearTimeout(timer);
   }, [edits, saving, saveNow]);
   const remove = useMutation({
-    mutationFn: async (id: string) => {
-      if (isLive) await deleteFloorplanRequest(id);
-    },
+    mutationFn: deleteFloorplanRequest,
     onSuccess: async (_result, id) => {
       setEdits((all) => without(all, id));
       setSelectedId(null);
@@ -200,13 +190,13 @@ export const FloorplanView = ({
       }}
     />
   );
-  const canCreate = isLive && data.groups.length > 0;
+  const canCreate = data.groups.length > 0;
   if (!plan)
     return (
       <PageShell>
         <SidePanel>
           <PanelSection title="Floor plan">
-            {isLive && data.groups.length === 0 && (
+            {data.groups.length === 0 && (
               <PanelEmpty
                 icon={<FolderIcon />}
                 title="No groups"
@@ -247,15 +237,12 @@ export const FloorplanView = ({
   const scope = groupScope(data.groups, plan.groupId);
   const onPlan = new Set(here.map((p) => p.deviceRecordId));
   const unplaced = [...cameras.values()].filter(
-    (c) =>
-      !onPlan.has(c.id) &&
-      (!isLive || (c.groupId !== null && scope.has(c.groupId))),
+    (c) => !onPlan.has(c.id) && c.groupId !== null && scope.has(c.groupId),
   );
   const selected = here.find((p) => p.id === selectedId) ?? null;
-  const imageSrc =
-    isLive && plan.hasImage
-      ? `/api/floorplans/${plan.id}/image?v=${encodeURIComponent(plan.updatedAt ?? "")}`
-      : null;
+  const imageSrc = plan.hasImage
+    ? `/api/floorplans/${plan.id}/image?v=${encodeURIComponent(plan.updatedAt ?? "")}`
+    : null;
   return (
     <PageShell>
       <SidePanel>
@@ -288,7 +275,6 @@ export const FloorplanView = ({
             edit((all) => rotateCamera(all, id, degrees))
           }
           onFov={(id, fov) => edit((all) => setFov(all, id, fov))}
-          isLive={isLive}
           isBusy={upload.isPending || remove.isPending}
           hasImage={plan.hasImage}
           onCreate={() => setCreating(true)}

@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import {
   createServerInputSchema,
   serverIdResponseSchema,
@@ -6,7 +5,6 @@ import {
 import { callCentral, errorResponse } from "@/lib/api/central-proxy";
 
 export const POST = async (request: Request) => {
-  if (!isLiveSource) return new Response(null, { status: 404 });
   const body = createServerInputSchema.safeParse(
     await request.json().catch(() => null),
   );

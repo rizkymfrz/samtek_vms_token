@@ -6,10 +6,10 @@ import type { LiveData } from "../types";
 
 export const LIVE_QUERY_KEY = QUERY_KEYS.live;
 
-export const useLive = (initialData: LiveData, isLive: boolean) =>
+export const useLive = (initialData: LiveData) =>
   useQuery({
     queryKey: LIVE_QUERY_KEY,
     queryFn: fetchLive,
     initialData,
-    staleTime: isLive ? LIVE_STALE_TIME_MS : Infinity,
+    staleTime: LIVE_STALE_TIME_MS,
   });

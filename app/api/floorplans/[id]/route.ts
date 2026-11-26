@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import {
   callCentral,
   errorResponse,
@@ -10,8 +9,7 @@ export const DELETE = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
-  if (!isLiveSource || !isValidIds(id))
-    return new Response(null, { status: 404 });
+  if (!isValidIds(id)) return new Response(null, { status: 404 });
   try {
     await callCentral("delete", `/v1/floorplans/${id}`);
     return new Response(null, { status: 204 });

@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { assignServerRoleInputSchema } from "@/features/users/schemas/user";
 import {
   callCentral,
@@ -11,7 +10,7 @@ export const PUT = async (
   { params }: { params: Promise<{ serverId: string; userId: string }> },
 ) => {
   const { serverId, userId } = await params;
-  if (!isLiveSource || !isValidIds(serverId, userId)) {
+  if (!isValidIds(serverId, userId)) {
     return new Response(null, { status: 404 });
   }
   const body = assignServerRoleInputSchema.safeParse(

@@ -7,15 +7,11 @@ import type { LiveLayout } from "../types";
 export const layoutQueryKey = (id: string | null) =>
   [...QUERY_KEYS.layout, id] as const;
 
-export const useLayout = (
-  id: string | null,
-  initial: LiveLayout | undefined,
-  isLive: boolean,
-) =>
+export const useLayout = (id: string | null, initial: LiveLayout | undefined) =>
   useQuery({
     queryKey: layoutQueryKey(id),
     queryFn: () => fetchLayout(id as string),
     enabled: id !== null,
     initialData: initial,
-    staleTime: isLive ? LIVE_STALE_TIME_MS : Infinity,
+    staleTime: LIVE_STALE_TIME_MS,
   });

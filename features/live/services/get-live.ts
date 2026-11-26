@@ -1,5 +1,4 @@
 import { analyticLabel } from "@/config/analytics-catalog";
-import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
 import { createCentralClient, toCentralError } from "@/lib/api/central-client";
 import { listCentralDevices } from "@/lib/api/central-devices";
@@ -7,7 +6,6 @@ import { fetchAllPages } from "@/lib/api/central-pages";
 import { getCentralServers } from "@/lib/api/edge-registry";
 import { requireAccessToken } from "@/lib/auth/session";
 import { deviceStateOf } from "@/lib/device-state";
-import { buildLive } from "./build-live";
 import { toLayout } from "./layout-mapper";
 import { summaryOf } from "../lib/edit-layout";
 import { layoutDetailResponseSchema, layoutSchema } from "../schemas/layout";
@@ -26,7 +24,6 @@ export const getLayout = async (id: string): Promise<LiveLayout> => {
 };
 
 export const getLive = async (): Promise<LiveData> => {
-  if (!isLiveSource) return buildLive();
   const token = await requireAccessToken();
   const now = Date.now();
   const servers = await getCentralServers(token);

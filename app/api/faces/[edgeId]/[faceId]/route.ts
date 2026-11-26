@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { deleteFromEdge } from "@/lib/api/edge-client";
 import { edgeErrorResponse } from "@/lib/api/edge-proxy";
 import { findEdgeServer } from "@/lib/api/edge-registry";
@@ -11,7 +10,6 @@ export const DELETE = async (
   { params }: { params: Promise<{ edgeId: string; faceId: string }> },
 ) => {
   const { edgeId, faceId } = await params;
-  if (!isLiveSource) return new Response(null, { status: 404 });
   if (!FACE_ID.test(faceId)) return new Response(null, { status: 400 });
   try {
     const edge = await findEdgeServer(await requireAccessToken(), edgeId);

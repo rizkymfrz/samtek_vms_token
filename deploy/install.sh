@@ -186,7 +186,6 @@ write_env() {
 NODE_ENV=production
 HOSTNAME=127.0.0.1
 PORT=$port
-DATA_SOURCE=live
 CENTRAL_API_URL=$api_url
 EDGE_TIMEOUT_MS=8000
 COOKIE_SECURE=$secure

@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import {
   deviceResponseSchema,
   updateDeviceInputSchema,
@@ -13,7 +12,7 @@ type Context = { params: Promise<{ serverId: string; id: string }> };
 
 const resolve = async ({ params }: Context) => {
   const { serverId, id } = await params;
-  if (!isLiveSource || !isValidIds(serverId, id)) {
+  if (!isValidIds(serverId, id)) {
     return null;
   }
   return `/v1/edge-servers/${serverId}/devices/${id}`;

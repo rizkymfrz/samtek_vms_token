@@ -1,10 +1,8 @@
-import { isLiveSource } from "@/config/env";
 import { listCentralDevices } from "@/lib/api/central-devices";
 import { getFromEdge } from "@/lib/api/edge-client";
 import { getCentralServers, getEdgeServers } from "@/lib/api/edge-registry";
 import { queryEdges } from "@/lib/api/fan-out";
 import { requireAccessToken } from "@/lib/auth/session";
-import { buildRecognitions } from "./build-recognitions";
 import { toRow } from "../lib/recognition-row";
 import { DEFAULT_HOURS } from "../lib/recognition-window";
 import { recognizerList } from "../lib/recognizer-list";
@@ -25,7 +23,6 @@ export const getRecognitions = async (
     since: now - DEFAULT_HOURS * 3_600_000,
     until: null,
   };
-  if (!isLiveSource) return buildRecognitions(now, { ...window, recognizer });
   const token = await requireAccessToken();
   const [edges, servers] = await Promise.all([
     getEdgeServers(token),

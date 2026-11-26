@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import {
   layoutDetailResponseSchema,
   replaceSlotsInputSchema,
@@ -15,8 +14,7 @@ export const PUT = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
-  if (!isLiveSource || !isValidIds(id))
-    return new Response(null, { status: 404 });
+  if (!isValidIds(id)) return new Response(null, { status: 404 });
   const body = replaceSlotsInputSchema.safeParse(
     await request.json().catch(() => null),
   );

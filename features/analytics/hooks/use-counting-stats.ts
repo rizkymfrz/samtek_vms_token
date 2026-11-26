@@ -16,13 +16,11 @@ export const useCountingStats = ({
   deviceId,
   bucket,
   range,
-  isPolling,
 }: {
   edgeId: string | null;
   deviceId: string | null;
   bucket: StatsBucket;
   range: DateRange | undefined;
-  isPolling: boolean;
 }) =>
   useQuery({
     queryKey: ["counting-stats", edgeId, deviceId, bucket, windowKey(range)],
@@ -37,7 +35,5 @@ export const useCountingStats = ({
     enabled: edgeId !== null && deviceId !== null,
     placeholderData: keepPreviousData,
     refetchInterval: () =>
-      isPolling && statsWindow(range, Date.now()).until === null
-        ? POLL_INTERVAL_MS
-        : false,
+      statsWindow(range, Date.now()).until === null ? POLL_INTERVAL_MS : false,
   });

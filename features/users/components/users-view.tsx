@@ -31,25 +31,19 @@ import type { UserRecord, UsersData } from "../types";
 
 const PAGE_SIZE = 20;
 
-export const UsersView = ({
-  data,
-  isLive,
-}: {
-  data: UsersData;
-  isLive: boolean;
-}) => {
-  const { data: current } = useUsers(data, isLive);
+export const UsersView = ({ data }: { data: UsersData }) => {
+  const { data: current } = useUsers(data);
   const { users, roles, servers, failures } = current;
   useFailureToast(
     "Some data did not load",
     failures.map((failure) => `${failure.source}: ${failure.message}`),
   );
   const { save, addRole, remove, addRoleError, saveError, removeError } =
-    useUserActions(isLive);
+    useUserActions();
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(0);
   const [dialog, setDialog] = useState<DialogTarget>(null);
-  const permissions = usePermissions(isLive && dialog !== null);
+  const permissions = usePermissions(dialog !== null);
   const [pendingDelete, setPendingDelete] = useState<UserRecord | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   useFailureToast("Saved with a problem", [warning]);

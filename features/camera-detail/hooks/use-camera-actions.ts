@@ -14,7 +14,7 @@ import type { SearchIndexConfig } from "@/lib/api/search-index";
 import { messageOf } from "@/lib/axios/browser-client";
 import { invalidateDeviceData } from "@/lib/query/invalidate";
 
-export const useCameraActions = (record: CameraRecord, isLive: boolean) => {
+export const useCameraActions = (record: CameraRecord) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const save = useMutation({
@@ -29,7 +29,6 @@ export const useCameraActions = (record: CameraRecord, isLive: boolean) => {
       analyticParams?: AnalyticParams;
       searchIndex?: SearchIndexConfig | null;
     }) => {
-      if (!isLive) return;
       await updateCamera(record, {
         ...toUpdatePayload(draft, record),
         analyticParams,
@@ -38,16 +37,14 @@ export const useCameraActions = (record: CameraRecord, isLive: boolean) => {
       });
     },
     onSuccess: () => {
-      if (isLive) void invalidateDeviceData(queryClient);
+      void invalidateDeviceData(queryClient);
       router.refresh();
     },
   });
   const remove = useMutation({
-    mutationFn: async () => {
-      if (isLive) await deleteCamera(record);
-    },
+    mutationFn: () => deleteCamera(record),
     onSuccess: () => {
-      if (isLive) void invalidateDeviceData(queryClient);
+      void invalidateDeviceData(queryClient);
       router.push("/cameras");
     },
   });

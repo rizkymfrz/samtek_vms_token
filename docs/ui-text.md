@@ -780,29 +780,24 @@ Menu dan page title: `Edge servers`.
 | Edge                             | Perangkat lunak SAMTEK Edge (nama produk, selalu kapital E).                                                                                                  | Aksi dan pesan tentang prosesnya.                                                      | edge (kata benda huruf kecil)         | `The Edge process stops`     |
 | Edge server                      | Server yang menjalankan SAMTEK Edge (§3.8).                                                                                                                   | Semua teks tentang mesinnya.                                                           | Server saja                           | `Edit edge server`           |
 | Restart edge server              | Menghentikan proses Edge lalu dijalankan lagi oleh service manager. Kamera berhenti streaming dan analyzing sampai Edge kembali. Lewat MQTT (`edge.restart`). | Tombol dan dialog. Tidak mematikan mesinnya.                                           | Restart server, Restart Edge (tombol) | `Restart edge server`        |
-| Reboot edge server               | Menghidupkan ulang mesin. Kamera berhenti sekitar satu menit. Hanya tersedia pada mode contoh (`!isLive`).                                                    | Tombol dan dialog.                                                                     | Reboot (mesin)                        | `Reboot edge server`         |
 | Active                           | Edge server aktif di sistem. Server tidak aktif diabaikan dan tampil sebagai `Edge server disabled` (§3.10).                                                  | Toggle form edge server.                                                               | Enabled (istilah kamera)              | `Active`                     |
 | Edge server ID                   | Id edge server.                                                                                                                                               | Label field dan pesan validasi. Tidak lagi dipakai di deskripsi dialog (§4 aturan 30). | Edge ID                               | `Edge server ID`             |
 | Group                            | Edge server group (§3.15). `Code` adalah kode unik grup.                                                                                                      | Dialog edge server dan grup.                                                           |                                       | `Add group`                  |
 | Host address, Local host address | Alamat Central ke Edge server, dan alamat di jaringan lokal.                                                                                                  | Field form.                                                                            | IP                                    | `Host address`               |
 | WebRTC URL                       | Alamat relay WebRTC (publik atau jaringan lokal) untuk stream kamera.                                                                                         | Field form.                                                                            | Stream URL                            | `WebRTC URL (local network)` |
-| Registered / Discovered          | Edge server yang sudah terdaftar dan perangkat hasil pencarian jaringan. Hanya pada mode contoh.                                                              | Tab dan judul section.                                                                 |                                       | `Registered 3`               |
-| Log stream                       | Aliran log Edge server secara langsung. Hanya pada mode contoh.                                                                                               | Dialog log.                                                                            |                                       | `Log stream`                 |
 | Retention                        | Lama data disimpan (hari).                                                                                                                                    | Kartu storage.                                                                         | Expiry                                | `Retention`                  |
 | Metric level                     | Level metrik: `Normal`, `Warning`, `Critical`.                                                                                                                | Badge metrik. Bukan risk level alarm (`Medium`/`High`).                                |                                       | `Critical`                   |
 
 Catatan:
 
-- Pada mode live, tombol yang tampil: `Edit edge server`,
-  `Restart edge server` (bila MQTT dikonfigurasi), dan `Delete edge server`.
-  Scan, Log stream, dan Reboot hanya pada mode contoh.
+- Tombol yang tampil: `Edit edge server`, `Restart edge server` (bila MQTT
+  dikonfigurasi), dan `Delete edge server`.
 - Judul kartu metrik memakai sentence case: `CPU temperature`,
   `Memory usage`, `CPU usage`, `Storage usage`. `CPU`, `GB`, `MQTT`,
   `MAC`, dan `WebRTC` adalah akronim baku.
 - Pesan gagal terhubung ke broker memakai pola `Failed to reach the
 MQTT broker`. Peringatan sebagian memakai `Some data did not load`.
 - Placeholder memakai `e.g.`: `e.g. Jakarta branch`.
-- Tombol scan: `Scan network` / `Scanning…`.
 - Hapus edge server dicegah bila masih memiliki kamera.
 
 ### 3.19 Analytics
@@ -992,8 +987,6 @@ to load user` 502) bukan teks UI langsung.
 - Dialog lupa password: judul `Forgot your password?`, tautan
   `Forgot password?`, isi `Passwords are managed by your
 administrator. Contact them to have your password reset.`
-- Pada mode contoh (`!isLiveSource`), login selalu berhasil tanpa
-  memeriksa kredensial.
 
 ### 3.25 Settings
 
@@ -1224,7 +1217,7 @@ Catatan:
     berbeda menurut state (contoh: edge server yang masih punya kamera,
     `Move or delete its cameras first.`). Judul `{Verb} this
     {object}?`, tombol `{Verb} {object}` dengan kata kerja yang sama
-    (`Reboot this edge server?` / `Reboot edge server`). Dua dialog
+    (`Restart this edge server?` / `Restart edge server`). Dua dialog
     untuk objek yang sama memakai teks yang sama (hapus kamera di tabel
     dan di detail).
 32. Deskripsi field dan toggle di dialog atau form: satu kalimat

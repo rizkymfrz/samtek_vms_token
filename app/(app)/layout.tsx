@@ -4,7 +4,6 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toast";
-import { isLiveSource } from "@/config/env";
 import { AlarmToaster } from "@/features/alerts/components/alarm-toaster";
 import { AlertNotifications } from "@/features/alerts/components/alert-notifications";
 import { UserMenu } from "@/features/auth/components/user-menu";
@@ -21,7 +20,7 @@ const AppLayout = ({ children }: LayoutProps<"/">) => {
         <AlarmToaster />
         <SidebarProvider>
           <Suspense fallback={null}>
-            <AppSidebar footer={<UserMenu />} isLive={isLiveSource} />
+            <AppSidebar footer={<UserMenu />} />
           </Suspense>
           <SidebarInset className="isolate min-w-0">
             <PageBackdrop intensity={4} />

@@ -1,6 +1,6 @@
 import { DonutChart } from "./donut-chart";
 import { riskConfig } from "../lib/risk-config";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 export const RiskDonut = ({ data }: { data: Dashboard["riskTotals"] }) => {
   return (

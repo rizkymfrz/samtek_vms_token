@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requiredText } from "@/lib/forms/required-text";
-import type { Discovered, ServerRecord } from "../types";
+import type { ServerRecord } from "../types";
 
 export type Draft = {
   name: string;
@@ -103,94 +103,4 @@ export const toUpdatePayload = (draft: Draft, original: ServerRecord) => ({
   isActive: draft.isActive !== original.isActive ? draft.isActive : undefined,
 });
 
-const nextId = (servers: ServerRecord[]) =>
-  Math.max(0, ...servers.map((s) => Number(s.id) || 0)) + 1;
-
-export const saveServer = (
-  servers: ServerRecord[],
-  draft: Draft,
-  editingId: string | null,
-): ServerRecord[] => {
-  if (editingId === null) {
-    const id = String(nextId(servers));
-    return [
-      ...servers,
-      {
-        id,
-        groupId: draft.groupId,
-        name: draft.name.trim(),
-        description: orNull(draft.description),
-        hostAddress: orNull(draft.hostAddress),
-        localHostAddress: orNull(draft.localHostAddress),
-        webrtcUrl: orNull(draft.webrtcUrl),
-        webrtcUrlLocal: orNull(draft.webrtcUrlLocal),
-        macAddress: orNull(draft.macAddress),
-        isActive: draft.isActive,
-        lastSeenAt: null,
-        vendor: "Custom",
-        cameraCount: 0,
-      },
-    ];
-  }
-  return servers.map((s) =>
-    s.id !== editingId
-      ? s
-      : {
-          ...s,
-          groupId: draft.groupId,
-          name: draft.name.trim(),
-          description: orNull(draft.description),
-          hostAddress: orNull(draft.hostAddress),
-          localHostAddress: orNull(draft.localHostAddress),
-          webrtcUrl: orNull(draft.webrtcUrl),
-          webrtcUrlLocal: orNull(draft.webrtcUrlLocal),
-          macAddress: orNull(draft.macAddress),
-          isActive: draft.isActive,
-        },
-  );
-};
-
 export const canDelete = (server: ServerRecord) => server.cameraCount === 0;
-
-export const removeServer = (servers: ServerRecord[], id: string) =>
-  servers.filter((s) => s.id !== id);
-
-export const registerDiscovered = (
-  servers: ServerRecord[],
-  discovered: Discovered[],
-  discoveredId: string,
-  now: number,
-): {
-  servers: ServerRecord[];
-  discovered: Discovered[];
-  serverId: string | null;
-} => {
-  const found = discovered.find((d) => d.id === discoveredId);
-  if (!found || found.registeredServerId)
-    return { servers, discovered, serverId: null };
-  const serverId = String(nextId(servers));
-  return {
-    serverId,
-    servers: [
-      ...servers,
-      {
-        id: serverId,
-        groupId: null,
-        name: found.id,
-        description: null,
-        hostAddress: `${found.ip}:443`,
-        localHostAddress: null,
-        webrtcUrl: null,
-        webrtcUrlLocal: null,
-        macAddress: null,
-        isActive: true,
-        lastSeenAt: now,
-        vendor: found.vendor,
-        cameraCount: 0,
-      },
-    ],
-    discovered: discovered.map((d) =>
-      d.id === discoveredId ? { ...d, registeredServerId: serverId } : d,
-    ),
-  };
-};

@@ -1,9 +1,7 @@
-import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
 import { listCentralDevices } from "@/lib/api/central-devices";
 import { getCentralServers } from "@/lib/api/edge-registry";
 import { requireAccessToken } from "@/lib/auth/session";
-import { buildLiveSource } from "@/lib/mock/live-source";
 import { emptyPerimeters } from "../lib/edit-perimeters";
 import type { CameraDetail } from "../types";
 
@@ -62,23 +60,6 @@ export const getCameraDetail = async (
   id: string,
 ): Promise<CameraDetail | null> => {
   const now = Date.now();
-  if (!isLiveSource) {
-    const { edgeServers, devices } = buildLiveSource(now);
-    const device = devices.find((d) => d.id === id);
-    const server = edgeServers.find((s) => s.id === device?.edgeServerId);
-    if (!device || !server) return null;
-    return toDetail(
-      device,
-      server,
-      isServerOnline(
-        {
-          isActive: server.isActive,
-          lastSeenAt: server.lastSeenAt?.getTime() ?? null,
-        },
-        now,
-      ),
-    );
-  }
   const token = await requireAccessToken();
   const servers = await getCentralServers(token);
   const { devices } = await listCentralDevices(token, servers);

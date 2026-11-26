@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { createCentralClient, toCentralError } from "@/lib/api/central-client";
 import { errorResponse, isValidIds } from "@/lib/api/central-proxy";
 import { requireAccessToken } from "@/lib/auth/session";
@@ -10,8 +9,7 @@ export const GET = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
-  if (!isLiveSource || !isValidIds(id))
-    return new Response(null, { status: 404 });
+  if (!isValidIds(id)) return new Response(null, { status: 404 });
   try {
     const token = await requireAccessToken();
     const response = await createCentralClient(token).get<ArrayBuffer>(
@@ -35,8 +33,7 @@ export const PUT = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
-  if (!isLiveSource || !isValidIds(id))
-    return new Response(null, { status: 404 });
+  if (!isValidIds(id)) return new Response(null, { status: 404 });
   const file = (await request.formData().catch(() => null))?.get("file");
   if (!(file instanceof File)) {
     return Response.json({ error: "An image is required" }, { status: 400 });

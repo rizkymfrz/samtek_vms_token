@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AlertDetailDialog, AlertsTable } from "@/features/alerts";
 import { NoData } from "./no-data";
 import { useLiveAlarms } from "../hooks/use-live-alarms";
-import type { Dashboard } from "../services/build-dashboard";
+import type { Dashboard } from "../types";
 
 export const RecentAlarms = ({
   alarms: initial,

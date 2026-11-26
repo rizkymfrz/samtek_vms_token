@@ -10,40 +10,23 @@ import { isServerOnline } from "@/config/server-status";
 import { useEdgeStatus, useServerOnline } from "@/features/edge-status";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { DeleteServerDialog } from "./delete-server-dialog";
-import { LogDialog } from "./log-dialog";
 import { ServerDetail } from "./server-detail";
 import { type FormTarget, ServerFormDialog } from "./server-form-dialog";
-import { type DiscoverTab, ServerListPanel } from "./server-list-panel";
+import { ServerListPanel } from "./server-list-panel";
 import { useServerActions } from "../hooks/use-server-actions";
 import { useServers } from "../hooks/use-servers";
 import { toMetrics } from "../lib/edge-metrics";
-import { type Draft, registerDiscovered } from "../lib/edit-server";
-import type { Discovered, ServersData } from "../types";
+import type { Draft } from "../lib/edit-server";
+import type { ServersData } from "../types";
 
-const SCAN_POOL: Omit<Discovered, "registeredServerId">[] = [
-  { id: "edge-c4d9", ip: "192.168.1.71", vendor: "SAMTEK Edge" },
-  { id: "smartbox-e803", ip: "192.168.1.72", vendor: "SmartBox" },
-  { id: "nvr-5b17", ip: "192.168.1.73", vendor: "Hikvision" },
-];
-
-const RESTART_MS = 4000;
-const SCAN_MS = 1500;
-
-export const ServersView = ({
-  data,
-  isLive,
-}: {
-  data: ServersData;
-  isLive: boolean;
-}) => {
-  const { data: current } = useServers(data, isLive);
-  const { servers, groups, metrics, failures, now } = current;
+export const ServersView = ({ data }: { data: ServersData }) => {
+  const { data: current } = useServers(data);
+  const { servers, groups, failures, now } = current;
   useFailureToast(
     "Some data did not load",
     failures.map((failure) => `${failure.serverName}: ${failure.message}`),
   );
-  const actions = useServerActions(isLive);
-  const [discovered, setDiscovered] = useState(data.discovered);
+  const actions = useServerActions();
   const linkedId = useSearchParams().get("id");
   const [selectedId, setSelectedId] = useState<string | null>(
     linkedId ?? data.servers[0]?.id ?? null,
@@ -53,12 +36,7 @@ export const ServersView = ({
     setSyncedId(linkedId);
     if (linkedId) setSelectedId(linkedId);
   }
-  const [tab, setTab] = useState<DiscoverTab>("discovered");
-  const [scanning, setScanning] = useState(false);
-  const [scanCount, setScanCount] = useState(0);
-  const [restartingId, setRestartingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormTarget>(null);
-  const [logsOpen, setLogsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { entries, recording, error: brokerError } = useEdgeStatus();
   useFailureToast(
@@ -92,31 +70,7 @@ export const ServersView = ({
   const entry = selected ? entries.get(selected.id) : undefined;
   const selectedMetrics = entry
     ? toMetrics(entry, recording.get(selected?.id ?? "")?.retentionDays ?? null)
-    : selected
-      ? (metrics[selected.id] ?? null)
-      : null;
-  useEffect(() => {
-    if (!restartingId) return;
-    const timer = setTimeout(() => setRestartingId(null), RESTART_MS);
-    return () => clearTimeout(timer);
-  }, [restartingId]);
-  useEffect(() => {
-    if (!scanning) return;
-    const timer = setTimeout(() => {
-      const next = SCAN_POOL[scanCount];
-      if (next) {
-        setDiscovered((all) =>
-          all.some((d) => d.id === next.id)
-            ? all
-            : [...all, { ...next, registeredServerId: null }],
-        );
-        setScanCount((count) => count + 1);
-      }
-      setScanning(false);
-      setTab("discovered");
-    }, SCAN_MS);
-    return () => clearTimeout(timer);
-  }, [scanning, scanCount]);
+    : null;
   const save = async (draft: Draft, id: string | null) => {
     try {
       const savedId = await actions.save.mutateAsync({ draft, id });
@@ -142,28 +96,9 @@ export const ServersView = ({
           servers={servers}
           online={online}
           selectedId={selected?.id ?? null}
-          discovered={discovered}
-          tab={tab}
-          scanning={scanning}
           onSelect={setSelectedId}
           onAdd={() => setForm("new")}
           onDelete={() => setIsDeleting(true)}
-          onTab={setTab}
-          isLive={isLive}
-          onScan={() => setScanning(true)}
-          onRegister={(deviceId) => {
-            const result = registerDiscovered(
-              servers,
-              discovered,
-              deviceId,
-              now,
-            );
-            if (!result.serverId) return;
-            actions.replaceServers(() => result.servers);
-            setDiscovered(result.discovered);
-            setSelectedId(result.serverId);
-            setTab("registered");
-          }}
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0 lg:overflow-y-auto">
@@ -171,14 +106,10 @@ export const ServersView = ({
           <ServerDetail
             key={selected.id}
             server={selected}
-            isLive={isLive}
             online={online.has(selected.id)}
-            restarting={restartingId === selected.id}
             metrics={selectedMetrics}
-            onLogs={() => setLogsOpen(true)}
             onEdit={() => setForm(selected)}
             isRestartingEdge={actions.restartEdge.isPending}
-            onRestart={() => setRestartingId(selected.id)}
             onRestartEdge={() => actions.restartEdge.mutate(selected)}
             onDelete={() => setIsDeleting(true)}
           />
@@ -192,7 +123,7 @@ export const ServersView = ({
             }
             description={
               servers.length === 0
-                ? "Add one, or register a discovered device."
+                ? "Add one to get started."
                 : "Choose an edge server from the list."
             }
           />
@@ -220,14 +151,6 @@ export const ServersView = ({
         isOpen={isDeleting}
         onOpenChange={setIsDeleting}
         onConfirm={() => selected && remove(selected.id)}
-      />
-      <LogDialog
-        server={
-          logsOpen && selected ? { id: selected.id, name: selected.name } : null
-        }
-        online={selected ? online.has(selected.id) : false}
-        startedAt={now}
-        onClose={() => setLogsOpen(false)}
       />
     </PageShell>
   );

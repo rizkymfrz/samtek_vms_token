@@ -1,5 +1,4 @@
 import { connection } from "next/server";
-import { isLiveSource } from "@/config/env";
 import {
   createUserInputSchema,
   userIdResponseSchema,
@@ -17,7 +16,6 @@ export const GET = async () => {
 };
 
 export const POST = async (request: Request) => {
-  if (!isLiveSource) return new Response(null, { status: 404 });
   const body = createUserInputSchema.safeParse(
     await request.json().catch(() => null),
   );

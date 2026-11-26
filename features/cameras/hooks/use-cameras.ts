@@ -6,10 +6,10 @@ import type { CameraData } from "../types";
 
 export const CAMERAS_QUERY_KEY = QUERY_KEYS.cameras;
 
-export const useCameras = (initialData: CameraData, isLive: boolean) =>
+export const useCameras = (initialData: CameraData) =>
   useQuery({
     queryKey: CAMERAS_QUERY_KEY,
     queryFn: fetchCameras,
     initialData,
-    staleTime: isLive ? LIVE_STALE_TIME_MS : Infinity,
+    staleTime: LIVE_STALE_TIME_MS,
   });

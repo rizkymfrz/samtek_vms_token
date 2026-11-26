@@ -1,4 +1,3 @@
-import { isLiveSource } from "@/config/env";
 import { EdgeError, getBinaryFromEdge } from "@/lib/api/edge-client";
 import { findEdgeServer } from "@/lib/api/edge-registry";
 import { requireAccessToken, UnauthorizedError } from "@/lib/auth/session";
@@ -10,7 +9,6 @@ export const GET = async (
   { params }: { params: Promise<{ edgeId: string; faceId: string }> },
 ) => {
   const { edgeId, faceId } = await params;
-  if (!isLiveSource) return new Response(null, { status: 404 });
   if (!FACE_ID.test(faceId)) return new Response(null, { status: 400 });
   try {
     const edge = await findEdgeServer(await requireAccessToken(), edgeId);

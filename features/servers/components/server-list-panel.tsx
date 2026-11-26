@@ -1,49 +1,28 @@
-import { CctvIcon, Loader2Icon, RadarIcon, ServerIcon } from "lucide-react";
+import { ServerIcon } from "lucide-react";
 import {
   PanelActions,
   PanelEmpty,
   PanelSection,
 } from "@/components/layout/side-panel";
 import { StatusDot } from "@/components/shared/status-dot";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import type { Discovered, ServerRecord } from "../types";
-
-export type DiscoverTab = "registered" | "discovered";
+import type { ServerRecord } from "../types";
 
 export const ServerListPanel = ({
   servers,
   online,
   selectedId,
-  discovered,
-  tab,
-  scanning,
   onSelect,
   onAdd,
   onDelete,
-  onTab,
-  isLive,
-  onScan,
-  onRegister,
 }: {
   servers: ServerRecord[];
   online: Set<string>;
   selectedId: string | null;
-  discovered: Discovered[];
-  isLive: boolean;
-  tab: DiscoverTab;
-  scanning: boolean;
   onSelect: (id: string) => void;
   onAdd: () => void;
   onDelete: () => void;
-  onTab: (tab: DiscoverTab) => void;
-  onScan: () => void;
-  onRegister: (id: string) => void;
 }) => {
-  const registered = discovered.filter((d) => d.registeredServerId);
-  const pending = discovered.filter((d) => !d.registeredServerId);
-  const shown = tab === "registered" ? registered : pending;
   return (
     <>
       <PanelSection title="Edge servers">
@@ -74,11 +53,6 @@ export const ServerListPanel = ({
                   <span className="truncate text-xs font-medium">
                     {server.name}
                   </span>
-                  {server.vendor && (
-                    <span className="truncate text-xs text-muted-foreground">
-                      {server.vendor}
-                    </span>
-                  )}
                 </span>
                 <StatusDot
                   shape="square"
@@ -98,86 +72,6 @@ export const ServerListPanel = ({
           onDelete={onDelete}
         />
       </PanelSection>
-      {!isLive && (
-        <PanelSection
-          title="Registered / Discovered"
-          shouldGrow
-          action={
-            <Button variant="secondary" onClick={onScan} disabled={scanning}>
-              {scanning ? (
-                <Loader2Icon className="animate-spin" />
-              ) : (
-                <RadarIcon />
-              )}
-              {scanning ? "Scanning…" : "Scan network"}
-            </Button>
-          }
-        >
-          <Tabs
-            value={tab}
-            onValueChange={(value) => onTab(value as DiscoverTab)}
-          >
-            <TabsList variant="line" className="w-full">
-              <TabsTrigger value="registered">
-                Registered {registered.length}
-              </TabsTrigger>
-              <TabsTrigger value="discovered">
-                Discovered {pending.length}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <ul className="flex flex-col gap-2">
-            {shown.length === 0 && (
-              <li>
-                <PanelEmpty
-                  icon={<RadarIcon />}
-                  title={
-                    tab === "registered"
-                      ? "No registered devices"
-                      : "No new devices"
-                  }
-                  description={
-                    tab === "registered"
-                      ? "Devices you register from a scan show up here."
-                      : "Scan the network to look again."
-                  }
-                />
-              </li>
-            )}
-            {shown.map((device) => (
-              <li
-                key={device.id}
-                className="flex items-center gap-2 rounded border p-2"
-              >
-                <CctvIcon className="size-4 shrink-0 text-muted-foreground" />
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-xs font-medium">
-                    {device.id}
-                  </span>{" "}
-                  <span className="truncate text-xs text-muted-foreground">
-                    {device.ip} · {device.vendor}
-                  </span>
-                </span>
-                {device.registeredServerId ? (
-                  <Button
-                    variant="link"
-                    onClick={() => onSelect(device.registeredServerId!)}
-                  >
-                    Open
-                  </Button>
-                ) : (
-                  <Button
-                    variant="secondary"
-                    onClick={() => onRegister(device.id)}
-                  >
-                    Register
-                  </Button>
-                )}
-              </li>
-            ))}
-          </ul>
-        </PanelSection>
-      )}
     </>
   );
 };

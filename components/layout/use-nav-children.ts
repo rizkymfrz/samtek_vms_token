@@ -14,27 +14,26 @@ const subscribe = () => () => {};
 
 type NavChild = { id: string; title: string; href: string };
 
-export const useNavChildren = (isLive: boolean) => {
+export const useNavChildren = () => {
   const hydrated = useSyncExternalStore(
     subscribe,
     () => true,
     () => false,
   );
-  const staleTime = isLive ? LIVE_STALE_TIME_MS : Number.POSITIVE_INFINITY;
   const servers = useQuery({
     queryKey: SERVERS_QUERY_KEY,
     queryFn: fetchServers,
-    staleTime,
+    staleTime: LIVE_STALE_TIME_MS,
   });
   const cameras = useQuery({
     queryKey: CAMERAS_QUERY_KEY,
     queryFn: fetchCameras,
-    staleTime,
+    staleTime: LIVE_STALE_TIME_MS,
   });
   const floorplan = useQuery({
     queryKey: FLOORPLAN_QUERY_KEY,
     queryFn: fetchFloorplan,
-    staleTime,
+    staleTime: LIVE_STALE_TIME_MS,
   });
   return {
     servers: (hydrated ? (servers.data?.servers ?? []) : []).map(

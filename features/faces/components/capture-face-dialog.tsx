@@ -14,12 +14,10 @@ export type EnrolledPerson = EnrolledFace & { name: string; group: string };
 
 export const CaptureFaceDialog = ({
   capture,
-  isLive,
   onSaved,
   onClose,
 }: {
   capture: FaceCapture | null;
-  isLive: boolean;
   onSaved: (person: EnrolledPerson) => void;
   onClose: () => void;
 }) => {
@@ -37,7 +35,7 @@ export const CaptureFaceDialog = ({
   useFailureToast("Failed to load the capture", [
     error ? messageOf(error, "The captured face is unavailable.") : null,
   ]);
-  const { save, saveError } = useFaceActions(isLive);
+  const { save, saveError } = useFaceActions();
   const edges = (faces?.edges ?? []).filter(
     (edge) => edge.id === capture?.edgeId,
   );

@@ -1,10 +1,8 @@
 import { analyticLabel } from "@/config/analytics-catalog";
-import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
 import { createCentralClient, failureMessage } from "@/lib/api/central-client";
 import { fetchAllPages } from "@/lib/api/central-pages";
 import { requireAccessToken } from "@/lib/auth/session";
-import { buildMap } from "./map-source";
 import {
   mapDeviceSchema,
   mapGroupSchema,
@@ -19,7 +17,6 @@ import type {
 } from "../types";
 
 export const getMap = async (): Promise<MapData> => {
-  if (!isLiveSource) return buildMap();
   const client = createCentralClient(await requireAccessToken());
   const [groups, servers] = await Promise.all([
     fetchAllPages(client, "/v1/edge-server-groups", mapGroupSchema),

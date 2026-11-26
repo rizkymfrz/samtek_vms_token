@@ -1,5 +1,4 @@
 import { analyticLabel } from "@/config/analytics-catalog";
-import { isLiveSource } from "@/config/env";
 import { isServerOnline } from "@/config/server-status";
 import { listEdgeAlarms } from "@/features/alerts/services/get-alerts";
 import {
@@ -13,7 +12,6 @@ import { getCentralServers, getEdgeServers } from "@/lib/api/edge-registry";
 import { queryEdges } from "@/lib/api/fan-out";
 import { requireAccessToken } from "@/lib/auth/session";
 import { deviceStateOf } from "@/lib/device-state";
-import { buildFloorplan } from "./build-floorplan";
 import { placementId } from "../lib/edit-placements";
 import {
   floorplanDetailResponseSchema,
@@ -61,7 +59,6 @@ const countAlarms = async (token: string, now: number) => {
 };
 
 export const getFloorplan = async (): Promise<FloorplanData> => {
-  if (!isLiveSource) return buildFloorplan();
   const token = await requireAccessToken();
   const client = createCentralClient(token);
   const now = Date.now();
