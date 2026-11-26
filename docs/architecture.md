@@ -121,16 +121,19 @@ Rules:
 - Pengecualian yang diterima: route handler di `app/api/auth/`,
   `app/api/alerts/`, `app/api/cameras/`, `app/api/edge-servers/`,
   `app/api/servers/`, `app/api/live/`, `app/api/layouts/`,
-  `app/api/map/`, `app/api/users/`, `app/api/roles/`, `app/api/permissions/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, `app/api/recognitions/`, dan `app/api/stats/` dipakai sebagai lapisan tipis
+  `app/api/map/`, `app/api/endpoints/`, `app/api/users/`, `app/api/roles/`, `app/api/permissions/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, `app/api/recognitions/`, dan `app/api/stats/` dipakai sebagai lapisan tipis
   (BFF) di depan API central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
   Alamat API central dibaca per request dari cookie `samtek_endpoints`
-  (diisi halaman `/settings`, dipilih menurut header `Host`), lalu
-  `CENTRAL_API_URL` bila kosong (`lib/api/central-client.ts`).
-  `cookies()` dan `headers()` tidak boleh dipanggil di dalam fungsi `"use cache"`:
-  alamat dibaca di luar cache lalu dikirim sebagai argumen (`getCentralServers`
-  di `lib/api/edge-registry.ts`), sehingga ikut menjadi kunci cache.
+  (diisi halaman `/settings` dan `EndpointsSync`, dipilih menurut header
+  `Host`). Bila kosong: host lokal memakai `http://{host}:5000` (dev) atau
+  `CENTRAL_API_URL` hasil instalasi (production, API di loopback), host
+  domain memakai `CENTRAL_API_URL` (`lib/api/central-client.ts`).
+  `app/api/endpoints/default/` (publik, tanpa login, `no-store`)
+  mengembalikan alamat itu untuk host yang dibuka, supaya browser bisa
+  menyimpannya ke IndexedDB (`EndpointsSync`) dan menampilkannya di form.
+  Hanya berisi `centralUrl`, tanpa secret.
   `app/api/map/match/` meneruskan jejak bodyworn ke Valhalla
   (`MAP_MATCHING_URL`, opsional) agar garis menempel ke jalan; tanpa env itu
   jejak tetap garis lurus.

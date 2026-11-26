@@ -974,15 +974,54 @@ Catatan:
 
 - Satu istilah untuk masuk dan keluar: `Sign in` dan `Sign out`.
   Jangan memakai `Login` / `Logout` sebagai kata kerja.
-- Halaman tidak punya judul sendiri; judulnya ada di breadcrumb header.
-- Judul card: `Local address`, `Cloud address`. Badge `In use` pada card
-  yang sedang dipakai browser ini.
+- Deskripsi halaman: `Sign in to monitor cameras, alarms and edge
+servers across your sites.`
+- Pesan validasi: `Username or email is required.`, `Password is
+required.`, `Username or email must be at most 255 characters.`,
+  `Password must be at most 1024 characters.`
+- Pesan gagal masuk: fallback `Failed to sign in`. Bila Central
+  merespons dengan status di bawah 500, pesan Central ditampilkan apa
+  adanya (teks dan bahasanya di luar kendali frontend). Bila Central
+  gagal (500 ke atas), API membalas `Sign-in is unavailable`.
+- Respons API lain (`Enter your username and password` 400, `Failed
+to load user` 502) bukan teks UI langsung.
+- Dialog lupa password: judul `Forgot your password?`, tautan
+  `Forgot password?`, isi `Passwords are managed by your
+administrator. Contact them to have your password reset.`
+- Header halaman login punya tombol ikon `Edit addresses` di samping
+  tombol `Theme`, yang membuka dialog alamat (§3.25).
+
+### 3.25 Settings
+
+Menu pengguna dan page title: `Settings`.
+
+Halaman `/settings` dan dialog `Edit addresses` di halaman login
+(`features/settings`) mengatur alamat API Central dan WebSocket MQTT,
+satu set untuk `Local address` dan satu set untuk `Cloud address`. Isi
+dan logikanya sama (satu hook, `use-endpoints-form`); dialog ada supaya
+alamat bisa diperbaiki sebelum masuk.
+
+- Halaman `/settings` tidak punya judul sendiri; judulnya ada di
+  breadcrumb header.
+- Dialog (§8.2 `docs/architecture.md`): judul `Edit addresses`, deskripsi
+  `Set the Central API and MQTT addresses this browser connects to.`,
+  tombol pemicu ikon saja dengan `aria-label` dan `title` sama
+  (`Edit addresses`). Satu `DialogSection` berisi dua bagian bertumpuk
+  dan dipisah `Separator` (bukan berdampingan, supaya tiap bagian cukup
+  lebar): judul bagian `Local address` dan `Cloud address` dengan badge
+  `In use`, deskripsi di bawahnya, lalu `Central API URL` dan `MQTT
+  WebSocket URL` dalam satu baris (satu kolom di layar sempit). Footer: `Cancel` (secondary) dan `Save settings` (default).
+  Menutup dialog tanpa menyimpan membuang perubahan.
+- Judul card: `Local address`, `Cloud address`, bertumpuk, dengan dua field
+  dalam satu baris. Badge `In use` pada card yang sedang dipakai browser ini.
 - Deskripsi card (tanpa titik, §4 aturan 2): `Used when the VMS is opened
 by IP address or a local name` dan `Used when the VMS is opened by a
 domain name`.
-- Label field: `Central API URL`, `MQTT WebSocket URL`, `MQTT username`,
-  `MQTT password`. Placeholder: `e.g. http://192.168.1.10:3000`,
-  `e.g. ws://192.168.1.10:9001`.
+- Label field: `Central API URL`, `MQTT WebSocket URL`. Placeholder
+  `Cloud address`: `e.g. https://central.example.com/api`,
+  `e.g. wss://vms.example.com/mqtt`. Placeholder `Local address`: alamat
+  yang sedang dipakai (turunan host, lihat di bawah), bukan contoh;
+  `Default from the installation` hanya selama alamat belum terambil.
 - Validation: `Central API URL must start with http:// or https://.` dan
   `MQTT WebSocket URL must start with ws:// or wss://.`
 - Aksi: `Save settings` (default; `Applying…` saat berjalan) dan `Cancel`
@@ -994,14 +1033,34 @@ Perilaku **[Keputusan produk]**:
   IP (v4 atau v6), `localhost`, nama tanpa titik, atau akhiran `.local`,
   `.lan`, `.internal`, `.home`, `.localdomain` memakai `Local address`;
   domain lain memakai `Cloud address`. Tidak ada tombol pilih mode.
+- `Local address` diturunkan dari host yang dibuka (`config/endpoints.ts`)
+  dan disimpan otomatis ke IndexedDB setiap kali VMS dibuka
+  (`EndpointsSync`), jadi form langsung berisi alamat yang dipakai:
+  - Build development: `http://{host}:5000` (API) dan `ws://{host}:8040`
+    (WebSocket).
+  - Build production (skema K25, `samtek_edge_new/docs/deployment.md`
+    §6.10): API (7200) dan broker WebSocket (7111) hanya mendengarkan di
+    127.0.0.1, jadi browser tidak memakai `{host}:7200` atau `{host}:7111`.
+    MQTT lewat nginx di host yang sama: `ws://{host}/mqtt`
+    (`wss://` bila halaman https), asalkan alamat bawaan instalasi
+    berakhiran `/mqtt`; alamat bawaan lain dipakai apa adanya. Central API
+    memakai `CENTRAL_API_URL` hasil instalasi (misalnya
+    `http://127.0.0.1:7200`), diambil browser dari
+    `GET /api/endpoints/default` lalu disimpan seperti alamat lain.
+  - Alamat yang tersimpan mengikuti host: dibuka lewat IP lain, nilainya
+    diganti otomatis. Setelah pengguna mengubah field `Local address` dan
+    menyimpannya (`isLocalManual`), nilai itu tidak ditimpa lagi.
+  - Field kosong tetap berarti diturunkan saat dipakai.
+- `Cloud address` kosong = nilai bawaan instalasi (`CENTRAL_API_URL`,
+  `public.env`). Tidak disimpan otomatis.
+- Username dan password MQTT tidak diatur di sini: selalu dari
+  `NEXT_PUBLIC_MQTT_USERNAME` dan `NEXT_PUBLIC_MQTT_PASSWORD`.
 - Nilai disimpan di IndexedDB (`settings:endpoints`) dan dicerminkan ke
   cookie `samtek_endpoints` (bukan `httpOnly`) supaya server (SSR, BFF,
   `proxy.ts`) dan modul klien sinkron (`config/mqtt.ts`) bisa membacanya.
   `EndpointsSync` di root layout menulis ulang cookie dari IndexedDB bila
-  hilang.
-- Alamat kosong memakai nilai bawaan instalasi (`CENTRAL_API_URL`,
-  `public.env`). Menyimpan memuat ulang halaman karena MQTT dibaca saat
-  modul dimuat.
+  hilang. Menyimpan memuat ulang halaman karena MQTT dibaca saat modul
+  dimuat.
 - Pengaturan hanya berlaku di browser ini, bukan untuk semua pengguna.
 
 ### 3.26 Header dan sidebar
