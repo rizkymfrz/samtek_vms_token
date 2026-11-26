@@ -1004,7 +1004,7 @@ alamat bisa diperbaiki sebelum masuk.
 - Halaman `/settings` tidak punya judul sendiri; judulnya ada di
   breadcrumb header.
 - Dialog (§8.2 `docs/architecture.md`): judul `Edit addresses`, deskripsi
-  `Set the Central API and MQTT addresses this browser connects to.`,
+  `Change the details of these addresses.` (pola §4 aturan 30),
   tombol pemicu ikon saja dengan `aria-label` dan `title` sama
   (`Edit addresses`). Satu `DialogSection` berisi dua bagian bertumpuk
   dan dipisah `Separator` (bukan berdampingan, supaya tiap bagian cukup
@@ -1012,8 +1012,9 @@ alamat bisa diperbaiki sebelum masuk.
   `In use`, deskripsi di bawahnya, lalu `Central API URL` dan `MQTT
   WebSocket URL` dalam satu baris (satu kolom di layar sempit). Footer: `Cancel` (secondary) dan `Save settings` (default).
   Menutup dialog tanpa menyimpan membuang perubahan.
-- Judul card: `Local address`, `Cloud address`, bertumpuk, dengan dua field
-  dalam satu baris. Badge `In use` pada card yang sedang dipakai browser ini.
+- Judul card: `Local address`, `Cloud address`, dua kolom di layar lebar
+  (satu kolom di layar sempit), field bertumpuk di dalam card. Badge `In
+  use` pada card yang sedang dipakai browser ini.
 - Deskripsi card (tanpa titik, §4 aturan 2): `Used when the VMS is opened
 by IP address or a local name` dan `Used when the VMS is opened by a
 domain name`.
@@ -1024,8 +1025,9 @@ domain name`.
   `Default from the installation` hanya selama alamat belum terambil.
 - Validation: `Central API URL must start with http:// or https://.` dan
   `MQTT WebSocket URL must start with ws:// or wss://.`
-- Aksi: `Save settings` (default; `Applying…` saat berjalan) dan `Cancel`
-  (secondary).
+- Aksi: `Cancel` (secondary) dan `Save settings` (default; `Applying…`
+  saat berjalan), di footer tiap card dengan lebar sama. Keduanya
+  menyimpan atau membuang seluruh form, bukan hanya card tempat tombol itu.
 
 Perilaku **[Keputusan produk]**:
 
@@ -1058,7 +1060,7 @@ Perilaku **[Keputusan produk]**:
 - Nilai disimpan di IndexedDB (`settings:endpoints`) dan dicerminkan ke
   cookie `samtek_endpoints` (bukan `httpOnly`) supaya server (SSR, BFF,
   `proxy.ts`) dan modul klien sinkron (`config/mqtt.ts`) bisa membacanya.
-  `EndpointsSync` di root layout menulis ulang cookie dari IndexedDB bila
+  `EndpointsSync` di layout aplikasi dan halaman login menulis ulang cookie dari IndexedDB bila
   hilang. Menyimpan memuat ulang halaman karena MQTT dibaca saat modul
   dimuat.
 - Pengaturan hanya berlaku di browser ini, bukan untuk semua pengguna.
