@@ -421,6 +421,14 @@ Pilih variant `Button` berdasarkan fungsinya, bukan selera tampilan.
   section itu. Jangan taruh aksi "buat baru" di sana.
 - Tidak ada variant `outline`. Jangan memakai `ghost` sebagai
   pengganti `secondary` hanya agar tombol terlihat lebih ringan.
+- Warna hover `default`, `destructive`, dan `secondary` berasal dari
+  token solid `--primary-hover`, `--destructive-hover`, dan
+  `--secondary-hover` di `app/globals.css` (utility `bg-primary-hover`
+  dan seterusnya). Jangan menulis `bg-primary/80` atau campuran warna
+  di komponen: alpha membuat tombol tembus pandang di atas card atau
+  gambar.
+- Autofill browser tidak boleh mengubah warna input. Aturannya satu di
+  `app/globals.css` (`:-webkit-autofill`); jangan ditimpa per komponen.
 
 ### 8.2 Overlay Forms
 

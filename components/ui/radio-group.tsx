@@ -18,7 +18,7 @@ const RadioGroupItem = ({ className, ...props }: RadioPrimitive.Root.Props) => {
     <RadioPrimitive.Root
       data-slot="radio-group-item"
       className={cn(
-        "peer relative flex size-4 cursor-pointer shrink-0 items-center justify-center rounded-full border border-border bg-secondary transition-colors outline-none hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] group-has-disabled/field:opacity-50 after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground data-checked:hover:bg-primary",
+        "peer relative flex size-4 cursor-pointer shrink-0 items-center justify-center rounded-full border border-border bg-secondary transition-colors outline-none hover:bg-secondary-hover group-has-disabled/field:opacity-50 after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground data-checked:hover:bg-primary",
         className,
       )}
       {...props}
