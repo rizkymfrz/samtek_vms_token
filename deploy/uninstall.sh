@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-# Removes the VMS. By default only the unit, the nginx site and the releases; config and cache stay.
 set -euo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=deploy/common.sh
-source "$here/common.sh"
-
 dry_run=0
 purge_config=0
 purge_data=0
+
+source "$here/common.sh"
 
 usage() {
   cat <<USAGE
@@ -30,7 +28,6 @@ while (($#)); do
     *) usage >&2; die "unknown argument: $1" ;;
   esac
 done
-
 require_root
 
 remove_tree() {
@@ -53,7 +50,6 @@ if ((purge_data)); then
     [[ $answer == "delete samtek vms data" ]] || die "not confirmed, nothing removed"
   fi
 fi
-
 if [[ -z $STAGING ]]; then
   run systemctl stop "$SERVICE" || true
   run systemctl disable "$SERVICE" || true
@@ -73,7 +69,6 @@ if [[ -z $STAGING ]]; then
   run systemctl daemon-reload
   run systemctl reset-failed "$SERVICE" 2>/dev/null || true
 fi
-
 remove_tree "$PREFIX"
 ((purge_config)) && remove_tree "$CONF"
 ((purge_data)) && remove_tree "$DATA"

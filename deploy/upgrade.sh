@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
-# Upgrades an installed VMS to the release in this (extracted) package; rolls back when it does not start.
 set -euo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(dirname "$here")
-# shellcheck source=deploy/common.sh
-source "$here/common.sh"
-
 keep=3
 dry_run=0
 verify=1
 from=""
 version=""
+
+source "$here/common.sh"
 
 usage() {
   cat <<USAGE
@@ -34,7 +32,6 @@ while (($#)); do
     *) usage >&2; die "unknown argument: $1" ;;
   esac
 done
-
 [[ $keep =~ ^[0-9]+$ ]] && ((keep >= 2)) || die "--keep must be a number of at least 2"
 require_root
 [[ -L $PREFIX/current ]] || die "nothing installed at $PREFIX (use install.sh first)"
@@ -45,7 +42,6 @@ if [[ -z $version ]]; then
   version=$(<"$repo/VERSION")
 fi
 [[ $(basename "$previous") != "$version" ]] || die "release $version is already the active one"
-
 install_args=(--no-start --version "$version")
 [[ -z $from ]] || install_args+=(--from "$from")
 ((dry_run)) && install_args+=(--dry-run)
@@ -98,7 +94,6 @@ if ! "$here/install.sh" "${install_args[@]}"; then
   die "install step failed"
 fi
 ((dry_run)) && { note "dry-run: stopping here"; exit 0; }
-
 service_start
 if ((verify)); then
   if ! "$here/verify.sh"; then

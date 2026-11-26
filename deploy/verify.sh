@@ -1,18 +1,14 @@
 #!/usr/bin/env bash
-# Read-only health check of an installed VMS. Exit code 1 when any check fails.
 set -uo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-# shellcheck source=deploy/common.sh
 source "$here/common.sh"
 
 readonly SETTLE_SECONDS=${SAMTEK_VERIFY_SETTLE_SECONDS:-20}
-
 if [[ -z $STAGING && $EUID -ne 0 ]]; then
   echo "verify: run as root (sudo): $CONF is not readable otherwise" >&2
   exit 2
 fi
-
 failed=0
 pass() { printf '  ok    %s\n' "$*"; }
 warn() { printf '  warn  %s\n' "$*"; }
@@ -129,6 +125,5 @@ check_release
 check_config
 check_service
 check_network
-
 if ((failed)); then echo "verify: FAILED"; exit 1; fi
 echo "verify: ok"

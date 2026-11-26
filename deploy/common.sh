@@ -1,7 +1,3 @@
-# Constants and helpers shared by the deploy scripts. Sourced, never executed.
-# SAMTEK_ROOT=<folder> puts every path under that folder and turns off the parts that need
-# root (users, chown, systemd, nginx reload): a staging mode to try the scripts without root.
-
 readonly STAGING=${SAMTEK_ROOT:-}
 readonly SERVICE=samtek-vms
 readonly SERVICE_USER=samtek-vms
@@ -14,7 +10,6 @@ readonly BACKUP=$STAGING/var/backups/samtek/vms
 readonly UNIT=$STAGING/etc/systemd/system/${SERVICE}.service
 readonly NGINX_CONF=$STAGING/etc/nginx/conf.d/samtek-vms.conf
 readonly MARKER='# samtek-deploy:'
-
 dry_run=${dry_run:-0}
 
 die() { echo "${0##*/}: $*" >&2; exit 1; }

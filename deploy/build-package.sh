@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
-# Builds the VMS in a temporary copy (never in .next of the repo: a running `next start` reads it)
-# and packs it with a Node binary and the deploy scripts: no Node, npm or build on the server.
 set -euo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(dirname "$here")
-# shellcheck source=deploy/common.sh
-source "$here/common.sh"
-
 out=$repo/dist-package
 version=""
 worktree=0
+
+source "$here/common.sh"
 
 usage() {
   cat <<USAGE
@@ -35,18 +32,15 @@ while (($#)); do
     *) usage >&2; die "unknown argument: $1" ;;
   esac
 done
-
 [[ $(uname -s) == Linux && $(uname -m) == x86_64 ]] || die "Linux x86_64 only"
 [[ -d $repo/node_modules ]] || die "$repo/node_modules missing: run npm install"
 command -v node >/dev/null || die "node is required"
 [[ -n $version ]] || version=$(git -C "$repo" describe --always --dirty 2>/dev/null || date +%Y%m%d%H%M%S)
 [[ $version =~ ^[A-Za-z0-9._-]+$ ]] || die "--version may only hold letters, digits, . _ -"
-
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 src=$work/src
 mkdir -p "$src"
-
 if ((worktree)); then
   note "copying the working tree"
   tar -C "$repo" --exclude=./node_modules --exclude=./.next --exclude=./.git --exclude=./logs \
@@ -58,14 +52,12 @@ fi
 note "copying node_modules"
 cp -a "$repo/node_modules" "$src/node_modules"
 (cd "$src" && node scripts/copy-maplibre-worker.mjs >/dev/null)
-
 note "building (Next.js, standalone)"
 build_env=()
 while IFS= read -r line; do build_env+=("$line"); done < <(node "$here/apply-public-env.mjs" --print-build-env)
 (cd "$src" && env SAMTEK_STANDALONE=1 DATA_SOURCE=mock "${build_env[@]}" npx next build >"$work/build.log" 2>&1) \
   || { tail -n 30 "$work/build.log" >&2; die "next build failed"; }
 [[ -f $src/.next/standalone/server.js ]] || die "the build made no standalone server.js (is SAMTEK_STANDALONE read by next.config.ts?)"
-
 name=samtek-vms-$version-linux-x86_64
 root=$work/$name
 mkdir -p "$root/payload/bin" "$root/deploy"
@@ -80,10 +72,8 @@ for script in common.sh install.sh upgrade.sh uninstall.sh verify.sh build-packa
 done
 cp -a "$repo/.env.example" "$root/"
 printf '%s' "$version" >"$root/VERSION"
-
 note "checking the placeholders are in the build"
 node "$root/deploy/apply-public-env.mjs" --require "$root/payload/app" || die "a NEXT_PUBLIC placeholder is not in the build: the VMS no longer reads it"
-
 (cd "$root" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum >SHA256SUMS)
 mkdir -p "$out"
 tarball=$out/$name.tar.gz

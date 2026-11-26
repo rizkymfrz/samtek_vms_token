@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
-# Installs the VMS from an extracted package into the release layout of samtek_edge/docs/deployment.md:
-# a Node binary and the standalone Next.js app, a systemd unit on 127.0.0.1 and an nginx site in front.
-# Idempotent: a second run only refreshes the unit, the nginx site and the symlink.
 set -euo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=$(dirname "$here")
-# shellcheck source=deploy/common.sh
-source "$here/common.sh"
-
 from=""
 version=""
 dry_run=0
@@ -24,6 +18,8 @@ mqtt_ws=""
 use_nginx=1
 install_deps=0
 disable_default_site=0
+
+source "$here/common.sh"
 
 usage() {
   cat <<USAGE
@@ -76,12 +72,10 @@ while (($#)); do
     *) usage >&2; die "unknown argument: $1" ;;
   esac
 done
-
 [[ -n $from || ! -d $repo/payload ]] || from=$repo/payload
 [[ -n $from ]] || { usage >&2; die "--from is required"; }
 [[ $port =~ ^[0-9]+$ && $http_port =~ ^[0-9]+$ ]] || die "ports must be numbers"
 [[ $server_name =~ ^[A-Za-z0-9._*-]+$ ]] || die "--server-name may only hold letters, digits, . _ * -"
-
 api_env=$STAGING/etc/samtek/api/api.env
 mosquitto_env=$STAGING/etc/samtek/mosquitto/client.env
 first_install=0
