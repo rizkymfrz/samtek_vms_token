@@ -27,3 +27,4 @@ next-env.d.ts
 
 # pm2 logs written by ecosystem.config.js
 /logs
+/dist-package
