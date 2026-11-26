@@ -9,15 +9,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary/15 text-[color-mix(in_oklch,var(--primary),var(--foreground)_35%)] [a]:hover:bg-primary/25",
+          "bg-badge-primary text-[color-mix(in_oklch,var(--primary),var(--foreground)_35%)] [a]:hover:bg-badge-primary-hover",
         secondary:
-          "bg-secondary-foreground/10 text-secondary-foreground [a]:hover:bg-secondary-foreground/15",
+          "bg-badge-secondary text-secondary-foreground [a]:hover:bg-badge-secondary-hover",
         destructive:
-          "bg-destructive/15 text-[color-mix(in_oklch,var(--destructive),var(--foreground)_25%)] [a]:hover:bg-destructive/25",
+          "bg-badge-destructive text-[color-mix(in_oklch,var(--destructive),var(--foreground)_25%)] [a]:hover:bg-badge-destructive-hover",
         outline:
-          "bg-muted-foreground/10 text-muted-foreground [a]:hover:bg-muted-foreground/15",
+          "bg-badge-muted text-muted-foreground [a]:hover:bg-badge-muted-hover",
         ghost:
-          "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
+          "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted-hover",
         overlay: "bg-background text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

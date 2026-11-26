@@ -432,6 +432,9 @@ Pilih variant `Button` berdasarkan fungsinya, bukan selera tampilan.
   (campuran 50% dengan background), serta `--foreground-disabled`
   untuk teks netral. Jangan memakai `disabled:opacity-50` atau
   opacity lain untuk state disabled.
+- Hover netral (baris tabel, menu, ghost) memakai `--muted-hover`, dan
+  badge memakai `--badge-*` dan `--badge-*-hover`. Semuanya solid,
+  tidak ada `bg-muted/50` atau tint alpha untuk hover.
 - Autofill browser tidak boleh mengubah warna input. Aturannya satu di
   `app/globals.css` (`:-webkit-autofill`); jangan ditimpa per komponen.
 
