@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CctvIcon, CircleDotIcon, PowerIcon } from "lucide-react";
 import { useId } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { DialogToggles } from "@/components/shared/dialog-toggles";
 import { Pick } from "@/components/shared/pick";
 import { ToggleCard } from "@/components/shared/toggle-card";
@@ -22,6 +22,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ANALYTICS } from "@/config/analytics-catalog";
+import { QuotaHint } from "@/features/license";
 import {
   cameraDraftSchema,
   type Draft,
@@ -67,6 +68,10 @@ const Form = ({
     defaultValues: editing
       ? toDraft(editing)
       : (initial ?? emptyDraft(servers)),
+  });
+  const [serverId, analyticId] = useWatch({
+    control,
+    name: ["edgeServerId", "analyticId"],
   });
   const serverItems = servers.map((s) => ({ value: s.id, label: s.name }));
   return (
@@ -134,6 +139,16 @@ const Form = ({
                     className="w-full"
                   />
                 )}
+              />
+              <QuotaHint
+                serverId={serverId}
+                analyticId={analyticId}
+                counted={
+                  !!editing &&
+                  editing.isEnabled &&
+                  editing.edgeServerId === serverId &&
+                  editing.analyticId === analyticId
+                }
               />
             </Field>
           </DialogSection>

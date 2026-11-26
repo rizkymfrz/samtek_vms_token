@@ -38,7 +38,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Analytics** (`/analytics`, `features/analytics`): diaudit
     teksnya (§3.19). Halaman kelola wajah (`faces`) belum diaudit.
   - **Edge servers** (`/servers`, `features/servers`): diaudit
-    teksnya (§3.18).
+    teksnya (§3.18). Kartu License (`features/license`) ditulis
+    mengikuti §3.18 dan belum diaudit.
   - **Cameras** (`/cameras`, `features/cameras`): diaudit teksnya
     (§3.17).
   - **Map** (`/map`, `features/map`): diaudit teksnya (§3.16).
@@ -800,6 +801,19 @@ Catatan:
 MQTT broker`. Peringatan sebagian memakai `Some data did not load`.
 - Placeholder memakai `e.g.`: `e.g. Jakarta branch`.
 - Hapus edge server dicegah bila masih memiliki kamera.
+- Kartu `License` (`features/license`) menampilkan laporan lisensi terakhir
+  dari Edge (`GET /v1/edge-servers/{id}/license`): `Term` (`Perpetual`,
+  `Fixed term`), `Enforcement` (`Limited`, `Not enforced`), `Last check`,
+  `Valid offline until`, lalu pemakaian per fitur (`1 of 2`, badge `Full`).
+  Belum ada laporan: `No license reports.` Memuat: `Loading license…`.
+  Nama fitur memakai `featureLabel` (`lpr` menjadi `License plate
+  recognition`).
+- Dialog kamera menampilkan sisa kuota di bawah `Analytic`: `{n} of {m}
+  licensed cameras in use for this analytic.` (singular: `1 licensed
+  camera`). Bila penuh: `The license
+  allows {m} enabled cameras for this analytic and all are in use.` Hanya
+  petunjuk; penolakan sebenarnya `422 LICENSE_QUOTA_EXCEEDED` dari API dan
+  pesannya tampil di dialog.
 
 ### 3.19 Analytics
 

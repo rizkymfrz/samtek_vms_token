@@ -8,6 +8,7 @@ const DEVICE_KEYS: QueryKey[] = [
   QUERY_KEYS.layout,
   QUERY_KEYS.map,
   QUERY_KEYS.floorplan,
+  QUERY_KEYS.license,
 ];
 
 const SERVER_KEYS: QueryKey[] = [
