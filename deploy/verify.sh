@@ -90,7 +90,7 @@ http_code() {
 check_network() {
   echo "network"
   local port listening code
-  port=$(env_value PORT); port=${port:-3100}
+  port=$(env_value PORT); port=${port:-7300}
   listening=$(ss -ltn 2>/dev/null || true)
   if grep -qE "127\.0\.0\.1:${port}\s" <<<"$listening"; then
     pass "Node listens on 127.0.0.1:$port only"
