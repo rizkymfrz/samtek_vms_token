@@ -32,7 +32,7 @@ export const AppHeader = ({
   const labels = useBreadcrumbLabels();
   const crumbs = getBreadcrumbs(pathname, labels);
   return (
-    <header className="sticky top-0 z-20 flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background px-4">
+    <header className="app-drag sticky top-0 z-20 flex h-(--header-height) shrink-0 items-center gap-2 border-b bg-background px-4">
       <SidebarTrigger />
       <Separator orientation="vertical" />
       <Breadcrumb>

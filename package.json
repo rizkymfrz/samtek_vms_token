@@ -12,7 +12,8 @@
     "fix:spacing": "node scripts/fix-spacing.mjs",
     "check:showcase": "node scripts/check-showcase.mjs",
     "format": "node scripts/format.mjs",
-    "format:check": "node scripts/format.mjs --check"
+    "format:check": "node scripts/format.mjs --check",
+    "desktop:dev": "node scripts/desktop.mjs dev"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.13",
@@ -47,10 +48,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "electron": "^45.5.0",
+    "electron-builder": "^26.18.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "prettier": "^3.9.10",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "main": "electron/main.cjs"
 }
