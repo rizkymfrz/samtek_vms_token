@@ -125,6 +125,12 @@ Rules:
   (BFF) di depan API central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.
+  Alamat API central dibaca per request dari cookie `samtek_endpoints`
+  (diisi halaman `/settings`, dipilih menurut header `Host`), lalu
+  `CENTRAL_API_URL` bila kosong (`lib/api/central-client.ts`).
+  `cookies()` dan `headers()` tidak boleh dipanggil di dalam fungsi `"use cache"`:
+  alamat dibaca di luar cache lalu dikirim sebagai argumen (`getCentralServers`
+  di `lib/api/edge-registry.ts`), sehingga ikut menjadi kunci cache.
   `app/api/map/match/` meneruskan jejak bodyworn ke Valhalla
   (`MAP_MATCHING_URL`, opsional) agar garis menempel ke jalan; tanpa env itu
   jejak tetap garis lurus.

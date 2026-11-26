@@ -24,7 +24,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Talk** (`features/talk`): diaudit teksnya (§3.27).
   - **Header dan sidebar** (`components/layout`, `components/ui/sidebar.tsx`):
     diaudit teksnya (§3.26).
-  - **Settings** (`/settings`): diperiksa (§3.25). Halaman kosong.
+  - **Settings** (`/settings`, `features/settings`): diaudit teksnya
+    (§3.25).
   - **Login** (`/login`, `features/auth`, menu pengguna): diaudit
     teksnya (§3.24).
   - **Manage faces** (`/analytics/[slug]/faces`, `features/faces`):
@@ -992,17 +993,42 @@ administrator. Contact them to have your password reset.`
 
 Menu pengguna dan page title: `Settings`.
 
-Halaman `/settings` belum punya isi, tidak ada fitur `settings`.
-Halaman menampilkan empty state sementara: judul `Settings are not
-available`, deskripsi `There is nothing to configure here yet.`
+Halaman `/settings` (`features/settings`) mengatur alamat API central dan
+WebSocket MQTT, satu set untuk `Local address` dan satu set untuk
+`Cloud address`.
 
-Catatan:
+- Deskripsi halaman: `Set the central API and MQTT addresses this browser
+connects to.`
+- Judul card: `Local address`, `Cloud address`. Badge `In use` pada card
+  yang sedang dipakai browser ini.
+- Deskripsi card: `Used when the VMS is opened by IP address or a local
+name.` dan `Used when the VMS is opened by a domain name.`
+- Label field: `Central API URL`, `MQTT WebSocket URL`, `MQTT username`,
+  `MQTT password`. Placeholder: `e.g. http://192.168.1.10:3000`,
+  `e.g. ws://192.168.1.10:9001`.
+- Validation: `Enter a full URL that starts with http:// or https://.` dan
+  `Enter a full URL that starts with ws:// or wss://.`
+- Aksi: `Save settings` (default; `Applying…` saat berjalan) dan `Cancel`
+  (secondary).
+- Catatan form: `An empty address uses the one set when the VMS was
+installed. The MQTT account is sent to this browser only: use an account
+that may only read.`
 
-- Item menu `Settings` (menu pengguna, `SETTINGS_ITEM`) tetap ada dan
-  mengarah ke empty state itu (keputusan: menu tidak disembunyikan).
-- Saat halaman diisi, teksnya diaudit pada saat itu dan mengikuti
-  aturan §1 sampai §5. Bagian pengaturan yang menyangkut istilah di
-  glossary (misalnya `Edge server`, `Alarm`) memakai istilah resmi.
+Perilaku **[Keputusan produk]**:
+
+- Set yang dipakai ditentukan otomatis oleh host yang dibuka di browser:
+  IP (v4 atau v6), `localhost`, nama tanpa titik, atau akhiran `.local`,
+  `.lan`, `.internal`, `.home`, `.localdomain` memakai `Local address`;
+  domain lain memakai `Cloud address`. Tidak ada tombol pilih mode.
+- Nilai disimpan di IndexedDB (`settings:endpoints`) dan dicerminkan ke
+  cookie `samtek_endpoints` (bukan `httpOnly`) supaya server (SSR, BFF,
+  `proxy.ts`) dan modul klien sinkron (`config/mqtt.ts`) bisa membacanya.
+  `EndpointsSync` di root layout menulis ulang cookie dari IndexedDB bila
+  hilang.
+- Alamat kosong memakai nilai bawaan instalasi (`CENTRAL_API_URL`,
+  `public.env`). Menyimpan memuat ulang halaman karena MQTT dibaca saat
+  modul dimuat.
+- Pengaturan hanya berlaku di browser ini, bukan untuk semua pengguna.
 
 ### 3.26 Header dan sidebar
 

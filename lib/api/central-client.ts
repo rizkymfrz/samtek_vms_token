@@ -1,5 +1,12 @@
 import axios, { isAxiosError } from "axios";
+import { cookies, headers } from "next/headers";
 import { z } from "zod";
+import {
+  ENDPOINTS_COOKIE,
+  hostnameOf,
+  parseEndpointsCookie,
+  scopeOf,
+} from "@/config/endpoints";
 import { env } from "@/config/env";
 import { UnauthorizedError } from "@/lib/auth/session";
 
@@ -23,13 +30,33 @@ const errorBodySchema = z.object({
   }),
 });
 
-export const createCentralClient = (token?: string) => {
-  if (!env.CENTRAL_API_URL) throw new Error("CENTRAL_API_URL is not set");
-  return axios.create({
-    baseURL: env.CENTRAL_API_URL,
+export const resolveCentralUrl = async () => {
+  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
+  const saved = parseEndpointsCookie(cookieStore.get(ENDPOINTS_COOKIE)?.value);
+  const scope = scopeOf(hostnameOf(headerStore.get("host")));
+  return saved?.[scope].centralUrl || env.CENTRAL_API_URL;
+};
+
+export const createCentralClient = (token?: string, baseURL?: string) => {
+  const client = axios.create({
+    baseURL,
     timeout: 10_000,
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
+  if (baseURL) return client;
+  client.interceptors.request.use(async (config) => {
+    const resolved = await resolveCentralUrl();
+    if (!resolved) {
+      throw new CentralError(
+        "The central API address is not set.",
+        503,
+        "NOT_CONFIGURED",
+      );
+    }
+    config.baseURL = resolved;
+    return config;
+  });
+  return client;
 };
 
 export const toCentralError = (error: unknown) => {

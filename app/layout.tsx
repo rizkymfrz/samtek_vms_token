@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { EndpointsSync } from "@/features/settings/components/endpoints-sync";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -43,7 +44,10 @@ const RootLayout = ({ children }: LayoutProps<"/">) => {
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <EndpointsSync />
+        {children}
+      </body>
     </html>
   );
 };

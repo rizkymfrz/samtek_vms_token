@@ -1,6 +1,6 @@
 import { cacheLife } from "next/cache";
 import { z } from "zod";
-import { createCentralClient } from "./central-client";
+import { createCentralClient, resolveCentralUrl } from "./central-client";
 import { fetchAllPages } from "./central-pages";
 import type { EdgeTarget } from "./edge-client";
 
@@ -26,9 +26,10 @@ export type CentralServer = Omit<
 
 export const listCentralServers = async (
   token: string,
+  baseURL?: string,
 ): Promise<CentralServer[]> => {
   const servers = await fetchAllPages(
-    createCentralClient(token),
+    createCentralClient(token, baseURL),
     "/v1/edge-servers",
     centralServerSchema,
   );
@@ -38,10 +39,16 @@ export const listCentralServers = async (
   }));
 };
 
-export const getCentralServers = async (token: string) => {
+const getCachedCentralServers = async (token: string, baseURL: string) => {
   "use cache";
   cacheLife({ revalidate: 30, expire: 60 });
-  return listCentralServers(token);
+  return listCentralServers(token, baseURL);
+};
+
+export const getCentralServers = async (token: string) => {
+  const baseURL = await resolveCentralUrl();
+  if (!baseURL) return listCentralServers(token);
+  return getCachedCentralServers(token, baseURL);
 };
 
 export const getEdgeServers = async (token: string): Promise<EdgeTarget[]> =>
