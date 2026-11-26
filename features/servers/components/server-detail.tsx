@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { mqttConfig } from "@/config/mqtt";
-import { LicenseCard } from "@/features/license";
 import { MetricChart } from "./metric-chart";
 import { Stats } from "./stats";
 import { StorageCard } from "./storage-card";
@@ -135,7 +134,6 @@ export const ServerDetail = ({
           }
           empty={empty}
         />
-        <LicenseCard serverId={server.id} online={online} />
       </div>
       <ConfirmDialog
         isOpen={isConfirming}
