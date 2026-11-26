@@ -10,11 +10,13 @@ import { UserMenu } from "@/features/auth/components/user-menu";
 import { DeviceStatus } from "@/features/cameras/components/device-status";
 import { EdgeStatusConnector } from "@/features/edge-status";
 import { GlobalSearch } from "@/features/search/components/global-search";
+import { EndpointsSync } from "@/features/settings/components/endpoints-sync";
 import { QueryProvider } from "@/providers/query-provider";
 
 const AppLayout = ({ children }: LayoutProps<"/">) => {
   return (
     <QueryProvider>
+      <EndpointsSync />
       <EdgeStatusConnector />
       <Toaster>
         <AlarmToaster />

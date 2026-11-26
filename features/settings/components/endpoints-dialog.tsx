@@ -45,7 +45,7 @@ export const EndpointsDialog = () => {
         <DialogHeader icon={ServerCogIcon}>
           <DialogTitle>Edit addresses</DialogTitle>
           <DialogDescription>
-            Set the Central API and MQTT addresses this browser connects to.
+            Change the details of these addresses.
           </DialogDescription>
         </DialogHeader>
         <Separator />
@@ -65,7 +65,11 @@ export const EndpointsDialog = () => {
                       {description}
                     </p>
                   </div>
-                  <EndpointFields scope={scope} form={form} />
+                  <EndpointFields
+                    scope={scope}
+                    form={form}
+                    className="sm:grid-cols-2"
+                  />
                 </Fragment>
               ))}
             </DialogSection>

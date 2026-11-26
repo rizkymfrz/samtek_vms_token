@@ -5,6 +5,7 @@ import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { StarField } from "@/features/auth/components/star-field";
 import { EndpointsDialog } from "@/features/settings/components/endpoints-dialog";
+import { EndpointsSync } from "@/features/settings/components/endpoints-sync";
 import { QueryProvider } from "@/providers/query-provider";
 
 const STAR_MASK = [
@@ -20,49 +21,50 @@ export const metadata: Metadata = { title: "Sign in" };
 
 const Page = () => {
   return (
-    <main className="relative isolate grid min-h-svh bg-background lg:grid-cols-2">
-      <PageBackdrop intensity={4} />
-      <div
-        className="absolute inset-y-0 right-0 hidden w-3/5 bg-background lg:block"
-        style={{ maskImage: STAR_MASK }}
-      >
-        <StarField />
-      </div>
-      <AuthHeader settings={<EndpointsDialog />} />
-      <div className="relative flex items-center justify-center p-4 pt-[calc(var(--header-height)+1rem)]">
-        <div className="flex w-full max-w-md flex-col gap-8">
-          <div className="flex flex-col gap-2">
-            <div className="mb-4 flex items-center gap-4">
-              <BrandLogo className="size-10" />
-              <span className="text-2xl font-semibold tracking-wide">
-                SAMTEK
-              </span>
-            </div>
-            <h1 className="text-3xl font-semibold tracking-tight">
-              Welcome back
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Sign in to monitor cameras, alarms and edge servers across your
-              sites.
-            </p>
-          </div>
-          <QueryProvider>
-            <LoginForm />
-          </QueryProvider>
+    <QueryProvider>
+      <EndpointsSync />
+      <main className="relative isolate grid min-h-svh bg-background lg:grid-cols-2">
+        <PageBackdrop intensity={4} />
+        <div
+          className="absolute inset-y-0 right-0 hidden w-3/5 bg-background lg:block"
+          style={{ maskImage: STAR_MASK }}
+        >
+          <StarField />
         </div>
-      </div>
-      <div className="relative hidden lg:block">
-        <video
-          className="absolute inset-0 size-full object-cover"
-          src="/earth.webm"
-          autoPlay
-          loop
-          muted
-          playsInline
-          aria-hidden="true"
-        />
-      </div>
-    </main>
+        <AuthHeader settings={<EndpointsDialog />} />
+        <div className="relative flex items-center justify-center p-4 pt-[calc(var(--header-height)+1rem)]">
+          <div className="flex w-full max-w-md flex-col gap-8">
+            <div className="flex flex-col gap-2">
+              <div className="mb-4 flex items-center gap-4">
+                <BrandLogo className="size-10" />
+                <span className="text-2xl font-semibold tracking-wide">
+                  SAMTEK
+                </span>
+              </div>
+              <h1 className="text-3xl font-semibold tracking-tight">
+                Welcome back
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Sign in to monitor cameras, alarms and edge servers across your
+                sites.
+              </p>
+            </div>
+            <LoginForm />
+          </div>
+        </div>
+        <div className="relative hidden lg:block">
+          <video
+            className="absolute inset-0 size-full object-cover"
+            src="/earth.webm"
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+          />
+        </div>
+      </main>
+    </QueryProvider>
   );
 };
 

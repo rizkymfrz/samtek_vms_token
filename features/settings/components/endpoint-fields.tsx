@@ -1,9 +1,9 @@
-"use client";
 import { CloudIcon, ServerIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { EndpointScope } from "@/config/endpoints";
+import { cn } from "@/lib/utils";
 import type { EndpointsForm } from "../hooks/use-endpoints-form";
 
 export const SCOPES: {
@@ -29,13 +29,15 @@ export const SCOPES: {
 export const EndpointFields = ({
   scope,
   form,
+  className,
 }: {
   scope: EndpointScope;
   form: EndpointsForm;
+  className?: string;
 }) => {
   const { formId, register, errors, placeholders } = form;
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className={cn("grid gap-4", className)}>
       <Field data-invalid={!!errors[scope]?.centralUrl}>
         <FieldLabel htmlFor={`${formId}-${scope}-central`}>
           Central API URL
