@@ -121,7 +121,7 @@ Rules:
 - Pengecualian yang diterima: route handler di `app/api/auth/`,
   `app/api/alerts/`, `app/api/cameras/`, `app/api/edge-servers/`,
   `app/api/servers/`, `app/api/live/`, `app/api/layouts/`,
-  `app/api/map/`, `app/api/endpoints/`, `app/api/users/`, `app/api/roles/`, `app/api/permissions/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, `app/api/recognitions/`, dan `app/api/stats/` dipakai sebagai lapisan tipis
+  `app/api/map/`, `app/api/endpoints/`, `app/api/users/`, `app/api/speakers/`, `app/api/roles/`, `app/api/permissions/`, `app/api/tickets/`, `app/api/ticket-link/`, `app/api/faces/`, `app/api/recognitions/`, dan `app/api/stats/` dipakai sebagai lapisan tipis
   (BFF) di depan API central dan Edge.
   Alasannya: token disimpan di cookie `httpOnly` sehingga tidak dapat
   dibaca JavaScript browser, dan API central tidak mengaktifkan CORS.

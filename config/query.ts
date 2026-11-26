@@ -9,6 +9,7 @@ export const QUERY_KEYS = {
   floorplan: ["floorplan"],
   faces: ["faces"],
   users: ["users"],
+  speakers: ["speakers"],
   license: ["license"],
   ticketServers: ["ticket-servers"],
   currentUser: ["current-user"],

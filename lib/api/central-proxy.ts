@@ -14,6 +14,7 @@ export const callCentral = async (
   method: "get" | "post" | "patch" | "put" | "delete",
   path: string,
   body?: unknown,
+  timeout?: number,
 ) => {
   const token = await requireAccessToken();
   try {
@@ -21,6 +22,7 @@ export const callCentral = async (
       method,
       url: path,
       data: body,
+      timeout,
     });
     return response.data;
   } catch (error) {

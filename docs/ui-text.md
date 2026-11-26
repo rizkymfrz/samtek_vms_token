@@ -35,6 +35,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Camera detail** (`/cameras/[id]`, `features/camera-detail`):
     diaudit teksnya (§3.21).
   - **Users** (`/users`, `features/users`): diaudit teksnya (§3.20).
+  - **Speakers** (`/speakers`, `features/speakers`): teksnya ditulis
+    mengikuti Users (§3.30).
   - **Analytics** (`/analytics`, `features/analytics`): diaudit
     teksnya (§3.19). Halaman kelola wajah (`faces`) belum diaudit.
   - **Edge servers** (`/servers`, `features/servers`): diaudit
@@ -1218,6 +1220,38 @@ Catatan:
 - Alt gambar: `Detected face of {name}`, `Registered photo of {name}`,
   `Detected vehicle {plate}`.
 - Dialog: judul `Recognition details` dan `Plate details`, deskripsi `Details of this recognition.` dan `Details of this plate read.` Nama, plat, dan kamera tampil di field body (§4 aturan 30).
+
+### 3.30 Speakers
+
+Menu dan page title: `Speakers`. Halaman mengikuti `/users`: filter,
+tabel, pagination, dialog `Add speaker` dan `Edit speaker`, hapus, dan tes
+nada per baris (`/v1/edge-servers/{serverId}/speakers`).
+
+| Canonical     | Definition                                                                                                   | Context & preferred wording                           | Avoid                 | Example         |
+| ------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- | --------------------- | --------------- |
+| Speaker       | Horn speaker SIP milik satu edge server.                                                                     | Seluruh halaman Speakers.                             | Horn, loudspeaker     | `Speakers`      |
+| Enabled       | `isEnabled`. Speaker yang dinonaktifkan tidak memutar audio.                                                 | Kolom `Status`, filter. Sama dengan kamera dan server. | Active (untuk speaker) | `Disabled`      |
+| Configuration | `applyStatus` terakhir yang dilaporkan edge: `Applied`, `Rejected`, `Pending` (belum ada laporan). Sama dengan kamera. | Kolom tabel. Tooltip memuat `applyError.message`.     |                       | `Applied`       |
+| Address       | `host:port` SIP speaker.                                                                                     | Kolom tabel.                                          | IP                    | `192.168.77.40:5060` |
+
+Catatan:
+
+- Status online atau offline speaker ada di `edge.state.speakers` (MQTT)
+  dan belum ditampilkan.
+- Password tidak pernah tampil (`hasPassword` saja). Kosong saat ubah
+  berarti tidak berubah.
+- Dialog: `Add speaker` / `Add a SIP speaker to an edge server.`,
+  `Edit speaker` / `Change the details of this speaker.` Field: `Edge server`
+  (hanya saat tambah), `Speaker name`, `Address` (IPv4), `Port`,
+  `Username (optional)`, `Password (optional)`, `Timeout (seconds)`,
+  `Volume (%)`, toggle `Enabled`.
+- Hapus: `Delete this speaker?` / `Delete speaker`. Ditolak API selama
+  dipakai aturan speaker sebuah kamera.
+- Tes (`Test {name}`): toast `{name} played the test tone` atau
+  `{name} did not play the test tone`; gagal: `Failed to test the speaker`.
+- Empty state: `No speakers` / `Add the first one.`;
+  `No speakers found` / `No speakers match the filters.`
+- Pesan tanpa izin: `You do not have permission to view speakers.`
 
 ## 4. Quality rules
 

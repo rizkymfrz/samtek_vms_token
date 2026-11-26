@@ -13,6 +13,7 @@ import {
   SettingsIcon,
   TicketIcon,
   UsersIcon,
+  Volume2Icon,
 } from "lucide-react";
 
 export type NavChildren = "floorplan" | "cameras" | "servers";
@@ -65,6 +66,7 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: ServerIcon,
         children: "servers",
       },
+      { href: "/speakers", title: "Speakers", icon: Volume2Icon },
     ],
   },
   {
