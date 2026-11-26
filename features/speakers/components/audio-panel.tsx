@@ -77,12 +77,16 @@ export const AudioPanel = ({ servers }: { servers: ServerOption[] }) => {
               ? "Loading audio files…"
               : isError
                 ? "Failed to load the audio files"
-                : "No audio files"
+                : (data?.audios.length ?? 0) === 0
+                  ? "No audio files"
+                  : "No audio files found"
           }
           description={
             isPending || isError
               ? undefined
-              : "Upload the first one to play it from a camera rule."
+              : (data?.audios.length ?? 0) === 0
+                ? "Upload the first one to play it from a camera rule."
+                : "No audio files match the filters."
           }
         />
       ) : (

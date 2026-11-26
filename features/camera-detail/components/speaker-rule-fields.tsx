@@ -30,6 +30,7 @@ import type { DetailDraft } from "../lib/detail-draft";
 import type { CameraDetail } from "../types";
 
 const NO_AUDIO = "none";
+
 const DAY_LABEL: Record<(typeof SPEAKER_DAYS)[number], string> = {
   mon: "Mon",
   tue: "Tue",
@@ -406,7 +407,7 @@ export const SpeakerRuleFields = ({
               </Field>
             </>
           )}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Button
               type="button"
               variant="secondary"

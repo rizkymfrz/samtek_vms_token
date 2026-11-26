@@ -9,9 +9,14 @@ export const CALL_STATUS = {
 
 type CallStatus = keyof typeof CALL_STATUS;
 
+const sentenceCase = (value: string) => {
+  const text = value.replaceAll("_", " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 export const statusOf = (status: string) =>
   CALL_STATUS[status as CallStatus] ?? {
-    label: status.replaceAll("_", " "),
+    label: sentenceCase(status),
     variant: "outline" as const,
   };
 
@@ -21,7 +26,7 @@ export const SOURCE_LABEL: Record<string, string> = {
 };
 
 export const reasonText = (reason: string | null) =>
-  reason ? reason.replaceAll("_", " ") : "—";
+  reason ? sentenceCase(reason) : "—";
 
 export const durationText = (ms: number) =>
-  ms < 1000 ? `${ms} ms` : `${(ms / 1000).toFixed(1)} s`;
+  ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;

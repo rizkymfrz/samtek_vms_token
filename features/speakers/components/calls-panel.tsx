@@ -25,7 +25,7 @@ import {
 import { alarmKindLabel } from "@/config/display-labels";
 import { useDeviceList } from "@/features/cameras";
 import { useFailureToast } from "@/hooks/use-failure-toast";
-import { formatDateTime } from "@/lib/format-date";
+import { formatShortDateTime } from "@/lib/format-date";
 import { useSpeakerCalls } from "../hooks/use-speaker-calls";
 import {
   CALL_STATUS,
@@ -173,7 +173,7 @@ export const CallsPanel = ({
                 return (
                   <TableRow key={`${call.edgeId}-${call.id}`}>
                     <TableCell className="whitespace-nowrap tabular-nums">
-                      {formatDateTime(call.occurredAt)}
+                      {formatShortDateTime(call.occurredAt)}
                     </TableCell>
                     <TableCell>{call.edgeName}</TableCell>
                     <TableCell>

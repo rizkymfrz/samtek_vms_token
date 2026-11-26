@@ -8,6 +8,7 @@ import {
 } from "../../features/camera-detail/lib/edit-speaker-rule.ts";
 
 const AUDIO = "01JB8Z3X9K4Q7M2T5V6W8Y0A7B";
+
 const on = {
   ...OFF_SPEAKER_RULE,
   isOn: true,
@@ -49,7 +50,7 @@ test("repeat, duration and cooldown stay in range", () => {
   assert.equal(issues({ ...on, repeatCount: Number.NaN }).length, 1);
 });
 
-test("a schedule needs days, a time zone and HH:MM times", () => {
+test("a schedule needs days, a time zone and HH:mm times", () => {
   const scheduled = { ...on, hasSchedule: true };
   assert.deepEqual(issues(scheduled), []);
   assert.deepEqual(issues({ ...scheduled, days: [] }), [
@@ -57,7 +58,7 @@ test("a schedule needs days, a time zone and HH:MM times", () => {
   ]);
   assert.deepEqual(issues({ ...scheduled, start: "25:00", timezone: " " }), [
     "timezone: Time zone is required.",
-    "start: Use the HH:MM format.",
+    "start: Use the HH:mm format.",
   ]);
   assert.deepEqual(issues({ ...on, hasSchedule: false, days: [] }), []);
 });

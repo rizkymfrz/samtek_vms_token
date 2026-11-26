@@ -128,8 +128,8 @@ export const speakerRuleDraftSchema = z
     if (!draft.hasSchedule) return;
     if (!draft.timezone.trim()) fail("timezone", "Time zone is required.");
     if (draft.days.length === 0) fail("days", "Choose at least one day.");
-    if (!CLOCK.test(draft.start)) fail("start", "Use the HH:MM format.");
-    if (!CLOCK.test(draft.end)) fail("end", "Use the HH:MM format.");
+    if (!CLOCK.test(draft.start)) fail("start", "Use the HH:mm format.");
+    if (!CLOCK.test(draft.end)) fail("end", "Use the HH:mm format.");
   });
 
 export const toSpeakerRulePayload = (

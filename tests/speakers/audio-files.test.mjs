@@ -28,5 +28,5 @@ test("sizes read as KB below one MB", () => {
 test("a play status has a label, and an unknown one is humanized", () => {
   assert.equal(statusOf("success").label, "Played");
   assert.equal(statusOf("skipped_schedule").label, "Outside schedule");
-  assert.equal(statusOf("brand_new").label, "brand new");
+  assert.equal(statusOf("brand_new").label, "Brand new");
 });

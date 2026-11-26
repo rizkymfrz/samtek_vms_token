@@ -23,9 +23,9 @@ import {
   detailDraftSchema,
   toDetailDraft,
 } from "../lib/detail-draft";
-import { toSpeakerRulePayload } from "../lib/edit-speaker-rule";
 import { isValidParams } from "../lib/edit-analytic-params";
 import { isSamePerimeters, isValidPerimeters } from "../lib/edit-perimeters";
+import { toSpeakerRulePayload } from "../lib/edit-speaker-rule";
 import type { CameraDetail, Selection, StreamState, Tool } from "../types";
 
 const toRecord = (detail: CameraDetail) => ({
