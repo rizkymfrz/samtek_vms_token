@@ -40,8 +40,8 @@ kecuali bagian bertanda **[Keputusan produk]**.
   - **Analytics** (`/analytics`, `features/analytics`): diaudit
     teksnya (§3.19). Halaman kelola wajah (`faces`) belum diaudit.
   - **Edge servers** (`/servers`, `features/servers`): diaudit
-    teksnya (§3.18). Kartu License (`features/license`) ditulis
-    mengikuti §3.18 dan belum diaudit.
+    teksnya (§3.18). Halaman detail hanya memuat grafik metrik; laporan
+    lisensi tidak ditampilkan di sana (petunjuk kuota ada di dialog kamera).
   - **Cameras** (`/cameras`, `features/cameras`): diaudit teksnya
     (§3.17).
   - **Map** (`/map`, `features/map`): diaudit teksnya (§3.16).
@@ -803,13 +803,6 @@ Catatan:
 MQTT broker`. Peringatan sebagian memakai `Some data did not load`.
 - Placeholder memakai `e.g.`: `e.g. Jakarta branch`.
 - Hapus edge server dicegah bila masih memiliki kamera.
-- Kartu `License` (`features/license`) menampilkan laporan lisensi terakhir
-  dari Edge (`GET /v1/edge-servers/{id}/license`): `Term` (`Perpetual`,
-  `Fixed term`), `Enforcement` (`Limited`, `Not enforced`), `Last check`,
-  `Valid offline until`, lalu pemakaian per fitur (`1 of 2`, badge `Full`).
-  Belum ada laporan: `No license reports.` Memuat: `Loading license…`.
-  Nama fitur memakai `featureLabel` (`lpr` menjadi `License plate
-  recognition`).
 - Dialog kamera menampilkan sisa kuota di bawah `Analytic`: `{n} of {m}
   licensed cameras in use for this analytic.` (singular: `1 licensed
   camera`). Bila penuh: `The license
@@ -893,6 +886,7 @@ Page title: nama kamera (fallback `Camera`). Tab: `Configuration`,
 | Direction A / Direction B | Dua arah lintas pada line crossing. Namanya dapat diubah, nilai bawaan `Direction A` dan `Direction B`.                                                         | Field nama perimeter.                                                  | In/Out                    | `Direction A name`         |
 | Analytic parameter        | Pengaturan per analytic (sensitivity, jam hitung, grup whitelist, dan sebagainya). Spesifikasinya dari katalog Edge; bila Edge offline, parameter belum dimuat. | Section parameter pada form. Label diturunkan dari kunci Edge.         | Setting                   | `Sensitivity`              |
 | Search index              | Pengaturan indeks untuk Object search (§3.13): label yang diindeks dan interval. Perubahannya me-restart analisis.                                              | Toggle `Object search`.                                                | Embedding index           | `Index status`             |
+| Speaker rule              | Aturan memutar audio di speaker SIP saat alarm kamera cocok (`speakerRule`). Toggle mati menghapus aturannya.                                                     | Toggle `Speaker`. Field: `Speakers`, `Audio file`, `Repeat`, `Maximum duration (seconds)`, `Alarm types`, `Labels`, `Cooldown (seconds)`, `Only play on a schedule` (`Days`, `From`, `Until`, `Time zone`), tombol `Test rule`. | Alarm sound, Horn rule    | `Test rule`                |
 | Index status              | Status indeks: `Off`, `Starting`, `Active`, `Unavailable`.                                                                                                      | Badge. `Off` berarti indeks mati, berbeda dari `Disabled` pada kamera. |                           | `Active`                   |
 | Labels to index           | Jenis objek yang diindeks (`person`, dan sebagainya).                                                                                                           | Field.                                                                 |                           | `Labels to index`          |
 | Indexing                  | Proses membuat embedding teks-gambar untuk objek. Interval dalam detik.                                                                                         | Teks UI. Istilah teknis `embedding` tidak ditampilkan.                 | Embedding                 | `Seconds between indexing` |
@@ -1223,9 +1217,10 @@ Catatan:
 
 ### 3.30 Speakers
 
-Menu dan page title: `Speakers`. Halaman mengikuti `/users`: filter,
-tabel, pagination, dialog `Add speaker` dan `Edit speaker`, hapus, dan tes
-nada per baris (`/v1/edge-servers/{serverId}/speakers`).
+Menu dan page title: `Speakers`. Halaman punya tiga tab: `Speakers`
+(mengikuti `/users`: filter, tabel, pagination, dialog `Add speaker` dan
+`Edit speaker`, hapus, dan tes nada per baris,
+`/v1/edge-servers/{serverId}/speakers`), `Audio`, dan `Play history`.
 
 | Canonical     | Definition                                                                                                   | Context & preferred wording                           | Avoid                 | Example         |
 | ------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- | --------------------- | --------------- |
@@ -1252,6 +1247,24 @@ Catatan:
 - Empty state: `No speakers` / `Add the first one.`;
   `No speakers found` / `No speakers match the filters.`
 - Pesan tanpa izin: `You do not have permission to view speakers.`
+- Tab `Audio` (`speaker-audio` milik edge, lewat `/api/speaker-audio`):
+  tombol `Upload audio`, dialog `Upload audio` / `Upload a WAV or MP3 file
+  to an edge server, up to 5 MB.` (field `Edge server` bila lebih dari satu,
+  `Audio file`, `Name (optional)`), kolom `Name`, `Edge server`, `Format`,
+  `Size`. Hapus: `Delete this audio file?` / `Delete audio`. Empty state:
+  `No audio files` / `Upload the first one to play it from a camera rule.`
+  Galat file: `Choose an audio file.`, `Use a WAV or MP3 file.`, `The file
+  is empty.`, `The file is larger than 5 MB.` Edge tidak menyediakan
+  pemutaran ulang, jadi tidak ada tombol putar.
+- Tab `Play history` (`speaker-calls` milik edge, `/api/speaker-calls`):
+  filter `Edge server` dan status, kolom `Time`, `Edge server`, `Camera`,
+  `Speaker`, `Trigger` (jenis alarm, atau `Manual test`), `Result`
+  (`Played`, `Failed`, `Throttled`, `Skipped`, `Outside schedule`, `Busy`,
+  plus alasan), `Duration`. Empty state: `No plays yet` / `Plays appear here
+  after a camera rule or a test.` Memuat paling banyak 200 entri terbaru.
+- Aturan speaker kamera ada di `/cameras/[id]` (bagian `Speaker` di
+  `Camera setup`, §3.21): `speakerRule` API, tampil hanya bila API
+  mengirim field itu.
 
 ## 4. Quality rules
 

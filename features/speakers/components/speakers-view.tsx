@@ -7,8 +7,11 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ListToolbar } from "@/components/shared/list-toolbar";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/toast";
 import { useFailureToast } from "@/hooks/use-failure-toast";
+import { AudioPanel } from "./audio-panel";
+import { CallsPanel } from "./calls-panel";
 import { type DialogTarget, SpeakerDialog } from "./speaker-dialog";
 import { SpeakerFilterPanel } from "./speaker-filter-panel";
 import { SpeakerTable } from "./speaker-table";
@@ -24,6 +27,8 @@ import type { SpeakerRecord, SpeakersData } from "../types";
 
 const PAGE_SIZE = 20;
 
+type Tab = "speakers" | "audio" | "history";
+
 export const SpeakersView = ({ data }: { data: SpeakersData }) => {
   const { data: current } = useSpeakers(data);
   const { speakers, servers, failures } = current;
@@ -33,6 +38,7 @@ export const SpeakersView = ({ data }: { data: SpeakersData }) => {
   );
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(0);
+  const [tab, setTab] = useState<Tab>("speakers");
   const { save, remove, test, saveError, removeError, testError } =
     useSpeakerActions();
   const [dialog, setDialog] = useState<DialogTarget>(null);
@@ -75,52 +81,71 @@ export const SpeakersView = ({ data }: { data: SpeakersData }) => {
   );
   return (
     <PageShell>
-      <SidePanel>
-        <SpeakerFilterPanel
-          filters={filters}
-          servers={servers}
-          counts={counts}
-          onChange={change}
-          onClear={() => {
-            setFilters(DEFAULT_FILTERS);
-            setPage(0);
-          }}
-        />
-      </SidePanel>
-      <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-        <ListToolbar
-          noun="speakers"
-          page={safePage}
-          pageSize={PAGE_SIZE}
-          total={matches.length}
-          onPageChange={setPage}
-        >
-          <Button onClick={() => setDialog("new")}>
-            <PlusIcon />
-            Add speaker
-          </Button>
-        </ListToolbar>
-        {matches.length === 0 ? (
-          <EmptyState
-            icon={<Volume2Icon />}
-            title={speakers.length === 0 ? "No speakers" : "No speakers found"}
-            description={
-              speakers.length === 0
-                ? "Add the first one."
-                : "No speakers match the filters."
-            }
+      {tab === "speakers" && (
+        <SidePanel>
+          <SpeakerFilterPanel
+            filters={filters}
+            servers={servers}
+            counts={counts}
+            onChange={change}
+            onClear={() => {
+              setFilters(DEFAULT_FILTERS);
+              setPage(0);
+            }}
           />
-        ) : (
-          <div className="flex flex-col overflow-hidden rounded border lg:min-h-0 lg:flex-1">
-            <SpeakerTable
-              speakers={visible}
-              servers={servers}
-              testingId={test.isPending ? "pending" : null}
-              onSelect={setDialog}
-              onTest={runTest}
-              onDelete={setPendingDelete}
-            />
-          </div>
+        </SidePanel>
+      )}
+      <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
+        <Tabs value={tab} onValueChange={(next) => setTab(next as Tab)}>
+          <TabsList variant="line">
+            <TabsTrigger value="speakers">Speakers</TabsTrigger>
+            <TabsTrigger value="audio">Audio</TabsTrigger>
+            <TabsTrigger value="history">Play history</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        {tab === "audio" && <AudioPanel servers={servers} />}
+        {tab === "history" && (
+          <CallsPanel servers={servers} speakers={speakers} />
+        )}
+        {tab === "speakers" && (
+          <>
+            <ListToolbar
+              noun="speakers"
+              page={safePage}
+              pageSize={PAGE_SIZE}
+              total={matches.length}
+              onPageChange={setPage}
+            >
+              <Button onClick={() => setDialog("new")}>
+                <PlusIcon />
+                Add speaker
+              </Button>
+            </ListToolbar>
+            {matches.length === 0 ? (
+              <EmptyState
+                icon={<Volume2Icon />}
+                title={
+                  speakers.length === 0 ? "No speakers" : "No speakers found"
+                }
+                description={
+                  speakers.length === 0
+                    ? "Add the first one."
+                    : "No speakers match the filters."
+                }
+              />
+            ) : (
+              <div className="flex flex-col overflow-hidden rounded border lg:min-h-0 lg:flex-1">
+                <SpeakerTable
+                  speakers={visible}
+                  servers={servers}
+                  testingId={test.isPending ? "pending" : null}
+                  onSelect={setDialog}
+                  onTest={runTest}
+                  onDelete={setPendingDelete}
+                />
+              </div>
+            )}
+          </>
         )}
         <SpeakerDialog
           target={dialog}

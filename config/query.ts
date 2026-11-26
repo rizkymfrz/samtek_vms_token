@@ -10,6 +10,8 @@ export const QUERY_KEYS = {
   faces: ["faces"],
   users: ["users"],
   speakers: ["speakers"],
+  speakerAudio: ["speaker-audio"],
+  speakerCalls: ["speaker-calls"],
   license: ["license"],
   ticketServers: ["ticket-servers"],
   currentUser: ["current-user"],

@@ -5,6 +5,7 @@ import { fetchAllPages } from "./central-pages";
 import type { CentralServer } from "./edge-registry";
 import { perimetersSchema } from "./perimeters";
 import { searchIndexSchema } from "./search-index";
+import { speakerRuleSchema } from "./speaker-rule";
 
 const applyErrorSchema = z.object({
   code: z.string(),
@@ -25,6 +26,7 @@ export const deviceSchema = z.object({
   perimeters: perimetersSchema.nullable().default(null),
   isRecordingEnabled: z.boolean(),
   searchIndex: searchIndexSchema.nullable().optional(),
+  speakerRule: speakerRuleSchema.nullable().optional(),
   applyStatus: z.enum(["applied", "rejected"]).nullable().catch(null),
   applyError: applyErrorSchema.nullable().catch(null),
 });

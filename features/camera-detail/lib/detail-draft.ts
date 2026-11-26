@@ -13,10 +13,17 @@ import {
   type SearchIndexConfig,
   searchIndexSchema,
 } from "@/lib/api/search-index";
+import type { SpeakerRule } from "@/lib/api/speaker-rule";
+import {
+  type SpeakerRuleDraft,
+  speakerRuleDraftSchema,
+  toSpeakerRuleDraft,
+} from "./edit-speaker-rule";
 
 export type DetailDraft = Draft & {
   analyticParams: AnalyticParams;
   searchIndex: SearchIndexConfig;
+  speakerRule: SpeakerRuleDraft;
 };
 
 export const detailDraftSchema = cameraDraftSchema.extend({
@@ -25,14 +32,17 @@ export const detailDraftSchema = cameraDraftSchema.extend({
     (config) => !config.isEnabled || config.labels.length > 0,
     { path: ["labels"], message: "Choose at least one label." },
   ),
+  speakerRule: speakerRuleDraftSchema,
 });
 
 export const toDetailDraft = (
   record: CameraRecord,
   analyticParams: AnalyticParams,
   searchIndex: SearchIndexConfig | null | undefined,
+  speakerRule: SpeakerRule | null | undefined,
 ): DetailDraft => ({
   ...toDraft(record),
   analyticParams,
   searchIndex: searchIndex ?? OFF_SEARCH_INDEX,
+  speakerRule: toSpeakerRuleDraft(speakerRule),
 });

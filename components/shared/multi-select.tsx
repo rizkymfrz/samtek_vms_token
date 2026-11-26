@@ -18,12 +18,14 @@ export const MultiSelect = ({
   value,
   onChange,
   placeholder = "Add…",
+  format = (item) => item,
   className,
 }: {
   options: string[];
   value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
+  format?: (item: string) => string;
   className?: string;
 }) => {
   const anchor = useComboboxAnchor();
@@ -39,7 +41,7 @@ export const MultiSelect = ({
           {(selected: string[]) => (
             <>
               {selected.map((item) => (
-                <ComboboxChip key={item}>{item}</ComboboxChip>
+                <ComboboxChip key={item}>{format(item)}</ComboboxChip>
               ))}
               <ComboboxChipsInput placeholder={placeholder} />
             </>
@@ -51,7 +53,7 @@ export const MultiSelect = ({
         <ComboboxList>
           {(item: string) => (
             <ComboboxItem key={item} value={item}>
-              {item}
+              {format(item)}
             </ComboboxItem>
           )}
         </ComboboxList>

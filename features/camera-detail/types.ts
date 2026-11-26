@@ -2,6 +2,7 @@ import type { CameraRecord } from "@/features/cameras";
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
 import type { SearchIndexConfig } from "@/lib/api/search-index";
+import type { SpeakerRule } from "@/lib/api/speaker-rule";
 import type { DeviceState } from "@/lib/device-state";
 
 export type StreamState = DeviceState;
@@ -27,6 +28,7 @@ export type CameraDetail = {
   analyticParams: AnalyticParams;
   perimeters: Perimeters;
   searchIndex: SearchIndexConfig | null | undefined;
+  speakerRule: SpeakerRule | null | undefined;
 };
 
 export type Tool = "line" | "polygon" | null;

@@ -20,6 +20,7 @@ type Device = {
   analyticParams?: CameraDetail["analyticParams"] | null;
   perimeters?: CameraDetail["perimeters"] | null;
   searchIndex?: CameraDetail["searchIndex"];
+  speakerRule?: CameraDetail["speakerRule"];
 };
 
 type Server = {
@@ -54,6 +55,7 @@ const toDetail = (
   analyticParams: device.analyticParams ?? {},
   perimeters: device.perimeters ?? emptyPerimeters(),
   searchIndex: device.searchIndex,
+  speakerRule: device.speakerRule,
 });
 
 export const getCameraDetail = async (

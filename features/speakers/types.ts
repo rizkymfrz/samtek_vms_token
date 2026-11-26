@@ -28,3 +28,38 @@ export type SpeakersData = {
   servers: ServerOption[];
   failures: SpeakerFailure[];
 };
+
+export type SpeakerAudio = {
+  id: string;
+  edgeId: string;
+  edgeName: string;
+  name: string;
+  format: string;
+  bytes: number;
+};
+
+export type SpeakerAudioData = {
+  audios: SpeakerAudio[];
+  failures: { edgeName: string; message: string }[];
+};
+
+export type SpeakerCall = {
+  id: string;
+  edgeId: string;
+  edgeName: string;
+  occurredAt: string;
+  source: string;
+  deviceId: string | null;
+  speakerId: string | null;
+  eventId: string | null;
+  kind: string | null;
+  label: string | null;
+  status: string;
+  reason: string | null;
+  durationMs: number;
+};
+
+export type SpeakerCallsData = {
+  calls: SpeakerCall[];
+  failures: { edgeName: string; message: string }[];
+};

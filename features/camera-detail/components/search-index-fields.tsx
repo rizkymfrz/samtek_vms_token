@@ -33,7 +33,7 @@ const STATUS: Record<
   unavailable: { label: "Unavailable", variant: "destructive" },
 };
 
-const labelOptions = (
+export const labelOptions = (
   specs: ParamSpec[],
   params: DetailDraft["analyticParams"],
 ) => {

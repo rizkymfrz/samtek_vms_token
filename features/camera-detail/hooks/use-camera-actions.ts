@@ -11,6 +11,7 @@ import {
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
 import type { SearchIndexConfig } from "@/lib/api/search-index";
+import type { SpeakerRuleInput } from "@/lib/api/speaker-rule";
 import { messageOf } from "@/lib/axios/browser-client";
 import { invalidateDeviceData } from "@/lib/query/invalidate";
 
@@ -23,17 +24,20 @@ export const useCameraActions = (record: CameraRecord) => {
       perimeters,
       analyticParams,
       searchIndex,
+      speakerRule,
     }: {
       draft: Draft;
       perimeters?: Perimeters;
       analyticParams?: AnalyticParams;
       searchIndex?: SearchIndexConfig | null;
+      speakerRule?: SpeakerRuleInput | null;
     }) => {
       await updateCamera(record, {
         ...toUpdatePayload(draft, record),
         analyticParams,
         perimeters,
         searchIndex,
+        speakerRule,
       });
     },
     onSuccess: () => {

@@ -41,3 +41,12 @@ export const testSpeaker = async (serverId: string, id: string) =>
       { timeout: 70_000 },
     )
   ).data.calls;
+
+export const testSpeakerRule = async (serverId: string, deviceId: string) =>
+  (
+    await http.post<{ calls: SpeakerCall[] }>(
+      `/api/edge-servers/${serverId}/devices/${deviceId}/speaker-test-calls`,
+      undefined,
+      { timeout: 70_000 },
+    )
+  ).data.calls;

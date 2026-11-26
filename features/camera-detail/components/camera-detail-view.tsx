@@ -23,6 +23,7 @@ import {
   detailDraftSchema,
   toDetailDraft,
 } from "../lib/detail-draft";
+import { toSpeakerRulePayload } from "../lib/edit-speaker-rule";
 import { isValidParams } from "../lib/edit-analytic-params";
 import { isSamePerimeters, isValidPerimeters } from "../lib/edit-perimeters";
 import type { CameraDetail, Selection, StreamState, Tool } from "../types";
@@ -61,6 +62,7 @@ export const CameraDetailView = ({
       record,
       detail.analyticParams,
       detail.searchIndex,
+      detail.speakerRule,
     ),
   });
   const actions = useCameraActions(record);
@@ -81,6 +83,7 @@ export const CameraDetailView = ({
   const params = useWatch({ control: form.control, name: "analyticParams" });
   const isParamsChanged = Boolean(form.formState.dirtyFields.analyticParams);
   const isSearchIndexChanged = Boolean(form.formState.dirtyFields.searchIndex);
+  const isSpeakerRuleChanged = Boolean(form.formState.dirtyFields.speakerRule);
   const canSave =
     !actions.isSaving &&
     (form.formState.isDirty || isPerimetersChanged) &&
@@ -99,6 +102,12 @@ export const CameraDetailView = ({
           detail.searchIndex !== undefined && isSearchIndexChanged
             ? draft.searchIndex.isEnabled
               ? draft.searchIndex
+              : null
+            : undefined,
+        speakerRule:
+          detail.speakerRule !== undefined && isSpeakerRuleChanged
+            ? draft.speakerRule.isOn
+              ? toSpeakerRulePayload(draft.speakerRule)
               : null
             : undefined,
       },
