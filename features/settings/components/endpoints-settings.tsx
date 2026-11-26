@@ -14,12 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   type Endpoints,
@@ -38,13 +33,13 @@ const SCOPES = [
   {
     scope: "local",
     title: "Local address",
-    description: "Used when the VMS is opened by IP address or a local name.",
+    description: "Used when the VMS is opened by IP address or a local name",
     icon: <ServerIcon className="size-4" />,
   },
   {
     scope: "cloud",
     title: "Cloud address",
-    description: "Used when the VMS is opened by a domain name.",
+    description: "Used when the VMS is opened by a domain name",
     icon: <CloudIcon className="size-4" />,
   },
 ] as const;
@@ -155,10 +150,6 @@ export const EndpointsSettings = () => {
           </Card>
         ))}
       </div>
-      <FieldDescription>
-        An empty address uses the one set when the VMS was installed. The MQTT
-        account is sent to this browser only: use an account that may only read.
-      </FieldDescription>
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={!isDirty || isApplying}>
           {isApplying ? "Applying…" : "Save settings"}

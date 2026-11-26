@@ -974,45 +974,19 @@ Catatan:
 
 - Satu istilah untuk masuk dan keluar: `Sign in` dan `Sign out`.
   Jangan memakai `Login` / `Logout` sebagai kata kerja.
-- Deskripsi halaman: `Sign in to monitor cameras, alarms and edge
-servers across your sites.`
-- Pesan validasi: `Username or email is required.`, `Password is
-required.`, `Username or email must be at most 255 characters.`,
-  `Password must be at most 1024 characters.`
-- Pesan gagal masuk: fallback `Failed to sign in`. Bila Central
-  merespons dengan status di bawah 500, pesan Central ditampilkan apa
-  adanya (teks dan bahasanya di luar kendali frontend). Bila Central
-  gagal (500 ke atas), API membalas `Sign-in is unavailable`.
-- Respons API lain (`Enter your username and password` 400, `Failed
-to load user` 502) bukan teks UI langsung.
-- Dialog lupa password: judul `Forgot your password?`, tautan
-  `Forgot password?`, isi `Passwords are managed by your
-administrator. Contact them to have your password reset.`
-
-### 3.25 Settings
-
-Menu pengguna dan page title: `Settings`.
-
-Halaman `/settings` (`features/settings`) mengatur alamat API central dan
-WebSocket MQTT, satu set untuk `Local address` dan satu set untuk
-`Cloud address`.
-
-- Deskripsi halaman: `Set the central API and MQTT addresses this browser
-connects to.`
+- Halaman tidak punya judul sendiri; judulnya ada di breadcrumb header.
 - Judul card: `Local address`, `Cloud address`. Badge `In use` pada card
   yang sedang dipakai browser ini.
-- Deskripsi card: `Used when the VMS is opened by IP address or a local
-name.` dan `Used when the VMS is opened by a domain name.`
+- Deskripsi card (tanpa titik, §4 aturan 2): `Used when the VMS is opened
+by IP address or a local name` dan `Used when the VMS is opened by a
+domain name`.
 - Label field: `Central API URL`, `MQTT WebSocket URL`, `MQTT username`,
   `MQTT password`. Placeholder: `e.g. http://192.168.1.10:3000`,
   `e.g. ws://192.168.1.10:9001`.
-- Validation: `Enter a full URL that starts with http:// or https://.` dan
-  `Enter a full URL that starts with ws:// or wss://.`
+- Validation: `Central API URL must start with http:// or https://.` dan
+  `MQTT WebSocket URL must start with ws:// or wss://.`
 - Aksi: `Save settings` (default; `Applying…` saat berjalan) dan `Cancel`
   (secondary).
-- Catatan form: `An empty address uses the one set when the VMS was
-installed. The MQTT account is sent to this browser only: use an account
-that may only read.`
 
 Perilaku **[Keputusan produk]**:
 

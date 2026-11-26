@@ -20,11 +20,11 @@ const optionalUrl = (protocol: RegExp, message: string) =>
 const addressSchema = z.object({
   centralUrl: optionalUrl(
     /^https?$/,
-    "Enter a full URL that starts with http:// or https://.",
+    "Central API URL must start with http:// or https://.",
   ),
   mqttUrl: optionalUrl(
     /^wss?$/,
-    "Enter a full URL that starts with ws:// or wss://.",
+    "MQTT WebSocket URL must start with ws:// or wss://.",
   ),
   mqttUsername: z.string().trim(),
   mqttPassword: z.string(),
