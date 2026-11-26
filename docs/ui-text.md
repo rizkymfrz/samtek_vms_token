@@ -26,7 +26,7 @@ kecuali bagian bertanda **[Keputusan produk]**.
     diaudit teksnya (§3.26).
   - **Settings** (`/settings`, `features/settings`): diaudit teksnya
     (§3.25).
-  - **Login** (`/login`, `features/auth`, menu pengguna): diaudit
+  - **Login** (`/login`, `features/auth`, footer sidebar): diaudit
     teksnya (§3.24).
   - **Manage faces** (`/analytics/[slug]/faces`, `features/faces`):
     diaudit teksnya (§3.23).
@@ -966,7 +966,7 @@ Page title: `Sign in`.
 | Canonical         | Definition                                               | Context & preferred wording   | Avoid                      | Example             |
 | ----------------- | -------------------------------------------------------- | ----------------------------- | -------------------------- | ------------------- |
 | Sign in           | Masuk ke SAMTEK dengan username atau email dan password. | Tombol, judul halaman, pesan. | Login (kata kerja), Log in | `Sign in`           |
-| Sign out          | Keluar dan mengakhiri sesi (`/api/auth/logout`).         | Item menu pengguna.           | Logout, Log out            | `Sign out`          |
+| Sign out          | Keluar dan mengakhiri sesi (`/api/auth/logout`).         | Item di footer sidebar.       | Logout, Log out            | `Sign out`          |
 | Username or email | Pengenal akun. Satu field menerima keduanya.             | Label field dan validasi.     | Identifier                 | `Username or email` |
 | Remember me       | Menyimpan sesi lebih lama (`remember`).                  | Checkbox.                     | Stay signed in             | `Remember me`       |
 
@@ -993,7 +993,7 @@ administrator. Contact them to have your password reset.`
 
 ### 3.25 Settings
 
-Menu pengguna dan page title: `Settings`.
+Item footer sidebar dan page title: `Settings`.
 
 Halaman `/settings` dan dialog `Edit addresses` di halaman login
 (`features/settings`) mengatur alamat API Central dan WebSocket MQTT,
@@ -1001,6 +1001,10 @@ satu set untuk `Local address` dan satu set untuk `Cloud address`. Isi
 dan logikanya sama (satu hook, `use-endpoints-form`); dialog ada supaya
 alamat bisa diperbaiki sebelum masuk.
 
+- Footer sidebar (`features/auth/components/user-menu.tsx`) bukan popover:
+  profil (avatar bulat, nama, email) lalu item `Settings` dan `Sign out`
+  (merah) di bawahnya. Saat sidebar diciutkan, avatar dan dua ikon tampil
+  dengan tooltip `Settings` dan `Sign out`.
 - Halaman `/settings` tidak punya judul sendiri; judulnya ada di
   breadcrumb header.
 - Dialog (§8.2 `docs/architecture.md`): judul `Edit addresses`, deskripsi
