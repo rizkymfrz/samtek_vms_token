@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { hostnameOf, readEndpointsCookie, scopeOf } from "./endpoints";
+import {
+  hostnameOf,
+  localAddress,
+  readEndpointsCookie,
+  scopeOf,
+} from "./endpoints";
 
 const schema = z.object({
   url: z.url({ protocol: /^wss?$/ }),
@@ -7,29 +12,33 @@ const schema = z.object({
   password: z.string().min(1).optional(),
 });
 
+const credentials = () => ({
+  username: process.env.NEXT_PUBLIC_MQTT_USERNAME || undefined,
+  password: process.env.NEXT_PUBLIC_MQTT_PASSWORD || undefined,
+});
+
 const fromEnv = () => {
   const url = process.env.NEXT_PUBLIC_MQTT_WS_URL;
   if (!url) return null;
-  return schema.parse({
-    url,
-    username: process.env.NEXT_PUBLIC_MQTT_USERNAME || undefined,
-    password: process.env.NEXT_PUBLIC_MQTT_PASSWORD || undefined,
-  });
+  return schema.parse({ url, ...credentials() });
 };
 
-const fromSettings = () => {
+const fromBrowser = () => {
   if (typeof document === "undefined") return null;
-  const saved = readEndpointsCookie();
-  if (!saved) return null;
-  const address = saved[scopeOf(hostnameOf(window.location.hostname))];
-  if (!address.mqttUrl) return null;
-  return schema.parse({
-    url: address.mqttUrl,
-    username: address.mqttUsername || undefined,
-    password: address.mqttPassword || undefined,
-  });
+  const hostname = hostnameOf(window.location.hostname);
+  const scope = scopeOf(hostname);
+  const saved = readEndpointsCookie()?.[scope].mqttUrl;
+  const derived =
+    scope === "local"
+      ? localAddress(
+          { ...window.location, hostname },
+          process.env.NEXT_PUBLIC_MQTT_WS_URL,
+        ).mqttUrl
+      : "";
+  const url = saved || derived;
+  return url ? schema.parse({ url, ...credentials() }) : null;
 };
 
-export const mqttConfig = fromSettings() ?? fromEnv();
+export const mqttConfig = fromBrowser() ?? fromEnv();
 export const EDGE_UP_TOPIC = "samtek/v1/+/up";
 export const edgeDownTopic = (edgeId: string) => `samtek/v1/${edgeId}/down`;

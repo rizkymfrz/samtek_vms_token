@@ -4,6 +4,7 @@ import { BrandLogo } from "@/components/layout/brand-logo";
 import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { StarField } from "@/features/auth/components/star-field";
+import { EndpointsDialog } from "@/features/settings/components/endpoints-dialog";
 import { QueryProvider } from "@/providers/query-provider";
 
 const STAR_MASK = [
@@ -27,7 +28,7 @@ const Page = () => {
       >
         <StarField />
       </div>
-      <AuthHeader />
+      <AuthHeader settings={<EndpointsDialog />} />
       <div className="relative flex items-center justify-center p-4 pt-[calc(var(--header-height)+1rem)]">
         <div className="flex w-full max-w-md flex-col gap-8">
           <div className="flex flex-col gap-2">

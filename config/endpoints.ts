@@ -26,13 +26,12 @@ const addressSchema = z.object({
     /^wss?$/,
     "MQTT WebSocket URL must start with ws:// or wss://.",
   ),
-  mqttUsername: z.string().trim(),
-  mqttPassword: z.string(),
 });
 
 export const endpointsSchema = z.object({
   local: addressSchema,
   cloud: addressSchema,
+  isLocalManual: z.boolean().default(false),
 });
 
 export type EndpointAddress = z.output<typeof addressSchema>;
@@ -41,14 +40,21 @@ export type Endpoints = z.output<typeof endpointsSchema>;
 export const EMPTY_ADDRESS: EndpointAddress = {
   centralUrl: "",
   mqttUrl: "",
-  mqttUsername: "",
-  mqttPassword: "",
 };
 
 export const EMPTY_ENDPOINTS: Endpoints = {
   local: EMPTY_ADDRESS,
   cloud: EMPTY_ADDRESS,
+  isLocalManual: false,
 };
+
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const PRODUCTION_CENTRAL_URL = "http://127.0.0.1:7200";
+const DEV_API_PORT = 5000;
+const DEV_MQTT_PORT = 8040;
+const NGINX_MQTT_PATH = "/mqtt";
+
+export type Where = { hostname: string; host: string; protocol: string };
 
 export const hostnameOf = (host: string | null | undefined) => {
   if (!host) return "";
@@ -64,6 +70,62 @@ export const scopeOf = (hostname: string): EndpointScope => {
     ? "local"
     : "cloud";
 };
+
+const bracketed = (hostname: string) =>
+  hostname.includes(":") ? `[${hostname}]` : hostname;
+
+export const localCentralUrl = (
+  hostname: string,
+  installed: string | undefined,
+) =>
+  IS_PRODUCTION
+    ? installed || PRODUCTION_CENTRAL_URL
+    : `http://${bracketed(hostname)}:${DEV_API_PORT}`;
+
+const isProxiedMqtt = (url: string) =>
+  URL.canParse(url) &&
+  new URL(url).pathname.replace(/\/+$/, "") === NGINX_MQTT_PATH;
+
+export const localAddress = (
+  where: Where,
+  installedMqtt: string | undefined,
+): EndpointAddress => {
+  if (!IS_PRODUCTION) {
+    const host = bracketed(where.hostname);
+    return {
+      centralUrl: `http://${host}:${DEV_API_PORT}`,
+      mqttUrl: `ws://${host}:${DEV_MQTT_PORT}`,
+    };
+  }
+  const scheme = where.protocol === "https:" ? "wss" : "ws";
+  const mqttUrl =
+    installedMqtt && isProxiedMqtt(installedMqtt)
+      ? `${scheme}://${where.host}${NGINX_MQTT_PATH}`
+      : (installedMqtt ?? "");
+  return { centralUrl: "", mqttUrl };
+};
+
+export const withLocalAddress = (
+  endpoints: Endpoints,
+  derived: EndpointAddress,
+): Endpoints => {
+  if (endpoints.isLocalManual) return endpoints;
+  const { local } = endpoints;
+  if (
+    local.centralUrl === derived.centralUrl &&
+    local.mqttUrl === derived.mqttUrl
+  ) {
+    return endpoints;
+  }
+  return { ...endpoints, local: derived };
+};
+
+export const isManualLocal = (
+  local: EndpointAddress,
+  derived: EndpointAddress,
+) =>
+  (local.centralUrl !== "" && local.centralUrl !== derived.centralUrl) ||
+  (local.mqttUrl !== "" && local.mqttUrl !== derived.mqttUrl);
 
 export const parseEndpointsCookie = (value: string | undefined) => {
   if (!value) return null;

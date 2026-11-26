@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   ENDPOINTS_COOKIE,
   hostnameOf,
+  localCentralUrl,
   parseEndpointsCookie,
   scopeOf,
 } from "@/config/endpoints";
@@ -32,9 +33,14 @@ const errorBodySchema = z.object({
 
 export const resolveCentralUrl = async () => {
   const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
+  const hostname = hostnameOf(headerStore.get("host"));
+  const scope = scopeOf(hostname);
   const saved = parseEndpointsCookie(cookieStore.get(ENDPOINTS_COOKIE)?.value);
-  const scope = scopeOf(hostnameOf(headerStore.get("host")));
-  return saved?.[scope].centralUrl || env.CENTRAL_API_URL;
+  if (saved?.[scope].centralUrl) return saved[scope].centralUrl;
+  if (scope === "local" && hostname) {
+    return localCentralUrl(hostname, env.CENTRAL_API_URL);
+  }
+  return env.CENTRAL_API_URL;
 };
 
 export const createCentralClient = (token?: string, baseURL?: string) => {
