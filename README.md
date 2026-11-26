@@ -34,13 +34,14 @@ sudo deploy/verify.sh
 
 `install.sh` membaca `samtek-api` dan `samtek-mosquitto` yang ada di mesin yang sama untuk `CENTRAL_API_URL` dan alamat MQTT browser (`/mqtt` di nginx diteruskan ke WebSocket broker di loopback). Nilai `NEXT_PUBLIC_*` dibangun sebagai placeholder dan ditulis saat instalasi dari `/etc/samtek/vms/public.env`, jadi satu paket melayani semua instalasi; ubah berkas itu lalu `deploy/install.sh --reapply`. Nilai itu terkirim ke setiap browser: pakai akun MQTT yang hanya boleh membaca. `SAMTEK_STANDALONE=1` di `next.config.ts` hanya dipakai skrip build; `npm run build` dan `next start` tidak berubah.
 
-| Skrip | Fungsi |
-| --- | --- |
-| `build-package.sh` | Membangun dan mengemas (binary Node + standalone + skrip), `--worktree` untuk working tree dengan perubahan yang belum di-commit |
-| `install.sh` | User `samtek-vms`, env (0640), nilai browser, situs nginx (ditulis sekali; `--rewrite-nginx` untuk mengubah), unit |
-| `upgrade.sh` | Dari paket baru: ganti rilis, `verify.sh`, rollback bila gagal |
-| `uninstall.sh` | Bawaan hanya unit, situs nginx dan rilis; `--purge-config` dan `--purge-data` meminta frasa |
-| `verify.sh` | Baca-saja: Node hanya di loopback, tanpa placeholder tersisa, `/login`, nginx, `/mqtt` (handshake 101) |
+| Skrip              | Fungsi                                                                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `build-package.sh` | Membangun dan mengemas (binary Node + standalone + skrip), `--worktree` untuk working tree dengan perubahan yang belum di-commit             |
+| `build-desktop.sh` | Membangun aplikasi desktop Electron (klien PC operator, bukan komponen server): AppImage dan deb, `--public-env` untuk nilai `NEXT_PUBLIC_*` |
+| `install.sh`       | User `samtek-vms`, env (0640), nilai browser, situs nginx (ditulis sekali; `--rewrite-nginx` untuk mengubah), unit                           |
+| `upgrade.sh`       | Dari paket baru: ganti rilis, `verify.sh`, rollback bila gagal                                                                               |
+| `uninstall.sh`     | Bawaan hanya unit, situs nginx dan rilis; `--purge-config` dan `--purge-data` meminta frasa                                                  |
+| `verify.sh`        | Baca-saja: Node hanya di loopback, tanpa placeholder tersisa, `/login`, nginx, `/mqtt` (handshake 101)                                       |
 
 `SAMTEK_ROOT=<folder>` menaruh semua path di bawah folder itu dan melewati user, systemd dan reload nginx, untuk mencoba skrip tanpa root.
 
@@ -52,6 +53,18 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Desktop (Electron)
+
+`electron/` membungkus VMS jadi aplikasi desktop tanpa jendela bawaan (frameless). `components/layout/window-controls.tsx` hanya tampil di Electron (lewat `window.samtekDesktop` dari `electron/preload.cjs`) dan di web tidak dirender; header menjadi area seret jendela (`app-drag`).
+
+```bash
+npm run desktop:dev                                                  # next dev + Electron di http://localhost:3000
+deploy/build-desktop.sh --public-env public.env                     # dist-package/samtek-vms-desktop-<versi>-linux-x64.{AppImage,deb}
+deploy/build-desktop.sh --version 1.0.0 -- --win                    # argumen setelah -- diteruskan ke electron-builder
+```
+
+Ini klien untuk PC operator, bukan komponen server: tidak ikut berkas `.run` dan tidak dipasang `install.sh`. Seperti `build-package.sh`, ia membangun di salinan (HEAD, atau `--worktree`), lalu `deploy/electron-builder.json` mengemas folder standalone ke `resources/app-server`. Aplikasi terpaket menjalankan server itu di `127.0.0.1` pada port bebas (`COOKIE_SECURE=false`, karena HTTP). Alamat API central diisi lewat `/settings` atau env `CENTRAL_API_URL`. Nilai `NEXT_PUBLIC_*` ditanam saat build dari `--public-env` (tanpa itu MQTT dan login scan kamera mati). Ikon aplikasi `electron/icon.png` dibuat dari `app/icon.svg` (ikon web): ulangi `node scripts/desktop-icon.mjs` bila ikon web berubah. Satu build untuk satu OS; electron-builder mengunduh alatnya, jadi mesin build butuh internet.
 
 ## Deploy on Vercel
 

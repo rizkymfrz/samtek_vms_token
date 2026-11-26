@@ -1,0 +1,24 @@
+{
+  "appId": "id.samtek.vms",
+  "productName": "SAMTEK",
+  "icon": "electron/icon.png",
+  "copyright": "Copyright © SAMTEK",
+  "artifactName": "samtek-vms-desktop-${env.SAMTEK_DESKTOP_VERSION}-${os}-${arch}.${ext}",
+  "directories": { "output": "${env.SAMTEK_DESKTOP_OUT}" },
+  "files": ["electron/**/*", "package.json"],
+  "extraMetadata": {
+    "name": "samtek",
+    "main": "electron/main.cjs",
+    "description": "SAMTEK",
+    "author": "SAMTEK"
+  },
+  "extraResources": [{ "from": "${env.SAMTEK_DESKTOP_STAGE}", "to": "app-server" }],
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "category": "Video",
+    "executableName": "samtek",
+    "maintainer": "SAMTEK"
+  },
+  "win": { "target": ["nsis"] },
+  "mac": { "target": ["dmg"], "category": "public.app-category.video" }
+}
