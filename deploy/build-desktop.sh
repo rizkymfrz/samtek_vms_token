@@ -69,7 +69,7 @@ fi
 (cd "$src" && env SAMTEK_STANDALONE=1 "${build_env[@]}" npx next build >"$work/build.log" 2>&1) \
   || { tail -n 30 "$work/build.log" >&2; die "next build failed"; }
 [[ -f $src/.next/standalone/server.js ]] || die "the build made no standalone server.js (is SAMTEK_STANDALONE read by next.config.ts?)"
-stage=$work/stage
+stage=$src/desktop-stage
 cp -a "$src/.next/standalone" "$stage"
 mkdir -p "$stage/.next"
 cp -a "$src/.next/static" "$stage/.next/static"
@@ -77,7 +77,7 @@ cp -a "$src/.next/static" "$stage/.next/static"
 rm -rf "$stage/.next/cache"
 note "packing (electron-builder ${builder_args[*]})"
 mkdir -p "$out"
-(cd "$src" && env SAMTEK_DESKTOP_VERSION="$version" SAMTEK_DESKTOP_STAGE="$stage" SAMTEK_DESKTOP_OUT="$work/out" \
+(cd "$src" && env SAMTEK_DESKTOP_VERSION="$version" SAMTEK_DESKTOP_STAGE=desktop-stage SAMTEK_DESKTOP_OUT="$work/out" \
   npx electron-builder --config deploy/electron-builder.json --publish never "${builder_args[@]}" >"$work/builder.log" 2>&1) \
   || { tail -n 30 "$work/builder.log" >&2; die "electron-builder failed"; }
 built=0
