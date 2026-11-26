@@ -1,16 +1,11 @@
 "use client";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PlusIcon,
-  Trash2Icon,
-  UsersIcon,
-} from "lucide-react";
+import { PlusIcon, Trash2Icon, UsersIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { SidePanel } from "@/components/layout/side-panel";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
+import { ListToolbar } from "@/components/shared/list-toolbar";
 import { Button } from "@/components/ui/button";
 import { useFailureToast } from "@/hooks/use-failure-toast";
 import { messageOf } from "@/lib/axios/browser-client";
@@ -75,37 +70,18 @@ export const UsersView = ({ data }: { data: UsersData }) => {
         />
       </SidePanel>
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 lg:min-h-0">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <ListToolbar
+          noun="users"
+          page={safePage}
+          pageSize={PAGE_SIZE}
+          total={matches.length}
+          onPageChange={setPage}
+        >
           <Button onClick={() => setDialog("new")}>
             <PlusIcon />
             Add user
           </Button>
-          <div className="flex items-center gap-2">
-            <span className="mr-2 text-xs text-muted-foreground tabular-nums">
-              {matches.length === 0
-                ? "0 users"
-                : `${safePage * PAGE_SIZE + 1}–${Math.min((safePage + 1) * PAGE_SIZE, matches.length)} of ${matches.length}`}
-            </span>
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label="Previous page"
-              disabled={safePage === 0}
-              onClick={() => setPage(safePage - 1)}
-            >
-              <ChevronLeftIcon />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label="Next page"
-              disabled={safePage >= pages - 1}
-              onClick={() => setPage(safePage + 1)}
-            >
-              <ChevronRightIcon />
-            </Button>
-          </div>
-        </div>
+        </ListToolbar>
         {matches.length === 0 ? (
           <EmptyState
             icon={<UsersIcon />}
