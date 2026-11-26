@@ -10,7 +10,8 @@
     "name": "samtek",
     "main": "electron/main.cjs",
     "description": "SAMTEK",
-    "author": "SAMTEK"
+    "author": "SAMTEK",
+    "homepage": "https://samtek.id"
   },
   "extraResources": [{ "from": "${env.SAMTEK_DESKTOP_STAGE}", "to": "app-server" }],
   "linux": {
