@@ -33,6 +33,10 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    files: ["electron/**/*.cjs"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
   globalIgnores([
     ".next/**",
     "out/**",
