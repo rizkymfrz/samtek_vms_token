@@ -137,7 +137,7 @@ export const AppSidebar = ({ footer }: { footer: ReactNode }) => {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>{footer}</SidebarFooter>
+      <SidebarFooter className="border-t">{footer}</SidebarFooter>
     </Sidebar>
   );
 };
