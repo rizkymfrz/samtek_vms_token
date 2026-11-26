@@ -67,6 +67,7 @@ const createWindow = async () => {
     minWidth: 1024,
     minHeight: 640,
     frame: false,
+    fullscreen: true,
     icon: path.join(__dirname, "icon.png"),
     show: false,
     autoHideMenuBar: true,
