@@ -85,7 +85,7 @@ export const AlertClipPlayer = ({
             const ratio = (event.clientX - rect.left) / rect.width;
             void seekTo(Math.min(1, Math.max(0, ratio)) * duration);
           }}
-          className="relative flex h-4 w-full gap-0.5 disabled:opacity-50"
+          className="group/seek relative flex h-4 w-full gap-0.5"
         >
           {Array.from({ length: SEGMENTS }, (_, segment) => (
             <span
@@ -95,11 +95,11 @@ export const AlertClipPlayer = ({
                   ? ""
                   : undefined
               }
-              className="h-full flex-1 rounded-[1px] bg-muted data-played:bg-primary"
+              className="h-full flex-1 rounded-[1px] bg-muted data-played:bg-primary group-disabled/seek:data-played:bg-primary-disabled"
             />
           ))}
           <span
-            className="absolute -inset-y-1 w-0.5 bg-foreground"
+            className="absolute -inset-y-1 w-0.5 bg-foreground group-disabled/seek:bg-foreground-disabled"
             style={{ left: `${(shown / duration) * 100}%` }}
           />
         </button>

@@ -60,6 +60,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-foreground-disabled: var(--foreground-disabled);
   --color-destructive-hover: var(--destructive-hover);
   --color-secondary-hover: var(--secondary-hover);
   --color-primary-disabled: var(--primary-disabled);
@@ -224,6 +225,7 @@
   --primary-hover: color-mix(in oklch, var(--primary) 80%, var(--background));
   --destructive-hover: color-mix(in oklch, var(--destructive) 80%, var(--background));
   --secondary-hover: color-mix(in oklch, var(--secondary), var(--foreground) 5%);
+  --foreground-disabled: color-mix(in oklch, var(--foreground) 50%, var(--background));
   --primary-disabled: color-mix(in oklch, var(--primary) 50%, var(--background));
   --primary-foreground-disabled: color-mix(in oklch, var(--primary-foreground) 50%, var(--primary-disabled));
   --destructive-disabled: color-mix(in oklch, var(--destructive) 50%, var(--background));

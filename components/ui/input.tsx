@@ -24,7 +24,7 @@ const Input = ({
       data-size={size}
       className={cn(
         inputSizes[size],
-        "w-full min-w-0 rounded border border-border bg-secondary text-secondary-foreground px-2 py-1 text-xs transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive md:text-xs dark:aria-invalid:border-destructive/50",
+        "w-full min-w-0 rounded border border-border bg-secondary text-secondary-foreground px-2 py-1 text-xs transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-secondary-disabled disabled:text-secondary-foreground-disabled aria-invalid:border-destructive md:text-xs dark:aria-invalid:border-destructive/50",
         className,
       )}
       {...props}

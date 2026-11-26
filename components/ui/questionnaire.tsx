@@ -108,7 +108,7 @@ const QuestionnaireChoice = ({
       data-slot="questionnaire-choice"
       className={cn(
         "group/questionnaire-choice relative flex min-h-11 cursor-pointer items-start gap-2 rounded border border-input bg-transparent px-4 py-2 text-start text-xs transition-colors outline-none select-none hover:bg-muted/50 has-[>input:focus-visible]:border-ring data-invalid:border-destructive data-checked:border-foreground/30 data-checked:bg-muted",
-        "data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50",
+        "data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:text-foreground-disabled",
         className,
       )}
       {...props}
@@ -170,7 +170,7 @@ const QuestionnaireInput = ({
       <QuestionnairePrimitive.Input
         data-slot="questionnaire-input"
         className={cn(
-          "h-8 min-h-11 w-full min-w-0 rounded border border-input bg-transparent px-2 py-1 text-xs transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive sm:min-h-0 md:text-xs dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50",
+          "h-8 min-h-11 w-full min-w-0 rounded border border-input bg-transparent px-2 py-1 text-xs transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:text-foreground-disabled aria-invalid:border-destructive sm:min-h-0 md:text-xs dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50",
           "selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground",
           className,
         )}

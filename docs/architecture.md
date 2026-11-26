@@ -427,10 +427,11 @@ Pilih variant `Button` berdasarkan fungsinya, bukan selera tampilan.
   dan seterusnya). Jangan menulis `bg-primary/80` atau campuran warna
   di komponen: alpha membuat tombol tembus pandang di atas card atau
   gambar.
-- Tombol disabled juga solid: `--*-disabled` dan
-  `--*-foreground-disabled` (campuran 50% dengan background), bukan
-  `disabled:opacity-50`. Jangan menambahkan opacity pada tombol
-  disabled.
+- State disabled juga solid, untuk tombol maupun semua komponen
+  `components/ui`: `--*-disabled` dan `--*-foreground-disabled`
+  (campuran 50% dengan background), serta `--foreground-disabled`
+  untuk teks netral. Jangan memakai `disabled:opacity-50` atau
+  opacity lain untuk state disabled.
 - Autofill browser tidak boleh mengubah warna input. Aturannya satu di
   `app/globals.css` (`:-webkit-autofill`); jangan ditimpa per komponen.
 

@@ -150,7 +150,7 @@ const ComboboxItem = ({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "group/item relative flex min-h-10 w-full cursor-pointer items-center gap-2 border-b border-border py-2 pr-2 pl-8 text-xs outline-hidden select-none last:border-b-0 data-selected:font-medium data-highlighted:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_10%)] data-highlighted:text-secondary-foreground not-data-[variant=destructive]:data-highlighted:**:text-secondary-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "group/item relative flex min-h-10 w-full cursor-pointer items-center gap-2 border-b border-border py-2 pr-2 pl-8 text-xs outline-hidden select-none last:border-b-0 data-selected:font-medium data-highlighted:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_10%)] data-highlighted:text-secondary-foreground not-data-[variant=destructive]:data-highlighted:**:text-secondary-foreground data-disabled:pointer-events-none data-disabled:text-foreground-disabled [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -257,7 +257,7 @@ const ComboboxChip = ({
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
       className={cn(
-        "flex h-6 w-fit items-center justify-center gap-1 rounded border border-border bg-background px-2 text-xs font-medium whitespace-nowrap text-foreground has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50 has-data-[slot=combobox-chip-remove]:pr-0",
+        "flex h-6 w-fit items-center justify-center gap-1 rounded border border-border bg-background px-2 text-xs font-medium whitespace-nowrap text-foreground has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:text-foreground-disabled has-data-[slot=combobox-chip-remove]:pr-0",
         className,
       )}
       {...props}
