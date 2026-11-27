@@ -66,6 +66,7 @@ export const AppSidebar = ({ footer }: { footer: ReactNode }) => {
                         <SidebarMenuItem key={href}>
                           <SidebarMenuButton
                             tooltip={title}
+                            className="data-active:bg-transparent data-active:hover:bg-sidebar-accent"
                             isActive={isActive}
                             render={<Link href={href} />}
                           >
@@ -90,6 +91,7 @@ export const AppSidebar = ({ footer }: { footer: ReactNode }) => {
                       >
                         <SidebarMenuButton
                           tooltip={title}
+                          className="data-active:bg-transparent data-active:hover:bg-sidebar-accent"
                           isActive={isActive}
                           render={<Link href={href} />}
                         >
@@ -113,7 +115,7 @@ export const AppSidebar = ({ footer }: { footer: ReactNode }) => {
                               return (
                                 <SidebarMenuSubItem key={sub.id}>
                                   <SidebarMenuSubButton
-                                    className="data-active:font-medium [&>svg]:size-4 data-active:[&>svg]:text-sidebar-primary"
+                                    className="relative before:absolute before:inset-y-1 before:left-0 before:w-0.5 before:bg-sidebar-primary before:opacity-0 data-active:bg-transparent data-active:font-medium data-active:before:opacity-100 data-active:hover:bg-sidebar-accent [&>svg]:size-4 data-active:[&>svg]:text-sidebar-primary"
                                     isActive={isSubActive}
                                     aria-current={
                                       isSubActive ? "page" : undefined

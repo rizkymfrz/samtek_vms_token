@@ -107,12 +107,7 @@ export const AudioPanel = ({ servers }: { servers: ServerOption[] }) => {
               {visible.map((audio) => (
                 <TableRow key={`${audio.edgeId}-${audio.id}`}>
                   <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{audio.name}</span>
-                      <span className="text-muted-foreground">
-                        ID {audio.id}
-                      </span>
-                    </div>
+                    <span className="font-medium">{audio.name}</span>
                   </TableCell>
                   <TableCell>{audio.edgeName}</TableCell>
                   <TableCell>

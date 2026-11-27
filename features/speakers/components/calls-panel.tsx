@@ -179,14 +179,14 @@ export const CallsPanel = ({
                     <TableCell>
                       {call.deviceId
                         ? (cameraName.get(`${call.edgeId}-${call.deviceId}`) ??
-                          `ID ${call.deviceId}`)
+                          "Unknown")
                         : "—"}
                     </TableCell>
                     <TableCell>
                       {call.speakerId
                         ? (speakerName.get(
                             `${call.edgeId}-${call.speakerId}`,
-                          ) ?? `ID ${call.speakerId}`)
+                          ) ?? "Unknown")
                         : "—"}
                     </TableCell>
                     <TableCell>

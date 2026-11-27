@@ -3,6 +3,8 @@ import {
   BellIcon,
   Building2Icon,
   CctvIcon,
+  FileAudioIcon,
+  HistoryIcon,
   LayoutDashboardIcon,
   type LucideIcon,
   MapIcon,
@@ -77,6 +79,12 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Administration",
     items: [{ href: "/users", title: "Users", icon: UsersIcon }],
   },
+];
+
+export const SPEAKER_NAV_ITEMS: NavItem[] = [
+  { href: "/speakers", title: "Speakers", icon: Volume2Icon },
+  { href: "/speakers/audio", title: "Audio", icon: FileAudioIcon },
+  { href: "/speakers/history", title: "Play history", icon: HistoryIcon },
 ];
 
 export const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items);

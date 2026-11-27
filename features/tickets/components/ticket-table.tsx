@@ -63,8 +63,7 @@ export const TicketTable = ({
             <div className="flex flex-col">
               <span>{ticket.deviceName}</span>
               <span className="text-muted-foreground">
-                {serverNames.get(ticket.edgeServerId) ??
-                  `Edge server ${ticket.edgeServerId}`}
+                {serverNames.get(ticket.edgeServerId) ?? "Unknown"}
               </span>
             </div>
           </TableCell>

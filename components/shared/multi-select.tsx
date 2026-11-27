@@ -33,6 +33,7 @@ export const MultiSelect = ({
     <Combobox
       multiple
       items={options}
+      itemToStringLabel={format}
       value={value}
       onValueChange={(next) => onChange(next)}
     >

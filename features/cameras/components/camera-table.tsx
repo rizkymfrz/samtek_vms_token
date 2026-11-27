@@ -88,10 +88,7 @@ export const CameraTable = ({
               className="cursor-pointer outline-none focus-visible:bg-muted"
             >
               <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium">{camera.name}</span>
-                  <span className="text-muted-foreground">ID {camera.id}</span>
-                </div>
+                <span className="font-medium">{camera.name}</span>
               </TableCell>
               <TableCell>
                 {serverName.get(camera.edgeServerId) ?? "Unknown"}

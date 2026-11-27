@@ -21,22 +21,26 @@ export const TimePicker = ({
   label,
   value,
   onChange,
+  hasSeconds = true,
   className,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  hasSeconds?: boolean;
   className?: string;
 }) => {
   const [hour, minute, second] = parts(value);
   const field = "min-w-0 flex-1";
+  const join = (h: string, m: string, sec: string) =>
+    hasSeconds ? `${h}:${m}:${sec}` : `${h}:${m}`;
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <Pick
         label={`${label} hour`}
         items={HOURS}
         value={hour}
-        onChange={(next) => onChange(`${next}:${minute}:${second}`)}
+        onChange={(next) => onChange(join(next, minute, second))}
         className={field}
       />
       <span className="text-xs text-muted-foreground">:</span>
@@ -44,17 +48,21 @@ export const TimePicker = ({
         label={`${label} minute`}
         items={SIXTIES}
         value={minute}
-        onChange={(next) => onChange(`${hour}:${next}:${second}`)}
+        onChange={(next) => onChange(join(hour, next, second))}
         className={field}
       />
-      <span className="text-xs text-muted-foreground">:</span>
-      <Pick
-        label={`${label} second`}
-        items={SIXTIES}
-        value={second}
-        onChange={(next) => onChange(`${hour}:${minute}:${next}`)}
-        className={field}
-      />
+      {hasSeconds && (
+        <>
+          <span className="text-xs text-muted-foreground">:</span>
+          <Pick
+            label={`${label} second`}
+            items={SIXTIES}
+            value={second}
+            onChange={(next) => onChange(join(hour, minute, next))}
+            className={field}
+          />
+        </>
+      )}
     </div>
   );
 };

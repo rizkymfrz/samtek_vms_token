@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDate } from "@/lib/format-date";
-import { applyState } from "../lib/filter-speakers";
+import { applyState } from "../lib/apply-state";
 import type { ServerOption, SpeakerRecord } from "../types";
 
 const APPLY_LABEL = {
@@ -84,10 +84,7 @@ export const SpeakerTable = ({
               className="cursor-pointer outline-none focus-visible:bg-muted"
             >
               <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium">{speaker.name}</span>
-                  <span className="text-muted-foreground">ID {speaker.id}</span>
-                </div>
+                <span className="font-medium">{speaker.name}</span>
               </TableCell>
               <TableCell>
                 {serverName.get(speaker.edgeServerId) ?? "Unknown"}

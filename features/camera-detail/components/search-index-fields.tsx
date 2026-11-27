@@ -4,12 +4,10 @@ import { useId } from "react";
 import { Controller, type UseFormReturn, useWatch } from "react-hook-form";
 import { MultiSelect } from "@/components/shared/multi-select";
 import { ToggleCard } from "@/components/shared/toggle-card";
-import { Badge } from "@/components/ui/badge";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   type ParamSpec,
-  type SearchIndexStatus,
   useAnalyticCatalog,
   useEdgeSearchIndex,
 } from "@/features/edge-status";
@@ -19,19 +17,6 @@ import {
 } from "@/lib/api/search-index";
 import type { DetailDraft } from "../lib/detail-draft";
 import type { CameraDetail } from "../types";
-
-const STATUS: Record<
-  SearchIndexStatus["status"],
-  {
-    label: string;
-    variant: "default" | "secondary" | "destructive" | "outline";
-  }
-> = {
-  disabled: { label: "Off", variant: "outline" },
-  starting: { label: "Starting", variant: "secondary" },
-  active: { label: "Active", variant: "default" },
-  unavailable: { label: "Unavailable", variant: "destructive" },
-};
 
 export const labelOptions = (
   specs: ParamSpec[],
@@ -75,7 +60,6 @@ export const SearchIndexFields = ({
     catalog.find((analytic) => analytic.id === analyticId)
       ?.supportsSearchIndex === true;
   if (!isSupported) return null;
-  const status = edge?.devices.get(detail.id);
   const applyError =
     detail.applyError?.field?.startsWith("search_index") === true
       ? detail.applyError.message
@@ -101,17 +85,6 @@ export const SearchIndexFields = ({
           />
         )}
       />
-      {status && status.status !== "active" && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          Index status
-          <Badge variant={STATUS[status.status].variant}>
-            {STATUS[status.status].label}
-          </Badge>
-          {status.status === "unavailable" && status.detail && (
-            <span title={status.detail}>{status.detail}</span>
-          )}
-        </div>
-      )}
       {applyError && (
         <span role="alert" className="text-xs text-destructive">
           {applyError}

@@ -2,16 +2,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const SpeakersSkeleton = () => {
   return (
-    <div className="flex min-h-full flex-col lg:flex-row">
-      <div className="flex w-full flex-col gap-4 border-t p-4 max-lg:order-last lg:w-88 lg:border-t-0 lg:border-r">
-        <Skeleton className="h-10" />
-        <Skeleton className="h-10" />
-        <Skeleton className="h-40" />
+    <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Skeleton className="h-10 w-56" />
+        <Skeleton className="h-10 w-36" />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
-        <Skeleton className="h-10 w-full max-w-3xl" />
-        <Skeleton className="h-96" />
-      </div>
+      <Skeleton className="h-96" />
     </div>
   );
 };
