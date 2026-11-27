@@ -40,7 +40,7 @@ require_root() {
 }
 
 file_value() {
-  grep -E "^$2=" "$1" 2>/dev/null | tail -n1 | cut -d= -f2-
+  { grep -E "^$2=" "$1" 2>/dev/null || true; } | tail -n1 | cut -d= -f2-
 }
 
 env_value() {
@@ -452,11 +452,9 @@ write_env() {
   fi
   first_install=1
   if [[ -z $api_url && -f $api_env ]]; then
-    local api_host api_port
-    api_host=$(file_value "$api_env" LISTEN_HOST); api_host=${api_host:-127.0.0.1}
-    [[ $api_host == 0.0.0.0 ]] && api_host=127.0.0.1
+    local api_port
     api_port=$(file_value "$api_env" PORT)
-    [[ -z $api_port ]] || api_url=http://$api_host:$api_port
+    [[ -z $api_port ]] || api_url=http://127.0.0.1:$api_port
   fi
   [[ -n $api_url ]] || die "the API address is unknown: pass --api-url (no samtek-api found on this machine)"
   if [[ -z $public_url ]]; then
