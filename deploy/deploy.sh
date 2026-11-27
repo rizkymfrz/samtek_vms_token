@@ -7,7 +7,7 @@ self=$here/deploy.sh
 dry_run=0
 work=""
 readonly STAGING=${SAMTEK_ROOT:-}
-readonly SERVICE=samtek-vms
+readonly SERVICE=samtek-vms-new
 readonly SERVICE_USER=samtek-vms
 readonly PREFIX=$STAGING/opt/samtek/vms
 readonly CONF=$STAGING/etc/samtek/vms
@@ -309,7 +309,7 @@ cmd_package() {
   [[ ! -d $src/public ]] || cp -a "$src/public" "$root/payload/app/public"
   rm -rf "$root/payload/app/.next/cache"
   cp -a "$(command -v node)" "$root/payload/bin/node"
-  for script in deploy.sh samtek-vms.service samtek-vms.nginx.conf; do
+  for script in deploy.sh samtek-vms-new.service samtek-vms.nginx.conf; do
     cp -a "$here/$script" "$root/deploy/"
   done
   cp -a "$repo/.env.example" "$root/"
@@ -597,7 +597,7 @@ install_unit() {
     run cp -a "$UNIT" "$BACKUP/$(basename "$UNIT").$(date +%Y%m%d%H%M%S)"
   fi
   [[ -z $STAGING ]] || run install -d -m 0755 "$(dirname "$UNIT")"
-  run install -m 0644 "$here/samtek-vms.service" "$UNIT"
+  run install -m 0644 "$here/samtek-vms-new.service" "$UNIT"
   [[ -n $STAGING ]] || run systemctl daemon-reload
 }
 
