@@ -22,7 +22,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ANALYTICS } from "@/config/analytics-catalog";
-import { QuotaHint } from "@/features/license";
+import { LicenseHint, useLicense, withLicenseMark } from "@/features/license";
 import {
   cameraDraftSchema,
   type Draft,
@@ -73,6 +73,7 @@ const Form = ({
     control,
     name: ["edgeServerId", "analyticId"],
   });
+  const { data: license } = useLicense(serverId);
   const serverItems = servers.map((s) => ({ value: s.id, label: s.name }));
   return (
     <>
@@ -131,7 +132,7 @@ const Form = ({
                 render={({ field }) => (
                   <Pick
                     label="Analytic"
-                    items={SHEET_ANALYTIC_ITEMS}
+                    items={withLicenseMark(SHEET_ANALYTIC_ITEMS, license)}
                     value={field.value ?? "none"}
                     onChange={(value) =>
                       field.onChange(value === "none" ? null : value)
@@ -140,7 +141,7 @@ const Form = ({
                   />
                 )}
               />
-              <QuotaHint
+              <LicenseHint
                 serverId={serverId}
                 analyticId={analyticId}
                 counted={

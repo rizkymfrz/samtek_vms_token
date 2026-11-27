@@ -8,6 +8,7 @@ import {
   toUpdatePayload,
   updateCamera,
 } from "@/features/cameras";
+import { licenseErrorMessage } from "@/features/license";
 import type { AnalyticParams } from "@/lib/api/analytic-params";
 import type { Perimeters } from "@/lib/api/perimeters";
 import type { SearchIndexConfig } from "@/lib/api/search-index";
@@ -55,7 +56,7 @@ export const useCameraActions = (record: CameraRecord) => {
   return {
     save: save.mutate,
     isSaving: save.isPending,
-    saveError: save.error ? messageOf(save.error) : null,
+    saveError: save.error ? licenseErrorMessage(save.error) : null,
     remove: remove.mutate,
     isRemoving: remove.isPending,
     removeError: remove.error ? messageOf(remove.error) : null,

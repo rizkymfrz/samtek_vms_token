@@ -803,12 +803,23 @@ Catatan:
 MQTT broker`. Peringatan sebagian memakai `Some data did not load`.
 - Placeholder memakai `e.g.`: `e.g. Jakarta branch`.
 - Hapus edge server dicegah bila masih memiliki kamera.
-- Dialog kamera menampilkan sisa kuota di bawah `Analytic`: `{n} of {m}
-  licensed cameras in use for this analytic.` (singular: `1 licensed
-  camera`). Bila penuh: `The license
-  allows {m} enabled cameras for this analytic and all are in use.` Hanya
-  petunjuk; penolakan sebenarnya `422 LICENSE_QUOTA_EXCEEDED` dari API dan
-  pesannya tampil di dialog.
+- Dialog kamera dan form Camera detail menampilkan petunjuk license di
+  bawah `Analytic` (`LicenseHint`). Kuota: `{n} of {m} licensed cameras
+  in use for this analytic.` (singular: `1 licensed camera`). Bila
+  penuh: `The license allows {m} enabled cameras for this analytic and
+  all are in use.` Bila analytic tidak ada di license edge server:
+  `{Analytic} is not included in the license of this edge server.` Bila
+  license tidak valid: `The license on this edge server is not valid
+  ({alasan}), so the edge server may reject {Analytic}.` Alasan dari
+  `reasonLabel`, huruf kecil. Peringatan berwarna destructive dan tidak
+  memblokir simpan.
+- Item analytic yang tidak ada di license diberi akhiran ` (not
+  licensed)` di daftar `Analytic` dan tetap bisa dipilih. Penolakan
+  sebenarnya tetap dari API (`422 LICENSE_QUOTA_EXCEEDED`); pesannya
+  tampil di dialog, di toast `Failed to save the changes` (Camera
+  detail), atau di toast `Failed to update the camera` (toggle `Enabled`
+  di tabel, state switch dikembalikan). Untuk kode berawalan `LICENSE`,
+  VMS menambahkan `Check the license on the edge server page.`
 
 ### 3.19 Analytics
 

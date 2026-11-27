@@ -35,7 +35,10 @@ export const errorResponse = (error: unknown, scope: string) => {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (error instanceof CentralError && error.status < 500) {
-    return Response.json({ error: error.message }, { status: error.status });
+    return Response.json(
+      { error: error.message, code: error.code },
+      { status: error.status },
+    );
   }
   console.error(`[${scope}]`, error);
   return Response.json({ error: "Request failed" }, { status: 502 });

@@ -17,6 +17,7 @@ import {
   type ParamSpec,
   useEdgeRecording,
 } from "@/features/edge-status";
+import { LicenseHint, useLicense, withLicenseMark } from "@/features/license";
 import { OFF_SEARCH_INDEX } from "@/lib/api/search-index";
 import { AnalyticParamFields } from "./analytic-params";
 import { SearchIndexFields } from "./search-index-fields";
@@ -66,6 +67,7 @@ export const CameraForm = ({
   } = form;
   const analyticId = useWatch({ control, name: "analyticId" });
   const recording = useEdgeRecording(detail.edgeServerId);
+  const { data: license } = useLicense(detail.edgeServerId);
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
@@ -191,7 +193,7 @@ export const CameraForm = ({
                 render={({ field }) => (
                   <Pick
                     label="Analytic"
-                    items={ANALYTIC_ITEMS}
+                    items={withLicenseMark(ANALYTIC_ITEMS, license)}
                     value={field.value ?? "none"}
                     onChange={(value) => {
                       field.onChange(value === "none" ? null : value);
@@ -207,6 +209,11 @@ export const CameraForm = ({
                     className="w-full"
                   />
                 )}
+              />
+              <LicenseHint
+                serverId={detail.edgeServerId}
+                analyticId={analyticId}
+                counted={detail.isEnabled && detail.analyticId === analyticId}
               />
             </Field>
             {analyticId && (

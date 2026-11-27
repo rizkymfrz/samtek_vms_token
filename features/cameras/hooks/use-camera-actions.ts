@@ -1,6 +1,6 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { messageOf } from "@/lib/axios/browser-client";
+import { licenseErrorMessage } from "@/features/license";
 import { invalidateDeviceData } from "@/lib/query/invalidate";
 import { CAMERAS_QUERY_KEY } from "./use-cameras";
 import {
@@ -69,7 +69,7 @@ export const useCameraActions = () => {
   });
   const errorOf = (...errors: unknown[]) => {
     const found = errors.find(Boolean);
-    return found ? messageOf(found) : null;
+    return found ? licenseErrorMessage(found) : null;
   };
   return {
     save,
