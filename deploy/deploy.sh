@@ -425,12 +425,14 @@ install_release() {
     return
   fi
   note "copying release $version"
-  run install -d -m 0755 "$release/bin"
-  run install -m 0755 "$from/bin/node" "$release/bin/node"
-  run rm -rf -- "${release:?}/app"
-  run cp -a "$from/app" "$release/app"
-  run ln -sfn "$DATA/cache" "$release/app/.next/cache"
-  [[ -n $STAGING ]] || run chown -R root:root "$release"
+  local partial=$release.partial
+  run rm -rf -- "${partial:?}" "${release:?}"
+  run install -d -m 0755 "$partial/bin"
+  run install -m 0755 "$from/bin/node" "$partial/bin/node"
+  run cp -a "$from/app" "$partial/app"
+  run ln -sfn "$DATA/cache" "$partial/app/.next/cache"
+  [[ -n $STAGING ]] || run chown -R root:root "$partial"
+  run mv -T "$partial" "$release"
   fresh_app=1
 }
 
@@ -502,7 +504,8 @@ ENV
 }
 
 apply_public_values() {
-  ((fresh_app)) || return 0
+  local node=$PREFIX/releases/$version/bin/node app=$PREFIX/releases/$version/app
+  ((fresh_app)) || ! [[ -x $node ]] || ! public_env "$node" --check "$app" >/dev/null 2>&1 || return 0
   note "writing the browser values into the app"
   ((dry_run)) && { printf '  [dry-run] write the browser values into the app\n'; return; }
   public_env "$PREFIX/releases/$version/bin/node" --apply "$PREFIX/releases/$version/app" "$PUBLICENV" >/dev/null
