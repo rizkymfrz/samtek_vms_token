@@ -105,7 +105,8 @@ sudo deploy/deploy.sh install [options]
                           this machine>[:http-port]. The browser MQTT address is built from it.
   --api-url <url>         the API the server calls; default: the samtek-api of this machine, else asked
   --scan-logins <list>    user:password pairs, comma separated (at most 8), the camera scan tries; the
-                          browser receives them, so they are visible to anyone who opens the site; default: none
+                          browser receives them, so they are visible to anyone who opens the site; default: NEXT_PUBLIC_SCAN_LOGINS
+                          of the .env.example inside the package, else none
   --mqtt-ws <host:port>   WebSocket listener of the broker that nginx forwards /mqtt to; default: the
                           samtek-mosquitto of this machine; none means no /mqtt
   --no-nginx              do not touch nginx (you put a proxy in front yourself)
@@ -444,6 +445,10 @@ detect_host() {
   printf '%s' "${address:-localhost}"
 }
 
+check_scan_logins() {
+  [[ -z $scan_logins || $scan_logins =~ ^[^:,[:space:]]+:[^,[:space:]]+(,[^:,[:space:]]+:[^,[:space:]]+){0,7}$ ]] || die "the scan logins are user:password pairs separated by commas, at most 8, without spaces"
+}
+
 write_env() {
   if [[ -e $ENVFILE ]]; then
     note "$ENVFILE exists, not touched"
@@ -467,6 +472,8 @@ write_env() {
   fi
   local secure=false
   [[ $public_url == https://* ]] && secure=true
+  [[ -n $scan_logins ]] || scan_logins=$(file_value "$repo/.env.example" NEXT_PUBLIC_SCAN_LOGINS)
+  check_scan_logins
   note "writing $ENVFILE (API $api_url, public $public_url)"
   if ((dry_run)); then
     printf '  [dry-run] create %s and %s\n' "$ENVFILE" "$PUBLICENV"
@@ -639,7 +646,7 @@ cmd_install() {
   [[ -n $from || ! -d $repo/payload ]] || from=$repo/payload
   [[ -n $from ]] || { usage >&2; die "--from is required"; }
   [[ $port =~ ^[0-9]+$ && $http_port =~ ^[0-9]+$ ]] || die "ports must be numbers"
-  [[ -z $scan_logins || $scan_logins =~ ^[^:,[:space:]]+:[^,[:space:]]+(,[^:,[:space:]]+:[^,[:space:]]+){0,7}$ ]] || die "--scan-logins is user:password pairs separated by commas, at most 8, without spaces"
+  check_scan_logins
   [[ $server_name =~ ^[A-Za-z0-9._*-]+$ ]] || die "--server-name may only hold letters, digits, . _ * -"
   preflight
   ensure_user
