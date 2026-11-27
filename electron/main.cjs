@@ -1,7 +1,7 @@
 const { spawn } = require("node:child_process");
 const net = require("node:net");
 const path = require("node:path");
-const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
 
 const DEV_URL = process.env.SAMTEK_DESKTOP_URL || "http://localhost:3000";
 const READY_TIMEOUT_MS = 30_000;
@@ -18,9 +18,10 @@ const freePort = () =>
     });
   });
 
-const waitForServer = async (url) => {
+const waitForServer = async (url, isDead) => {
   const deadline = Date.now() + READY_TIMEOUT_MS;
   while (Date.now() < deadline) {
+    if (isDead?.()) throw new Error("The VMS server stopped while starting");
     try {
       await fetch(url, { redirect: "manual" });
       return;
@@ -46,12 +47,14 @@ const startServer = async () => {
     },
     stdio: "inherit",
   });
-  server.once("exit", () => {
+  let exitCode = null;
+  server.once("exit", (code) => {
     server = null;
-    if (!app.isQuitting) app.quit();
+    exitCode = code;
+    if (!app.isQuitting && mainWindow?.isVisible()) app.quit();
   });
   const url = `http://127.0.0.1:${port}`;
-  await waitForServer(url);
+  await waitForServer(url, () => exitCode !== null);
   return url;
 };
 
@@ -116,5 +119,10 @@ if (!app.requestSingleInstanceLock()) {
     server?.kill();
   });
   app.on("window-all-closed", () => app.quit());
-  app.whenReady().then(createWindow);
+  app.whenReady().then(() =>
+    createWindow().catch((error) => {
+      dialog.showErrorBox("SAMTEK", error.message);
+      app.quit();
+    }),
+  );
 }

@@ -6,6 +6,7 @@
   "artifactName": "samtek-vms-desktop-${env.SAMTEK_DESKTOP_VERSION}-${os}-${arch}.${ext}",
   "directories": { "output": "${env.SAMTEK_DESKTOP_OUT}" },
   "files": ["electron/**/*", "package.json"],
+  "afterPack": "electron/after-pack.cjs",
   "extraMetadata": {
     "name": "samtek",
     "main": "electron/main.cjs",
