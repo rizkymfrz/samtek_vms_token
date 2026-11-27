@@ -104,6 +104,8 @@ sudo deploy/deploy.sh install [options]
   --public-url <url>      what the browsers use, e.g. https://vms.example.com; default: http://<ip of
                           this machine>[:http-port]. The browser MQTT address is built from it.
   --api-url <url>         the API the server calls; default: the samtek-api of this machine, else asked
+  --scan-logins <list>    user:password pairs, comma separated (at most 8), the camera scan tries; the
+                          browser receives them, so they are visible to anyone who opens the site; default: none
   --mqtt-ws <host:port>   WebSocket listener of the broker that nginx forwards /mqtt to; default: the
                           samtek-mosquitto of this machine; none means no /mqtt
   --no-nginx              do not touch nginx (you put a proxy in front yourself)
@@ -496,7 +498,7 @@ ENV
 NEXT_PUBLIC_MQTT_WS_URL=$ws_url
 NEXT_PUBLIC_MQTT_USERNAME=$mqtt_user
 NEXT_PUBLIC_MQTT_PASSWORD=$mqtt_pass
-NEXT_PUBLIC_SCAN_LOGINS=
+NEXT_PUBLIC_SCAN_LOGINS=$scan_logins
 ENV
   umask 0022
   chmod 0640 "$ENVFILE" "$PUBLICENV"
@@ -607,7 +609,7 @@ activate() {
 
 cmd_install() {
   local from="" version="" start=1 reapply=0 rewrite_nginx=0
-  local port=$DEFAULT_PORT http_port=$DEFAULT_HTTP_PORT server_name=_ public_url="" api_url="" mqtt_ws=""
+  local port=$DEFAULT_PORT http_port=$DEFAULT_HTTP_PORT server_name=_ public_url="" api_url="" mqtt_ws="" scan_logins=""
   local use_nginx=1 install_deps=0 disable_default_site=0
   local api_env=$STAGING/etc/samtek/api/api.env
   local mosquitto_env=$STAGING/etc/samtek/mosquitto/client.env
@@ -622,6 +624,7 @@ cmd_install() {
       --public-url) public_url=${2:-}; shift 2 ;;
       --api-url) api_url=${2:-}; shift 2 ;;
       --mqtt-ws) mqtt_ws=${2:-}; shift 2 ;;
+      --scan-logins) scan_logins=${2:-}; shift 2 ;;
       --no-nginx) use_nginx=0; shift ;;
       --install-deps) install_deps=1; shift ;;
       --disable-default-site) disable_default_site=1; shift ;;
@@ -636,6 +639,7 @@ cmd_install() {
   [[ -n $from || ! -d $repo/payload ]] || from=$repo/payload
   [[ -n $from ]] || { usage >&2; die "--from is required"; }
   [[ $port =~ ^[0-9]+$ && $http_port =~ ^[0-9]+$ ]] || die "ports must be numbers"
+  [[ -z $scan_logins || $scan_logins =~ ^[^:,[:space:]]+:[^,[:space:]]+(,[^:,[:space:]]+:[^,[:space:]]+){0,7}$ ]] || die "--scan-logins is user:password pairs separated by commas, at most 8, without spaces"
   [[ $server_name =~ ^[A-Za-z0-9._*-]+$ ]] || die "--server-name may only hold letters, digits, . _ * -"
   preflight
   ensure_user
