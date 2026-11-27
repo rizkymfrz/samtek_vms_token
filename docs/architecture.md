@@ -232,7 +232,7 @@ Rules:
   dan navigasi.
 - Layout route-specific yang hanya digunakan satu route group boleh
   tetap berada dekat route group tersebut.
-- Aplikasi desktop (Electron, `electron/` dan `scripts/desktop.mjs`)
+- Aplikasi desktop (Electron, `electron/` dan `scripts/dev.mjs`)
   hanya pembungkus: UI tetap satu basis kode. Kode UI mendeteksi
   Electron lewat `useDesktop` (`window.samtekDesktop`), bukan lewat
   cabang build. `WindowControls` tidak dirender di web.

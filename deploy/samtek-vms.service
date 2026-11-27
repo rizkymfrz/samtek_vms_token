@@ -1,4 +1,4 @@
-# samtek-deploy: managed by deploy/install.sh, do not edit
+# samtek-deploy: managed by deploy/deploy.sh, do not edit
 [Unit]
 Description=samtek_vms (web interface, behind nginx)
 After=network-online.target samtek-api.service

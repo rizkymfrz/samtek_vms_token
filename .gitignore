@@ -22,7 +22,7 @@ yarn-error.log*
 next-env.d.ts
 !.env.example
 
-# copied from node_modules by scripts/copy-maplibre-worker.mjs
+# copied from node_modules by scripts/dev.mjs worker
 /public/maplibre-gl-worker.mjs
 
 # pm2 logs written by ecosystem.config.js

@@ -3,17 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "node scripts/copy-maplibre-worker.mjs",
+    "postinstall": "node scripts/dev.mjs worker",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "node --import ./tests/register.mjs --test \"tests/**/*.test.mjs\"",
-    "fix:spacing": "node scripts/fix-spacing.mjs",
-    "check:showcase": "node scripts/check-showcase.mjs",
+    "check:showcase": "node scripts/dev.mjs showcase",
     "format": "node scripts/format.mjs",
     "format:check": "node scripts/format.mjs --check",
-    "desktop:dev": "node scripts/desktop.mjs dev"
+    "desktop:dev": "node scripts/dev.mjs desktop"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.13",
